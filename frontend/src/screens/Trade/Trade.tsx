@@ -21,6 +21,10 @@ const Root = styled.div`
   gap: 4px;
   height: calc(100vh - 40px);
   margin: 16px;
+
+  > div {
+    border-radius: 4px;
+  }
 `;
 
 const TradeImpl: React.FC<IProps> = () => {

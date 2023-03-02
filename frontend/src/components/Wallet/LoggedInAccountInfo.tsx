@@ -84,7 +84,9 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
         <BalanceContainer>
           <TokenIcon size="tiny" src={eth.logo} alt="token" />
           <SizedBox width={4} />
-          <Text size="small">{formattedBalance.toFormat(4)}</Text>
+          <Text size="small" weight={500}>
+            {formattedBalance.toFormat(4)}
+          </Text>
         </BalanceContainer>
         <Tooltip
           config={{
@@ -95,7 +97,9 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
           content={<WalletActionsTooltip />}
         >
           <AddressContainer expanded={accountOpened}>
-            <Text size="small">{centerEllipsis(address ?? "", 10)}</Text>
+            <Text size="small" weight={500}>
+              {centerEllipsis(address ?? "", 10)}
+            </Text>
             <SizedBox width={4} />
             <img
               src={theme.images.icons.arrowDown}

@@ -4,10 +4,13 @@ import styled from "@emotion/styled";
 const Root = styled.input<{ small?: boolean }>`
   font-size: ${({ small }) => (small ? "16px;" : "20px")};
   caret-color: ${({ theme }) => theme.colors.primary01};
-  font-weight: 600;
-  line-height: 32px;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 18px;
   border: none;
   background: transparent;
+  text-align: right;
   outline: none;
   width: 100%;
   color: ${({ theme }) => theme.colors.text};

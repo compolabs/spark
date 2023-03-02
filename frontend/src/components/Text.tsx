@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 
-type TTextType = "primary" | "secondary" | "error";
+type TTextType = "primary" | "secondary" | "error" | "green";
 type TTextSize = "tiny" | "small" | "medium" | "large" | "big";
 type TTextAlign = "center" | "left" | "right" | "justify" | "end";
 
@@ -29,6 +29,8 @@ const Text = styled.p<{
           return `color: ${theme.colors?.neutral4};`;
         case "error":
           return `color: ${theme.colors?.secondary1};`;
+        case "green":
+          return `color: #25B05B;`;
         default:
           return `color: ${theme.colors?.text};`;
       }

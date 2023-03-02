@@ -11,6 +11,7 @@ import "rc-notification/assets/index.css";
 import "react-perfect-scrollbar/dist/css/styles.css";
 import "react-loading-skeleton/dist/skeleton.css";
 import "rc-dialog/assets/index.css";
+import "rc-slider/assets/index.css";
 import ThemeWrapper from "./themes/ThemeProvider";
 import GlobalStyles from "@src/themes/GlobalStyles";
 import { ToastContainer } from "react-toastify";

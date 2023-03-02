@@ -17,6 +17,16 @@ const OrderRow = styled.div`
   grid-template-columns: repeat(8, 1fr);
   padding: 0 2px;
 
+  text-align: center;
+
+  p:last-of-type {
+    text-align: end;
+  }
+
+  p:first-of-type {
+    text-align: start;
+  }
+
   :hover {
     background: rgb(50, 56, 70);
     border-radius: 2px;
@@ -33,7 +43,6 @@ const OpenedHistory: React.FC<IProps> = () => {
     "Amount",
     "Status",
     "Total",
-    "",
   ];
 
   return (

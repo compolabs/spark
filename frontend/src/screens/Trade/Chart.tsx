@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
+import Text from "@components/Text";
 
 interface IProps {}
 
@@ -8,9 +9,16 @@ const Root = styled.div`
   flex-direction: column;
   grid-area: chart;
   background: #222936;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 `;
 
 const Chart: React.FC<IProps> = () => {
-  return <Root>Graphic</Root>;
+  return (
+    <Root>
+      <Text>Chart will be here</Text>
+    </Root>
+  );
 };
 export default Chart;

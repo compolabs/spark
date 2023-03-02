@@ -6,20 +6,13 @@ import BigNumberInput from "@components/BigNumberInput";
 import AmountInput from "@components/AmountInput";
 import _ from "lodash";
 import Text from "@components/Text";
-import SizedBox from "@components/SizedBox";
 
 interface IProps {
   assetId: string;
   setAssetId?: (assetId: string) => void;
 
-  onMaxClick?: () => void;
-  balance?: string;
-
-  disabled?: boolean;
-
-  error: string | null;
-
   decimals: number;
+  description?: string;
 
   amount: BN;
   setAmount?: (amount: BN) => void;
@@ -43,11 +36,10 @@ const InputContainer = styled.div<{
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  padding: 16px;
   height: 32px;
-  font-weight: 600;
-  font-size: 20px;
-  line-height: 32px;
   width: 100%;
+  position: relative;
   cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
 
   box-sizing: border-box;
@@ -55,18 +47,12 @@ const InputContainer = styled.div<{
   input {
     cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
   }
-`;
 
-const MaxButton = styled.div`
-  font-style: normal;
-  font-weight: 700;
-  font-size: 13px;
-  line-height: 24px;
-  padding: 4px 16px;
+  background: #323846;
+  border: 1px solid #3a4050;
   border-radius: 4px;
-  cursor: pointer;
-  background: ${({ theme }) => theme.colors.button.secondaryBackground};
-  color: ${({ theme }) => theme.colors.button.secondaryColor};
+
+  //todo add border
 `;
 const TokenInput: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
@@ -77,7 +63,6 @@ const TokenInput: React.FC<IProps> = (props) => {
   }, [props.amount]);
 
   const handleChangeAmount = (v: BN) => {
-    if (props.disabled) return;
     setAmount(v);
     debounce(v);
   };
@@ -92,6 +77,16 @@ const TokenInput: React.FC<IProps> = (props) => {
   return (
     <Root>
       <InputContainer focused={focused} readOnly={!props.setAmount}>
+        {props.description != null && (
+          <Text
+            style={{ whiteSpace: "nowrap" }}
+            type="secondary"
+            size="small"
+            fitContent
+          >
+            {props.description}
+          </Text>
+        )}
         <BigNumberInput
           renderInput={(props, ref) => (
             <AmountInput
@@ -114,31 +109,7 @@ const TokenInput: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
-        {props.onMaxClick && (
-          <MaxButton
-            onClick={() => {
-              if (props.disabled) return;
-              setFocused(true);
-              props.onMaxClick && props.onMaxClick();
-            }}
-          >
-            MAX
-          </MaxButton>
-        )}
       </InputContainer>
-      <SizedBox height={2} />
-      {/*{props.error==null}*/}
-      {props.error != null ? (
-        <Text fitContent size="tiny" type="error">
-          {props.error}
-        </Text>
-      ) : (
-        props.balance && (
-          <Text fitContent size="tiny" type="secondary">
-            {`${props.balance} available`}
-          </Text>
-        )
-      )}
     </Root>
   );
 };
