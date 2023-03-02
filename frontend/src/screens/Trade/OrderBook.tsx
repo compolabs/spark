@@ -8,7 +8,6 @@ import Divider from "@src/components/Divider";
 import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
 import { useTradeVM } from "@screens/Trade/TradeVm";
-import { Column } from "@src/components/Flex";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 

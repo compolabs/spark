@@ -11,8 +11,6 @@
 
 export type { TokenAbi } from "./TokenAbi";
 export type { OracleAbi } from "./OracleAbi";
-export type { MarketAbi } from "./MarketAbi";
 
 export { TokenAbi__factory } from "./factories/TokenAbi__factory";
 export { OracleAbi__factory } from "./factories/OracleAbi__factory";
-export { MarketAbi__factory } from "./factories/MarketAbi__factory";

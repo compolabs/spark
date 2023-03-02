@@ -7,9 +7,10 @@ import OrderHistory from "@screens/Trade/Tables/OrderHistory";
 import Funds from "@screens/Trade/Tables/Funds";
 import { observer } from "mobx-react-lite";
 import { useStores } from "@stores";
-import { Column } from "@src/components/Flex";
+import { Column, Row } from "@src/components/Flex";
 import Text from "@components/Text";
 import Button from "@components/Button";
+import useWindowSize from "@src/hooks/useWindowSize";
 
 interface IProps {}
 
