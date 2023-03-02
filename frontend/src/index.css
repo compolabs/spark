@@ -1,0 +1,34 @@
+
+body.noscroll {
+    overflow-y: hidden;
+}
+
+a {
+    text-decoration: none;
+}
+
+
+#root {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    flex: 1 1 auto;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    font-weight: normal;
+    src: local('Roboto'), url(assets/fonts/Roboto-Regular.ttf) format('truetype');
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: local('Roboto'), url(assets/fonts/Roboto-Medium.ttf) format('truetype');
+    font-weight: 500;
+}
+
+
+.Toastify__toast-icon {
+    display: none !important;
+}
