@@ -1,0 +1,12 @@
+[package]
+name = "matcher"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = "0.15.0"
+fuels = { version = "0.35.1", features = ["fuel-core-lib"] }
+serenity = { default-features = false, features = ["client", "gateway", "model", "rustls_backend"], version = "0.11.5"}
+tokio = { version = "1.25.0", features = ["full"] }
