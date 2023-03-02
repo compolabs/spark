@@ -1,10 +1,10 @@
 import React from "react";
-import {BottomSheet, BottomSheetProps} from "react-spring-bottom-sheet";
-import {Column, Row} from "@components/Flex";
+import { BottomSheet, BottomSheetProps } from "react-spring-bottom-sheet";
+import { Column, Row } from "@components/Flex";
 import styled from "@emotion/styled";
 
 interface IProps extends BottomSheetProps {
-    onClose: () => void;
+  onClose: () => void;
 }
 
 const Header = styled(Row)`
@@ -18,11 +18,11 @@ const Body = styled(Column)`
   padding: 16px;
 `;
 
-const BottomMenu: React.FC<IProps> = ({children, open, header, onClose}) => (
-    <BottomSheet open={open} onDismiss={onClose}>
-        {header && <Header>{header}</Header>}
-        <Body>{children}</Body>
-    </BottomSheet>
+const BottomMenu: React.FC<IProps> = ({ children, open, header, onClose }) => (
+  <BottomSheet open={open} onDismiss={onClose}>
+    {header && <Header>{header}</Header>}
+    <Body>{children}</Body>
+  </BottomSheet>
 );
 
 export default BottomMenu;

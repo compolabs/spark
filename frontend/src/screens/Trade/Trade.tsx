@@ -6,10 +6,11 @@ import { TradeVMProvider } from "@screens/Trade/TradeVm";
 import OrderBook from "@screens/Trade/OrderBook";
 import PairsList from "@screens/Trade/PairsList";
 import Chart from "./Chart";
-import Order from "./Order";
 import Tables from "./Tables";
 import useWindowSize from "@src/hooks/useWindowSize";
 import MobileStats from "@screens/Trade/MobileStats";
+import OrderDesktop from "@screens/Trade/Order/OrderDesktop";
+import OrderMobile from "@screens/Trade/Order/OrderMobile";
 
 interface IProps {}
 
@@ -46,7 +47,7 @@ const TradeImpl: React.FC<IProps> = () => {
                 <>
                   <OrderBook />
                   <Chart />
-                  <Order />
+                  <OrderDesktop />
                   <PairsList />
                   <Tables />
                 </>
@@ -55,7 +56,7 @@ const TradeImpl: React.FC<IProps> = () => {
                   <MobileStats />
                   <Chart />
                   <Tables />
-                  <Order />
+                  <OrderMobile />
                 </>
               )}
             </Root>

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useState } from "react";
 import Button from "@components/Button";
 import SizedBox from "@components/SizedBox";
 import { useTradeVM } from "@screens/Trade/TradeVm";
@@ -19,13 +19,15 @@ const Root = styled.div`
 
 const OrderMobile: React.FC<IProps> = () => {
   const vm = useTradeVM();
+  const [openedDialog, setOpenedDialog] = useState(false);
+  const [action, setAction] = useState<null | string>(null);
   return (
     <Root>
-      <Button fixed kind="green">
+      <Button fixed kind="green" onClick={() => setOpenedDialog(true)}>
         Buy {vm.token0.symbol}
       </Button>
       <SizedBox width={8} />
-      <Button fixed kind="danger">
+      <Button fixed kind="danger" onClick={() => setOpenedDialog(true)}>
         Sell {vm.token1.symbol}
       </Button>
     </Root>
