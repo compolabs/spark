@@ -6,8 +6,8 @@ use fuels::{
 
 abigen!(Contract(
     name = "LimitOrdersContract",
-    abi = "out/debug/limit_orders-abi.json"
-),);
+    abi = "src/artefacts/limit_orders-abi.json"
+));
 
 pub async fn deploy_limit_orders_contract(admin: &WalletUnlocked) -> LimitOrdersContract {
     let id = Contract::deploy(
@@ -53,6 +53,7 @@ pub mod limit_orders_abi_calls {
     //         .unwrap()
     //         .value
     // }
+
     pub async fn get_trades(
         contract: &LimitOrdersContract,
         offset: u64,

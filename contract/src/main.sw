@@ -30,7 +30,13 @@ abi LimitOrders {
     fn orders_amount() -> u64;
 
     #[storage(read)]
-    fn trades(offset: u64) ->  (Option<Trade>,Option<Trade>,Option<Trade>,Option<Trade>,Option<Trade>,Option<Trade>,Option<Trade>,Option<Trade>,Option<Trade>,Option<Trade>,);
+    fn trades(offset: u64) -> (Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>);
+
+    #[storage(read)]
+    fn orders(offset: u64) -> (Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>);
+
+    #[storage(read)]
+    fn orders_by_id(ids: [u64; 10]) -> (Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>);
 
     #[storage(read)]
     fn order_by_id(id: u64) -> Order;
@@ -139,19 +145,91 @@ impl LimitOrders for Contract {
     }
 
     #[storage(read)]
-    fn trades(offset: u64) -> (Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>){
+    fn trades(
+        offset: u64,
+    ) -> (Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>, Option<Trade>) {
         let mut vec = Vec::new();
         let mut i = 0;
         while i < 10 {
-            let trade = if storage.trades.len() - 1  < i + offset {
+            let trade = if storage.trades.len() - 1 < i + offset {
                 Option::None
-            }else{ 
+            } else {
                 storage.trades.get(storage.trades.len() - 1 - i - offset)
             };
             vec.push(trade);
             i += 1;
         }
-        (vec.get(0).unwrap() ,vec.get(1).unwrap() ,vec.get(2).unwrap() ,vec.get(3).unwrap() ,vec.get(4).unwrap(),vec.get(5).unwrap() ,vec.get(6).unwrap() ,vec.get(7).unwrap() ,vec.get(8).unwrap() ,vec.get(9).unwrap())
+        (
+            vec.get(0).unwrap(),
+            vec.get(1).unwrap(),
+            vec.get(2).unwrap(),
+            vec.get(3).unwrap(),
+            vec.get(4).unwrap(),
+            vec.get(5).unwrap(),
+            vec.get(6).unwrap(),
+            vec.get(7).unwrap(),
+            vec.get(8).unwrap(),
+            vec.get(9).unwrap(),
+        )
+    }
+
+    #[storage(read)]
+    fn orders(
+        offset: u64,
+    ) -> (Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>) {
+        let mut vec = Vec::new();
+        let mut i = 0;
+        while i < 10 {
+            let order = if storage.orders_amount <= i + offset {
+                Option::None
+            } else {
+                Option::Some(storage.orders.get(storage.orders_amount - i - offset))
+            };
+            vec.push(order);
+            i += 1;
+        }
+        (
+            vec.get(0).unwrap(),
+            vec.get(1).unwrap(),
+            vec.get(2).unwrap(),
+            vec.get(3).unwrap(),
+            vec.get(4).unwrap(),
+            vec.get(5).unwrap(),
+            vec.get(6).unwrap(),
+            vec.get(7).unwrap(),
+            vec.get(8).unwrap(),
+            vec.get(9).unwrap(),
+        )
+    }
+
+    #[storage(read)]
+    fn orders_by_id(
+        ids: [u64; 10],
+    ) -> (Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>, Option<Order>) {
+        let mut vec = Vec::new();
+        let mut i = 0;
+        while i < 10 {
+            let order = storage.orders.get(i);
+            let order: Option<Order> = if order.id > 0 {
+                Option::Some(order)
+            } else {
+                Option::None
+            };
+            vec.push(order);
+            i += 1;
+        }
+        (
+            vec.get(0).unwrap(),
+            vec.get(1).unwrap(),
+            vec.get(2).unwrap(),
+            vec.get(3).unwrap(),
+            vec.get(4).unwrap(),
+            vec.get(5).unwrap(),
+            vec.get(6).unwrap(),
+            vec.get(7).unwrap(),
+            vec.get(8).unwrap(),
+            vec.get(9).unwrap(),
+        )
     }
 
     #[payable]
@@ -261,13 +339,14 @@ impl LimitOrders for Contract {
     }
 
     #[storage(read, write)]
-    //TODO orders_ids_a: u64[], orders_ids_b: u64[]
-    fn match_orders(order0_id: u64, order1_id: u64) {
+        //TODO orders_ids_a: u64[], orders_ids_b: u64[]
+fn match_orders(order0_id: u64, order1_id: u64) {
         let matcher = get_sender_or_throw();
         let mut order0 = storage.orders.get(order0_id);
         let mut order1 = storage.orders.get(order1_id);
         require(order0_id > 0 && order0.id == order0_id, "Order 0 is not found");
         require(order1_id > 0 && order1.id == order1_id, "Order 1 is not found");
+        require(is_order_active(order0) && is_order_active(order1), "Orders shuold be active");
         require(order0.asset0 == order1.asset1 && order0.asset1 == order1.asset0, "Orders don't match by tokens");
         let price_0 = order0.amount1 * 1_000_000_000 / order0.amount0;
         let price_1 = order1.amount0 * 1_000_000_000 / order1.amount1;
