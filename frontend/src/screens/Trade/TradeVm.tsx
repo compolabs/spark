@@ -17,6 +17,19 @@ export const TradeVMProvider: React.FC<IProps> = ({ children }) => {
   return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
+export interface IOrder {
+  id: string;
+  amount0: BN;
+  token0: string;
+  amount1: BN;
+  token1: string;
+  txId: string;
+  fulfilled0: BN;
+  fulfilled1: BN;
+  timestamp: number;
+  status: "active" | "closed" | "canceled";
+}
+
 export const useTradeVM = () => useVM(ctx);
 
 class TradeVm {
@@ -41,8 +54,20 @@ class TradeVm {
     return TOKENS_BY_ASSET_ID[this.assetId0];
   }
 
+  get balance0() {
+    return this.rootStore.accountStore.balances.find(
+      ({ assetId }) => assetId === this.assetId0
+    )!;
+  }
+
   get token1() {
     return TOKENS_BY_ASSET_ID[this.assetId1];
+  }
+
+  get balance1() {
+    return this.rootStore.accountStore.balances.find(
+      ({ assetId }) => assetId === this.assetId1
+    )!;
   }
 
   searchValue = "";

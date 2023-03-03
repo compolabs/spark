@@ -8,11 +8,11 @@ body {
     font-family: "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background:  ${theme.colors.mainBackground};
+    background: #292F3C;
 }
 
 .rc-dialog-mask {
-     background:  ${theme.colors.modal.mask};
+     background: rgba(0, 0, 0, 0.4);
 }
 
 .rc-dialog-wrap {
@@ -27,8 +27,8 @@ body {
 }
 
 .rc-dialog-content {
-    background: ${theme.colors.modal.background} ;
-    border: 1px solid ${theme.colors.modal.border} ;
+    background: #292F3C ;
+    border: 1px solid #292F3C ;
     box-shadow: 0px 8px 56px rgba(54, 56, 112, 0.16);
     border-radius: 4px;
     overflow: hidden;
@@ -37,14 +37,11 @@ body {
 }
 
 .rc-dialog-header {
-    border-bottom: 2px solid ${theme.colors.modal.border};
-    background: ${theme.colors.modal.background} ;
+    border-bottom: 1px solid #4B5364;
+    background: #292F3C ;
     padding: 16px 24px;
     max-height: 56px;
 } 
-.rc-dialog-header .send-asset{
-    border-bottom: 1px solid ${theme.colors.primary01};
-}
 
 .rc-dialog-body {
     padding: 16px 24px 0 24px;
@@ -56,7 +53,7 @@ body {
     font-weight: 500;
     font-size: 16px;
     line-height: 24px;
-    color: ${theme.colors.primary800};
+    color: #FFFFFF;
 }
 
 

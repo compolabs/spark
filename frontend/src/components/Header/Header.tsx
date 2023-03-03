@@ -96,11 +96,6 @@ const Header: React.FC<IProps> = () => {
     { name: "Trade", link: ROUTES.TRADE, outer: false },
     { name: "Faucet", link: ROUTES.FAUCET, outer: false },
     {
-      name: "Sway Lend",
-      link: "https://app.swaylend.com/",
-      outer: true,
-    },
-    {
       name: "Docs",
       link: "https://google.com/",
       outer: true,

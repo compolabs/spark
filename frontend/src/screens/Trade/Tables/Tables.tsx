@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import SizedBox from "@components/SizedBox";
 import OpenedOrders from "@screens/Trade/Tables/OpenedOrders";
 import OrderHistory from "@screens/Trade/Tables/OrderHistory";
-import Funds from "@screens/Trade/Tables/Funds";
 import { observer } from "mobx-react-lite";
 import { useStores } from "@stores";
 import { Column } from "@src/components/Flex";
@@ -53,11 +52,7 @@ const Tables: React.FC<IProps> = () => {
     <Root>
       <TabsContainer>
         <Tabs
-          tabs={[
-            { name: "Opened orders" },
-            { name: "Order history" },
-            { name: "Funds" },
-          ]}
+          tabs={[{ name: "Opened orders" }, { name: "Order history" }]}
           activeTab={activeTab}
           setActive={(t) => setActiveTab(t)}
         />
@@ -67,7 +62,6 @@ const Tables: React.FC<IProps> = () => {
           <DContainer>
             {activeTab === 0 && <OpenedOrders />}
             {activeTab === 1 && <OrderHistory />}
-            {activeTab === 2 && <Funds />}
           </DContainer>
         ) : (
           <Column alignItems="center" justifyContent="center">
