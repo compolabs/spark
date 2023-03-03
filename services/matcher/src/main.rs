@@ -1,3 +1,4 @@
+use crate::utils::print_swaygang_sign::print_swaygang_sign;
 use dotenv::dotenv;
 use fuels::prelude::{
     abigen, Address, Bech32ContractId, ContractId, Provider, SettableContract, WalletUnlocked,
@@ -5,19 +6,13 @@ use fuels::prelude::{
 use serenity::model::prelude::ChannelId;
 use serenity::prelude::*;
 use std::{env, fmt::format, str::FromStr, thread::sleep, time::Duration};
-
+use tuple_conv::RepeatedTuple;
+use utils::limit_orders_utils::{limit_orders_abi_calls::get_orders, LimitOrdersContract, Order};
 mod utils;
-use utils::{market_abi_calls::market_abi_calls, print_swaygang_sign::print_swaygang_sign};
-
-abigen!(
-    Contract(
-        name = "LimitOrders",
-        abi = "src/artefacts/limit_orders-abi.json"
-    )
-);
 
 const RPC: &str = "node-beta-2.fuel.network";
-const LIMIT_ORDERS_ADDRESS: &str = "";
+const LIMIT_ORDERS_ADDRESS: &str =
+    "0x386ef6d3568e912b19045e446a307bd7b8f7ec0e1cc8f5b123b2d1aa2b241a44";
 
 #[tokio::main]
 async fn main() {
@@ -31,10 +26,11 @@ async fn main() {
     let wallet = WalletUnlocked::new_from_private_key(secret.parse().unwrap(), Some(provider));
 
     let bech32_id = Bech32ContractId::from(ContractId::from_str(LIMIT_ORDERS_ADDRESS).unwrap());
-    let instance = LimitOrders::new(bech32_id.clone(), wallet.clone());
+    let instance = LimitOrdersContract::new(bech32_id.clone(), wallet.clone());
 
-    // let mut users = Users::new(MarketContract::new(bech32_id, wallet.clone()));
-    // users.fetch().await;
+    let mut ordersFetcher =
+        OpenOrdersFetcher::new(LimitOrdersContract::new(bech32_id, wallet.clone()));
+    ordersFetcher.fetch().await;
 
     //discord
     let token = env::var("DISCORD_TOKEN").expect("❌ Expected a token in the environment");
@@ -47,67 +43,66 @@ async fn main() {
 
     print_swaygang_sign("✅ Matcher is alive");
     loop {
-        users.fetch().await;
-        let list = users.list.clone();
+        ordersFetcher.fetch().await;
+        let orders = ordersFetcher.orders.clone();
         // println!("Total users {}", list.len());
-        let mut index = 0;
-        while index < list.len() {
-            let user = list[index];
-            let res = market_abi_calls::is_liquidatable(&market, &contracts, user).await;
-            if res.is_err() {
-                println!("error = {:?}", res.err());
-                continue;
-            }
-            let is_liquidatable = res.unwrap().value;
-            if is_liquidatable {
-                let _res = market_abi_calls::absorb(&market, &contracts, vec![user])
-                    .await
-                    .unwrap();
-                
-                // let tx_link =
-                    // format!("https://fuellabs.github.io/block-explorer-v2/transaction/{}");
-                channel
-                    .say(
-                        client.cache_and_http.http.clone(),
-                        format!("🔥 0x{user} has been liquidated."),
-                    )
-                    .await
-                    .unwrap();
-            }
-            index += 1;
-        }
+        // let mut index = 0;
+        // while index < list.len() {
+        //     let user = list[index];
+        //     let res = market_abi_calls::is_liquidatable(&market, &contracts, user).await;
+        //     if res.is_err() {
+        //         println!("error = {:?}", res.err());
+        //         continue;
+        //     }
+        //     let is_liquidatable = res.unwrap().value;
+        //     if is_liquidatable {
+        //         let _res = market_abi_calls::absorb(&market, &contracts, vec![user])
+        //             .await
+        //             .unwrap();
+
+        //         // let tx_link =
+        //             // format!("https://fuellabs.github.io/block-explorer-v2/transaction/{}");
+        //         channel
+        //             .say(
+        //                 client.cache_and_http.http.clone(),
+        //                 format!("🔥 0x{user} has been liquidated."),
+        //             )
+        //             .await
+        //             .unwrap();
+        //     }
+        //     index += 1;
+        // }
+        println!("Ok ✅",);
         sleep(Duration::from_secs(10));
     }
 }
 
-struct Users {
-    pub list: Vec<Address>,
-    market: MarketContract,
-    last_check_borrowers_amount: u64,
+struct OpenOrdersFetcher {
+    pub orders: Vec<Order>,
+    instance: LimitOrdersContract,
 }
 
-impl Users {
-    fn new(market: MarketContract) -> Users {
-        Users {
-            list: vec![],
-            market,
-            last_check_borrowers_amount: 0,
+impl OpenOrdersFetcher {
+    fn new(instance: LimitOrdersContract) -> OpenOrdersFetcher {
+        OpenOrdersFetcher {
+            orders: vec![],
+            instance,
         }
     }
     async fn fetch(&mut self) {
-        let methods = self.market.methods();
-        let amount = methods
-            .get_borrowers_amount()
-            .simulate()
-            .await
-            .unwrap()
-            .value;
-        let mut index = self.last_check_borrowers_amount;
-        while index < amount {
-            let borrower = methods.get_borrower(index).simulate().await.unwrap().value;
-            self.list.push(borrower);
-            index += 1;
+        let mut offset = 0;
+        let mut orders: Vec<Order> = vec![];
+        while offset == 0 || orders.last().unwrap().id > 1 {
+            let mut batch: Vec<Order> = get_orders(&self.instance, offset)
+                .await
+                .to_vec()
+                .into_iter()
+                .filter(|o| o.is_some())
+                .map(|o| o.unwrap())
+                .collect();
+            orders.append(&mut batch);
+            offset += 10;
         }
-        self.last_check_borrowers_amount = amount;
+        self.orders = orders;
     }
 }

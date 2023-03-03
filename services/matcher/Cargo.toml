@@ -10,3 +10,4 @@ dotenv = "0.15.0"
 fuels = { version = "0.35.1", features = ["fuel-core-lib"] }
 serenity = { default-features = false, features = ["client", "gateway", "model", "rustls_backend"], version = "0.11.5"}
 tokio = { version = "1.25.0", features = ["full"] }
+tuple-conv = "1.0.1"
