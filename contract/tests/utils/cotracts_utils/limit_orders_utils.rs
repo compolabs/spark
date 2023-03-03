@@ -53,6 +53,52 @@ pub mod limit_orders_abi_calls {
     //         .unwrap()
     //         .value
     // }
+    pub async fn get_trades(
+        contract: &LimitOrdersContract,
+        offset: u64,
+    ) -> (
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+        Option<Trade>,
+    ) {
+        contract
+            .methods()
+            .trades(offset)
+            .simulate()
+            .await
+            .unwrap()
+            .value
+    }
+    pub async fn get_orders(
+        contract: &LimitOrdersContract,
+        offset: u64,
+    ) -> (
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+    ) {
+        contract
+            .methods()
+            .orders(offset)
+            .simulate()
+            .await
+            .unwrap()
+            .value
+    }
 
     pub async fn order_by_id(
         contract: &LimitOrdersContract,
