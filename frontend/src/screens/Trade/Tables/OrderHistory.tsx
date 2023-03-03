@@ -8,6 +8,9 @@ import OrderItem from "@screens/Trade/Tables/OrderItem";
 import BN from "@src/utils/BN";
 import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
+import { Column } from "@components/Flex";
+import Img from "@components/Img";
+import notFound from "@src/assets/notFound.svg";
 
 interface IProps {}
 
@@ -53,7 +56,18 @@ const OrderHistory: React.FC<IProps> = () => {
       )}
       <SizedBox height={8} />
       {length === 0 ? (
-        <Text>No data yet</Text>
+        <Column justifyContent="center" alignItems="center" crossAxisSize="max">
+          <Img
+            style={{ width: 100, height: 100 }}
+            src={notFound}
+            alt="no-data"
+          />
+          <SizedBox height={12} />
+          <Text fitContent>
+            You have no order history.
+            <SizedBox height={24} />
+          </Text>
+        </Column>
       ) : (
         Array.from({ length })
           .map(() => ({

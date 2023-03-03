@@ -8,6 +8,7 @@ import Divider from "@src/components/Divider";
 import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
 import { useTradeVM } from "@screens/Trade/TradeVm";
+import BN from "@src/utils/BN";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -33,6 +34,7 @@ const Icon = styled.img<{ selected?: boolean }>`
 const Row = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  cursor: pointer;
 
   text-align: center;
 
@@ -42,6 +44,10 @@ const Row = styled.div`
 
   p:first-of-type {
     text-align: start;
+  }
+
+  :hover {
+    background: #323846;
   }
 `;
 const Container = styled.div`
@@ -91,7 +97,11 @@ const OrderBook: React.FC<IProps> = () => {
       <Container>
         {orderFilter !== 1 &&
           data.map(({ priceToken1, amountToken0, totalToken1 }, index) => (
-            <Row style={{ margin: "4px 0" }} key={index + "positive"}>
+            <Row
+              style={{ margin: "4px 0" }}
+              key={index + "positive"}
+              onClick={() => vm.setBuyPrice(new BN(priceToken1), true)}
+            >
               <Text size="small" type="error">
                 {priceToken1}
               </Text>
@@ -112,7 +122,11 @@ const OrderBook: React.FC<IProps> = () => {
         <SizedBox height={8} />
         {orderFilter !== 2 &&
           data.map(({ priceToken1, amountToken0, totalToken1 }, index) => (
-            <Row style={{ margin: "4px 0" }} key={index + "negative"}>
+            <Row
+              style={{ margin: "4px 0" }}
+              key={index + "negative"}
+              onClick={() => vm.setSellPrice(new BN(priceToken1), true)}
+            >
               <Text size="small" type="green">
                 {priceToken1}
               </Text>

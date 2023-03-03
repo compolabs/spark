@@ -35,21 +35,23 @@ const Column = styled.div`
 const OrderDesktop: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const { accountStore, settingsStore } = useStores();
-  const balance0 = accountStore.getBalance(vm.token0);
-  const balance1 = accountStore.getBalance(vm.token1);
+  const balance0 = accountStore.getFormattedBalance(vm.token0);
+  const balance1 = accountStore.getFormattedBalance(vm.token1);
 
   return (
     <Root>
       <Column>
         <Row alignItems="center" justifyContent="space-between">
           <Text>Buy {vm.token0.symbol}</Text>
-          <Row alignItems="center" justifyContent="flex-end">
-            <Img src={wallet} alt="wallet" />
-            <SizedBox width={4} />
-            <Text nowrap fitContent>
-              {balance0?.toFormat(2)} {vm.token1.symbol}
-            </Text>
-          </Row>
+          {accountStore.isLoggedIn && (
+            <Row alignItems="center" justifyContent="flex-end">
+              <Img src={wallet} alt="wallet" />
+              <SizedBox width={4} />
+              <Text nowrap fitContent>
+                {balance0} {vm.token0.symbol}
+              </Text>
+            </Row>
+          )}
         </Row>
         <SizedBox height={24} />
         <TokenInput
@@ -74,6 +76,7 @@ const OrderDesktop: React.FC<IProps> = () => {
           amount={vm.buyTotal}
           setAmount={(v) => vm.setBuyTotal(v, true)}
           assetId={vm.assetId1}
+          error={vm.buyTotalError}
         />
         <SizedBox height={12} />
         {accountStore.isLoggedIn ? (
@@ -95,13 +98,15 @@ const OrderDesktop: React.FC<IProps> = () => {
       <Column>
         <Row alignItems="center" justifyContent="space-between">
           <Text>Sell {vm.token0.symbol}</Text>
-          <Row alignItems="center" justifyContent="flex-end">
-            <Img src={wallet} alt="wallet" />
-            <SizedBox width={4} />
-            <Text nowrap fitContent>
-              {balance1?.toFormat(2)} {vm.token0.symbol}
-            </Text>
-          </Row>
+          {accountStore.isLoggedIn && (
+            <Row alignItems="center" justifyContent="flex-end">
+              <Img src={wallet} alt="wallet" />
+              <SizedBox width={4} />
+              <Text nowrap fitContent>
+                {balance1} {vm.token1.symbol}
+              </Text>
+            </Row>
+          )}
         </Row>
         <SizedBox height={24} />
         <TokenInput
@@ -118,6 +123,7 @@ const OrderDesktop: React.FC<IProps> = () => {
           amount={vm.sellAmount}
           setAmount={(v) => vm.setSellAmount(v, true)}
           assetId={vm.assetId0}
+          error={vm.sellAmountError}
         />
         <SizedBox height={12} />
         <TokenInput

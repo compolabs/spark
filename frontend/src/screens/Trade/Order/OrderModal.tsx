@@ -15,39 +15,49 @@ import TokenInput from "@src/components/TokenInput";
 interface IProps {
   onClose: () => void;
   visible: boolean;
-  initAction: 0 | 1;
 }
 
 const OrderModal: React.FC<IProps> = ({ ...rest }) => {
   const vm = useTradeVM();
   const { accountStore, settingsStore } = useStores();
-  const [action, setAction] = useState<0 | 1>(rest.initAction);
+  const balance0 = accountStore.getFormattedBalance(vm.token0);
+  const balance1 = accountStore.getFormattedBalance(vm.token1);
   return (
-    <Dialog
-      style={{ maxWidth: 360 }}
-      bodyStyle={{ minHeight: 440 }}
-      title="Place Order"
-      {...rest}
-    >
+    <Dialog style={{ maxWidth: 360 }} title="Place Order" {...rest}>
       <SwitchButtons
         values={["Buy", "Sell"]}
-        active={action}
-        onActivate={setAction}
+        active={vm.activeModalAction}
+        onActivate={vm.setActiveModalAction}
         border
       />
       <SizedBox height={24} />
-      <Row alignItems="center" justifyContent="flex-end">
-        <Img src={wallet} alt="wallet" />
-        <SizedBox width={4} />
-        <Text fitContent>0.001 {vm.token0.symbol}</Text>
+      <Row alignItems="center" justifyContent="space-between">
+        <Text>
+          {vm.activeModalAction === 0
+            ? `Buy ${vm.token0.symbol}`
+            : `Sell ${vm.token0.symbol}`}
+        </Text>
+        {accountStore.isLoggedIn && (
+          <Row alignItems="center" justifyContent="flex-end">
+            <Img src={wallet} alt="wallet" />
+            <SizedBox width={4} />
+            <Text nowrap fitContent>
+              {vm.activeModalAction === 1
+                ? `${balance0} ${vm.token0.symbol}`
+                : `${balance1} ${vm.token1.symbol}`}
+            </Text>
+          </Row>
+        )}
       </Row>
       <SizedBox height={24} />
       <TokenInput
         description="Price"
         decimals={vm.token1.decimals}
-        amount={action === 0 ? vm.buyPrice : vm.sellPrice}
+        amount={vm.activeModalAction === 0 ? vm.buyPrice : vm.sellPrice}
         setAmount={(v) =>
-          action === 0 ? vm.setBuyPrice(v, true) : vm.setSellPrice(v, true)
+          vm.activeModalAction === 0
+            ? vm.setBuyPrice(v, true)
+            : vm.setSellPrice(v, true)
         }
         assetId={vm.assetId1}
       />
@@ -55,32 +65,49 @@ const OrderModal: React.FC<IProps> = ({ ...rest }) => {
       <TokenInput
         description="Amount"
         decimals={vm.token0.decimals}
-        amount={action === 0 ? vm.buyAmount : vm.sellAmount}
+        amount={vm.activeModalAction === 0 ? vm.buyAmount : vm.sellAmount}
         setAmount={(v) =>
-          action === 0 ? vm.setBuyAmount(v, true) : vm.setSellAmount(v, true)
+          vm.activeModalAction === 0
+            ? vm.setBuyAmount(v, true)
+            : vm.setSellAmount(v, true)
         }
         assetId={vm.assetId0}
+        error={vm.activeModalAction === 1 ? vm.sellAmountError : false}
       />
       <SizedBox height={12} />
       <TokenInput
         description="Total"
         decimals={vm.token1.decimals}
-        amount={action === 0 ? vm.buyTotal : vm.sellTotal}
+        amount={vm.activeModalAction === 0 ? vm.buyTotal : vm.sellTotal}
         setAmount={(v) =>
-          action === 0 ? vm.setBuyTotal(v, true) : vm.setSellTotal(v, true)
+          vm.activeModalAction === 0
+            ? vm.setBuyTotal(v, true)
+            : vm.setSellTotal(v, true)
         }
         assetId={vm.assetId1}
+        error={vm.activeModalAction === 0 ? vm.buyTotalError : false}
       />
       <SizedBox height={12} />
+      <SizedBox height={12} />
       {accountStore.isLoggedIn ? (
-        <Button kind={action === 0 ? "green" : "danger"} fixed>
-          {`${action === 0 ? "Buy" : "Sell"} ${vm.token1.symbol}`}
+        <Button
+          kind={vm.activeModalAction === 0 ? "green" : "danger"}
+          fixed
+          disabled={vm.activeModalAction === 0 ? !vm.canBuy : !vm.canSell}
+          onClick={() =>
+            vm.activeModalAction === 0
+              ? vm.createOrder("buy")
+              : vm.createOrder("sell")
+          }
+        >
+          {`${vm.activeModalAction === 0 ? "Buy" : "Sell"} ${vm.token1.symbol}`}
         </Button>
       ) : (
         <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>
           Connect wallet
         </Button>
       )}
+      <SizedBox height={24} />
     </Dialog>
   );
 };

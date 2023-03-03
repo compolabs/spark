@@ -18,25 +18,14 @@ const Root = styled.div`
 
 const OrderMobile: React.FC<IProps> = () => {
   const [openedDialog, setOpenedDialog] = useState(false);
-  const [action, setAction] = useState<0 | 1>(0);
   return (
     <Root>
-      <Button
-        fixed
-        onClick={() => {
-          setOpenedDialog(true);
-          setAction(0);
-        }}
-      >
+      <Button fixed onClick={() => setOpenedDialog(true)}>
         Place Order
       </Button>
       <OrderModal
-        onClose={() => {
-          setOpenedDialog(false);
-          setAction(1);
-        }}
+        onClose={() => setOpenedDialog(false)}
         visible={openedDialog}
-        initAction={action}
       />
     </Root>
   );

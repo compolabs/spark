@@ -54,6 +54,9 @@ class TradeVm {
   initialized: boolean = false;
   private setInitialized = (l: boolean) => (this.loading = l);
 
+  activeModalAction: 0 | 1 = 0;
+  setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
+
   assetId0: string = TOKENS_BY_SYMBOL.ETH.assetId;
   setAssetId0 = (assetId: string) => (this.assetId0 = assetId);
 
@@ -185,12 +188,20 @@ class TradeVm {
   };
 
   get canBuy() {
-    return this.buyAmount.gt(0) && this.buyPrice.gt(0) && this.buyTotal.gt(0);
+    return (
+      this.buyAmount.gt(0) &&
+      this.buyPrice.gt(0) &&
+      this.buyTotal.gt(0) &&
+      !this.buyTotalError
+    );
   }
 
   get canSell() {
     return (
-      this.sellAmount.gt(0) && this.sellPrice.gt(0) && this.sellTotal.gt(0)
+      this.sellAmount.gt(0) &&
+      this.sellPrice.gt(0) &&
+      this.sellTotal.gt(0) &&
+      !this.sellAmountError
     );
   }
 
@@ -248,4 +259,16 @@ class TradeVm {
       this._setLoading(false);
     }
   };
+
+  get buyTotalError(): boolean {
+    const { accountStore } = this.rootStore;
+    const balance = accountStore.getBalance(this.token1);
+    return balance == null ? false : this.buyTotal.gt(balance);
+  }
+
+  get sellAmountError(): boolean | undefined {
+    const { accountStore } = this.rootStore;
+    const balance = accountStore.getBalance(this.token0);
+    return balance == null ? false : this.sellAmount.gt(balance);
+  }
 }
