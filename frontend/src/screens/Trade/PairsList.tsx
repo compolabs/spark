@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { HTMLAttributes, useMemo, useState } from "react";
+import React, { HTMLAttributes, useState } from "react";
 import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
 import Input from "@src/components/Input";
@@ -102,8 +102,8 @@ const PairsList: React.FC<IProps> = () => {
         <Text type="secondary">Last Price</Text>
         <Text type="secondary">Change</Text>
       </PairRow>
-      {allPairs.map(({ token0, token1, lastPrice, change }) => (
-        <PairRow>
+      {allPairs.map(({ token0, token1, lastPrice, change }, index) => (
+        <PairRow key={index + "stat"}>
           <Text
             onClick={() => console.log("change pair")}
           >{`${token0.symbol}/${token1.symbol}`}</Text>

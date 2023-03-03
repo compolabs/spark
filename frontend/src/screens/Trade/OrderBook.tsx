@@ -52,7 +52,7 @@ const Container = styled.div`
 const OrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [orderFilter, setOrderFilter] = useState(0);
-  const data = Array.from({ length: orderFilter === 0 ? 14 : 28 }).map(() => ({
+  const data = Array.from({ length: orderFilter === 0 ? 13 : 28 }).map(() => ({
     priceToken1: "0.07873807",
     amountToken0: "0.07873807",
     totalToken1: "0.06117154",
@@ -90,8 +90,8 @@ const OrderBook: React.FC<IProps> = () => {
       <SizedBox height={8} />
       <Container>
         {orderFilter !== 1 &&
-          data.map(({ priceToken1, amountToken0, totalToken1 }) => (
-            <Row style={{ margin: "4px 0" }}>
+          data.map(({ priceToken1, amountToken0, totalToken1 }, index) => (
+            <Row style={{ margin: "4px 0" }} key={index + "positive"}>
               <Text size="small" type="error">
                 {priceToken1}
               </Text>
@@ -111,8 +111,8 @@ const OrderBook: React.FC<IProps> = () => {
         <Divider />
         <SizedBox height={8} />
         {orderFilter !== 2 &&
-          data.map(({ priceToken1, amountToken0, totalToken1 }) => (
-            <Row style={{ margin: "4px 0" }}>
+          data.map(({ priceToken1, amountToken0, totalToken1 }, index) => (
+            <Row style={{ margin: "4px 0" }} key={index + "negative"}>
               <Text size="small" type="green">
                 {priceToken1}
               </Text>

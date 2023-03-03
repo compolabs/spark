@@ -11,6 +11,7 @@ import Img from "@components/Img";
 import wallet from "@src/assets/icons/wallet.svg";
 import Slider from "@src/components/Slider";
 import { useStores } from "@stores";
+import BN from "@src/utils/BN";
 
 interface IProps {}
 
@@ -37,6 +38,14 @@ const OrderDesktop: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const { accountStore, settingsStore } = useStores();
   const [percent, setPercent] = useState<number | number[]>(100);
+  const formattedBalance0 = BN.formatUnits(
+    vm.balance0?.balance ?? 0,
+    vm.token0.decimals
+  ).toFormat(2);
+  const formattedBalance1 = BN.formatUnits(
+    vm.balance1?.balance ?? 0,
+    vm.token1.decimals
+  ).toFormat(2);
   return (
     <Root>
       <Column>
@@ -45,7 +54,9 @@ const OrderDesktop: React.FC<IProps> = () => {
           <Row alignItems="center" justifyContent="flex-end">
             <Img src={wallet} alt="wallet" />
             <SizedBox width={4} />
-            <Text fitContent>0.001 {vm.token0.symbol}</Text>
+            <Text fitContent>
+              {formattedBalance0} {vm.token1.symbol}
+            </Text>
           </Row>
         </Row>
         <SizedBox height={24} />
@@ -95,11 +106,13 @@ const OrderDesktop: React.FC<IProps> = () => {
       <SizedBox width={24} />
       <Column>
         <Row alignItems="center" justifyContent="space-between">
-          <Text>Sell {vm.token1.symbol}</Text>
+          <Text>Sell {vm.token0.symbol}</Text>
           <Row alignItems="center" justifyContent="flex-end">
             <Img src={wallet} alt="wallet" />
             <SizedBox width={4} />
-            <Text fitContent>0.001 {vm.token1.symbol}</Text>
+            <Text fitContent>
+              {formattedBalance1} {vm.token0.symbol}
+            </Text>
           </Row>
         </Row>
         <SizedBox height={24} />

@@ -43,7 +43,7 @@ const MobileStats: React.FC<IProps> = () => {
       </Column>
       <Stats>
         {stats.map(({ title, value }) => (
-          <Column>
+          <Column key={title}>
             <Text size="tiny" type="secondary">
               {title}
             </Text>
