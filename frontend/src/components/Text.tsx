@@ -42,13 +42,13 @@ const Text = styled.p<{
     (() => {
       switch (size) {
         case "tiny":
-          return "font-size: 12px; line-height: 12px;";
+          return "font-size: 10px; line-height: 12px;";
         case "small":
-          return "font-size: 13px; line-height: 16px;";
+          return "font-size: 12px; line-height: 18px;";
         case "medium":
           return "font-size: 18px; line-height: 24px;";
         case "big":
-          return "font-size: 40px; line-height: 48px;";
+          return "font-size: 26px; line-height: 32px;";
         case "large":
           return "font-size: 64px; line-height: 64px;";
         default:

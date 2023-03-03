@@ -12,6 +12,12 @@ const Root = styled.div`
   width: 100%;
   justify-content: center;
   align-items: center;
+
+  height: 410px;
+
+  @media (min-width: 880px) {
+    height: unset;
+  }
 `;
 
 const Chart: React.FC<IProps> = () => {

@@ -14,6 +14,12 @@ const Root = styled(Column)`
   background: ${({ theme }) => theme.colors.mainBackground};
   min-height: 100vh;
 `;
+const MobileSpace = styled.div`
+  height: 58px;
+  @media (min-width: 880px) {
+    display: none;
+  }
+`;
 const App: React.FC = () => {
   return (
     <Root>
@@ -22,6 +28,7 @@ const App: React.FC = () => {
         <Route path={ROUTES.TRADE} element={<Trade />} />
         <Route path={ROUTES.FAUCET} element={<Faucet />} />
       </Routes>
+      <MobileSpace />
     </Root>
   );
 };
