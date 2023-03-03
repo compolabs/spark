@@ -65,15 +65,6 @@ const allPairs = [
 const PairsList: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [tokenFilter, setTokenFilter] = useState<string | null>(null);
-  // const [filteredPairs, setFilteredPairs] = useState<any>([]);
-  // useMemo(() => {
-  //   const data = allPairs.filter(
-  //     ({ token0 }) =>
-  //       // filteredPairs == null ? true : token0.assetId === tokenFilter
-  //       true
-  //   );
-  //   setFilteredPairs(data);
-  // }, [filteredPairs]);
   return (
     <Root>
       <Input
@@ -105,7 +96,11 @@ const PairsList: React.FC<IProps> = () => {
       {allPairs.map(({ token0, token1, lastPrice, change }, index) => (
         <PairRow key={index + "stat"}>
           <Text
-            onClick={() => console.log("change pair")}
+            style={{ cursor: "pointer" }}
+            onClick={() => {
+              vm.setAssetId0(token0.assetId);
+              vm.setAssetId1(token1.assetId);
+            }}
           >{`${token0.symbol}/${token1.symbol}`}</Text>
           <Text>{lastPrice}</Text>
           <Text>{change}%</Text>

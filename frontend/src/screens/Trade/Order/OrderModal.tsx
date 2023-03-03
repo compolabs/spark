@@ -8,10 +8,9 @@ import { Row } from "@components/Flex";
 import Text from "@components/Text";
 import Img from "@components/Img";
 import wallet from "@src/assets/icons/wallet.svg";
-import TokenInput from "@components/TokenInput/TokenInput";
-import Slider from "@components/Slider";
 import Button from "@components/Button";
 import { useStores } from "@stores";
+import TokenInput from "@src/components/TokenInput";
 
 interface IProps {
   onClose: () => void;
@@ -22,7 +21,6 @@ interface IProps {
 const OrderModal: React.FC<IProps> = ({ ...rest }) => {
   const vm = useTradeVM();
   const { accountStore, settingsStore } = useStores();
-  const [percent, setPercent] = useState<number | number[]>(100);
   const [action, setAction] = useState<0 | 1>(rest.initAction);
   return (
     <Dialog
@@ -46,35 +44,32 @@ const OrderModal: React.FC<IProps> = ({ ...rest }) => {
       <SizedBox height={24} />
       <TokenInput
         description="Price"
-        decimals={vm.token0.decimals}
-        amount={vm.amount0}
-        setAmount={vm.setAmount0}
-        assetId={vm.assetId0}
+        decimals={vm.token1.decimals}
+        amount={action === 0 ? vm.buyPrice : vm.sellPrice}
+        setAmount={(v) =>
+          action === 0 ? vm.setBuyPrice(v, true) : vm.setSellPrice(v, true)
+        }
+        assetId={vm.assetId1}
       />
       <SizedBox height={12} />
       <TokenInput
         description="Amount"
         decimals={vm.token0.decimals}
-        amount={vm.amount0}
-        setAmount={vm.setAmount0}
+        amount={action === 0 ? vm.buyAmount : vm.sellAmount}
+        setAmount={(v) =>
+          action === 0 ? vm.setBuyAmount(v, true) : vm.setSellAmount(v, true)
+        }
         assetId={vm.assetId0}
-      />
-      <SizedBox height={12} />
-      <Slider
-        min={0}
-        max={100}
-        step={1}
-        marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
-        value={percent}
-        onChange={setPercent}
       />
       <SizedBox height={12} />
       <TokenInput
         description="Total"
-        decimals={vm.token0.decimals}
-        amount={vm.amount0}
-        setAmount={vm.setAmount0}
-        assetId={vm.assetId0}
+        decimals={vm.token1.decimals}
+        amount={action === 0 ? vm.buyTotal : vm.sellTotal}
+        setAmount={(v) =>
+          action === 0 ? vm.setBuyTotal(v, true) : vm.setSellTotal(v, true)
+        }
+        assetId={vm.assetId1}
       />
       <SizedBox height={12} />
       {accountStore.isLoggedIn ? (

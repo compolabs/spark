@@ -3,7 +3,6 @@ import { ThemeProvider } from "@emotion/react";
 
 import darkTheme from "@src/themes/darkTheme";
 import lightTheme from "@src/themes/lightTheme";
-import { useStores } from "@stores";
 import { Observer } from "mobx-react-lite";
 
 export enum THEME_TYPE {
@@ -19,16 +18,10 @@ export const themes = {
   darkTheme,
   lightTheme,
 };
-//todo fix
 const ThemeWrapper: React.FC<IProps> = ({ children }) => {
-  const { settingsStore } = useStores();
   return (
     <Observer>
-      {() => (
-        <ThemeProvider theme={themes[settingsStore.selectedTheme]}>
-          {children}
-        </ThemeProvider>
-      )}
+      {() => <ThemeProvider theme={themes.darkTheme}>{children}</ThemeProvider>}
     </Observer>
   );
 };

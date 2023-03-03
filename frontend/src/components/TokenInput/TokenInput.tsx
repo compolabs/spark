@@ -6,6 +6,8 @@ import BigNumberInput from "@components/BigNumberInput";
 import AmountInput from "@components/AmountInput";
 import _ from "lodash";
 import Text from "@components/Text";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import SizedBox from "@components/SizedBox";
 
 interface IProps {
   assetId: string;
@@ -109,6 +111,16 @@ const TokenInput: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
+
+        <SizedBox width={4} />
+        <Text
+          style={{ whiteSpace: "nowrap" }}
+          type="secondary"
+          size="small"
+          fitContent
+        >
+          {TOKENS_BY_ASSET_ID[props.assetId].symbol}
+        </Text>
       </InputContainer>
     </Root>
   );

@@ -28,6 +28,7 @@ const OrderRow = styled.div`
 const OrderHistory: React.FC<IProps> = () => {
   const { width } = useWindowSize();
   const vm = useTradeVM();
+  const length = 0;
   const columns = [
     "Date",
     "Pair",
@@ -41,7 +42,7 @@ const OrderHistory: React.FC<IProps> = () => {
 
   return (
     <Root>
-      {width && width >= 880 && (
+      {width && width >= 880 && length > 0 && (
         <OrderRow>
           {columns.map((value) => (
             <Text size="small" key={value}>
@@ -51,45 +52,50 @@ const OrderHistory: React.FC<IProps> = () => {
         </OrderRow>
       )}
       <SizedBox height={8} />
-      {Array.from({ length: 10 })
-        .map(() => ({
-          date: "",
-          pair: "ETH/BTC",
-          type: "limit",
-          side: "sell",
-          price: "10",
-          amount: "status",
-          total: "10 usdt",
-          status: "0 %",
-          action: "10 usdt",
-        }))
-        .map((v, index) =>
-          width && width >= 880 ? (
-            <OrderRow key={index}>
-              <Text> {dayjs().format("DD-MMM MM:HH")}</Text>
-              <Text>{v.pair}</Text>
-              <Text>{v.type}</Text>
-              <Text>{v.side}</Text>
-              <Text>{v.price}</Text>
-              <Text>{v.amount}</Text>
-              <Text>{v.status}</Text>
-              <Text>{v.total}</Text>
-            </OrderRow>
-          ) : (
-            <OrderItem
-              id={"1"}
-              amount0={BN.ZERO}
-              token0={vm.assetId0}
-              amount1={BN.ZERO}
-              token1={vm.assetId1}
-              txId={""}
-              fulfilled0={BN.ZERO}
-              fulfilled1={BN.ZERO}
-              timestamp={0}
-              status="active"
-            />
+      {length === 0 ? (
+        <Text>No data yet</Text>
+      ) : (
+        Array.from({ length })
+          .map(() => ({
+            date: "",
+            pair: "ETH/BTC",
+            type: "limit",
+            side: "sell",
+            price: "10",
+            amount: "status",
+            total: "10 usdt",
+            status: "0 %",
+            action: "10 usdt",
+          }))
+          .map((v, index) =>
+            width && width >= 880 ? (
+              <OrderRow key={index}>
+                <Text> {dayjs().format("DD-MMM MM:HH")}</Text>
+                <Text>{v.pair}</Text>
+                <Text>{v.type}</Text>
+                <Text>{v.side}</Text>
+                <Text>{v.price}</Text>
+                <Text>{v.amount}</Text>
+                <Text>{v.status}</Text>
+                <Text>{v.total}</Text>
+              </OrderRow>
+            ) : (
+              <OrderItem
+                id={"1"}
+                amount0={BN.ZERO}
+                token0={vm.assetId0}
+                amount1={BN.ZERO}
+                token1={vm.assetId1}
+                txId={""}
+                fulfilled0={BN.ZERO}
+                fulfilled1={BN.ZERO}
+                timestamp={0}
+                status="active"
+                onCancel={() => console.log("cancel order")}
+              />
+            )
           )
-        )}
+      )}
     </Root>
   );
 };
