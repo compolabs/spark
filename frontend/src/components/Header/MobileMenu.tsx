@@ -73,7 +73,7 @@ const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => {
     { name: "Faucet", link: ROUTES.FAUCET, outer: false },
     {
       name: "Docs",
-      link: "https://google.com/",
+      link: "https://github.com/sway-gang/sway-network#readme",
       outer: true,
     },
     {
