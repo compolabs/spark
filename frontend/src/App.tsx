@@ -25,7 +25,7 @@ const App: React.FC = () => {
     <Root>
       <Header />
       <Routes>
-        <Route path={ROUTES.TRADE} element={<Trade />} />
+        <Route path="*" element={<Trade />} />
         <Route path={ROUTES.FAUCET} element={<Faucet />} />
       </Routes>
       <MobileSpace />

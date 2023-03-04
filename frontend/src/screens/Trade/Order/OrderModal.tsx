@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Dialog from "@components/Dialog";
 import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";

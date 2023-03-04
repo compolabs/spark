@@ -5,12 +5,12 @@ import Layout from "@components/Layout";
 import { TradeVMProvider } from "@screens/Trade/TradeVm";
 import OrderBook from "@screens/Trade/OrderBook";
 import PairsList from "@screens/Trade/PairsList";
-import Chart from "./Chart";
 import Tables from "./Tables";
 import useWindowSize from "@src/hooks/useWindowSize";
 import MobileStats from "@screens/Trade/MobileStats";
 import OrderDesktop from "@screens/Trade/Order/OrderDesktop";
 import OrderMobile from "@screens/Trade/Order/OrderMobile";
+import TradingViewWidget from "./Chart";
 
 interface IProps {}
 
@@ -46,7 +46,7 @@ const TradeImpl: React.FC<IProps> = () => {
               {width && width >= 880 ? (
                 <>
                   <OrderBook />
-                  <Chart />
+                  <TradingViewWidget />
                   <OrderDesktop />
                   <PairsList />
                   <Tables />
@@ -55,7 +55,7 @@ const TradeImpl: React.FC<IProps> = () => {
                 <>
                   <MobileStats />
                   <PairsList />
-                  <Chart />
+                  <TradingViewWidget />
                   <Tables />
                   <OrderMobile />
                 </>
