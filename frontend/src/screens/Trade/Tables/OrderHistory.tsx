@@ -2,11 +2,8 @@ import styled from "@emotion/styled";
 import React from "react";
 import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
-import dayjs from "dayjs";
 import useWindowSize from "@src/hooks/useWindowSize";
 import OrderItem from "@screens/Trade/Tables/OrderItem";
-import BN from "@src/utils/BN";
-import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
 import { Column } from "@components/Flex";
 import Img from "@components/Img";
@@ -36,7 +33,6 @@ const OrderHistory: React.FC<IProps> = () => {
     "Date",
     "Pair",
     "Type",
-    "Side",
     "Price",
     "Amount",
     "Status",
@@ -78,24 +74,28 @@ const OrderHistory: React.FC<IProps> = () => {
                 <Text> {o.time}</Text>
                 <Text>{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
                 <Text>limit</Text>
-                <Text>{o.price}</Text>
-                <Text>{o.amount}</Text>
+                <Text>{o.priceFormatter}</Text>
+                <Text>
+                  {o.amount} {o.token0.symbol}
+                </Text>
                 <Text>{o.fullFillPercent} %</Text>
                 <Text>
                   {o.fullFillPercent != 100 ? "Canceled" : "Completed"}
                 </Text>
-                <Text>{o.total}</Text>
+                <Text>
+                  {o.total} {o.token1.symbol}
+                </Text>
               </OrderRow>
             ) : (
               <OrderItem
                 id={"1"}
                 time={o.time}
                 pair={`${o.token0.symbol}/${o.token1.symbol}`}
-                price={o.price}
-                amount={o.amount}
+                price={o.priceFormatter}
                 fullFillPercent={o.fullFillPercent}
-                total={o.total}
                 status={o.fullFillPercent != 100 ? "Canceled" : "Completed"}
+                amount={`${o.amount} ${o.token0.symbol}`}
+                total={`${o.total} ${o.token1.symbol}`}
               />
             )
           )

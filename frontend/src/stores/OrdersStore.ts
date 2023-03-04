@@ -54,21 +54,33 @@ export class Order {
       : this.fulfilled0.times(100).div(this.amount0).toNumber();
   }
 
-  get price() {
+  get priceFormatter() {
     const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
     const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
     const price = am1.div(am0);
-    return `${price.toFormat(2)} ${this.token1.symbol}`;
+    return `${price.toFormat(price.lt(0.01) ? 4 : 2)} ${this.token1.symbol}`;
+  }
+
+  get price() {
+    const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+    const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+    return am1.div(am0);
+  }
+
+  get reversePrice() {
+    const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+    const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+    return am0.div(am1);
   }
 
   get amount() {
     const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
-    return `${am0.toFormat(2)} ${this.token0.symbol}`;
+    return am0.toFormat(am0.lt(0.01) ? 4 : 2);
   }
 
   get total() {
     const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
-    return `${am1.toFormat(2)} ${this.token1.symbol}`;
+    return am1.toFormat(am1.lt(0.01) ? 4 : 2);
   }
 }
 

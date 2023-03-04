@@ -9,6 +9,8 @@ import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
 import { useTradeVM } from "@screens/Trade/TradeVm";
 import BN from "@src/utils/BN";
+import { useStores } from "@stores";
+import Skeleton from "react-loading-skeleton";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -53,17 +55,39 @@ const Row = styled.div`
 const Container = styled.div`
   display: flex;
   flex-direction: column;
+  //align-items: center;
+  justify-content: center;
   width: 100%;
+  height: 100%;
 `;
 const OrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
+  const { ordersStore } = useStores();
   const [orderFilter, setOrderFilter] = useState(0);
-  const data = Array.from({ length: orderFilter === 0 ? 13 : 28 }).map(() => ({
-    priceToken1: "0.07873807",
-    amountToken0: "0.07873807",
-    totalToken1: "0.06117154",
-  }));
+  const activeOrdersForCurrentPair = ordersStore.orders
+    .filter((o) => o.status.Active != null)
+    .filter(
+      (o) =>
+        (vm.assetId1 === o.asset0 && vm.assetId0 === o.asset1) ||
+        (vm.assetId1 === o.asset1 && vm.assetId0 === o.asset0)
+    );
 
+  const buyOrders = activeOrdersForCurrentPair
+    .filter((o) => o.asset0 === vm.assetId0)
+    .sort((a, b) => {
+      if (a.price == null && b.price == null) return 0;
+      if (a.price == null && b.price != null) return 1;
+      if (a.price == null && b.price == null) return -1;
+      return a.price!.lt(b.price!) ? 1 : -1;
+    });
+  const sellOrders = activeOrdersForCurrentPair
+    .filter((o) => o.asset0 === vm.assetId1)
+    .sort((a, b) => {
+      if (a.reversePrice == null && b.reversePrice == null) return 0;
+      if (a.reversePrice == null && b.reversePrice != null) return 1;
+      if (a.reversePrice == null && b.reversePrice == null) return -1;
+      return a.reversePrice!.lt(b.reversePrice!) ? -1 : 1;
+    });
   const filters = [sell, buy, sellAndSell];
   const columns = [
     `Price ${vm.token1.symbol}`,
@@ -80,7 +104,7 @@ const OrderBook: React.FC<IProps> = () => {
             src={image}
             alt="filter"
             selected={orderFilter === index}
-            onClick={() => setOrderFilter(index)}
+            onClick={() => ordersStore.initialized && setOrderFilter(index)}
           />
         ))}
       </Settings>
@@ -96,45 +120,71 @@ const OrderBook: React.FC<IProps> = () => {
       <Divider />
       <SizedBox height={8} />
       <Container>
-        {orderFilter !== 1 &&
-          data.map(({ priceToken1, amountToken0, totalToken1 }, index) => (
+        {!ordersStore.initialized ? (
+          <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
+        ) : (
+          orderFilter !== 1 &&
+          buyOrders.map((o, index) => (
             <Row
               style={{ margin: "4px 0" }}
               key={index + "positive"}
-              onClick={() => vm.setBuyPrice(new BN(priceToken1), true)}
+              onClick={() => {
+                const price = BN.parseUnits(o.price, vm.token1.decimals);
+                vm.setSellPrice(price, true);
+                vm.setBuyPrice(price, true);
+              }}
             >
-              <Text size="small" type="error">
-                {priceToken1}
+              <Text size="small" type="green">
+                {o.price.toFormat(2)}
               </Text>
-              <Text size="small">{amountToken0}</Text>
-              <Text size="small">{totalToken1}</Text>
+              <Text size="small">{o.amount}</Text>
+              <Text size="small">{o.total}</Text>
             </Row>
-          ))}
+          ))
+        )}
         <SizedBox height={8} />
         <Divider />
         <SizedBox height={8} />
         <Row>
-          <Text>{currentPrice}</Text>
-          <div />
-          <Text>SPREAD 1.10%</Text>
+          {!ordersStore.initialized ? (
+            <>
+              <Skeleton height={20} />
+              <div />
+              <Skeleton height={20} />
+            </>
+          ) : (
+            <>
+              <Text>{currentPrice}</Text>
+              <div />
+              <Text>SPREAD 1.10%</Text>
+            </>
+          )}
         </Row>
         <SizedBox height={8} />
         <Divider />
         <SizedBox height={8} />
-        {orderFilter !== 2 &&
-          data.map(({ priceToken1, amountToken0, totalToken1 }, index) => (
+        {!ordersStore.initialized ? (
+          <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
+        ) : (
+          orderFilter !== 2 &&
+          sellOrders.map((o, index) => (
             <Row
               style={{ margin: "4px 0" }}
               key={index + "negative"}
-              onClick={() => vm.setSellPrice(new BN(priceToken1), true)}
+              onClick={() => {
+                const price = BN.parseUnits(o.reversePrice, vm.token1.decimals);
+                vm.setSellPrice(price, true);
+                vm.setBuyPrice(price, true);
+              }}
             >
-              <Text size="small" type="green">
-                {priceToken1}
+              <Text size="small" type="error">
+                {o.reversePrice.toFormat(2)}
               </Text>
-              <Text size="small">{amountToken0}</Text>
-              <Text size="small">{totalToken1}</Text>
+              <Text size="small">{o.total}</Text>
+              <Text size="small">{o.amount}</Text>
             </Row>
-          ))}
+          ))
+        )}
       </Container>
     </Root>
   );

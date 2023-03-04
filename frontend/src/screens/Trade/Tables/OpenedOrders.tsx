@@ -81,10 +81,14 @@ const OpenedOrders: React.FC<IProps> = () => {
                 <Text> {o.time}</Text>
                 <Text>{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
                 <Text>limit</Text>
-                <Text>{o.price}</Text>
-                <Text>{o.amount}</Text>
+                <Text>{o.priceFormatter}</Text>
+                <Text>
+                  {o.amount} {o.token0.symbol}
+                </Text>
                 <Text>{o.fullFillPercent} %</Text>
-                <Text>{o.total}</Text>
+                <Text>
+                  {o.total} {o.token1.symbol}
+                </Text>
                 <Text
                   style={{ cursor: "pointer" }}
                   size="small"
@@ -102,10 +106,10 @@ const OpenedOrders: React.FC<IProps> = () => {
                 id={"1"}
                 time={o.time}
                 pair={`${o.token0.symbol}/${o.token1.symbol}`}
-                price={o.price}
-                amount={o.amount}
+                price={o.priceFormatter}
+                amount={`${o.amount} ${o.token0.symbol}`}
+                total={`${o.total} ${o.token1.symbol}`}
                 fullFillPercent={o.fullFillPercent}
-                total={o.total}
                 status="Active"
                 onCancel={() => {
                   setModalOpened(true);
