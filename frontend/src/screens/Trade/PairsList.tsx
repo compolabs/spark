@@ -61,6 +61,12 @@ const allPairs = [
     lastPrice: "0.00",
     change: "2.0",
   },
+  {
+    token0: TOKENS_BY_SYMBOL.BTC,
+    token1: TOKENS_BY_SYMBOL.USDC,
+    lastPrice: "0.00",
+    change: "2.0",
+  },
 ];
 const PairsList: React.FC<IProps> = () => {
   const vm = useTradeVM();

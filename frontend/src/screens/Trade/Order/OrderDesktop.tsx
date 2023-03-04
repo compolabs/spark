@@ -38,7 +38,6 @@ const OrderDesktop: React.FC<IProps> = () => {
   const { accountStore, settingsStore } = useStores();
   const balance0 = accountStore.getFormattedBalance(vm.token0);
   const balance1 = accountStore.getFormattedBalance(vm.token1);
-  console.log(vm.loading);
   return (
     <Root>
       <Column>
