@@ -4,7 +4,7 @@ use crate::utils::{
 };
 use dotenv::dotenv;
 use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
-use serenity::{Client, prelude::GatewayIntents, model::prelude::ChannelId};
+use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
 use std::{env, fs, str::FromStr, thread::sleep, time::Duration};
 use utils::{
     limit_orders_utils::{LimitOrdersContract, Order, Status},
@@ -87,6 +87,7 @@ async fn main() {
                                 == format!("0x{}", order_a.asset_1.to_string())
                         });
                         if asset0.is_none() || asset1.is_none() {
+                            println!("asset0/asset1 is not found");
                             continue;
                         }
                         let a_symbol = asset0.unwrap()["symbol"].as_str().unwrap();
@@ -121,6 +122,6 @@ async fn main() {
             }
             i += 1;
         }
-        sleep(Duration::from_secs(1));
+        sleep(Duration::from_secs(10));
     }
 }
