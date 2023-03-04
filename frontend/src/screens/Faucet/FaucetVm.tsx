@@ -143,7 +143,8 @@ class FaucetVM {
 
   mint = async (assetId?: string) => {
     if (assetId == null || this.alreadyMintedTokens.includes(assetId)) return;
-    const addedAssets: Array<Asset> = await window?.fuel.assets();
+    const addedAssets: Array<Asset> =
+      (await window?.fuel.assets) && window?.fuel.assets();
     if (
       addedAssets != null &&
       !addedAssets.some((v) => v.assetId === assetId) &&

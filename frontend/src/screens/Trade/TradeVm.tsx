@@ -33,7 +33,6 @@ class TradeVm {
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
-    this.updateState().then(() => this.setInitialized(true));
   }
 
   loading: boolean = false;
@@ -53,43 +52,6 @@ class TradeVm {
 
   rejectUpdateStatePromise?: () => void;
   setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
-
-  updateState = async () => {
-    const { accountStore } = this.rootStore;
-    if (accountStore.address == null) return;
-    const wallet = accountStore.walletToRead;
-    if (wallet == null) return;
-    const limitOrdersContract = LimitOrdersAbi__factory.connect(
-      CONTRACT_ADDRESSES.limitOrders,
-      wallet
-    );
-    if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
-
-    const promise = new Promise((resolve, reject) => {
-      this.rejectUpdateStatePromise = reject;
-      resolve(Promise.all([this.getDepositByAddress(limitOrdersContract)]));
-    });
-    promise
-      .catch((v) => {
-        console.log("update data error", v);
-      })
-      .finally(() => {
-        this.setInitialized(true);
-        this.setRejectUpdateStatePromise(undefined);
-      });
-  };
-
-  getDepositByAddress = async (contract: LimitOrdersAbi) => {
-    const { addressInput } = this.rootStore.accountStore;
-    if (addressInput == null) return;
-    // const value = await contract.functions
-    //   .get_deposit_by_address(addressInput)
-    //   .get();
-  };
-  getOrdersByAddress = async (contract: LimitOrdersAbi) => {
-    const { addressInput } = this.rootStore.accountStore;
-    if (addressInput == null) return;
-  };
 
   get token0() {
     return TOKENS_BY_ASSET_ID[this.assetId0];
@@ -198,7 +160,6 @@ class TradeVm {
   }
 
   createOrder = async (action: OrderAction) => {
-    console.log("createOrder");
     const { accountStore } = this.rootStore;
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();

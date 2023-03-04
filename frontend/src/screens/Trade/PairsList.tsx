@@ -21,6 +21,7 @@ const PairRow = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
 
+  margin: 3px 0;
   text-align: center;
 
   p:last-of-type {

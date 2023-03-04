@@ -1,5 +1,5 @@
 import RootStore from "@stores/RootStore";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import BN from "@src/utils/BN";
 import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
@@ -95,23 +95,34 @@ class OrdersStore {
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
-    if (this.rootStore.accountStore.address == null) return;
-    const wallet = this.rootStore.accountStore.walletToRead;
-    if (wallet == null) return;
-    this.limitOrdersContract = LimitOrdersAbi__factory.connect(
-      CONTRACT_ADDRESSES.limitOrders,
-      wallet
-    );
-    this.fetchAllOrders().then(() => {
-      this.setInitialized(true);
-      console.log("✅ initialized");
-    });
+    this.init().then(() => this.setInitialized(true));
     setInterval(
       () => Promise.all([this.updateActiveOrders(), this.fetchNewOrders()]),
       10000
     );
+    reaction(
+      () => this.rootStore.accountStore.address,
+      () =>
+        Promise.all([
+          this.init(),
+          this.updateActiveOrders(),
+          this.fetchNewOrders(),
+        ])
+    );
   }
 
+  init = async () => {
+    const wallet = this.rootStore.accountStore.walletToRead;
+    if (wallet == null) {
+      this.setInitialized(true);
+      return;
+    }
+    this.limitOrdersContract = LimitOrdersAbi__factory.connect(
+      CONTRACT_ADDRESSES.limitOrders,
+      wallet
+    );
+    await this.fetchAllOrders();
+  };
   fetchAllOrders = async () => {
     let ordersAmount = await this.getOrdersAmount();
     if (this.limitOrdersContract === null || ordersAmount == null) return;

@@ -80,7 +80,7 @@ const OrderHistory: React.FC<IProps> = () => {
                 </Text>
                 <Text>{o.fullFillPercent} %</Text>
                 <Text>
-                  {o.fullFillPercent != 100 ? "Canceled" : "Completed"}
+                  {o.fullFillPercent !== 100 ? "Canceled" : "Completed"}
                 </Text>
                 <Text>
                   {o.total} {o.token1.symbol}
@@ -93,7 +93,7 @@ const OrderHistory: React.FC<IProps> = () => {
                 pair={`${o.token0.symbol}/${o.token1.symbol}`}
                 price={o.priceFormatter}
                 fullFillPercent={o.fullFillPercent}
-                status={o.fullFillPercent != 100 ? "Canceled" : "Completed"}
+                status={o.fullFillPercent !== 100 ? "Canceled" : "Completed"}
                 amount={`${o.amount} ${o.token0.symbol}`}
                 total={`${o.total} ${o.token1.symbol}`}
               />

@@ -6,7 +6,7 @@ import OpenedOrders from "@screens/Trade/Tables/OpenedOrders";
 import OrderHistory from "@screens/Trade/Tables/OrderHistory";
 import { observer } from "mobx-react-lite";
 import { useStores } from "@stores";
-import { Column } from "@src/components/Flex";
+import { Column, Row } from "@src/components/Flex";
 import Text from "@components/Text";
 import Button from "@components/Button";
 import Loading from "@components/Loading";
@@ -59,23 +59,27 @@ const Tables: React.FC<IProps> = () => {
         />
       </TabsContainer>
       <Container>
-        {ordersStore.initialized ? (
-          accountStore.isLoggedIn ? (
-            <DContainer>
-              {activeTab === 0 && <OpenedOrders />}
-              {activeTab === 1 && <OrderHistory />}
-            </DContainer>
-          ) : (
-            <Column alignItems="center" justifyContent="center">
-              <Text>Connect wallet to trade</Text>
-              <SizedBox height={8} />
-              <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
-                Connect wallet
-              </Button>
-            </Column>
-          )
+        {accountStore.isLoggedIn ? (
+          <DContainer>
+            {ordersStore.initialized ? (
+              <>
+                {activeTab === 0 && <OpenedOrders />}
+                {activeTab === 1 && <OrderHistory />}
+              </>
+            ) : (
+              <Row justifyContent="center">
+                <Loading />
+              </Row>
+            )}
+          </DContainer>
         ) : (
-          <Loading />
+          <Column alignItems="center" justifyContent="center">
+            <Text>Connect wallet to trade</Text>
+            <SizedBox height={8} />
+            <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
+              Connect wallet
+            </Button>
+          </Column>
         )}
       </Container>
     </Root>
