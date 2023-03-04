@@ -3,6 +3,7 @@ import AccountStore, { ISerializedAccountStore } from "@stores/AccountStore";
 import SettingsStore, { ISerializedSettingsStore } from "@stores/SettingsStore";
 import NotificationStore from "@stores/NotificationStore";
 import PricesStore from "@stores/PricesStore";
+import OrdersStore from "@stores/OrdersStore";
 
 export interface ISerializedRootStore {
   accountStore?: ISerializedAccountStore;
@@ -14,12 +15,14 @@ export default class RootStore {
   public settingsStore: SettingsStore;
   public notificationStore: NotificationStore;
   public pricesStore: PricesStore;
+  public ordersStore: OrdersStore;
 
   constructor(initState?: ISerializedRootStore) {
     this.accountStore = new AccountStore(this, initState?.accountStore);
     this.settingsStore = new SettingsStore(this);
     this.notificationStore = new NotificationStore(this);
     this.pricesStore = new PricesStore(this);
+    this.ordersStore = new OrdersStore(this);
     makeAutoObservable(this);
   }
 

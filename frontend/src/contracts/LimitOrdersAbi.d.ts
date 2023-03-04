@@ -43,7 +43,9 @@ interface LimitOrdersAbiInterface extends Interface {
     get_deposit_by_address: FunctionFragment;
     match_orders: FunctionFragment;
     order_by_id: FunctionFragment;
+    orders: FunctionFragment;
     orders_amount: FunctionFragment;
+    orders_by_id: FunctionFragment;
     trades: FunctionFragment;
     withdraw: FunctionFragment;
   };
@@ -55,7 +57,9 @@ interface LimitOrdersAbiInterface extends Interface {
   encodeFunctionData(functionFragment: 'get_deposit_by_address', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'match_orders', values: [BigNumberish, BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'order_by_id', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'orders', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'orders_amount', values: []): Uint8Array;
+  encodeFunctionData(functionFragment: 'orders_by_id', values: [[BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish]]): Uint8Array;
   encodeFunctionData(functionFragment: 'trades', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'withdraw', values: [BigNumberish]): Uint8Array;
 
@@ -66,7 +70,9 @@ interface LimitOrdersAbiInterface extends Interface {
   decodeFunctionData(functionFragment: 'get_deposit_by_address', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'match_orders', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'order_by_id', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'orders', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'orders_amount', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'orders_by_id', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'trades', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'withdraw', data: BytesLike): DecodedValue;
 }
@@ -81,7 +87,9 @@ export class LimitOrdersAbi extends Contract {
     get_deposit_by_address: InvokeFunction<[address: AddressInput], BN>;
     match_orders: InvokeFunction<[order0_id: BigNumberish, order1_id: BigNumberish], void>;
     order_by_id: InvokeFunction<[id: BigNumberish], OrderOutput>;
+    orders: InvokeFunction<[offset: BigNumberish], [Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>]>;
     orders_amount: InvokeFunction<[], BN>;
+    orders_by_id: InvokeFunction<[ids: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish]], [Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>]>;
     trades: InvokeFunction<[offset: BigNumberish], [Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>]>;
     withdraw: InvokeFunction<[amount: BigNumberish], void>;
   };
