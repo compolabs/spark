@@ -6,6 +6,8 @@ import BigNumberInput from "@components/BigNumberInput";
 import AmountInput from "@components/AmountInput";
 import _ from "lodash";
 import Text from "@components/Text";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import SizedBox from "@components/SizedBox";
 
 interface IProps {
   assetId: string;
@@ -16,6 +18,8 @@ interface IProps {
 
   amount: BN;
   setAmount?: (amount: BN) => void;
+
+  error?: boolean;
 }
 
 const Root = styled.div`
@@ -31,6 +35,7 @@ const InputContainer = styled.div<{
   focused?: boolean;
   invalid?: boolean;
   readOnly?: boolean;
+  error?: boolean;
 }>`
   display: flex;
   flex-direction: row;
@@ -49,7 +54,9 @@ const InputContainer = styled.div<{
   }
 
   background: #323846;
-  border: 1px solid #3a4050;
+  border: 1px solid
+    ${({ error, focused }) =>
+      error ? "#FF6A55" : focused ? "#3C69FF" : "#3a4050"};
   border-radius: 4px;
 
   //todo add border
@@ -76,7 +83,11 @@ const TokenInput: React.FC<IProps> = (props) => {
 
   return (
     <Root>
-      <InputContainer focused={focused} readOnly={!props.setAmount}>
+      <InputContainer
+        focused={focused}
+        readOnly={!props.setAmount}
+        error={props.error}
+      >
         {props.description != null && (
           <Text
             style={{ whiteSpace: "nowrap" }}
@@ -109,6 +120,16 @@ const TokenInput: React.FC<IProps> = (props) => {
           placeholder="0.00"
           readOnly={!props.setAmount}
         />
+
+        <SizedBox width={4} />
+        <Text
+          style={{ whiteSpace: "nowrap" }}
+          type="secondary"
+          size="small"
+          fitContent
+        >
+          {TOKENS_BY_ASSET_ID[props.assetId].symbol}
+        </Text>
       </InputContainer>
     </Root>
   );

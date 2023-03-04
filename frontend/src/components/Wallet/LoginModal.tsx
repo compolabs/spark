@@ -74,10 +74,8 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
         <SizedBox height={34} />
         {!isImportInputOpened ? (
           loginTypes.map(
-            (t) =>
-              t.isActive && (
-                <LoginType {...t} key={t.type} onClick={t.onClick} />
-              )
+            (t, i) =>
+              t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
           )
         ) : (
           <Column crossAxisSize="max">

@@ -54,6 +54,7 @@ const TradeImpl: React.FC<IProps> = () => {
               ) : (
                 <>
                   <MobileStats />
+                  <PairsList />
                   <Chart />
                   <Tables />
                   <OrderMobile />

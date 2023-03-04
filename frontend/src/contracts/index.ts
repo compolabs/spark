@@ -8,9 +8,10 @@
   Forc version: 0.32.2
   Fuel-Core version: 0.15.1
 */
-
 export type { TokenAbi } from "./TokenAbi";
 export type { OracleAbi } from "./OracleAbi";
+export type { LimitOrdersAbi } from "./LimitOrdersAbi";
 
 export { TokenAbi__factory } from "./factories/TokenAbi__factory";
 export { OracleAbi__factory } from "./factories/OracleAbi__factory";
+export { LimitOrdersAbi__factory } from "./factories/LimitOrdersAbi__factory";

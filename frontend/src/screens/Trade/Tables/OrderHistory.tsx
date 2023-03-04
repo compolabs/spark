@@ -8,6 +8,9 @@ import OrderItem from "@screens/Trade/Tables/OrderItem";
 import BN from "@src/utils/BN";
 import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
+import { Column } from "@components/Flex";
+import Img from "@components/Img";
+import notFound from "@src/assets/notFound.svg";
 
 interface IProps {}
 
@@ -28,6 +31,7 @@ const OrderRow = styled.div`
 const OrderHistory: React.FC<IProps> = () => {
   const { width } = useWindowSize();
   const vm = useTradeVM();
+  const length = 0;
   const columns = [
     "Date",
     "Pair",
@@ -41,7 +45,7 @@ const OrderHistory: React.FC<IProps> = () => {
 
   return (
     <Root>
-      {width && width >= 880 && (
+      {width && width >= 880 && length > 0 && (
         <OrderRow>
           {columns.map((value) => (
             <Text size="small" key={value}>
@@ -51,45 +55,61 @@ const OrderHistory: React.FC<IProps> = () => {
         </OrderRow>
       )}
       <SizedBox height={8} />
-      {Array.from({ length: 10 })
-        .map(() => ({
-          date: "",
-          pair: "ETH/BTC",
-          type: "limit",
-          side: "sell",
-          price: "10",
-          amount: "status",
-          total: "10 usdt",
-          status: "0 %",
-          action: "10 usdt",
-        }))
-        .map((v, index) =>
-          width && width >= 880 ? (
-            <OrderRow key={index}>
-              <Text> {dayjs().format("DD-MMM MM:HH")}</Text>
-              <Text>{v.pair}</Text>
-              <Text>{v.type}</Text>
-              <Text>{v.side}</Text>
-              <Text>{v.price}</Text>
-              <Text>{v.amount}</Text>
-              <Text>{v.status}</Text>
-              <Text>{v.total}</Text>
-            </OrderRow>
-          ) : (
-            <OrderItem
-              id={"1"}
-              amount0={BN.ZERO}
-              token0={vm.assetId0}
-              amount1={BN.ZERO}
-              token1={vm.assetId1}
-              txId={""}
-              fulfilled0={BN.ZERO}
-              fulfilled1={BN.ZERO}
-              timestamp={0}
-              status="active"
-            />
+      {length === 0 ? (
+        <Column justifyContent="center" alignItems="center" crossAxisSize="max">
+          <Img
+            style={{ width: 100, height: 100 }}
+            src={notFound}
+            alt="no-data"
+          />
+          <SizedBox height={12} />
+          <Text fitContent>
+            You have no order history.
+            <SizedBox height={24} />
+          </Text>
+        </Column>
+      ) : (
+        Array.from({ length })
+          .map(() => ({
+            date: "",
+            pair: "ETH/BTC",
+            type: "limit",
+            side: "sell",
+            price: "10",
+            amount: "status",
+            total: "10 usdt",
+            status: "0 %",
+            action: "10 usdt",
+          }))
+          .map((v, index) =>
+            width && width >= 880 ? (
+              <OrderRow key={index}>
+                <Text> {dayjs().format("DD-MMM MM:HH")}</Text>
+                <Text>{v.pair}</Text>
+                <Text>{v.type}</Text>
+                <Text>{v.side}</Text>
+                <Text>{v.price}</Text>
+                <Text>{v.amount}</Text>
+                <Text>{v.status}</Text>
+                <Text>{v.total}</Text>
+              </OrderRow>
+            ) : (
+              <OrderItem
+                id={"1"}
+                amount0={BN.ZERO}
+                token0={vm.assetId0}
+                amount1={BN.ZERO}
+                token1={vm.assetId1}
+                txId={""}
+                fulfilled0={BN.ZERO}
+                fulfilled1={BN.ZERO}
+                timestamp={0}
+                status="active"
+                onCancel={() => console.log("cancel order")}
+              />
+            )
           )
-        )}
+      )}
     </Root>
   );
 };

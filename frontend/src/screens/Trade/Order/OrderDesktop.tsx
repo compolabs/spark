@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Row } from "@src/components/Flex";
-import React, { useState } from "react";
+import React from "react";
 import TokenInput from "@components/TokenInput/TokenInput";
 import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
@@ -9,9 +9,8 @@ import Text from "@components/Text";
 import Button from "@components/Button";
 import Img from "@components/Img";
 import wallet from "@src/assets/icons/wallet.svg";
-import Slider from "@src/components/Slider";
 import { useStores } from "@stores";
-import BN from "@src/utils/BN";
+import Loading from "@components/Loading";
 
 interface IProps {}
 
@@ -37,65 +36,57 @@ const Column = styled.div`
 const OrderDesktop: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const { accountStore, settingsStore } = useStores();
-  const [percent, setPercent] = useState<number | number[]>(100);
-  const formattedBalance0 = BN.formatUnits(
-    vm.balance0?.balance ?? 0,
-    vm.token0.decimals
-  ).toFormat(2);
-  const formattedBalance1 = BN.formatUnits(
-    vm.balance1?.balance ?? 0,
-    vm.token1.decimals
-  ).toFormat(2);
+  const balance0 = accountStore.getFormattedBalance(vm.token0);
+  const balance1 = accountStore.getFormattedBalance(vm.token1);
   return (
     <Root>
       <Column>
         <Row alignItems="center" justifyContent="space-between">
           <Text>Buy {vm.token0.symbol}</Text>
-          <Row alignItems="center" justifyContent="flex-end">
-            <Img src={wallet} alt="wallet" />
-            <SizedBox width={4} />
-            <Text fitContent>
-              {formattedBalance0} {vm.token1.symbol}
-            </Text>
-          </Row>
+          {accountStore.isLoggedIn && (
+            <Row alignItems="center" justifyContent="flex-end">
+              <Img src={wallet} alt="wallet" />
+              <SizedBox width={4} />
+              <Text nowrap fitContent>
+                {balance0} {vm.token0.symbol}
+              </Text>
+            </Row>
+          )}
         </Row>
         <SizedBox height={24} />
         <TokenInput
           description="Price"
-          decimals={vm.token0.decimals}
-          amount={vm.amount0}
-          setAmount={vm.setAmount0}
-          assetId={vm.assetId0}
+          decimals={vm.token1.decimals}
+          amount={vm.buyPrice}
+          setAmount={(v) => vm.setBuyPrice(v, true)}
+          assetId={vm.assetId1}
         />
         <SizedBox height={12} />
         <TokenInput
           description="Amount"
           decimals={vm.token0.decimals}
-          amount={vm.amount0}
-          setAmount={vm.setAmount0}
+          amount={vm.buyAmount}
+          setAmount={(v) => vm.setBuyAmount(v, true)}
           assetId={vm.assetId0}
-        />
-        <SizedBox height={12} />
-        <Slider
-          min={0}
-          max={100}
-          step={1}
-          marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
-          value={percent}
-          onChange={setPercent}
         />
         <SizedBox height={12} />
         <TokenInput
           description="Total"
-          decimals={vm.token0.decimals}
-          amount={vm.amount0}
-          setAmount={vm.setAmount0}
-          assetId={vm.assetId0}
+          decimals={vm.token1.decimals}
+          amount={vm.buyTotal}
+          setAmount={(v) => vm.setBuyTotal(v, true)}
+          assetId={vm.assetId1}
+          error={vm.buyTotalError}
         />
         <SizedBox height={12} />
         {accountStore.isLoggedIn ? (
-          <Button kind="green" fixed>
-            Buy {vm.token1.symbol}
+          <Button
+            kind="green"
+            fixed
+            onClick={() => vm.createOrder("buy")}
+            disabled={vm.loading || !vm.canBuy}
+          >
+            {vm.loading ? <Loading /> : `Buy ${vm.token1.symbol}`}
           </Button>
         ) : (
           <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>
@@ -107,51 +98,50 @@ const OrderDesktop: React.FC<IProps> = () => {
       <Column>
         <Row alignItems="center" justifyContent="space-between">
           <Text>Sell {vm.token0.symbol}</Text>
-          <Row alignItems="center" justifyContent="flex-end">
-            <Img src={wallet} alt="wallet" />
-            <SizedBox width={4} />
-            <Text fitContent>
-              {formattedBalance1} {vm.token0.symbol}
-            </Text>
-          </Row>
+          {accountStore.isLoggedIn && (
+            <Row alignItems="center" justifyContent="flex-end">
+              <Img src={wallet} alt="wallet" />
+              <SizedBox width={4} />
+              <Text nowrap fitContent>
+                {balance1} {vm.token1.symbol}
+              </Text>
+            </Row>
+          )}
         </Row>
         <SizedBox height={24} />
         <TokenInput
           description="Price"
           decimals={vm.token1.decimals}
-          amount={vm.amount1}
-          setAmount={vm.setAmount1}
+          amount={vm.sellPrice}
+          setAmount={(v) => vm.setSellPrice(v, true)}
           assetId={vm.assetId1}
         />
         <SizedBox height={12} />
         <TokenInput
           description="Amount"
-          decimals={vm.token1.decimals}
-          amount={vm.amount1}
-          setAmount={vm.setAmount1}
-          assetId={vm.assetId1}
-        />
-        <SizedBox height={12} />
-        <Slider
-          min={0}
-          max={100}
-          step={1}
-          marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
-          value={percent}
-          onChange={setPercent}
+          decimals={vm.token0.decimals}
+          amount={vm.sellAmount}
+          setAmount={(v) => vm.setSellAmount(v, true)}
+          assetId={vm.assetId0}
+          error={vm.sellAmountError}
         />
         <SizedBox height={12} />
         <TokenInput
           description="Total"
           decimals={vm.token1.decimals}
-          amount={vm.amount1}
-          setAmount={vm.setAmount1}
+          amount={vm.sellTotal}
+          setAmount={(v) => vm.setSellTotal(v, true)}
           assetId={vm.assetId1}
         />
         <SizedBox height={12} />
         {accountStore.isLoggedIn ? (
-          <Button kind="danger" fixed>
-            Sell {vm.token1.symbol}{" "}
+          <Button
+            kind="danger"
+            fixed
+            disabled={vm.loading || !vm.canSell}
+            onClick={() => vm.createOrder("sell")}
+          >
+            {vm.loading ? <Loading /> : `Sell ${vm.token1.symbol}`}
           </Button>
         ) : (
           <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>

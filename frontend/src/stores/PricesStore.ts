@@ -1,8 +1,14 @@
 import RootStore from "@stores/RootStore";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import BN from "@src/utils/BN";
 import { Provider, Wallet } from "fuels";
-import { IToken, NODE_URL, SEED, TOKENS_LIST } from "@src/constants";
+import {
+  CONTRACT_ADDRESSES,
+  IToken,
+  NODE_URL,
+  SEED,
+  TOKENS_LIST,
+} from "@src/constants";
 import { OracleAbi__factory } from "@src/contracts";
 
 class PricesStore {
@@ -11,15 +17,12 @@ class PricesStore {
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
-    this.updateTokenPrices().then();
-    setInterval(this.updateTokenPrices, 60 * 1000);
-    reaction(
-      () => [
-        this.rootStore.settingsStore.version,
-        this.rootStore.accountStore.address,
-      ],
-      () => this.updateTokenPrices()
-    );
+    // this.updateTokenPrices().then();
+    // setInterval(this.updateTokenPrices, 60 * 1000);
+    // reaction(
+    //   () => this.rootStore.accountStore.address,
+    //   () => this.updateTokenPrices()
+    // );
   }
 
   tokensPrices: Record<string, BN> | null = null;
@@ -40,14 +43,15 @@ class PricesStore {
   updateTokenPrices = async () => {
     //todo fix to one type of call and new  oracleContracts.get_prices
     //todo fix without seed
+
+    //todo fix this
     const { address } = this.rootStore.accountStore;
     if (address == null) return;
     const checkWallet = Wallet.fromSeed(SEED, "", new Provider(NODE_URL));
-    const { priceOracle } = this.rootStore.settingsStore.currentVersionConfig;
 
     try {
-      const oracleContracts = TOKENS_LIST.map((b) =>
-        OracleAbi__factory.connect(priceOracle, checkWallet)
+      const oracleContracts = TOKENS_LIST.map(() =>
+        OracleAbi__factory.connect(CONTRACT_ADDRESSES.limitOrders, checkWallet)
       );
       const ids = TOKENS_LIST.map((t) => {
         return { value: t.assetId };

@@ -1,6 +1,5 @@
 import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
-import { THEME_TYPE } from "@src/themes/ThemeProvider";
 import { Theme, toast } from "react-toastify";
 import { ToastOptions } from "react-toastify/dist/types";
 import getAlert from "@src/utils/alertUtil";
@@ -20,10 +19,7 @@ class NotificationStore {
   }
 
   toast(content: string, options: TNotifyOptions = {}) {
-    let theme: Theme =
-      this.rootStore.settingsStore.selectedTheme === THEME_TYPE.DARK_THEME
-        ? "dark"
-        : "light";
+    let theme: Theme = "dark";
 
     toast(getAlert(content, options) ?? content, {
       autoClose: 1500,

@@ -139,13 +139,13 @@ class AccountStore {
     const balance = this.findBalanceByAssetId(token.assetId);
     if (balance == null) return null;
     return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(
-      2
+      4
     );
   };
   getBalance = (token: IToken): BN | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
     if (balance == null) return null;
-    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals);
+    return balance.balance ?? BN.ZERO;
   };
 
   get isLoggedIn() {
