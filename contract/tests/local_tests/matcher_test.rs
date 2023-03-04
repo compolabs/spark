@@ -444,7 +444,6 @@ async fn match_orders_positive_test() {
             }
             i += 1;
         }
-        sleep(Duration::from_secs(30));
         loop_index += 1;
     }
 }
