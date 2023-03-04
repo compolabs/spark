@@ -1,4 +1,4 @@
-# Sway exchange limit orders smart contract
+# Sway exchange Limit Orders Smart Contract
 ## Version warning
 The master branch contains the latest work-in-progress version of Sway exchange smart contract. It hasn't been audited and may contain severe security issues or may not work at all.
 
