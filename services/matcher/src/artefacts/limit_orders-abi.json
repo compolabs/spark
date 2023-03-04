@@ -16,7 +16,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -27,7 +27,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -38,7 +38,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -49,7 +49,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -60,7 +60,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -71,7 +71,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -82,7 +82,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -93,7 +93,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -104,7 +104,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -115,7 +115,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 16,
+              "type": 17,
               "typeArguments": null
             }
           ]
@@ -133,7 +133,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -144,7 +144,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -155,7 +155,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -166,7 +166,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -177,7 +177,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -188,7 +188,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -199,7 +199,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -210,7 +210,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -221,7 +221,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -232,7 +232,7 @@
           "typeArguments": [
             {
               "name": "",
-              "type": 17,
+              "type": 18,
               "typeArguments": null
             }
           ]
@@ -246,7 +246,7 @@
       "components": [
         {
           "name": "__array_element",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -337,12 +337,18 @@
     },
     {
       "typeId": 13,
-      "type": "str[28]",
+      "type": "str[23]",
       "components": null,
       "typeParameters": null
     },
     {
       "typeId": 14,
+      "type": "str[28]",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 15,
       "type": "struct Address",
       "components": [
         {
@@ -354,7 +360,7 @@
       "typeParameters": null
     },
     {
-      "typeId": 15,
+      "typeId": 16,
       "type": "struct ContractId",
       "components": [
         {
@@ -366,27 +372,27 @@
       "typeParameters": null
     },
     {
-      "typeId": 16,
+      "typeId": 17,
       "type": "struct Order",
       "components": [
         {
           "name": "asset0",
-          "type": 15,
+          "type": 16,
           "typeArguments": null
         },
         {
           "name": "amount0",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "asset1",
-          "type": 15,
+          "type": 16,
           "typeArguments": null
         },
         {
           "name": "amount1",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
@@ -396,74 +402,37 @@
         },
         {
           "name": "fulfilled0",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "fulfilled1",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "owner",
-          "type": 14,
+          "type": 15,
           "typeArguments": null
         },
         {
           "name": "id",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "timestamp",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "matcher_fee_used",
-          "type": 18,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": null
-    },
-    {
-      "typeId": 17,
-      "type": "struct Trade",
-      "components": [
-        {
-          "name": "order_id",
-          "type": 18,
-          "typeArguments": null
-        },
-        {
-          "name": "asset0",
-          "type": 15,
-          "typeArguments": null
-        },
-        {
-          "name": "amount0",
-          "type": 18,
-          "typeArguments": null
-        },
-        {
-          "name": "asset1",
-          "type": 15,
-          "typeArguments": null
-        },
-        {
-          "name": "amount1",
-          "type": 18,
-          "typeArguments": null
-        },
-        {
-          "name": "timestamp",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -471,6 +440,43 @@
     },
     {
       "typeId": 18,
+      "type": "struct Trade",
+      "components": [
+        {
+          "name": "order_id",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "asset0",
+          "type": 16,
+          "typeArguments": null
+        },
+        {
+          "name": "amount0",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "asset1",
+          "type": 16,
+          "typeArguments": null
+        },
+        {
+          "name": "amount1",
+          "type": 19,
+          "typeArguments": null
+        },
+        {
+          "name": "timestamp",
+          "type": 19,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 19,
       "type": "u64",
       "components": null,
       "typeParameters": null
@@ -481,7 +487,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -490,54 +496,32 @@
         "name": "",
         "type": 0,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "asset1",
-          "type": 15,
+          "type": 16,
           "typeArguments": null
         },
         {
           "name": "amount1",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
       "name": "create_order",
       "output": {
         "name": "",
-        "type": 18,
+        "type": 19,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "payable",
-          "arguments": []
-        },
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [],
@@ -546,26 +530,13 @@
         "name": "",
         "type": 0,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "id",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -574,54 +545,33 @@
         "name": "",
         "type": 0,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "payable",
-          "arguments": []
-        },
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "address",
-          "type": 14,
+          "type": 15,
           "typeArguments": null
         }
       ],
       "name": "get_deposit_by_address",
       "output": {
         "name": "",
-        "type": 18,
+        "type": 19,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "order0_id",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         },
         {
           "name": "order1_id",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -630,45 +580,28 @@
         "name": "",
         "type": 0,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "id",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
       "name": "order_by_id",
       "output": {
         "name": "",
-        "type": 16,
+        "type": 17,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "offset",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -677,32 +610,16 @@
         "name": "",
         "type": 1,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [],
       "name": "orders_amount",
       "output": {
         "name": "",
-        "type": 18,
+        "type": 19,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
@@ -717,21 +634,13 @@
         "name": "",
         "type": 1,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "offset",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -740,21 +649,13 @@
         "name": "",
         "type": 2,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      }
     },
     {
       "inputs": [
         {
           "name": "amount",
-          "type": 18,
+          "type": 19,
           "typeArguments": null
         }
       ],
@@ -763,16 +664,7 @@
         "name": "",
         "type": 0,
         "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
+      }
     }
   ],
   "loggedTypes": [
@@ -804,7 +696,7 @@
       "logId": 3,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 14,
         "typeArguments": null
       }
     },
@@ -876,7 +768,7 @@
       "logId": 12,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 14,
         "typeArguments": null
       }
     },
@@ -884,7 +776,7 @@
       "logId": 13,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 14,
         "typeArguments": null
       }
     },
@@ -895,8 +787,14 @@
         "type": 10,
         "typeArguments": null
       }
+    },
+    {
+      "logId": 15,
+      "loggedType": {
+        "name": "",
+        "type": 10,
+        "typeArguments": null
+      }
     }
-  ],
-  "messagesTypes": [],
-  "configurables": []
+  ]
 }
