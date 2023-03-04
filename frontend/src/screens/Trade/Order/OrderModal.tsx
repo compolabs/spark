@@ -94,7 +94,13 @@ const OrderModal: React.FC<IProps> = ({ ...rest }) => {
         <Button
           kind={vm.activeModalAction === 0 ? "green" : "danger"}
           fixed
-          disabled={vm.activeModalAction === 0 ? !vm.canBuy : !vm.canSell}
+          disabled={
+            vm.loading
+              ? true
+              : vm.activeModalAction === 0
+              ? !vm.canBuy
+              : !vm.canSell
+          }
           onClick={() =>
             vm.activeModalAction === 0
               ? vm.createOrder("buy")

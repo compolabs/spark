@@ -51,7 +51,7 @@ export class Order {
   get fullFillPercent() {
     return this.fulfilled0.eq(0)
       ? 0
-      : this.fulfilled0.times(100).div(this.amount0).toNumber();
+      : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
   }
 
   get priceFormatter() {
