@@ -116,7 +116,7 @@ const Header: React.FC<IProps> = () => {
     <Root>
       <TopMenu>
         <Row alignItems="center" crossAxisSize="max">
-          <img className="logo" src={theme.images.icons.logo} alt="logo" />
+          <img style={{height: 24}} src={theme.images.icons.logo} alt="logo" />
           <Desktop>
             <SizedBox width={40} />
             {menuItems.map(({ name, link, outer }) => (
