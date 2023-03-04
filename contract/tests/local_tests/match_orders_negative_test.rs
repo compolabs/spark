@@ -109,10 +109,10 @@ async fn match_orders_negative_test() {
     let bob_instance = instance.with_wallet(bob.clone()).unwrap();
     let matcher_instance = instance.with_wallet(matcher.clone()).unwrap();
 
-    let mut counter = 0;
+    // let mut counter = 0;
     for test_case in TEST_CASES {
-        counter += 1;
-        println!("Test case #{counter}");
+        // counter += 1;
+        // println!("Test case #{counter}");
 
         let order0_asset0 = assets.get(test_case.order_a.asset0).unwrap();
         let order0_asset1 = assets.get(test_case.order_a.asset1).unwrap();
@@ -157,6 +157,6 @@ async fn match_orders_negative_test() {
         let order_id_b = create_order(&bob_instance, &b_args).await.unwrap().value;
 
         let res = match_orders(&matcher_instance, order_id_a, order_id_b).await;
-        println!("{:#?}", res.err().unwrap());
+        assert!(res.is_err());
     }
 }

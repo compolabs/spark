@@ -1,7 +1,3 @@
-use std::fs;
-use std::thread::sleep;
-use std::time::Duration;
-
 use fuels::tx::Address;
 
 use crate::utils::cotracts_utils::limit_orders_utils::deploy_limit_orders_contract;
@@ -374,10 +370,6 @@ async fn match_orders_positive_test() {
     let mut orders_fetcher = OrdersFetcher::new(instance);
     orders_fetcher.fetch_all_orders().await;
 
-    let tokens_json_str =
-        fs::read_to_string("tests/tokens.json").expect("Should have been able to read the file");
-    let tokens: serde_json::Value = serde_json::from_str(tokens_json_str.as_str()).unwrap();
-    let tokens = tokens.as_array().unwrap();
     let mut loop_index = 0;
     while loop_index < 3 {
         orders_fetcher.update_active_orders().await;
@@ -417,15 +409,15 @@ async fn match_orders_positive_test() {
                         orders[i].status = Status::Completed;
                         orders[j].status = Status::Completed;
 
-                        // println!(
-                        //     "Match 👩‍❤️‍👨!\n Order {}: {} {a_symbol} ➡️ {} {b_symbol}\n Order {}: {} {b_symbol} ➡️ {} {a_symbol}\n\n",
-                        //     order_a.id,
-                        //     order_a.amount_0,
-                        //     order_a.amount_1,
-                        //     order_b.id,
-                        //     order_b.amount_0,
-                        //     order_b.amount_1,
-                        // );
+                        println!(
+                            "Match 👩‍❤️‍👨!\n Order {}: {} ➡️ {} \n Order {}: {} ➡️ {} \n\n",
+                            order_a.id,
+                            order_a.amount_0,
+                            order_a.amount_1,
+                            order_b.id,
+                            order_b.amount_0,
+                            order_b.amount_1,
+                        );
                         continue 'a_order_cycle;
                     } else {
                         // println!(
