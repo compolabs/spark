@@ -107,6 +107,30 @@ pub mod limit_orders_abi_calls {
         contract.methods().order_by_id(id).simulate().await
     }
 
+    pub async fn orders_by_id(
+        contract: &LimitOrdersContract,
+        ids: [u64; 10],
+    ) -> (
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+        Option<Order>,
+    ) {
+        contract
+            .methods()
+            .orders_by_id(ids)
+            .simulate()
+            .await
+            .unwrap()
+            .value
+    }
+
     pub async fn deposit(
         contract: &LimitOrdersContract,
         amount: u64,
@@ -117,7 +141,7 @@ pub mod limit_orders_abi_calls {
             .methods()
             .deposit()
             .call_params(call_params)
-            .unwrap()
+            // .unwrap()
             .tx_params(tx_params)
             // .append_variable_outputs(1)
             .call()
@@ -156,7 +180,7 @@ pub mod limit_orders_abi_calls {
             .create_order(args.asset1, args.amount1, args.matcher_fee)
             .tx_params(tx_params)
             .call_params(call_params)
-            .unwrap()
+            // .unwrap()
             .append_variable_outputs(1)
             .call()
             .await
@@ -193,7 +217,7 @@ pub mod limit_orders_abi_calls {
             .fulfill_order(args.id)
             .tx_params(tx_params)
             .call_params(call_params)
-            .unwrap()
+            // .unwrap()
             .append_variable_outputs(2)
             .append_variable_outputs(1)
             .call()

@@ -209,7 +209,7 @@ impl LimitOrders for Contract {
         let mut vec = Vec::new();
         let mut i = 0;
         while i < 10 {
-            let order = storage.orders.get(i);
+            let order = storage.orders.get(ids[i]);
             let order: Option<Order> = if order.id > 0 {
                 Option::Some(order)
             } else {
@@ -348,8 +348,8 @@ fn match_orders(order0_id: u64, order1_id: u64) {
         require(order1_id > 0 && order1.id == order1_id, "Order 1 is not found");
         require(is_order_active(order0) && is_order_active(order1), "Orders shuold be active");
         require(order0.asset0 == order1.asset1 && order0.asset1 == order1.asset0, "Orders don't match by tokens");
-        let price_0 = order0.amount1 * 1_000_000_000 / order0.amount0;
-        let price_1 = order1.amount0 * 1_000_000_000 / order1.amount1;
+        let price_0 = order0.amount1 * 10_000_000 / order0.amount0;
+        let price_1 = order1.amount0 * 10_000_000 / order1.amount1;
         require(price_0 <= price_1, "Price of order 1 is too much");
 
         let order0_amount0_left = order0.amount0 - order0.fulfilled0;
@@ -389,14 +389,14 @@ fn match_orders(order0_id: u64, order1_id: u64) {
             order1.status = Status::Completed;
 
         // Transfer order0_fulfill_percent * order0_amount1 / 100 from order1 to order0
-            let order0_fulfill_percent = order1_amount1_left * 100 / order0_amount0_left;
-            let order0_fulfill_amount = order0_fulfill_percent * order0_amount1_left / 100;
+            let order0_fulfill_percent = order1_amount1_left * 100_000 / order0_amount0_left;
+            let order0_fulfill_amount = order0_fulfill_percent * order0_amount1_left / 100_000;
             order1.fulfilled0 += order0_fulfill_amount;
             order0.fulfilled1 += order0_fulfill_amount;
             trade1.amount0 = order0_fulfill_amount;
             trade0.amount1 = order0_fulfill_amount;
             transfer_to_address(order0_fulfill_amount, order0.asset1, order0.owner);
-            if order0_fulfill_percent == 100 {
+            if order0_fulfill_percent == 100_000 {
                 order0.status = Status::Completed;
             }
 
@@ -408,7 +408,7 @@ fn match_orders(order0_id: u64, order1_id: u64) {
             }
 
         // Mathcer fee
-            let order0_matcher_fee = order0_matcher_fee_left * order0_fulfill_percent / 100;
+            let order0_matcher_fee = order0_matcher_fee_left * order0_fulfill_percent / 100_000;
             order0.matcher_fee_used += order0_matcher_fee;
             order1.matcher_fee_used += order1_matcher_fee_left;
             transfer_to_address(order0_matcher_fee + order1_matcher_fee_left, BASE_ASSET_ID, matcher);
@@ -427,17 +427,17 @@ fn match_orders(order0_id: u64, order1_id: u64) {
             transfer_to_address(order0_amount1_left, order0.asset1, order0.owner);
             order0.status = Status::Completed;
 
-                // Transfer order1_amount0 * order1_fulfill_percent - order0_amount1 (a: 0.01 BTC, b: 0 BTC) from order1 to order1.owner 
-            let order1_fulfill_percent = order0_amount0_left * 100 / order1_amount1_left;
-            let cashback = order1_amount0_left * order1_fulfill_percent / 100 - order0_amount1_left;
-            if cashback > 0 {
+        // Transfer order1_amount0 * order1_fulfill_percent - order0_amount1 (a: 0.01 BTC, b: 0 BTC) from order1 to order1.owner 
+            let order1_fulfill_percent = order0_amount0_left * 100_000 / order1_amount1_left;
+            if order1_amount0_left * order1_fulfill_percent / 100_000 > order0_amount1_left {
+                let cashback = order1_amount0_left * order1_fulfill_percent / 100_000 - order0_amount1_left;
                 order1.fulfilled0 += cashback;
                 transfer_to_address(cashback, order1.asset0, order1.owner);
             }
         // Matcher fee
             let order0_matcher_fee = order0.matcher_fee - order0.matcher_fee_used;
             order0.matcher_fee_used += order0_matcher_fee;
-            let order1_matcher_fee = order1_matcher_fee_left * order1_fulfill_percent / 100;
+            let order1_matcher_fee = order1_matcher_fee_left * order1_fulfill_percent / 100_000;
             order1.matcher_fee_used += order1_matcher_fee;
             transfer_to_address(order0_matcher_fee + order1_matcher_fee, BASE_ASSET_ID, matcher);
         }

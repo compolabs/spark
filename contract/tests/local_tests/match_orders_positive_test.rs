@@ -1,15 +1,13 @@
 use fuels::prelude::BASE_ASSET_ID;
 use fuels::tx::Address;
-use tuple_conv::RepeatedTuple;
 
 use crate::utils::cotracts_utils::limit_orders_utils::deploy_limit_orders_contract;
 use crate::utils::cotracts_utils::limit_orders_utils::limit_orders_abi_calls::*;
-use crate::utils::cotracts_utils::limit_orders_utils::LimitOrdersContract;
-use crate::utils::cotracts_utils::limit_orders_utils::Order;
 use crate::utils::cotracts_utils::limit_orders_utils::Status;
 use crate::utils::cotracts_utils::token_utils::token_abi_calls::mint_and_transfer;
 use crate::utils::cotracts_utils::token_utils::TokenContract;
 use crate::utils::local_tests_utils::*;
+use crate::utils::orders_fetcher::OrdersFetcher;
 
 struct TestCaseOrder {
     amount0: u64,
@@ -269,79 +267,25 @@ async fn match_orders_positive_test() {
         amount1: 1,
         matcher_fee: 1000,
     };
-    create_order(&alice_instance, &args).await.unwrap().value;
+    let order_id = create_order(&alice_instance, &args).await.unwrap().value;
 
     orders_fetcher.fetch_new_orders().await;
-    println!(" {:#?}", orders_fetcher.orders);
     assert_eq!(orders_fetcher.orders.len(), 13);
-}
 
-struct OrdersFetcher {
-    pub orders: Vec<Order>,
-    instance: LimitOrdersContract,
-}
-
-impl OrdersFetcher {
-    fn new(instance: LimitOrdersContract) -> OrdersFetcher {
-        OrdersFetcher {
-            orders: vec![],
-            instance,
-        }
-    }
-    async fn fetch_all_orders(&mut self) {
-        let mut offset = 0;
-        let mut orders: Vec<Order> = vec![];
-        while offset == 0 || orders.last().unwrap().id > 1 {
-            let batch: Vec<Order> = get_orders(&self.instance, offset)
-                .await
-                .to_vec()
-                .into_iter()
-                .filter(|o| o.is_some())
-                .map(|o| o.unwrap())
-                .collect();
-            orders.extend(batch);
-            offset += 10;
-        }
-        self.orders = orders;
-    }
-    async fn fetch_new_orders(&mut self) {
-        let mut offset = 0;
-        let mut orders: Vec<Order> = self.orders.clone();
-        let first_order_id = orders.first().unwrap().id; //can be NONE
-        loop {
-            println!("loop");
-            let mut batch: Vec<Option<Order>> = get_orders(&self.instance, offset).await.to_vec();
-            let mut contains_first_order_id = false;
-            batch.clone().into_iter().for_each(|o| {
-                if o.is_some() && o.unwrap().id == first_order_id {
-                    contains_first_order_id = true;
-                }
-            });
-            batch = batch
-                .into_iter()
-                .filter(|o| o.is_some() && o.as_ref().unwrap().id > first_order_id)
-                .collect();
-            let mut batch: Vec<Order> = batch.into_iter().map(|o| o.unwrap()).collect();
-            batch.extend(orders.clone());
-            orders = batch;
-            if contains_first_order_id {
-                break;
-            }
-            offset += 10;
-        }
-        self.orders = orders;
-    }
-    // async fn update_active_orders(&mut self) {
-    //     let active_orders: Vec<Order> = self
-    //         .orders
-    //         .clone()
-    //         .into_iter()
-    //         .filter(|o| o.status == Status::Active)
-    //         .collect();
-    //     let mut i: u64 = 0;
-    //     while i < ((active_orders.len() / 10) as f64).ceil() as u64 {
-
-            
-    //     }
-    // }
+    let order = orders_fetcher
+        .orders
+        .clone()
+        .into_iter()
+        .find(|o| o.id == order_id)
+        .unwrap();
+    assert_eq!(order.status, Status::Active);
+    cancel_order(&alice_instance, order_id).await.unwrap();
+    orders_fetcher.update_active_orders().await;
+    let order = orders_fetcher
+        .orders
+        .clone()
+        .into_iter()
+        .find(|o| o.id == order_id)
+        .unwrap();
+    assert_eq!(order.status, Status::Canceled);
 }

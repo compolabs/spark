@@ -1,7 +1,7 @@
 use crate::utils::number_utils::parse_units;
 use fuels::prelude::{abigen, Contract, StorageConfiguration, TxParameters};
 use fuels::{
-    programs::Configurables,
+    // programs::Configurables,
     signers::WalletUnlocked,
     tx::{Address, Salt},
     types::{AssetId, ContractId, SizedAsciiString},
@@ -81,7 +81,7 @@ pub async fn get_token_contract_instance(
         &wallet,
         TxParameters::default(),
         StorageConfiguration::default(),
-        Configurables::new(vec![]),
+        // Configurables::new(vec![]),
         Salt::from(salt),
     )
     .await
