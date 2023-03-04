@@ -33,7 +33,7 @@ export const CONTRACT_ADDRESSES = {
   limitOrders:
     "0x5b250a58322fcbbaf2cdd1c7a5a92a01d4b09dd94d7eef9a98e88d63c1176e77",
   priceOracle:
-    "0x4bf2826201fb74fc479a6a785cb70f2ce8e45b67010acfd47906993d130a21ff",
+    "0x6fbaa125ecd73570eed403caafb2e242f7aacf89f54cf53ad510038d3518a0b8",
 };
 
 export interface IToken {
