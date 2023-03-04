@@ -7,6 +7,7 @@ import SizedBox from "@components/SizedBox";
 import { TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import { Row } from "@src/components/Flex";
 import Text from "@components/Text";
+import { useStores } from "@stores";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -71,6 +72,7 @@ const allPairs = [
 ];
 const PairsList: React.FC<IProps> = () => {
   const vm = useTradeVM();
+  const { accountStore } = useStores();
   const [tokenFilter, setTokenFilter] = useState<string | null>(null);
   return (
     <Root>
@@ -105,10 +107,10 @@ const PairsList: React.FC<IProps> = () => {
           <Text
             style={{ cursor: "pointer" }}
             onClick={() => {
-              console.log(token0.symbol);
-              console.log(token1.assetId);
-              vm.setAssetId0(token0.symbol);
-              vm.setAssetId1(token1.assetId);
+              if (accountStore.isLoggedIn) {
+                vm.setAssetId0(token0.symbol);
+                vm.setAssetId1(token1.assetId);
+              }
             }}
           >{`${token0.symbol}/${token1.symbol}`}</Text>
           <Text>{lastPrice}</Text>

@@ -19,7 +19,7 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-  height: calc(100vh - 40px);
+  height: calc(100vh - 48px);
   margin: 16px;
 
   > div {
@@ -27,6 +27,7 @@ const Root = styled.div`
   }
 
   @media (min-width: 880px) {
+    height: calc(100vh - 62px);
     display: grid;
     grid-template:
       "orderbook chart pairs" 484px

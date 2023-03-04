@@ -3,7 +3,7 @@ import React, { HTMLAttributes, useState } from "react";
 import { observer } from "mobx-react-lite";
 import sell from "@src/assets/icons/sellOrderBookIcon.svg";
 import buy from "@src/assets/icons/buyOrderBookIcon.svg";
-import sellAndSell from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
+import sellAndBuy from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
 import Divider from "@src/components/Divider";
 import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
@@ -11,6 +11,7 @@ import { useTradeVM } from "@screens/Trade/TradeVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import Skeleton from "react-loading-skeleton";
+import Button from "@components/Button";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -61,7 +62,7 @@ const Container = styled.div`
 `;
 const OrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
-  const { ordersStore } = useStores();
+  const { ordersStore, accountStore, settingsStore } = useStores();
   const [orderFilter, setOrderFilter] = useState(0);
   const activeOrdersForCurrentPair = ordersStore.orders
     .filter((o) => o.status.Active != null)
@@ -87,13 +88,23 @@ const OrderBook: React.FC<IProps> = () => {
       if (a.reversePrice == null && b.reversePrice == null) return -1;
       return a.reversePrice!.lt(b.reversePrice!) ? -1 : 1;
     });
-  const filters = [sell, buy, sellAndSell];
+  const filters = [sellAndBuy, buy, sell];
   const columns = [
     `Price ${vm.token1.symbol}`,
     `Amount ${vm.token0.symbol}`,
     `Total ${vm.token1.symbol}`,
   ];
   const currentPrice = "3.14";
+  if (!accountStore.isLoggedIn)
+    return (
+      <Root style={{ justifyContent: "center", alignItems: "center" }}>
+        <Text textAlign="center">Connect wallet to see orders</Text>
+        <SizedBox height={12} />
+        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
+          Connect wallet
+        </Button>
+      </Root>
+    );
   return (
     <Root>
       <Settings>
@@ -122,7 +133,7 @@ const OrderBook: React.FC<IProps> = () => {
         {!ordersStore.initialized ? (
           <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
         ) : (
-          orderFilter !== 1 &&
+          orderFilter !== 2 &&
           buyOrders.map((o, index) => (
             <Row
               style={{ margin: "4px 0" }}
@@ -165,7 +176,7 @@ const OrderBook: React.FC<IProps> = () => {
         {!ordersStore.initialized ? (
           <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
         ) : (
-          orderFilter !== 2 &&
+          orderFilter !== 1 &&
           sellOrders.map((o, index) => (
             <Row
               style={{ margin: "4px 0" }}
