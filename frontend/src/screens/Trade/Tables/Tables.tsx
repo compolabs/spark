@@ -9,6 +9,7 @@ import { useStores } from "@stores";
 import { Column } from "@src/components/Flex";
 import Text from "@components/Text";
 import Button from "@components/Button";
+import Loading from "@components/Loading";
 
 interface IProps {}
 
@@ -47,7 +48,7 @@ const Container = styled.div`
 
 const Tables: React.FC<IProps> = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const { accountStore, settingsStore } = useStores();
+  const { accountStore, ordersStore, settingsStore } = useStores();
   return (
     <Root>
       <TabsContainer>
@@ -58,19 +59,23 @@ const Tables: React.FC<IProps> = () => {
         />
       </TabsContainer>
       <Container>
-        {accountStore.isLoggedIn ? (
-          <DContainer>
-            {activeTab === 0 && <OpenedOrders />}
-            {activeTab === 1 && <OrderHistory />}
-          </DContainer>
+        {ordersStore.initialized ? (
+          accountStore.isLoggedIn ? (
+            <DContainer>
+              {activeTab === 0 && <OpenedOrders />}
+              {activeTab === 1 && <OrderHistory />}
+            </DContainer>
+          ) : (
+            <Column alignItems="center" justifyContent="center">
+              <Text>Connect wallet to trade</Text>
+              <SizedBox height={8} />
+              <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
+                Connect wallet
+              </Button>
+            </Column>
+          )
         ) : (
-          <Column alignItems="center" justifyContent="center">
-            <Text>Connect wallet to trade</Text>
-            <SizedBox height={8} />
-            <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
-              Connect wallet
-            </Button>
-          </Column>
+          <Loading />
         )}
       </Container>
     </Root>

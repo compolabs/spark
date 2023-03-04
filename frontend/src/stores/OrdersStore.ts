@@ -70,13 +70,6 @@ export class Order {
     const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
     return `${am1.toFormat(2)} ${this.token1.symbol}`;
   }
-
-  get statusString() {
-    if (this.status.Completed === null) return "completed";
-    if (this.status.Active === null) return "active";
-    if (this.status.Canceled === null) return "canceled";
-    return "active";
-  }
 }
 
 class OrdersStore {

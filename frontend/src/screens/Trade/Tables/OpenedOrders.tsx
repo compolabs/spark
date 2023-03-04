@@ -9,6 +9,7 @@ import { Column } from "@src/components/Flex";
 import Img from "@components/Img";
 import notFound from "@src/assets/notFound.svg";
 import { useStores } from "@stores";
+import Loading from "@components/Loading";
 
 interface IProps {}
 
@@ -97,7 +98,7 @@ const OpenedOrders: React.FC<IProps> = () => {
                 amount={o.amount}
                 fullFillPercent={o.fullFillPercent}
                 total={o.total}
-                status="active"
+                status="Active"
                 onCancel={() => console.log("cancel order")}
               />
             )

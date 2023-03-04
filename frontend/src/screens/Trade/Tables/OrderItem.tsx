@@ -46,7 +46,7 @@ const Order: React.FC<IProps> = ({
         <Row alignItems="center">
           <CircularProgressbar
             percent={fullFillPercent}
-            red={status === "canceled"}
+            red={status === "Canceled"}
           />
           <SizedBox width={10} />
           <Column>
