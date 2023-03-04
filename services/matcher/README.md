@@ -1,6 +1,6 @@
-# Sway Exchange Order Matching Engine
+# Sway Network Order Matching Engine
 ## Version warning
-The master branch contains the latest work-in-progress version of Sway Exchange Order Matching Engine. It hasn't been audited and may contain severe security issues or may not work at all.
+The master branch contains the latest work-in-progress version of Sway Network Order Matching Engine. It hasn't been audited and may contain severe security issues or may not work at all.
 
 ## About
 

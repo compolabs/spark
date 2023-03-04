@@ -1,6 +1,6 @@
-# Sway exchange 
+# Sway Network 
 
-Sway Exchange is an order book built on the fuel.network blockchain. It operates using an order book model, allowing users to trade various cryptocurrencies in a secure and transparent manner and enables peer-to-peer trading of cryptocurrencies with high transaction throughput and low fees.
+Sway Network is an order book built on the fuel.network blockchain. It operates using an order book model, allowing users to trade various cryptocurrencies in a secure and transparent manner and enables peer-to-peer trading of cryptocurrencies with high transaction throughput and low fees.
 
 ## Project Goals: 
 - To provide a decentralized, transparent and secure platform for users to trade cryptocurrencies with low fees.
