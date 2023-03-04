@@ -19,15 +19,17 @@ struct TestCaseOrder {
     amount1: u64,
     asset1: &'static str,
 }
+
 struct TestCase {
     order_a: TestCaseOrder,
     order_b: TestCaseOrder,
 }
+
 // TestCase {
 // order_a: TestCaseOrder {amount0: 200_000,asset0: "USDC",amount1: 4_000_000, asset1: "UNI"}, // Order a: 200 USDT ➡️ 0.01 WETH
 // order_b: TestCaseOrder {amount0: 98_000_000,asset0: "UNI",amount1: 4_900_000,asset1: "USDC"},  // Order b: 200 USDT ➡️ 0.0102 WETH
 // },
-const TEST_CASES: [TestCase; 6] = [
+const TEST_CASES: [TestCase; 17] = [
     // 1. price_a < price_b && order_a_amount0 > order_b_amount1
     TestCase {
         // Order a: 200 USDT ➡️ 0.01 WETH
@@ -130,6 +132,162 @@ const TEST_CASES: [TestCase; 6] = [
             asset1: "USDC",
         },
     },
+    //7
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 15_000_000_000,
+            asset0: "USDC",
+            amount1: 75_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 60_000_000,
+            asset0: "UNI",
+            amount1: 12_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    //8
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 15_000_000_000,
+            asset0: "USDC",
+            amount1: 75_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 90_000_000,
+            asset0: "UNI",
+            amount1: 18_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 12_000_000_000,
+            asset0: "USDC",
+            amount1: 60_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 120_000_000,
+            asset0: "UNI",
+            amount1: 24_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 10_000_000_000,
+            asset0: "USDC",
+            amount1: 50_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 20_000_000_000,
+            asset0: "UNI",
+            amount1: 40_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 20_000_000_000,
+            asset0: "USDC",
+            amount1: 100_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 100_000_000,
+            asset0: "UNI",
+            amount1: 20_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 10_000_000_000,
+            asset0: "USDC",
+            amount1: 50_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 100_000_000,
+            asset0: "UNI",
+            amount1: 20_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 20_000_000_000,
+            asset0: "USDC",
+            amount1: 102_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 50_000_000,
+            asset0: "UNI",
+            amount1: 10_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 20_000_000_000,
+            asset0: "USDC",
+            amount1: 102_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 50_000_000,
+            asset0: "UNI",
+            amount1: 10_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 20_000_000_000,
+            asset0: "USDC",
+            amount1: 102_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 100_000_000,
+            asset0: "UNI",
+            amount1: 20_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 10_000_000_000,
+            asset0: "USDC",
+            amount1: 51_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 100_000_000,
+            asset0: "UNI",
+            amount1: 20_000_000_000,
+            asset1: "USDC",
+        },
+    },
+    TestCase {
+        order_a: TestCaseOrder {
+            amount0: 15_000_000_000,
+            asset0: "USDC",
+            amount1: 75_000_000,
+            asset1: "UNI",
+        },
+        order_b: TestCaseOrder {
+            amount0: 60_000_000,
+            asset0: "UNI",
+            amount1: 12_000_000_000,
+            asset1: "USDC",
+        },
+    },
 ];
 
 #[tokio::test]
@@ -174,13 +332,13 @@ async fn match_orders_positive_test() {
             test_case.order_a.amount0,
             alice_address,
         )
-        .await;
+            .await;
         mint_and_transfer(
             &order1_asset0_instance,
             test_case.order_b.amount0,
             bob_address,
         )
-        .await;
+            .await;
 
         let a_args = CreatreOrderArguments {
             asset0: order0_asset0.asset_id,
@@ -214,7 +372,7 @@ async fn match_orders_positive_test() {
     let tokens = tokens.as_array().unwrap();
 
     loop {
-        println!("Loop ✅",);
+        // println!("Loop ✅",);
         orders_fetcher.update_active_orders().await;
         orders_fetcher.fetch_new_orders().await;
         // println!("{:#?}", orders_fetcher.orders.len());
@@ -224,7 +382,7 @@ async fn match_orders_positive_test() {
             .into_iter()
             .filter(|o| o.status == Status::Active)
             .collect();
-        println!("orders len {:?}", orders.len());
+        // println!("orders len {:?}", orders.len());
         let mut i = 0;
         'a_order_cycle: while i < orders.len() {
             let order_a = &orders[i].clone();
@@ -242,8 +400,8 @@ async fn match_orders_positive_test() {
                 {
                     let res = match_orders(&matcher_instance, order_a.id, order_b.id).await;
                     if res.is_ok() {
-                        println!(" = {:?}", res.as_ref().unwrap().get_logs());
-                        println!(" = {:?}", res.unwrap().get_logs_with_type::<u64>());
+                        // println!(" = {:?}", res.as_ref().unwrap().get_logs());
+                        // println!(" = {:?}", res.unwrap().get_logs_with_type::<u64>());
                         orders[i].status = Status::Completed;
                         orders[j].status = Status::Completed;
 
@@ -273,20 +431,20 @@ async fn match_orders_positive_test() {
                         println!(
                             "Match 👩‍❤️‍👨!\n Order {}: {}{a_symbol} ➡️ {}{b_symbol}\n Order {}: {}{b_symbol} ➡️ {}{a_symbol}\n\n",
                             order_a.id,
-                            order_a.amount_0 ,//as f64 / 10f64.powf(a_decimals),
-                            order_a.amount_1 ,//as f64 / 10f64.powf(b_decimals),
+                            order_a.amount_0,//as f64 / 10f64.powf(a_decimals),
+                            order_a.amount_1,//as f64 / 10f64.powf(b_decimals),
                             order_b.id,
-                            order_b.amount_0 ,//as f64 / 10f64.powf(b_decimals),
-                            order_b.amount_1 ,//as f64 / 10f64.powf(a_decimals),
+                            order_b.amount_0,//as f64 / 10f64.powf(b_decimals),
+                            order_b.amount_1,//as f64 / 10f64.powf(a_decimals),
                         );
                         continue 'a_order_cycle;
                     } else {
-                        println!(
-                            "Error: \n0 {:#?}\n1 {:#?}\n❌{:?}\n\n",
-                            order_a,
-                            order_b,
-                            res.err().unwrap()
-                        );
+                        // println!(
+                        //     "Error: \n0 {:#?}\n1 {:#?}\n❌{:?}\n\n",
+                        //     order_a,
+                        //     order_b,
+                        //     res.err().unwrap()
+                        // );
                     }
                 }
                 j += 1;
