@@ -184,6 +184,11 @@ class AccountStore {
     return Wallet.fromAddress(this.address, new Provider(NODE_URL));
   }
 
+  get ethFormatWallet(): string | null {
+    if (this.address == null) return null;
+    return Address.fromString(this.address).toB256();
+  }
+
   get addressInput(): null | { value: string } {
     if (this.address == null) return null;
     return { value: Address.fromString(this.address).toB256() };

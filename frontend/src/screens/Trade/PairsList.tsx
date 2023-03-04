@@ -44,7 +44,7 @@ const Tokens = styled(Row)`
 `;
 const allPairs = [
   {
-    token0: TOKENS_BY_SYMBOL.SWAY,
+    token0: TOKENS_BY_SYMBOL.UNI,
     token1: TOKENS_BY_SYMBOL.BTC,
     lastPrice: "0.00",
     change: "2.0",

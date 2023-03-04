@@ -11,6 +11,7 @@ import { observer } from "mobx-react-lite";
 import { Column } from "@components/Flex";
 import Img from "@components/Img";
 import notFound from "@src/assets/notFound.svg";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -25,13 +26,12 @@ const OrderRow = styled.div`
   grid-template-columns: repeat(2, 1fr);
   @media (min-width: 880px) {
     height: 36px;
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(8, 1fr);
   }
 `;
 const OrderHistory: React.FC<IProps> = () => {
   const { width } = useWindowSize();
-  const vm = useTradeVM();
-  const length = 0;
+  const { ordersStore, accountStore } = useStores();
   const columns = [
     "Date",
     "Pair",
@@ -45,7 +45,7 @@ const OrderHistory: React.FC<IProps> = () => {
 
   return (
     <Root>
-      {width && width >= 880 && length > 0 && (
+      {width && width >= 880 && ordersStore.orders.length > 0 && (
         <OrderRow>
           {columns.map((value) => (
             <Text size="small" key={value}>
@@ -55,7 +55,7 @@ const OrderHistory: React.FC<IProps> = () => {
         </OrderRow>
       )}
       <SizedBox height={8} />
-      {length === 0 ? (
+      {ordersStore.orders.length === 0 ? (
         <Column justifyContent="center" alignItems="center" crossAxisSize="max">
           <Img
             style={{ width: 100, height: 100 }}
@@ -69,43 +69,31 @@ const OrderHistory: React.FC<IProps> = () => {
           </Text>
         </Column>
       ) : (
-        Array.from({ length })
-          .map(() => ({
-            date: "",
-            pair: "ETH/BTC",
-            type: "limit",
-            side: "sell",
-            price: "10",
-            amount: "status",
-            total: "10 usdt",
-            status: "0 %",
-            action: "10 usdt",
-          }))
-          .map((v, index) =>
+        ordersStore.orders
+          .filter((o) => o.status.Active == null)
+          .filter((o) => o.owner === accountStore.ethFormatWallet)
+          .map((o, index) =>
             width && width >= 880 ? (
               <OrderRow key={index}>
-                <Text> {dayjs().format("DD-MMM MM:HH")}</Text>
-                <Text>{v.pair}</Text>
-                <Text>{v.type}</Text>
-                <Text>{v.side}</Text>
-                <Text>{v.price}</Text>
-                <Text>{v.amount}</Text>
-                <Text>{v.status}</Text>
-                <Text>{v.total}</Text>
+                <Text> {o.time}</Text>
+                <Text>{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
+                <Text>limit</Text>
+                <Text>{o.price}</Text>
+                <Text>{o.amount}</Text>
+                <Text>{o.fullFillPercent} %</Text>
+                <Text>{o.statusString}</Text>
+                <Text>{o.total}</Text>
               </OrderRow>
             ) : (
               <OrderItem
                 id={"1"}
-                amount0={BN.ZERO}
-                token0={vm.assetId0}
-                amount1={BN.ZERO}
-                token1={vm.assetId1}
-                txId={""}
-                fulfilled0={BN.ZERO}
-                fulfilled1={BN.ZERO}
-                timestamp={0}
-                status="active"
-                onCancel={() => console.log("cancel order")}
+                time={o.time}
+                pair={`${o.token0.symbol}/${o.token1.symbol}`}
+                price={o.price}
+                amount={o.amount}
+                fullFillPercent={o.fullFillPercent}
+                total={o.total}
+                status={o.statusString}
               />
             )
           )

@@ -5,8 +5,9 @@ import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { OrderOutput, StatusOutput } from "@src/contracts/LimitOrdersAbi";
 import BigNumber from "bignumber.js";
+import dayjs from "dayjs";
 
-class Order {
+export class Order {
   asset0: string;
   amount0: BN;
   asset1: string;
@@ -35,12 +36,46 @@ class Order {
     this.matcher_fee_used = new BN(orderOutput.matcher_fee_used.toString());
   }
 
-  get symbol0() {
-    return TOKENS_BY_ASSET_ID[this.asset0].symbol;
+  get token0() {
+    return TOKENS_BY_ASSET_ID[this.asset0];
   }
 
-  get symbol1() {
-    return TOKENS_BY_ASSET_ID[this.asset1].symbol;
+  get token1() {
+    return TOKENS_BY_ASSET_ID[this.asset1];
+  }
+
+  get time() {
+    return dayjs(this.timestamp).format("DD-MMM MM:HH");
+  }
+
+  get fullFillPercent() {
+    return this.fulfilled0.eq(0)
+      ? 0
+      : this.fulfilled0.times(100).div(this.amount0).toNumber();
+  }
+
+  get price() {
+    const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+    const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+    const price = am1.div(am0);
+    return `${price.toFormat(2)} ${this.token1.symbol}`;
+  }
+
+  get amount() {
+    const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+    return `${am0.toFormat(2)} ${this.token0.symbol}`;
+  }
+
+  get total() {
+    const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+    return `${am1.toFormat(2)} ${this.token1.symbol}`;
+  }
+
+  get statusString() {
+    if (this.status.Completed === null) return "completed";
+    if (this.status.Active === null) return "active";
+    if (this.status.Canceled === null) return "canceled";
+    return "active";
   }
 }
 
@@ -146,40 +181,6 @@ class OrdersStore {
       }
     });
   };
-
-  /*
-     pub async fn update_active_orders(&mut self) {
-          let mut active_orders: Vec<(u64, u64)> = vec![]; // (index, id)
-          let mut i = 0;
-          while i < self.orders.len() {
-              let order = self.orders[i].clone();
-              if order.status == Status::Active {
-                  active_orders.push((i as u64, order.id));
-              }
-              i += 1;
-          }
-          let chanks: Vec<Vec<(u64, u64)>> = active_orders.chunks(10).map(|s| s.into()).collect();
-          for chank in chanks {
-              let mut arr: [u64; 10] = pad_zeroes([]);
-              let mut i = 0;
-              while i < chank.len() {
-                  arr[i] = chank[i].1;
-                  i += 1;
-              }
-              let res = orders_by_id(&self.instance, arr).await.to_vec();
-              let mut i = 0;
-              while i < res.len() {
-                  if res[i].is_some() {
-                      let index = chank[i].0;
-                      let array_index = usize::try_from(index).unwrap();
-                      let order = res[i].clone().unwrap();
-                      self.orders[array_index] = order;
-                  }
-                  i += 1;
-              }
-          }
-      }
-    * */
 
   getOrdersAmount = () =>
     this.limitOrdersContract?.functions

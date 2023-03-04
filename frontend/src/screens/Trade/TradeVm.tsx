@@ -24,19 +24,6 @@ export const TradeVMProvider: React.FC<IProps> = ({ children }) => {
 
 type OrderAction = "buy" | "sell";
 
-export interface IOrder {
-  id: string;
-  amount0: BN;
-  token0: string;
-  amount1: BN;
-  token1: string;
-  txId: string;
-  fulfilled0: BN;
-  fulfilled1: BN;
-  timestamp: number;
-  status: "active" | "closed" | "canceled";
-}
-
 export const useTradeVM = () => useVM(ctx);
 
 class TradeVm {

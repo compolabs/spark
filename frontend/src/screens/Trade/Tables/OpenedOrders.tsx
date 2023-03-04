@@ -2,11 +2,8 @@ import styled from "@emotion/styled";
 import React from "react";
 import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
-import dayjs from "dayjs";
 import useWindowSize from "@src/hooks/useWindowSize";
 import OrderItem from "@screens/Trade/Tables/OrderItem";
-import BN from "@src/utils/BN";
-import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
 import { Column } from "@src/components/Flex";
 import Img from "@components/Img";
@@ -26,19 +23,16 @@ const OrderRow = styled.div`
   grid-template-columns: repeat(2, 1fr);
   @media (min-width: 880px) {
     height: 36px;
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(8, 1fr);
   }
 `;
 const OpenedOrders: React.FC<IProps> = () => {
   const { width } = useWindowSize();
-  const { ordersStore } = useStores();
-
-  const vm = useTradeVM();
+  const { ordersStore, accountStore } = useStores();
   const columns = [
     "Date",
     "Pair",
     "Type",
-    "Side",
     "Price",
     "Amount",
     "Status",
@@ -74,28 +68,17 @@ const OpenedOrders: React.FC<IProps> = () => {
       ) : (
         ordersStore.orders
           .filter((o) => o.status.Active != null)
-          .map((o) => ({
-            date: "",
-            pair: `${o.symbol0}/${o.symbol1}`,
-            type: "limit",
-            side: "sell",
-            price: "10",
-            amount: "status",
-            total: "10 usdt",
-            status: "0 %",
-            action: "10 usdt",
-          }))
-          .map((v, index) =>
+          .filter((o) => o.owner === accountStore.ethFormatWallet)
+          .map((o, index) =>
             width && width >= 880 ? (
               <OrderRow key={index}>
-                <Text> {dayjs().format("DD-MMM MM:HH")}</Text>
-                <Text>{v.pair}</Text>
-                <Text>{v.type}</Text>
-                <Text>{v.side}</Text>
-                <Text>{v.price}</Text>
-                <Text>{v.amount}</Text>
-                <Text>{v.status}</Text>
-                <Text>{v.total}</Text>
+                <Text> {o.time}</Text>
+                <Text>{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
+                <Text>limit</Text>
+                <Text>{o.price}</Text>
+                <Text>{o.amount}</Text>
+                <Text>{o.fullFillPercent} %</Text>
+                <Text>{o.total}</Text>
                 <Text
                   style={{ cursor: "pointer" }}
                   size="small"
@@ -108,14 +91,12 @@ const OpenedOrders: React.FC<IProps> = () => {
             ) : (
               <OrderItem
                 id={"1"}
-                amount0={BN.ZERO}
-                token0={vm.assetId0}
-                amount1={BN.ZERO}
-                token1={vm.assetId1}
-                txId={""}
-                fulfilled0={BN.ZERO}
-                fulfilled1={BN.ZERO}
-                timestamp={0}
+                time={o.time}
+                pair={`${o.token0.symbol}/${o.token1.symbol}`}
+                price={o.price}
+                amount={o.amount}
+                fullFillPercent={o.fullFillPercent}
+                total={o.total}
                 status="active"
                 onCancel={() => console.log("cancel order")}
               />
