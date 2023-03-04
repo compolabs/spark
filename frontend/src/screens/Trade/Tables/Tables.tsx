@@ -49,6 +49,19 @@ const Container = styled.div`
 const Tables: React.FC<IProps> = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { accountStore, ordersStore, settingsStore } = useStores();
+  if (!accountStore.isLoggedIn)
+    return (
+      <Root>
+        <Container>
+          <SizedBox height={24} />
+          <Text textAlign="center">Connect wallet to trade</Text>
+          <SizedBox height={8} />
+          <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
+            Connect wallet
+          </Button>
+        </Container>
+      </Root>
+    );
   return (
     <Root>
       <TabsContainer>
@@ -59,28 +72,18 @@ const Tables: React.FC<IProps> = () => {
         />
       </TabsContainer>
       <Container>
-        {accountStore.isLoggedIn ? (
-          <DContainer>
-            {ordersStore.initialized ? (
-              <>
-                {activeTab === 0 && <OpenedOrders />}
-                {activeTab === 1 && <OrderHistory />}
-              </>
-            ) : (
-              <Row justifyContent="center">
-                <Loading />
-              </Row>
-            )}
-          </DContainer>
-        ) : (
-          <Column alignItems="center" justifyContent="center">
-            <Text>Connect wallet to trade</Text>
-            <SizedBox height={8} />
-            <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
-              Connect wallet
-            </Button>
-          </Column>
-        )}
+        <DContainer>
+          {ordersStore.initialized ? (
+            <>
+              {activeTab === 0 && <OpenedOrders />}
+              {activeTab === 1 && <OrderHistory />}
+            </>
+          ) : (
+            <Row justifyContent="center">
+              <Loading />
+            </Row>
+          )}
+        </DContainer>
       </Container>
     </Root>
   );
