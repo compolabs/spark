@@ -1,6 +1,7 @@
 {
   "name": "sway-exchange",
   "version": "0.1.0",
+  "homepage": "https://app.swaynetwork.xyz",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
