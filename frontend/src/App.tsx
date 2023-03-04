@@ -13,6 +13,7 @@ const Root = styled(Column)`
   align-items: center;
   background: ${({ theme }) => theme.colors.mainBackground};
   min-height: 100vh;
+  overflow-y: scroll;
 `;
 const MobileSpace = styled.div`
   height: 58px;
