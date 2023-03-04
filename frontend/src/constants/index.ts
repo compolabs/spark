@@ -2,9 +2,8 @@ import tokens from "./tokens.json";
 import tokenLogos from "./tokenLogos";
 
 export const ROUTES = {
-  ROOT: "/",
+  TRADE: "/",
   FAUCET: "/faucet",
-  TRADE: "/trade",
   WALLET: "/wallet",
 };
 

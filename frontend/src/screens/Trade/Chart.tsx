@@ -1,6 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
-import Text from "@components/Text";
+import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
+import { useTradeVM } from "@screens/Trade/TradeVm";
 
 interface IProps {}
 
@@ -11,7 +12,7 @@ const Root = styled.div`
   background: #222936;
   width: 100%;
   justify-content: center;
-  align-items: center;
+  align-items: stretch;
 
   height: 410px;
 
@@ -21,9 +22,16 @@ const Root = styled.div`
 `;
 
 const Chart: React.FC<IProps> = () => {
+  const vm = useTradeVM();
   return (
     <Root>
-      <Text>Chart will be here</Text>
+      <AdvancedRealTimeChart
+        symbol={`${vm.token0.symbol}${vm.token1.symbol}`}
+        interval="1"
+        style="8"
+        theme="dark"
+        autosize
+      />
     </Root>
   );
 };
