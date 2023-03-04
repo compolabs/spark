@@ -22,22 +22,12 @@ const TokensFaucetTable: React.FC<IProps> = () => {
     setTokens(
       vm.faucetTokens.map((t) => ({
         asset: (
-          <Row>
+          <Row alignItems="center">
             <TokenIcon size="small" src={t.logo} alt="logo" />
             <SizedBox width={16} />
-            <Column crossAxisSize="max">
-              <Text size="medium" fitContent style={{ whiteSpace: "nowrap" }}>
-                {t.name}
-              </Text>
-              <Text
-                fitContent
-                style={{ whiteSpace: "nowrap" }}
-                type="secondary"
-                size="small"
-              >
-                $ {t.price.toFormat(2)}
-              </Text>
-            </Column>
+            <Text size="medium" fitContent style={{ whiteSpace: "nowrap" }}>
+              {t.name}
+            </Text>
           </Row>
         ),
         amount: (
@@ -45,18 +35,12 @@ const TokensFaucetTable: React.FC<IProps> = () => {
             <Text fitContent style={{ whiteSpace: "nowrap" }} weight={500}>
               {`${t.mintAmount.toFormat()} ${t.symbol}`}
             </Text>
-            <Text fitContent style={{ whiteSpace: "nowrap" }} type="secondary">
-              $ {t.mintAmountDollar.toFormat(2)}
-            </Text>
           </Column>
         ),
         balance: (
           <Column crossAxisSize="max">
             <Text fitContent style={{ whiteSpace: "nowrap" }} weight={500}>
               {`${t.formatBalance?.toFormat(2)} ${t.symbol}`}
-            </Text>
-            <Text fitContent style={{ whiteSpace: "nowrap" }} type="secondary">
-              $ {t.balanceDollar.toFormat(2)}
             </Text>
           </Column>
         ),
@@ -85,7 +69,7 @@ const TokensFaucetTable: React.FC<IProps> = () => {
           return (
             <Button
               fixed
-              disabled={vm.loading}
+              disabled={vm.loading || !vm.initialized}
               onClick={() => {
                 if (t.symbol === "ETH") {
                   window.open(

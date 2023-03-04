@@ -38,9 +38,6 @@ class TradeVm {
   loading: boolean = false;
   private setLoading = (l: boolean) => (this.loading = l);
 
-  initialized: boolean = false;
-  private setInitialized = (l: boolean) => (this.initialized = l);
-
   activeModalAction: 0 | 1 = 0;
   setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
 

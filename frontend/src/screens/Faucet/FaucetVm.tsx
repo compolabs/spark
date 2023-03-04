@@ -33,7 +33,6 @@ const faucetAmounts: Record<string, number> = {
   UNI: 1000,
   BTC: 1,
   USDC: 10000,
-  SWAY: 1000,
   COMP: 1000,
 };
 
@@ -49,9 +48,7 @@ class FaucetVM {
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-    this.checkTokensThatAlreadyBeenMinted().then(() =>
-      this.setInitialized(true)
-    );
+    this.checkTokensThatAlreadyBeenMinted();
     reaction(
       () => [this.rootStore.accountStore.address],
       () => this.updateFaucetStateWhenVersionChanged()
@@ -142,15 +139,19 @@ class FaucetVM {
   }
 
   mint = async (assetId?: string) => {
-    if (assetId == null || this.alreadyMintedTokens.includes(assetId)) return;
-    const addedAssets: Array<Asset> =
-      (await window?.fuel.assets) && window?.fuel.assets();
-    if (
-      addedAssets != null &&
-      !addedAssets.some((v) => v.assetId === assetId) &&
-      this.rootStore.accountStore.loginType === LOGIN_TYPE.FUEL_WALLET
-    ) {
-      await this.addAsset(assetId);
+    console.log("mint");
+    if (assetId == null || this.alreadyMintedTokens.includes(assetId)) {
+      console.log("return 1");
+      return;
+    }
+    if (this.rootStore.accountStore.loginType === LOGIN_TYPE.FUEL_WALLET) {
+      const addedAssets: Array<Asset> = await window?.fuel.assets();
+      if (
+        addedAssets != null &&
+        !addedAssets.some((v) => v.assetId === assetId)
+      ) {
+        await this.addAsset(assetId);
+      }
     }
     this._setLoading(true);
     this.setActionTokenAssetId(assetId);
