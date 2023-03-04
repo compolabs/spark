@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useState } from "react";
 import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
 import useWindowSize from "@src/hooks/useWindowSize";
@@ -9,7 +9,9 @@ import { Column } from "@src/components/Flex";
 import Img from "@components/Img";
 import notFound from "@src/assets/notFound.svg";
 import { useStores } from "@stores";
-import Loading from "@components/Loading";
+import Dialog from "@components/Dialog";
+import Button from "@components/Button";
+import { useTradeVM } from "@screens/Trade/TradeVm";
 
 interface IProps {}
 
@@ -30,6 +32,9 @@ const OrderRow = styled.div`
 const OpenedOrders: React.FC<IProps> = () => {
   const { width } = useWindowSize();
   const { ordersStore, accountStore } = useStores();
+  const [openedModal, setModalOpened] = useState(false);
+  const vm = useTradeVM();
+  const [cancelOrderId, setCancelOrderId] = useState<null | string>(null);
   const columns = [
     "Date",
     "Pair",
@@ -84,7 +89,10 @@ const OpenedOrders: React.FC<IProps> = () => {
                   style={{ cursor: "pointer" }}
                   size="small"
                   type="error"
-                  onClick={() => console.log("cancel")}
+                  onClick={() => {
+                    setModalOpened(true);
+                    setCancelOrderId(o.id);
+                  }}
                 >
                   Cancel
                 </Text>
@@ -99,11 +107,49 @@ const OpenedOrders: React.FC<IProps> = () => {
                 fullFillPercent={o.fullFillPercent}
                 total={o.total}
                 status="Active"
-                onCancel={() => console.log("cancel order")}
+                onCancel={() => {
+                  setModalOpened(true);
+                  setCancelOrderId(o.id);
+                }}
               />
             )
           )
       )}
+
+      <Dialog
+        style={{ maxWidth: 360 }}
+        title="Cancel order"
+        visible={openedModal}
+        onClose={() => setModalOpened(false)}
+      >
+        <Column crossAxisSize="max" alignItems="center" justifyContent="center">
+          <Text size="medium" weight={500} fitContent textAlign="center">
+            Are you sure you want cancel the order?
+          </Text>
+          <SizedBox height={24} />
+          <Button
+            fixed
+            kind="danger"
+            onClick={() => {
+              setModalOpened(false);
+              cancelOrderId && vm.cancelOrder(cancelOrderId);
+            }}
+          >
+            Cancel the order
+          </Button>
+          <SizedBox height={8} />
+          <Button
+            fixed
+            onClick={() => {
+              setModalOpened(false);
+              setCancelOrderId(null);
+            }}
+          >
+            Go back
+          </Button>
+          <SizedBox height={24} />
+        </Column>
+      </Dialog>
     </Root>
   );
 };

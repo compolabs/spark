@@ -4,6 +4,7 @@ import { makeAutoObservable } from "mobx";
 import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
+  EXPLORER_URL,
   TOKENS_BY_ASSET_ID,
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
@@ -228,14 +229,20 @@ class TradeVm {
 
     this.setLoading(true);
     try {
-      const deposit = await this.deposit(limitOrdersContract);
-      console.log(deposit);
-      const tx = await limitOrdersContract.functions
+      await this.deposit(limitOrdersContract);
+      await limitOrdersContract.functions
         .create_order({ value: token1 }, amount1, this.matcherFee)
         .callParams({ forward: { amount: amount0, assetId: token0 } })
         .txParams({ gasPrice: 1 })
-        .call();
-      console.log(tx);
+        .call()
+        .then(
+          ({ transactionResult }) =>
+            transactionResult &&
+            this.notifyThatActionIsSuccessful(
+              "Order has been placed",
+              transactionResult.transactionId ?? ""
+            )
+        );
     } catch (e) {
       const error = JSON.parse(JSON.stringify(e)).toString();
       this.rootStore.notificationStore.toast(error.error, {
@@ -243,6 +250,39 @@ class TradeVm {
         title: "Oops..",
       });
       console.error(e);
+    } finally {
+      this.setLoading(false);
+    }
+  };
+
+  cancelOrder = async (id: string) => {
+    const { accountStore } = this.rootStore;
+    if (accountStore.address == null) return;
+    const wallet = await accountStore.getWallet();
+    if (wallet == null) return;
+    const limitOrdersContract = LimitOrdersAbi__factory.connect(
+      CONTRACT_ADDRESSES.limitOrders,
+      wallet
+    );
+    if (limitOrdersContract == null) return;
+
+    this.setLoading(true);
+    try {
+      await limitOrdersContract.functions
+        .cancel_order(id)
+        .txParams({ gasPrice: 1 })
+        .call()
+        .then(
+          ({ transactionResult }) =>
+            transactionResult &&
+            this.notifyThatActionIsSuccessful(
+              "Order has been canceled",
+              transactionResult.transactionId ?? ""
+            )
+        );
+      //todo add update
+    } catch (e) {
+      this.notifyError(JSON.parse(JSON.stringify(e)).toString(), e);
     } finally {
       this.setLoading(false);
     }
@@ -259,4 +299,20 @@ class TradeVm {
     const balance = accountStore.getBalance(this.token0);
     return balance == null ? false : this.sellAmount.gt(balance);
   }
+
+  notifyThatActionIsSuccessful = (title: string, txId: string) => {
+    this.rootStore.notificationStore.toast(title, {
+      link: `${EXPLORER_URL}/transaction/${txId}`,
+      linkTitle: "View on Explorer",
+      type: "success",
+      title: "Transaction is completed!",
+    });
+  };
+  notifyError = (title: string, error: any) => {
+    console.error(error);
+    this.rootStore.notificationStore.toast(title, {
+      type: "error",
+      title: "Oops...",
+    });
+  };
 }

@@ -22,7 +22,7 @@ class NotificationStore {
     let theme: Theme = "dark";
 
     toast(getAlert(content, options) ?? content, {
-      autoClose: 1500,
+      autoClose: 5000,
       ...options,
       theme,
     });
