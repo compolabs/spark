@@ -105,7 +105,9 @@ const PairsList: React.FC<IProps> = () => {
           <Text
             style={{ cursor: "pointer" }}
             onClick={() => {
-              vm.setAssetId0(token0.assetId);
+              console.log(token0.symbol);
+              console.log(token1.assetId);
+              vm.setAssetId0(token0.symbol);
               vm.setAssetId1(token1.assetId);
             }}
           >{`${token0.symbol}/${token1.symbol}`}</Text>
