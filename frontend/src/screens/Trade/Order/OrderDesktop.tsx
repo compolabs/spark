@@ -10,6 +10,7 @@ import Button from "@components/Button";
 import Img from "@components/Img";
 import wallet from "@src/assets/icons/wallet.svg";
 import { useStores } from "@stores";
+import Loading from "@components/Loading";
 
 interface IProps {}
 
@@ -37,7 +38,7 @@ const OrderDesktop: React.FC<IProps> = () => {
   const { accountStore, settingsStore } = useStores();
   const balance0 = accountStore.getFormattedBalance(vm.token0);
   const balance1 = accountStore.getFormattedBalance(vm.token1);
-
+  console.log(vm.loading);
   return (
     <Root>
       <Column>
@@ -84,9 +85,9 @@ const OrderDesktop: React.FC<IProps> = () => {
             kind="green"
             fixed
             onClick={() => vm.createOrder("buy")}
-            disabled={!vm.canBuy}
+            disabled={vm.loading || !vm.canBuy}
           >
-            Buy {vm.token1.symbol}
+            {vm.loading ? <Loading /> : `Buy ${vm.token1.symbol}`}
           </Button>
         ) : (
           <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>
@@ -138,10 +139,10 @@ const OrderDesktop: React.FC<IProps> = () => {
           <Button
             kind="danger"
             fixed
-            disabled={!vm.canSell}
+            disabled={vm.loading || !vm.canSell}
             onClick={() => vm.createOrder("sell")}
           >
-            Sell {vm.token1.symbol}{" "}
+            {vm.loading ? <Loading /> : `Sell ${vm.token1.symbol}`}
           </Button>
         ) : (
           <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>

@@ -11,6 +11,7 @@ import wallet from "@src/assets/icons/wallet.svg";
 import Button from "@components/Button";
 import { useStores } from "@stores";
 import TokenInput from "@src/components/TokenInput";
+import Loading from "@components/Loading";
 
 interface IProps {
   onClose: () => void;
@@ -100,7 +101,11 @@ const OrderModal: React.FC<IProps> = ({ ...rest }) => {
               : vm.createOrder("sell")
           }
         >
-          {`${vm.activeModalAction === 0 ? "Buy" : "Sell"} ${vm.token1.symbol}`}
+          {vm.loading ? (
+            <Loading />
+          ) : (
+            `${vm.activeModalAction === 0 ? "Buy" : "Sell"} ${vm.token1.symbol}`
+          )}
         </Button>
       ) : (
         <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>

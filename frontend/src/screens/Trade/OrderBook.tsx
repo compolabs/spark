@@ -76,6 +76,7 @@ const OrderBook: React.FC<IProps> = () => {
       <Settings>
         {filters.map((image, index) => (
           <Icon
+            key={index}
             src={image}
             alt="filter"
             selected={orderFilter === index}

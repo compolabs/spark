@@ -49,10 +49,10 @@ class TradeVm {
   }
 
   loading: boolean = false;
-  private _setLoading = (l: boolean) => (this.loading = l);
+  private setLoading = (l: boolean) => (this.loading = l);
 
   initialized: boolean = false;
-  private setInitialized = (l: boolean) => (this.loading = l);
+  private setInitialized = (l: boolean) => (this.initialized = l);
 
   activeModalAction: 0 | 1 = 0;
   setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
@@ -210,8 +210,8 @@ class TradeVm {
   }
 
   createOrder = async (action: OrderAction) => {
+    console.log("createOrder");
     const { accountStore } = this.rootStore;
-    this._setLoading(true);
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
@@ -226,19 +226,20 @@ class TradeVm {
     let amount1 = null;
     if (action === "buy") {
       token0 = this.assetId1;
-      token1 = this.assetId1;
-      amount0 = this.buyTotal.toString();
-      amount1 = this.buyAmount.toString();
-    }
-    if (action === "sell") {
-      token0 = this.assetId1;
       token1 = this.assetId0;
       amount0 = this.buyTotal.toString();
       amount1 = this.buyAmount.toString();
     }
+    if (action === "sell") {
+      token0 = this.assetId0;
+      token1 = this.assetId1;
+      amount0 = this.sellAmount.toString();
+      amount1 = this.sellTotal.toString();
+    }
     if (token0 == null || token1 == null || amount0 == null || amount1 == null)
       return;
 
+    this.setLoading(true);
     try {
       const deposit = await this.deposit(limitOrdersContract);
       console.log(deposit);
@@ -256,7 +257,7 @@ class TradeVm {
       });
       console.error(e);
     } finally {
-      this._setLoading(false);
+      this.setLoading(false);
     }
   };
 
