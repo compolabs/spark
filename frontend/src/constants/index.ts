@@ -31,7 +31,7 @@ export const SEED_ADDRESS =
 
 export const CONTRACT_ADDRESSES = {
   limitOrders:
-    "0x5b250a58322fcbbaf2cdd1c7a5a92a01d4b09dd94d7eef9a98e88d63c1176e77",
+    "0x6fbaa125ecd73570eed403caafb2e242f7aacf89f54cf53ad510038d3518a0b8",
   priceOracle:
     "0x6fbaa125ecd73570eed403caafb2e242f7aacf89f54cf53ad510038d3518a0b8",
 };

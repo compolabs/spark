@@ -11,6 +11,7 @@ import { observer } from "mobx-react-lite";
 import { Column } from "@src/components/Flex";
 import Img from "@components/Img";
 import notFound from "@src/assets/notFound.svg";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -30,8 +31,9 @@ const OrderRow = styled.div`
 `;
 const OpenedOrders: React.FC<IProps> = () => {
   const { width } = useWindowSize();
+  const { ordersStore } = useStores();
+
   const vm = useTradeVM();
-  const length = 0;
   const columns = [
     "Date",
     "Pair",
@@ -46,7 +48,7 @@ const OpenedOrders: React.FC<IProps> = () => {
 
   return (
     <Root>
-      {width && width >= 880 && length > 0 && (
+      {width && width >= 880 && ordersStore.orders.length > 0 && (
         <OrderRow>
           {columns.map((value) => (
             <Text size="small" key={value}>
@@ -56,7 +58,7 @@ const OpenedOrders: React.FC<IProps> = () => {
         </OrderRow>
       )}
       <SizedBox height={8} />
-      {length === 0 ? (
+      {ordersStore.orders.length === 0 ? (
         <Column justifyContent="center" alignItems="center" crossAxisSize="max">
           <Img
             style={{ width: 100, height: 100 }}
@@ -70,10 +72,11 @@ const OpenedOrders: React.FC<IProps> = () => {
           </Text>
         </Column>
       ) : (
-        Array.from({ length })
-          .map(() => ({
+        ordersStore.orders
+          .filter((o) => o.status.Active != null)
+          .map((o) => ({
             date: "",
-            pair: "ETH/BTC",
+            pair: `${o.symbol0}/${o.symbol1}`,
             type: "limit",
             side: "sell",
             price: "10",
