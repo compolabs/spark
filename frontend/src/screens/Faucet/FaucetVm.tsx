@@ -111,29 +111,20 @@ class FaucetVM {
   private setInitialized = (l: boolean) => (this.initialized = l);
 
   get faucetTokens() {
-    const { accountStore, pricesStore } = this.rootStore;
+    const { accountStore } = this.rootStore;
     if (accountStore.assetBalances == null) return [];
     return TOKENS_LIST.map((b) => {
       const balance = accountStore.findBalanceByAssetId(b.assetId);
-      const price =
-        pricesStore.tokensPrices != null
-          ? pricesStore.tokensPrices[b.assetId]
-          : BN.ZERO;
       const mintAmount = new BN(faucetAmounts[b.symbol] ?? 0);
-      const mintAmountDollar = mintAmount.times(price);
       const formatBalance = BN.formatUnits(
         balance?.balance ?? BN.ZERO,
         b.decimals
       );
-      const balanceDollar = formatBalance.times(price);
       return {
         ...TOKENS_BY_ASSET_ID[b.assetId],
         ...balance,
         formatBalance,
-        price,
-        balanceDollar,
         mintAmount,
-        mintAmountDollar,
       };
     });
   }
