@@ -2,6 +2,7 @@ import styled from "@emotion/styled";
 import React from "react";
 import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
 import { useTradeVM } from "@screens/Trade/TradeVm";
+import { observer } from "mobx-react-lite";
 
 interface IProps {}
 
@@ -35,4 +36,4 @@ const Chart: React.FC<IProps> = () => {
     </Root>
   );
 };
-export default Chart;
+export default observer(Chart);

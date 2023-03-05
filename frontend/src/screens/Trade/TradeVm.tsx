@@ -41,7 +41,7 @@ class TradeVm {
   activeModalAction: 0 | 1 = 0;
   setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
 
-  assetId0: string = TOKENS_BY_SYMBOL.ETH.assetId;
+  assetId0: string = TOKENS_BY_SYMBOL.BTC.assetId;
   setAssetId0 = (assetId: string) => (this.assetId0 = assetId);
 
   assetId1: string = TOKENS_BY_SYMBOL.USDC.assetId;
@@ -209,6 +209,10 @@ class TradeVm {
       });
       console.error(e);
     } finally {
+      await Promise.all([
+        this.rootStore.ordersStore.updateActiveOrders(),
+        this.rootStore.ordersStore.fetchNewOrders(),
+      ]);
       this.setLoading(false);
     }
   };

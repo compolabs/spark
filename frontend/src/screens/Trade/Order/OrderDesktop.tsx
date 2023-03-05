@@ -86,7 +86,7 @@ const OrderDesktop: React.FC<IProps> = () => {
             onClick={() => vm.createOrder("buy")}
             disabled={vm.loading || !vm.canBuy}
           >
-            {vm.loading ? <Loading /> : `Buy ${vm.token1.symbol}`}
+            {vm.loading ? <Loading /> : `Buy ${vm.token0.symbol}`}
           </Button>
         ) : (
           <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>
@@ -141,7 +141,7 @@ const OrderDesktop: React.FC<IProps> = () => {
             disabled={vm.loading || !vm.canSell}
             onClick={() => vm.createOrder("sell")}
           >
-            {vm.loading ? <Loading /> : `Sell ${vm.token1.symbol}`}
+            {vm.loading ? <Loading /> : `Sell ${vm.token0.symbol}`}
           </Button>
         ) : (
           <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>

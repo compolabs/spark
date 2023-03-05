@@ -80,6 +80,7 @@ const OrderBook: React.FC<IProps> = () => {
       if (a.price == null && b.price == null) return -1;
       return a.price!.lt(b.price!) ? 1 : -1;
     });
+
   const sellOrders = activeOrdersForCurrentPair
     .filter((o) => o.asset0 === vm.assetId1)
     .sort((a, b) => {
@@ -88,12 +89,14 @@ const OrderBook: React.FC<IProps> = () => {
       if (a.reversePrice == null && b.reversePrice == null) return -1;
       return a.reversePrice!.lt(b.reversePrice!) ? -1 : 1;
     });
+
   const filters = [sellAndBuy, buy, sell];
   const columns = [
     `Price ${vm.token1.symbol}`,
     `Amount ${vm.token0.symbol}`,
     `Total ${vm.token1.symbol}`,
   ];
+
   const currentPrice = "3.14";
   if (!accountStore.isLoggedIn)
     return (
@@ -135,16 +138,16 @@ const OrderBook: React.FC<IProps> = () => {
         ) : (
           orderFilter !== 2 &&
           buyOrders.map((o, index) => (
-            <Row
-              style={{ margin: "4px 0" }}
-              key={index + "positive"}
-              onClick={() => {
-                const price = BN.parseUnits(o.price, vm.token1.decimals);
-                vm.setSellPrice(price, true);
-                vm.setBuyPrice(price, true);
-              }}
-            >
-              <Text size="small" type="green">
+            <Row style={{ margin: "4px 0" }} key={index + "positive"}>
+              <Text
+                size="small"
+                type="green"
+                onClick={() => {
+                  const price = BN.parseUnits(o.price, vm.token1.decimals);
+                  vm.setSellPrice(price, true);
+                  vm.setBuyPrice(price, true);
+                }}
+              >
                 {o.price.toFormat(2)}
               </Text>
               <Text size="small">{o.amount}</Text>
@@ -164,9 +167,9 @@ const OrderBook: React.FC<IProps> = () => {
             </>
           ) : (
             <>
-              <Text>{currentPrice}</Text>
-              <div />
-              <Text>SPREAD 1.10%</Text>
+              {/*<Text>{currentPrice}</Text>*/}
+              {/*<div />*/}
+              {/*<Text>SPREAD 1.10%</Text>*/}
             </>
           )}
         </Row>

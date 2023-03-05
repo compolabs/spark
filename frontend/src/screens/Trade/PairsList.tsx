@@ -108,7 +108,7 @@ const PairsList: React.FC<IProps> = () => {
             style={{ cursor: "pointer" }}
             onClick={() => {
               if (accountStore.isLoggedIn) {
-                vm.setAssetId0(token0.symbol);
+                vm.setAssetId0(token0.assetId);
                 vm.setAssetId1(token1.assetId);
               }
             }}
