@@ -97,7 +97,6 @@ const OrderBook: React.FC<IProps> = () => {
     `Total ${vm.token1.symbol}`,
   ];
 
-  const currentPrice = "3.14";
   if (!accountStore.isLoggedIn)
     return (
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
@@ -166,11 +165,7 @@ const OrderBook: React.FC<IProps> = () => {
               <Skeleton height={20} />
             </>
           ) : (
-            <>
-              {/*<Text>{currentPrice}</Text>*/}
-              {/*<div />*/}
-              {/*<Text>SPREAD 1.10%</Text>*/}
-            </>
+            <></>
           )}
         </Row>
         <SizedBox height={8} />
