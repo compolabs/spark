@@ -1,0 +1,14 @@
+[project]
+authors = ["Alexey"]
+entry = "main.sw"
+license = "Apache-2.0"
+name = "order"
+
+[constants]
+AMOUNT_1 = { type = "u64", value = "200000000000" }
+ASSET_1 = { type = "Identity", value = "0x35395f5b21b3e93e0dd4e476bc8d92a989185cf050a71aff861667d5a1ddefe3" }
+AMOUNT_0 = { type = "u64", value = "1000000000" }
+ASSET_0 = { type = "Identity", value = "0x4e68158aa0dd81c438160a6ef38829363cf96eeef1ae5c6cb3cccb1c52a7e685" }
+ORDER_OWNER = { type = "Identity", value = "0x5d99ee966b42cd8fc7bdd1364b389153a9e78b42b7d4a691470674e817888d4e" }
+
+[dependencies]

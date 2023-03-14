@@ -1,0 +1,15 @@
+[package]
+name = "hello-world"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4"
+execute = "0.2.11"
+fuels = { version = "0.35.1", features = ["fuel-core-lib"] }
+serde_json = "1.0.94"
+toml_edit = "0.19.6"
+
+
