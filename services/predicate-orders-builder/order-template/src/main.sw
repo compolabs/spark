@@ -11,23 +11,22 @@ use std::{
         output_pointer,
         output_type,
     },
-    logging::log,
 };
 
-// TODO : Remove once __gtf getters implemented in std-lib
 const GTF_OUTPUT_COIN_TO = 0x202;
 const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 
 /// Order / OTC swap Predicate
 fn main() -> bool {
-    // Order conditions: These are set in Forc.toml
-    // The spending transaction must have an output that sends `AMOUNT_1` of `ask_token` to `receiver`
+    const ASK_TOKEN = ContractId {
+        value: ASK_TOKEN_CONFIG,
+    };
+    const RECEIVER = Address::from(RECEIVER_CONFIG);
 
     // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)
-    let owner = Address::from(ORDER_OWNER);
     if input_count() == 2u8 {
-        if input_owner(0).unwrap() == owner
-            || input_owner(1).unwrap() == owner
+        if input_owner(0).unwrap() == RECEIVER
+            || input_owner(1).unwrap() == RECEIVER
         {
             return true;
         };
@@ -50,5 +49,5 @@ fn main() -> bool {
     let amount = output_amount(output_index);
 
     // Evaluate the predicate
-    (to == owner) && (amount == AMOUNT_1) && (asset_id.into() == ASSET_1)
+    (to == RECEIVER) && (amount == ASK_AMOUNT) && (asset_id == ASK_TOKEN)
 }
