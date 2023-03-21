@@ -55,6 +55,7 @@ async fn create_order_post(req_body_str: String) -> impl Responder {
     let forc_toml = std::fs::read_to_string(&forc_toml_path).expect("Cannom fimd Forc.toml");
     let mut forc_toml = forc_toml.parse::<Document>().expect("invalid forc_toml");
 
+    // these constants will be deprecated, check out new 'configurable' block (just like 'storage' in contracts)
     forc_toml["constants"]["ASK_TOKEN_CONFIG"]["type"] = value("b256");
     forc_toml["constants"]["ASK_TOKEN_CONFIG"]["value"] = value(asset1);
 
