@@ -23,7 +23,7 @@ const OrderRow = styled.div`
   grid-template-columns: repeat(2, 1fr);
   @media (min-width: 880px) {
     height: 36px;
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(7, 1fr);
   }
 `;
 const OrderHistory: React.FC<IProps> = () => {
@@ -35,7 +35,7 @@ const OrderHistory: React.FC<IProps> = () => {
     .filter((o) => o.owner === accountStore.ethFormatWallet);
 
   const columns = [
-    "Date",
+    // "Date",
     "Pair",
     "Type",
     "Price",
@@ -70,10 +70,10 @@ const OrderHistory: React.FC<IProps> = () => {
           </Text>
         </Column>
       ) : (
-        userOrders.map((o, index) =>
+        userOrders.map((o) =>
           width && width >= 880 ? (
-            <OrderRow key={index}>
-              <Text> {o.time}</Text>
+            <OrderRow key={o.id}>
+              {/*<Text> {o.time}</Text>*/}
               <Text>{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
               <Text>limit</Text>
               <Text>{o.priceFormatter}</Text>
@@ -90,6 +90,7 @@ const OrderHistory: React.FC<IProps> = () => {
             </OrderRow>
           ) : (
             <OrderItem
+              key={o.id}
               time={o.time}
               pair={`${o.token0.symbol}/${o.token1.symbol}`}
               price={o.priceFormatter}
