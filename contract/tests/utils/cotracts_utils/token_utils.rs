@@ -1,9 +1,8 @@
 use crate::utils::number_utils::parse_units;
-use fuels::prelude::{abigen, Contract, StorageConfiguration, TxParameters};
+use fuels::prelude::{abigen, Contract, DeployConfiguration};
 use fuels::{
-    // programs::Configurables,
     signers::WalletUnlocked,
-    tx::{Address, Salt},
+    tx::Address,
     types::{AssetId, ContractId, SizedAsciiString},
 };
 
@@ -76,13 +75,10 @@ pub async fn get_token_contract_instance(
     let mut rng = rand::thread_rng();
     let salt = rng.gen::<[u8; 32]>();
 
-    let id = Contract::deploy_with_parameters(
+    let id = Contract::deploy(
         "./tests/artefacts/token/token_contract.bin",
         &wallet,
-        TxParameters::default(),
-        StorageConfiguration::default(),
-        // Configurables::new(vec![]),
-        Salt::from(salt),
+        DeployConfiguration::default().set_salt(salt),
     )
     .await
     .unwrap();

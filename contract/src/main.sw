@@ -110,7 +110,7 @@ fn is_order_active(order: Order) -> bool {
 impl LimitOrders for Contract {
     #[storage(read)]
     fn get_deposit_by_address(address: Address) -> u64 {
-        storage.deposits.get(address)
+        storage.deposits.get(address).unwrap_or(0)
     }
 
     #[payable]
@@ -119,14 +119,14 @@ impl LimitOrders for Contract {
         let amount = msg_amount();
         let caller = get_sender_or_throw();
         require(amount > 0 && msg_asset_id() == BASE_ASSET_ID, "Invalid payment");
-        let deposit = storage.deposits.get(caller);
+        let deposit = storage.deposits.get(caller).unwrap_or(0);
         storage.deposits.insert(caller, deposit + amount);
     }
 
     #[storage(read, write)]
     fn withdraw(amount: u64) {
         let caller = get_sender_or_throw();
-        let deposit = storage.deposits.get(caller);
+        let deposit = storage.deposits.get(caller).unwrap_or(0);
         require(amount <= deposit, "Insufficient funds");
         storage.deposits.insert(caller, deposit - amount);
         transfer_to_address(deposit - amount, BASE_ASSET_ID, caller);
@@ -140,8 +140,8 @@ impl LimitOrders for Contract {
     #[storage(read)]
     fn order_by_id(id: u64) -> Order {
         let order = storage.orders.get(id);
-        require(id > 0 && order.id == id, "Order is not found");
-        order
+        require(id > 0 && order.is_some(), "Order is not found");
+        order.unwrap()
     }
 
     #[storage(read)]
@@ -183,7 +183,7 @@ impl LimitOrders for Contract {
             let order = if storage.orders_amount <= i + offset {
                 Option::None
             } else {
-                Option::Some(storage.orders.get(storage.orders_amount - i - offset))
+                storage.orders.get(storage.orders_amount - i - offset)
             };
             vec.push(order);
             i += 1;
@@ -209,13 +209,7 @@ impl LimitOrders for Contract {
         let mut vec = Vec::new();
         let mut i = 0;
         while i < 10 {
-            let order = storage.orders.get(ids[i]);
-            let order: Option<Order> = if order.id > 0 {
-                Option::Some(order)
-            } else {
-                Option::None
-            };
-            vec.push(order);
+            vec.push(storage.orders.get(ids[i]));
             i += 1;
         }
         (
@@ -238,7 +232,7 @@ impl LimitOrders for Contract {
         let asset0 = msg_asset_id();
         let amount0 = msg_amount();
         let caller = get_sender_or_throw();
-        let deposit = storage.deposits.get(caller);
+        let deposit = storage.deposits.get(caller).unwrap_or(0);
         require(amount0 > 0 && amount1 > 0, "Amount cannot be less then 1");
         require(deposit >= matcher_fee, "Not enough deposit");
         let id = storage.orders_amount + 1;
@@ -266,8 +260,11 @@ impl LimitOrders for Contract {
 
     #[storage(read, write)]
     fn cancel_order(id: u64) {
-        let mut order = storage.orders.get(id);
-        let deposit = storage.deposits.get(order.owner);
+        let order = storage.orders.get(id);
+        require(id > 0 && order.is_some(), "Order is not found");
+        let mut order = order.unwrap();
+
+        let deposit = storage.deposits.get(order.owner).unwrap_or(0);
         require(id > 0 && order.id == id, "Order is not found");
         require(get_sender_or_throw() == order.owner, "Access denied");
         require(is_order_active(order), "The order isn't active");
@@ -282,10 +279,12 @@ impl LimitOrders for Contract {
     #[storage(read, write)]
     fn fulfill_order(id: u64) {
         let mut order = storage.orders.get(id);
+        require(id > 0 && order.is_some(), "Order is not found");
+        let mut order = storage.orders.get(id).unwrap();
+
         let payment_asset = msg_asset_id();
         let payment_amount = msg_amount();
 
-        require(id > 0 && order.id == id, "Order is not found");
         require(is_order_active(order), "The order isn't active");
         require(payment_amount > 0 && payment_asset == order.asset1, "Invalid payment");
 
@@ -316,7 +315,7 @@ impl LimitOrders for Contract {
             trade.amount1 = amount1_left;
             order.status = Status::Completed;
             storage.orders.insert(id, order);
-            let deposit = storage.deposits.get(order.owner);
+            let deposit = storage.deposits.get(order.owner).unwrap_or(0);
             storage.deposits.insert(order.owner, deposit + order.matcher_fee - order.matcher_fee_used);
         }
         //If payed less - close order partially
@@ -342,10 +341,13 @@ impl LimitOrders for Contract {
         //TODO orders_ids_a: u64[], orders_ids_b: u64[]
 fn match_orders(order0_id: u64, order1_id: u64) {
         let matcher = get_sender_or_throw();
-        let mut order0 = storage.orders.get(order0_id);
-        let mut order1 = storage.orders.get(order1_id);
-        require(order0_id > 0 && order0.id == order0_id, "Order 0 is not found");
-        require(order1_id > 0 && order1.id == order1_id, "Order 1 is not found");
+        let order0 = storage.orders.get(order0_id);
+        let order1 = storage.orders.get(order1_id);
+        require(order0_id > 0 && order0.is_some(), "Order 0 is not found");
+        require(order1_id > 0 && order1.is_some(), "Order 1 is not found");
+        let mut order0 = storage.orders.get(order0_id).unwrap();
+        let mut order1 = storage.orders.get(order1_id).unwrap();
+
         require(is_order_active(order0) && is_order_active(order1), "Orders shuold be active");
         require(order0.asset0 == order1.asset1 && order0.asset1 == order1.asset0, "Orders don't match by tokens");
         let price_0 = order0.amount1 * 10_000_000 / order0.amount0;

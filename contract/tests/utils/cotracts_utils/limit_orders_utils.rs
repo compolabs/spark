@@ -1,4 +1,4 @@
-use fuels::prelude::abigen;
+use fuels::prelude::{abigen, DeployConfiguration};
 use fuels::{
     prelude::{Contract, StorageConfiguration, TxParameters},
     signers::WalletUnlocked,
@@ -10,13 +10,12 @@ abigen!(Contract(
 ),);
 
 pub async fn deploy_limit_orders_contract(admin: &WalletUnlocked) -> LimitOrdersContract {
+    let storage = StorageConfiguration::default()
+        .set_storage_path(String::from("./out/debug/limit_orders-storage_slots.json"));
     let id = Contract::deploy(
         "./out/debug/limit_orders.bin",
         &admin,
-        TxParameters::default(),
-        StorageConfiguration::with_storage_path(Some(
-            "./out/debug/limit_orders-storage_slots.json".to_string(),
-        )),
+        DeployConfiguration::default().set_storage_configuration(storage),
     )
     .await
     .unwrap();
@@ -27,9 +26,7 @@ pub async fn deploy_limit_orders_contract(admin: &WalletUnlocked) -> LimitOrders
 pub mod limit_orders_abi_calls {
 
     use fuels::{
-        prelude::{CallParameters, BASE_ASSET_ID},
-        programs::call_response::FuelCallResponse,
-        types::ContractId,
+        prelude::CallParameters, programs::call_response::FuelCallResponse, types::ContractId,
     };
 
     use super::*;
@@ -135,15 +132,14 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract,
         amount: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-        let call_params = CallParameters::new(Some(amount), Some(BASE_ASSET_ID), None);
-        let tx_params = TxParameters::new(Some(100), Some(100_000_000), Some(0));
+        let call_params = CallParameters::default().set_amount(amount);
+        let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()
             .deposit()
             .call_params(call_params)
-            // .unwrap()
+            .unwrap()
             .tx_params(tx_params)
-            // .append_variable_outputs(1)
             .call()
             .await
     }
@@ -173,15 +169,18 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract,
         args: &CreatreOrderArguments,
     ) -> Result<FuelCallResponse<u64>, fuels::prelude::Error> {
-        let call_params = CallParameters::new(Some(args.amount0), Some(args.asset0), None);
-        let tx_params = TxParameters::new(Some(100), Some(100_000_000), Some(0));
+        let call_params = CallParameters::default()
+            .set_amount(args.amount0)
+            .set_asset_id(args.asset0);
+        let tx_params = TxParameters::default().set_gas_price(1);
+
         contract
             .methods()
             .create_order(args.asset1, args.amount1, args.matcher_fee)
             .tx_params(tx_params)
             .call_params(call_params)
-            // .unwrap()
-            .append_variable_outputs(1)
+            .unwrap()
+            // .append_variable_outputs(1)
             .call()
             .await
     }
@@ -190,7 +189,7 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract,
         id: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-        let tx_params = TxParameters::new(Some(100), Some(100_000_000), Some(0));
+        let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()
             .cancel_order(id)
@@ -210,16 +209,17 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract,
         args: &FulfillOrderArguments,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-        let call_params = CallParameters::new(Some(args.amount1), Some(args.asset1), None);
-        let tx_params = TxParameters::new(Some(100), Some(100_000_000), Some(0));
+        let call_params = CallParameters::default()
+            .set_amount(args.amount1)
+            .set_asset_id(args.asset1);
+        let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()
             .fulfill_order(args.id)
             .tx_params(tx_params)
             .call_params(call_params)
-            // .unwrap()
+            .unwrap()
             .append_variable_outputs(2)
-            .append_variable_outputs(1)
             .call()
             .await
     }
@@ -228,7 +228,7 @@ pub mod limit_orders_abi_calls {
         order_id_a: u64,
         order_id_b: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-        let tx_params = TxParameters::new(Some(100), Some(100_000_000), Some(0));
+        let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()
             .match_orders(order_id_a, order_id_b)

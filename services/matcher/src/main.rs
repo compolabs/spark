@@ -12,9 +12,9 @@ use utils::{
 };
 mod utils;
 
-const RPC: &str = "node-beta-2.fuel.network";
+const RPC: &str = "beta-3.fuel.network";
 const LIMIT_ORDERS_ADDRESS: &str =
-    "0x6fbaa125ecd73570eed403caafb2e242f7aacf89f54cf53ad510038d3518a0b8";
+    "0xd331d875edc2bbdcc04f5f087b80f227ad537306a5a8785dd2a56eb752006979";
 
 #[tokio::main]
 async fn main() {

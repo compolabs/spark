@@ -93,7 +93,7 @@ pub mod limit_orders_abi_calls {
         Option<Order>,
         Option<Order>,
         Option<Order>,
-    ) {
+    ) { 
         contract
             .methods()
             .orders(offset)
@@ -207,7 +207,7 @@ pub mod limit_orders_abi_calls {
         order_id_a: u64,
         order_id_b: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-        let tx_params = TxParameters::new(Some(100), Some(100_000_000), Some(0));
+        let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()
             .match_orders(order_id_a, order_id_b)
