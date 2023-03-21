@@ -5,7 +5,6 @@ license = "Apache-2.0"
 name = 'limit_orders'
 
 [dependencies]
-# oracle_abi = { path = "../../abi/oracle_abi" }
 token_abi = { path = "../abi/token_abi" }
 
 [constants]
