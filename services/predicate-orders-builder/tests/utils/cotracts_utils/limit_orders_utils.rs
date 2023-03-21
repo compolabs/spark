@@ -9,6 +9,7 @@ pub mod limit_orders_interactions {
 
     use super::*;
     use fuels::core::abi_encoder::UnresolvedBytes;
+    use fuels::prelude::ResourceFilter;
     use fuels::programs::call_response::FuelCallResponse;
     use fuels::programs::script_calls::ScriptCallHandler;
     use fuels::tx::{AssetId, Input, Output, TxPointer};
@@ -22,10 +23,22 @@ pub mod limit_orders_interactions {
         asset0: AssetId,
         amount0: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
+        // predicate
+        //     .receive(wallet, amount0, asset0, None)
+        //     .await
+        //     .unwrap();
+        //-------------------------------------------------------------------------------------
         let provider = wallet.get_provider().unwrap();
         // Get predicate coin to unlock
+        let filter = ResourceFilter {
+            from: predicate.address().clone(),
+            asset_id: asset0,
+            amount: 1,
+            ..Default::default()
+        };
         let predicate_coin = &provider
-            .get_spendable_resources(predicate.address(), asset0, 1)
+            // .get_spendable_resources(predicate.address(), asset0, 1)
+            .get_spendable_resources(filter)
             .await
             .unwrap()[0];
         let predicate_coin_utxo_id = match predicate_coin {
@@ -61,7 +74,7 @@ pub mod limit_orders_interactions {
         )
         .with_inputs(vec![input_predicate])
         .with_outputs(vec![output_offered_change])
-        .tx_params(TxParameters::new(Some(1), Some(10_000_000), None));
+        .tx_params(TxParameters::default().set_gas_price(1));
 
         script_call.call().await
     }
@@ -79,17 +92,27 @@ pub mod limit_orders_interactions {
 
         // ==================== BOB SIDE CALL ====================
         // Get predicate coin to unlock
-        let predicate_coin = &provider
-            .get_spendable_resources(predicate.address(), asset0, 1)
-            .await
-            .unwrap()[0];
+        let filter = ResourceFilter {
+            from: predicate.address().clone(),
+            asset_id: asset0,
+            amount: 1,
+            ..Default::default()
+        };
+        let predicate_coin = &provider.get_spendable_resources(filter).await.unwrap()[0];
         let predicate_coin_utxo_id = match predicate_coin {
             Resource::Coin(coin) => coin.utxo_id,
             _ => panic!(),
         };
         // Get other coin to spend
+        let filter = ResourceFilter {
+            from: wallet.address().clone(),
+            asset_id: asset1,
+            amount: 1,
+            ..Default::default()
+        };
         let swap_coin = &provider
-            .get_spendable_resources(wallet.address(), asset1, 1)
+            .get_spendable_resources(filter)
+            // .get_spendable_resources(wallet.address(), asset1, 1)
             .await
             .unwrap()[0];
         let (swap_coin_utxo_id, swap_coin_amount) = match swap_coin {
@@ -162,7 +185,7 @@ pub mod limit_orders_interactions {
             output_to_taker,
             output_asked_change,
         ])
-        .tx_params(TxParameters::new(None, Some(10_000_000), None));
+        .tx_params(TxParameters::default().set_gas_price(1));
 
         script_call.call().await
     }

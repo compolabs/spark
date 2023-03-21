@@ -2423,9 +2423,9 @@ dependencies = [
 
 [[package]]
 name = "fuels"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec9f85950c301889c074c3882ccb49fca1900f0d54a434fede12ea55d4583e12"
+checksum = "9eede2cde3dd4e8cba56ed5bf4412836d7be280e013e392b2756af99ffb9e714"
 dependencies = [
  "fuel-core",
  "fuel-core-client",
@@ -2440,9 +2440,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-code-gen"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7cfe362e48283fcb080c9f435fc1ac18aad34c3c3c91779cc99415862573faed"
+checksum = "96d03eee7fa041bb4da8cdecc84b81f1ab8e5810d67bcec0c090bdd58f07e955"
 dependencies = [
  "Inflector",
  "fuel-abi-types",
@@ -2457,9 +2457,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-core"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d846794076498a56c4fdf64e62852a2e183f4a50a70492a329f54fce3830e95c"
+checksum = "8fd7273ee45a548acbd95e67405809e4b1778f4973851c16633e75b902f0ea9e"
 dependencies = [
  "fuel-tx 0.26.1",
  "fuel-types 0.26.1",
@@ -2472,9 +2472,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-macros"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ddb21e9d6e680e910e07aaa0b5570e54b93416d68d84dcf01c4df245168bef23"
+checksum = "6107ffb7dda1051d1db5d1bc209a66d3c2911a8fc844cf3662ca4b705556b57a"
 dependencies = [
  "Inflector",
  "fuel-abi-types",
@@ -2491,9 +2491,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-programs"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e736f3c2186876f4f7741f9c390b32d22c9819196470ec875fca6c1cacd74e0"
+checksum = "57c1034d747824c089622ca9ec400dc44a7a7119d9caf001116d8befa441bd47"
 dependencies = [
  "bytes",
  "fuel-abi-types",
@@ -2520,9 +2520,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-signers"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "51eff88f45d0b813a9f44200d7bb14678a04c04e4d42f8cdd7e7b4e130ae4664"
+checksum = "862c60e598272158d3877896b1a47ae6109733f4538711a4d898c571a88aacb7"
 dependencies = [
  "async-trait",
  "bytes",
@@ -2548,9 +2548,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-test-helpers"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b022b5daebc2c9e07bf35e6c7d71bc377859225c985fa900cca406b22a594eb"
+checksum = "c51cb48e1a813b61d811f0811d9758e0f4527097b6a17fccf613ecc3595d3e4d"
 dependencies = [
  "fuel-core",
  "fuel-core-chain-config",
@@ -2559,8 +2559,6 @@ dependencies = [
  "fuel-tx 0.26.1",
  "fuel-types 0.26.1",
  "fuel-vm 0.26.1",
- "fuels-core",
- "fuels-programs",
  "fuels-signers",
  "fuels-types",
  "futures",
@@ -2577,9 +2575,9 @@ dependencies = [
 
 [[package]]
 name = "fuels-types"
-version = "0.37.1"
+version = "0.38.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b3328fa28eac1bd6925a50a9d925a448141d48a1c3cac812defbcee159087f4"
+checksum = "7e2ee9c34502c6427661beb51ee954b2c7c50e51a9bb518f2a7d512682cddd31"
 dependencies = [
  "bech32 0.9.1",
  "chrono",
