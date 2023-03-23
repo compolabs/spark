@@ -125,7 +125,7 @@ class OrdersStore {
       CONTRACT_ADDRESSES.limitOrders,
       wallet
     );
-    await this.fetchAllOrders();
+    await Promise.all([this.fetchAllOrders(), this.fetchTrades()]);
   };
   fetchAllOrders = async () => {
     let ordersAmount = await this.getOrdersAmount();
@@ -200,6 +200,16 @@ class OrdersStore {
         this.orders[i] = new Order(order);
       }
     });
+  };
+
+  tradesOffset = 0;
+  fetchTrades = async () => {
+    console.log("ok");
+    let trades = await this.limitOrdersContract?.functions
+      .trades(this.tradesOffset)
+      .get()
+      .then((res) => res.value);
+    console.log(trades);
   };
 
   getOrdersAmount = () =>
