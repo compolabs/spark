@@ -29,11 +29,12 @@ export const useFaucetVM = () => useVM(ctx);
 
 const faucetAmounts: Record<string, number> = {
   ETH: 0.5,
-  LINK: 1000,
-  UNI: 1000,
-  BTC: 1,
-  USDC: 10000,
-  COMP: 1000,
+  LINK: 50,
+  UNI: 50,
+  BTC: 0.01,
+  USDC: 300,
+  SWAY: 5,
+  COMP: 5,
 };
 
 class FaucetVM {
@@ -130,7 +131,6 @@ class FaucetVM {
   }
 
   mint = async (assetId?: string) => {
-    console.log("mint");
     if (assetId == null || this.alreadyMintedTokens.includes(assetId)) {
       console.log("return 1");
       return;

@@ -35,7 +35,7 @@ class AccountStore {
       }
     }
     this.updateAccountBalances().then();
-    setInterval(this.updateAccountBalances, 60 * 1000);
+    setInterval(this.updateAccountBalances, 10 * 1000);
     reaction(
       () => this.address,
       () => Promise.all([this.updateAccountBalances()])
@@ -133,7 +133,13 @@ class AccountStore {
   };
   disconnect = async () => {
     if (this.loginType === LOGIN_TYPE.FUEL_WALLET) {
-      await window.fuel.disconnect();
+      try {
+        await window.fuel.disconnect();
+      } catch (e) {
+        this.setAddress(null);
+        this.setMnemonicPhrase(null);
+        this.setLoginType(null);
+      }
     }
     this.setAddress(null);
     this.setMnemonicPhrase(null);
