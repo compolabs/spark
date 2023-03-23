@@ -4,13 +4,13 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.30.0
-  Forc version: 0.32.2
-  Fuel-Core version: 0.15.1
+  Fuels version: 0.35.0
+  Forc version: 0.35.3
+  Fuel-Core version: 0.17.3
 */
 
 import { Interface, Contract } from "fuels";
-import type { Provider, BaseWalletLocked, AbstractAddress } from "fuels";
+import type { Provider, Account, AbstractAddress } from "fuels";
 import type { LimitOrdersAbi, LimitOrdersAbiInterface } from "../LimitOrdersAbi";
 
 const _abi = {
@@ -511,7 +511,16 @@ const _abi = {
         "name": "",
         "type": 0,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -536,7 +545,20 @@ const _abi = {
         "name": "",
         "type": 19,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
       "inputs": [],
@@ -545,7 +567,20 @@ const _abi = {
         "name": "",
         "type": 0,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "payable",
+          "arguments": []
+        }
+      ]
     },
     {
       "inputs": [
@@ -560,7 +595,20 @@ const _abi = {
         "name": "",
         "type": 0,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -575,7 +623,15 @@ const _abi = {
         "name": "",
         "type": 19,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -595,7 +651,16 @@ const _abi = {
         "name": "",
         "type": 0,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -610,7 +675,15 @@ const _abi = {
         "name": "",
         "type": 17,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -625,7 +698,15 @@ const _abi = {
         "name": "",
         "type": 1,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     },
     {
       "inputs": [],
@@ -634,7 +715,15 @@ const _abi = {
         "name": "",
         "type": 19,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -649,7 +738,15 @@ const _abi = {
         "name": "",
         "type": 1,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -664,7 +761,15 @@ const _abi = {
         "name": "",
         "type": 2,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     },
     {
       "inputs": [
@@ -679,7 +784,16 @@ const _abi = {
         "name": "",
         "type": 0,
         "typeArguments": null
-      }
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
     }
   ],
   "loggedTypes": [
@@ -695,7 +809,7 @@ const _abi = {
       "logId": 1,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 10,
         "typeArguments": null
       }
     },
@@ -703,7 +817,7 @@ const _abi = {
       "logId": 2,
       "loggedType": {
         "name": "",
-        "type": 12,
+        "type": 8,
         "typeArguments": null
       }
     },
@@ -711,7 +825,7 @@ const _abi = {
       "logId": 3,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 12,
         "typeArguments": null
       }
     },
@@ -719,7 +833,7 @@ const _abi = {
       "logId": 4,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 14,
         "typeArguments": null
       }
     },
@@ -727,7 +841,7 @@ const _abi = {
       "logId": 5,
       "loggedType": {
         "name": "",
-        "type": 9,
+        "type": 10,
         "typeArguments": null
       }
     },
@@ -735,7 +849,7 @@ const _abi = {
       "logId": 6,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 9,
         "typeArguments": null
       }
     },
@@ -743,7 +857,7 @@ const _abi = {
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 12,
+        "type": 10,
         "typeArguments": null
       }
     },
@@ -751,7 +865,7 @@ const _abi = {
       "logId": 8,
       "loggedType": {
         "name": "",
-        "type": 9,
+        "type": 12,
         "typeArguments": null
       }
     },
@@ -759,7 +873,7 @@ const _abi = {
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 11,
+        "type": 9,
         "typeArguments": null
       }
     },
@@ -775,7 +889,7 @@ const _abi = {
       "logId": 11,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       }
     },
@@ -783,7 +897,7 @@ const _abi = {
       "logId": 12,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 13,
         "typeArguments": null
       }
     },
@@ -799,7 +913,7 @@ const _abi = {
       "logId": 14,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 14,
         "typeArguments": null
       }
     },
@@ -810,8 +924,18 @@ const _abi = {
         "type": 10,
         "typeArguments": null
       }
+    },
+    {
+      "logId": 16,
+      "loggedType": {
+        "name": "",
+        "type": 10,
+        "typeArguments": null
+      }
     }
-  ]
+  ],
+  "messagesTypes": [],
+  "configurables": []
 }
 
 export class LimitOrdersAbi__factory {
@@ -821,8 +945,8 @@ export class LimitOrdersAbi__factory {
   }
   static connect(
     id: string | AbstractAddress,
-    walletOrProvider: BaseWalletLocked | Provider
+    accountOrProvider: Account | Provider
   ): LimitOrdersAbi {
-    return new Contract(id, _abi, walletOrProvider) as unknown as LimitOrdersAbi
+    return new Contract(id, _abi, accountOrProvider) as unknown as LimitOrdersAbi
   }
 }

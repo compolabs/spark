@@ -1,6 +1,6 @@
-# Sway Network Limit Orders Smart Contract
+# Spark Limit Orders Smart Contract
 ## Version warning
-The master branch contains the latest work-in-progress version of Sway Network smart contract. It hasn't been audited and may contain severe security issues or may not work at all.
+The master branch contains the latest work-in-progress version of Spark smart contract. It hasn't been audited and may contain severe security issues or may not work at all.
 
 ## About
 

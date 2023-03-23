@@ -4,7 +4,7 @@ import { Column, Row } from "@components/Flex";
 import SizedBox from "@components/SizedBox";
 import Text from "@components/Text";
 import Button from "@components/Button";
-import { FAUCET_URL } from "@src/constants";
+import { FAUCET_URL, TOKENS_BY_SYMBOL } from "@src/constants";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
 import { observer } from "mobx-react-lite";
 import Table from "@components/Table";
@@ -18,6 +18,7 @@ const TokensFaucetTable: React.FC<IProps> = () => {
   const { accountStore, settingsStore } = useStores();
   const vm = useFaucetVM();
   const [tokens, setTokens] = useState<any>([]);
+  const ethBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.ETH);
   useMemo(() => {
     setTokens(
       vm.faucetTokens.map((t) => ({
@@ -58,6 +59,12 @@ const TokensFaucetTable: React.FC<IProps> = () => {
             return (
               <Button fixed disabled>
                 <Loading />
+              </Button>
+            );
+          if (ethBalance?.eq(0) && t.symbol !== "ETH")
+            return (
+              <Button fixed disabled>
+                Mint
               </Button>
             );
           if (vm.alreadyMintedTokens.includes(t.assetId))
