@@ -7,7 +7,7 @@ import { ReactComponent as CloseIcon } from "@src/assets/icons/close.svg";
 import CircularProgressbar from "@src/components/CircularProgressbar";
 
 interface IProps {
-  time: string;
+  time: string | number;
   pair: string;
   price: string;
   amount: string;
