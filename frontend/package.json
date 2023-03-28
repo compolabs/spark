@@ -71,7 +71,6 @@
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
     "react-circular-progressbar": "^2.1.0",
-    "react-dev-utils": "^12.0.1",
     "react-dom": "^18.2.0",
     "react-loading-skeleton": "^3.1.0",
     "react-perfect-scrollbar": "^1.5.8",
@@ -183,6 +182,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.191",
     "@types/lodash.debounce": "^4.0.7",
-    "gh-pages": "^4.0.0"
+    "gh-pages": "^4.0.0",
+    "react-dev-utils": "^12.0.1"
   }
 }
