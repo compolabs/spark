@@ -1,10 +1,11 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction } from "mobx";
 import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
+import { IToken, NODE_URL, ROUTES, TOKENS_LIST } from "@src/constants";
 import Balance from "@src/entities/Balance";
 import BN from "@src/utils/BN";
 import { Mnemonic } from "@fuel-ts/mnemonic";
+import { FuelProviderConfig } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
   FUEL_WALLET = "FUEL_WALLET",
@@ -44,8 +45,22 @@ class AccountStore {
   onFuelLoaded = () => {
     if (window.fuel == null) return;
     window?.fuel?.on(window?.fuel.events.currentAccount, this.handleAccEvent);
+    window?.fuel?.on(window?.fuel.events?.network, this.handleNetworkEvent);
   };
   handleAccEvent = (account: string) => this.setAddress(account);
+  handleNetworkEvent = (network: FuelProviderConfig) => {
+    if (network.url !== NODE_URL) {
+      this.rootStore.notificationStore.toast(
+        `Please change network url to Testnet Beta 3`,
+        {
+          link: NODE_URL,
+          linkTitle: "Go to Testnet Beta 3",
+          type: "error",
+          title: "Attention",
+        }
+      );
+    }
+  };
 
   public address: string | null = null;
   setAddress = (address: string | null) => (this.address = address);
@@ -117,6 +132,15 @@ class AccountStore {
     }
   };
   disconnect = async () => {
+    if (this.loginType === LOGIN_TYPE.FUEL_WALLET) {
+      try {
+        await window.fuel.disconnect();
+      } catch (e) {
+        this.setAddress(null);
+        this.setMnemonicPhrase(null);
+        this.setLoginType(null);
+      }
+    }
     this.setAddress(null);
     this.setMnemonicPhrase(null);
     this.setLoginType(null);
@@ -132,6 +156,18 @@ class AccountStore {
       return;
     }
     const account = await window.fuel.currentAccount();
+    const provider = await fuel.getProvider();
+    if (provider.url !== NODE_URL) {
+      this.rootStore.notificationStore.toast(
+        `Please change network url to beta 3`,
+        {
+          link: NODE_URL,
+          linkTitle: "Go to Beta 3",
+          type: "error",
+          title: "Attention",
+        }
+      );
+    }
     this.setAddress(account);
   };
 
@@ -161,7 +197,12 @@ class AccountStore {
     this.setMnemonicPhrase(mnemonic);
     this.rootStore.settingsStore.setLoginModalOpened(false);
     if (mnemonicPhrase == null) {
-      this.rootStore.notificationStore.toast("Go to faucet page to mint ETH");
+      this.rootStore.notificationStore.toast("First you need to mint ETH", {
+        link: `${window.location.origin}/#${ROUTES.FAUCET}`,
+        linkTitle: "Go to Faucet",
+        type: "info",
+        title: "Attention",
+      });
     }
   };
 
@@ -193,6 +234,10 @@ class AccountStore {
     if (this.address == null) return null;
     return { value: Address.fromString(this.address).toB256() };
   }
+
+  isWavesKeeperInstalled = false;
+  setWavesKeeperInstalled = (state: boolean) =>
+    (this.isWavesKeeperInstalled = state);
 }
 
 export default AccountStore;

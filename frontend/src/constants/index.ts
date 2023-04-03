@@ -20,19 +20,14 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
   {}
 );
 
-export const NODE_URL = "https://node-beta-2.fuel.network/graphql";
-export const EXPLORER_URL = "https://fuellabs.github.io/block-explorer-v2";
-export const FAUCET_URL = "https://faucet-beta-2.fuel.network";
-export const SEED =
-  "0x3c930502838f1da408d93665b78c4fc00b884c0128fff900d05b4def71a3da4335d029828ba0a62c26f3563bcd52b0deec84d1014373a1722610d411611c3771";
-export const SEED_ADDRESS =
-  "fuel1pln6n26y4e8lrgcaqctp8mddhvgzgt44pc9ychark93ks9mk7yxqr63nle";
+export const NODE_URL = "https://beta-3.fuel.network/graphql";
+export const EXPLORER_URL =
+  "https://fuellabs.github.io/block-explorer-v2/beta-3/#";
+export const FAUCET_URL = "https://faucet-beta-3.fuel.network";
 
 export const CONTRACT_ADDRESSES = {
   limitOrders:
-    "0x6fbaa125ecd73570eed403caafb2e242f7aacf89f54cf53ad510038d3518a0b8",
-  priceOracle:
-    "0x6fbaa125ecd73570eed403caafb2e242f7aacf89f54cf53ad510038d3518a0b8",
+    "0xd331d875edc2bbdcc04f5f087b80f227ad537306a5a8785dd2a56eb752006979",
 };
 
 export interface IToken {

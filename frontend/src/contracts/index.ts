@@ -4,12 +4,12 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.30.0
-  Forc version: 0.32.2
-  Fuel-Core version: 0.15.1
+  Fuels version: 0.35.0
+  Forc version: 0.35.3
+  Fuel-Core version: 0.17.3
 */
 export type { TokenAbi } from "./TokenAbi";
 export type { LimitOrdersAbi } from "./LimitOrdersAbi";
 
-export { TokenAbi__factory } from "./factories/TokenAbi__factory";
+export { TokenContractAbi__factory } from "./factories/TokenContractAbi__factory";
 export { LimitOrdersAbi__factory } from "./factories/LimitOrdersAbi__factory";

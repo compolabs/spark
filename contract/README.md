@@ -1,6 +1,6 @@
-# Sway Network Limit Orders Smart Contract
+# Spark Limit Orders Smart Contract
 ## Version warning
-The master branch contains the latest work-in-progress version of Sway Network smart contract. It hasn't been audited and may contain severe security issues or may not work at all.
+The master branch contains the latest work-in-progress version of Spark smart contract. It hasn't been audited and may contain severe security issues or may not work at all.
 
 ## About
 
@@ -104,4 +104,32 @@ enum Status {
     Canceled: (),
     Completed: (),
 }
+```
+
+
+## Setting up and running the tests using Fuel Rust SDK
+
+### Dependencies
+- [The latest stable Rust toolchain](https://fuellabs.github.io/sway/master/introduction/installation.html);
+- [forc and fuel-core binaries](https://fuellabs.github.io/sway/master/introduction/installation.html#installing-from-cargo).
+
+
+forc is Sway equivalent of Rust's cargo. fuel-core is a Fuel full node implementation.
+
+### Clone repo
+```
+git clone https://github.com/sway-gang/spark.git 
+cd spark
+```
+
+### Build contract
+
+```
+cd contract
+forc build
+```
+
+### Run tests
+```
+cargo test
 ```

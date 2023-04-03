@@ -5,6 +5,7 @@ import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { OrderOutput, StatusOutput } from "@src/contracts/LimitOrdersAbi";
 import BigNumber from "bignumber.js";
+import dayjs from "dayjs";
 
 export class Order {
   asset0: string;
@@ -44,12 +45,8 @@ export class Order {
   }
 
   get time() {
-    // console.log(this.timestamp);
-    // const time = new BN(this.timestamp).minus(Math.pow(2, 62)).minus(10);
-    // const time = new BN(this.timestamp).minus(new BN(2).pow(62)).minus(10);
-    // console.log(this.timestamp, time.toString());
-    // return dayjs(time.toString()).format("DD-MMM MM:HH");
-    return "";
+    const time = BigInt(this.timestamp) - BigInt(Math.pow(2, 62)) - BigInt(10);
+    return dayjs(Number(time) * 1000).format("DD-MMM MM:HH");
   }
 
   get fullFillPercent() {

@@ -1,7 +1,7 @@
 {
-  "name": "sway-network",
+  "name": "spark",
   "version": "0.1.0",
-  "homepage": "https://app.swaynetwork.xyz",
+  "homepage": "https://app.allspark.gg",
   "private": true,
   "dependencies": {
     "@babel/core": "^7.16.0",
@@ -10,8 +10,8 @@
     "@emotion/styled": "^11.10.6",
     "@fuel-ts/contract": "^0.31.0",
     "@fuel-ts/mnemonic": "^0.33.0",
-    "@fuel-ts/wallet": "^0.32.0",
-    "@fuel-wallet/sdk": "^0.6.0",
+    "@fuel-ts/wallet": "^0.35.0",
+    "@fuel-wallet/sdk": "^0.7.1",
     "@fuel-wallet/types": "^0.6.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^6.5.1",
@@ -45,7 +45,7 @@
     "eslint-webpack-plugin": "^3.1.1",
     "file-loader": "^6.2.0",
     "fs-extra": "^10.0.0",
-    "fuels": "^0.30.0",
+    "fuels": "^0.35.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-img": "^2.0.0",
     "identity-obj-proxy": "^3.0.0",
@@ -71,7 +71,6 @@
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
     "react-circular-progressbar": "^2.1.0",
-    "react-dev-utils": "^12.0.1",
     "react-dom": "^18.2.0",
     "react-loading-skeleton": "^3.1.0",
     "react-perfect-scrollbar": "^1.5.8",
@@ -183,6 +182,7 @@
   "devDependencies": {
     "@types/lodash": "^4.14.191",
     "@types/lodash.debounce": "^4.0.7",
-    "gh-pages": "^4.0.0"
+    "gh-pages": "^4.0.0",
+    "react-dev-utils": "^12.0.1"
   }
 }

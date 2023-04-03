@@ -1,8 +1,8 @@
 import styled from "@emotion/styled";
 import React from "react";
-import {Observer} from "mobx-react-lite";
+import { Observer } from "mobx-react-lite";
 import Layout from "@components/Layout";
-import {TradeVMProvider} from "@screens/Trade/TradeVm";
+import { TradeVMProvider } from "@screens/Trade/TradeVm";
 import OrderBook from "@screens/Trade/OrderBook";
 import PairsList from "@screens/Trade/PairsList";
 import Tables from "./Tables";
@@ -13,8 +13,7 @@ import OrderMobile from "@screens/Trade/Order/OrderMobile";
 import TradingViewWidget from "./Chart";
 import SizedBox from "@components/SizedBox";
 
-interface IProps {
-}
+interface IProps {}
 
 const Root = styled.div`
   width: 100%;
@@ -39,42 +38,42 @@ const Root = styled.div`
 `;
 
 const TradeImpl: React.FC<IProps> = () => {
-    const {width} = useWindowSize();
-    return (
-        <Layout>
-            <Observer>
-                {() => {
-                    return (
-                        <Root>
-                            {width && width >= 880 ? (
-                                <>
-                                    <OrderBook/>
-                                    <TradingViewWidget/>
-                                    <OrderDesktop/>
-                                    <PairsList/>
-                                    <Tables/>
-                                    <SizedBox height={1}/>
-                                </>
-                            ) : (
-                                <>
-                                    <MobileStats/>
-                                    <PairsList/>
-                                    <TradingViewWidget/>
-                                    <Tables/>
-                                    <OrderMobile/>
-                                </>
-                            )}
-                        </Root>
-                    );
-                }}
-            </Observer>
-        </Layout>
-    );
+  const { width } = useWindowSize();
+  return (
+    <Layout>
+      <Observer>
+        {() => {
+          return (
+            <Root>
+              {width && width >= 880 ? (
+                <>
+                  <OrderBook />
+                  <TradingViewWidget />
+                  <OrderDesktop />
+                  <PairsList />
+                  <Tables />
+                  <SizedBox height={1} />
+                </>
+              ) : (
+                <>
+                  <MobileStats />
+                  <PairsList />
+                  <TradingViewWidget />
+                  <Tables />
+                  <OrderMobile />
+                </>
+              )}
+            </Root>
+          );
+        }}
+      </Observer>
+    </Layout>
+  );
 };
 
 const Trade: React.FC<IProps> = () => (
-    <TradeVMProvider>
-        <TradeImpl/>
-    </TradeVMProvider>
+  <TradeVMProvider>
+    <TradeImpl />
+  </TradeVMProvider>
 );
 export default Trade;
