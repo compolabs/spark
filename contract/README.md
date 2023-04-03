@@ -112,6 +112,8 @@ enum Status {
 ### Dependencies
 - [The latest stable Rust toolchain](https://fuellabs.github.io/sway/master/introduction/installation.html);
 - [forc and fuel-core binaries](https://fuellabs.github.io/sway/master/introduction/installation.html#installing-from-cargo).
+
+
 forc is Sway equivalent of Rust's cargo. fuel-core is a Fuel full node implementation.
 
 ### Clone repo
