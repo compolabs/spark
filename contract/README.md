@@ -105,3 +105,29 @@ enum Status {
     Completed: (),
 }
 ```
+
+
+## Setting up and running the tests using Fuel Rust SDK
+
+### Dependencies
+- [The latest stable Rust toolchain](https://fuellabs.github.io/sway/master/introduction/installation.html);
+- [forc and fuel-core binaries](https://fuellabs.github.io/sway/master/introduction/installation.html#installing-from-cargo).
+forc is Sway equivalent of Rust's cargo. fuel-core is a Fuel full node implementation.
+
+### Clone repo
+```
+git clone https://github.com/sway-gang/spark.git 
+cd spark
+```
+
+### Build contract
+
+```
+cd contract
+forc build
+```
+
+### Run tests
+```
+cargo test
+```
