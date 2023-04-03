@@ -1,16 +1,21 @@
 use std::collections::HashMap;
 
+use fuels::prelude::{abigen, TxParameters};
 use fuels::tx::Address;
 
 use crate::utils::cotracts_utils::limit_orders_utils::{
     limit_orders_interactions, LimitOrdersPredicate,
 };
 use crate::utils::cotracts_utils::token_utils::{token_abi_calls, TokenContract};
+use crate::utils::local_tests_utils::scripts::transaction_inputs_outputs;
 use crate::utils::{get_balance, local_tests_utils::*, print_title};
 
 // Alice wants to exchange 1000 USDC for 200 UNI
 // Bob wants to exchange 200 UNI for 1000 USDC
-
+abigen!(Script(
+    name = "Script",
+    abi = "create_order_script/out/debug/create_order_script-abi.json"
+));
 #[tokio::test]
 async fn fulfill_order_test() {
     print_title("Fulfill Order Test");
@@ -33,19 +38,19 @@ async fn fulfill_order_test() {
     let uni = assets.get("UNI").unwrap();
     let uni_instance = TokenContract::new(uni.contract_id.into(), admin.clone());
 
-    let amount0 = 1000_000_000; //1000 USDC
+    let amount0 = 1_000_000_000; //1000 USDC
     let amount1 = 200_000_000_000; // 200 UNI
     println!("USDC AssetId (asset0) = {:?}", usdc.asset_id.to_string());
     println!("UNI AssetId (asset1) = {:?}", uni.asset_id.to_string());
-    println!("amount0 = {:?} USDC", amount0 / 1000_000);
-    println!("amount1 = {:?} UNI", amount1 / 1000_000_000);
+    println!("amount0 = {:?} USDC", amount0 / 1_000_000);
+    println!("amount1 = {:?} UNI", amount1 / 1_000_000_000);
     println!("");
 
     token_abi_calls::mint_and_transfer(&usdc_instance, amount0, alice_address).await;
     token_abi_calls::mint_and_transfer(&uni_instance, amount1, bob_address).await;
 
-    println!("Alice minting {:?} USDC", amount0 / 1000_000);
-    println!("Bob minting {:?} UNI", amount1 / 1000_000_000);
+    println!("Alice minting {:?} USDC", amount0 / 1_000_000);
+    println!("Bob minting {:?} UNI", amount1 / 1_000_000_000);
     println!("");
     //--------------- PREDICATE ---------
     let mut req = HashMap::new();
@@ -82,8 +87,20 @@ async fn fulfill_order_test() {
 
     // ==================== ALICE CREATES THE ORDER (TRANSFER) ====================
     // Alice transfer amount0 of  usdc.asset_id to the predicate root
-    predicate
-        .receive(&alice, amount0, usdc.asset_id, None)
+    assert!(alice.get_asset_balance(&usdc.asset_id).await.unwrap() == amount0);
+    let bin_path = "create_order_script/out/debug/create_order_script.bin";
+    let instance = Script::new(alice.clone(), bin_path);
+
+    let assets = vec![usdc.asset_id];
+    let transaction_parameters =
+        transaction_inputs_outputs(&alice, &provider, &assets, Some(&vec![amount0])).await;
+
+    instance
+        .main(amount0, usdc.contract_id, predicate.address().into())
+        .tx_params(TxParameters::default().set_gas_price(1))
+        .with_inputs(transaction_parameters.inputs)
+        .with_outputs(transaction_parameters.outputs)
+        .call()
         .await
         .unwrap();
 
@@ -113,7 +130,7 @@ async fn fulfill_order_test() {
     .await
     .unwrap();
 
-    println!("Bob transfers 200 USDC to predicate, thus closing the order\n");
+    println!("Bob transfers 200 UNI to predicate, thus closing the order\n");
 
     let predicate_balance = get_balance(provider, predicate.address(), usdc.asset_id).await;
     let taker_asked_token_balance = get_balance(provider, bob.address(), uni.asset_id).await;
