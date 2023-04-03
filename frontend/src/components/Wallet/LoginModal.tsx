@@ -37,11 +37,11 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
     setErr(false);
   };
   const handleLoginWithSeed = () => {
-    const valid = isValidMnemonic(seed);
-    if (!valid) {
-      setErr(true);
-      return;
-    }
+    // const valid = isValidMnemonic(seed);
+    // if (!valid) {
+    //   setErr(true);
+    //   return;
+    // }
     onLogin(LOGIN_TYPE.PASTE_SEED, seed);
     setImportInputOpened(false);
     setSeed("");
@@ -56,7 +56,7 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
       onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
     },
     {
-      title: "Paste seed",
+      title: "Paste private key",
       type: LOGIN_TYPE.PASTE_SEED,
       isActive: true,
       onClick: () => setImportInputOpened(true),

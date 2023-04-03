@@ -1,0 +1,21 @@
+[[package]]
+name = 'core'
+source = 'path+from-root-894BF76E6DA2FFD3'
+
+[[package]]
+name = 'std'
+source = 'git+https://github.com/fuellabs/sway?tag=v0.35.3#5d2b10bd83791d2eaff04206dbd45bfdd9cf23ff'
+dependencies = ['core']
+
+[[package]]
+name = 'token_abi'
+source = 'path+from-root-3E94B027267B5600'
+dependencies = ['std']
+
+[[package]]
+name = 'token_contract'
+source = 'member'
+dependencies = [
+    'std',
+    'token_abi',
+]

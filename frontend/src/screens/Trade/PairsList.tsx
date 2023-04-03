@@ -48,26 +48,32 @@ const allPairs = [
   {
     token0: TOKENS_BY_SYMBOL.UNI,
     token1: TOKENS_BY_SYMBOL.BTC,
-    lastPrice: "0.00",
-    change: "2.0",
+    lastPrice: "",
+    change: "",
   },
   {
     token0: TOKENS_BY_SYMBOL.ETH,
     token1: TOKENS_BY_SYMBOL.BTC,
-    lastPrice: "0.00",
-    change: "2.0",
+    lastPrice: "",
+    change: "",
   },
   {
     token0: TOKENS_BY_SYMBOL.ETH,
     token1: TOKENS_BY_SYMBOL.USDC,
-    lastPrice: "0.00",
-    change: "2.0",
+    lastPrice: "",
+    change: "",
   },
   {
     token0: TOKENS_BY_SYMBOL.BTC,
     token1: TOKENS_BY_SYMBOL.USDC,
-    lastPrice: "0.00",
-    change: "2.0",
+    lastPrice: "",
+    change: "",
+  },
+  {
+    token0: TOKENS_BY_SYMBOL.UNI,
+    token1: TOKENS_BY_SYMBOL.USDC,
+    lastPrice: "",
+    change: "",
   },
 ];
 const PairsList: React.FC<IProps> = () => {

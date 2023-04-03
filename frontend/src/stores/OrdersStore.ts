@@ -99,7 +99,7 @@ class OrdersStore {
     this.init().then(() => this.setInitialized(true));
     setInterval(
       () => Promise.all([this.updateActiveOrders(), this.fetchNewOrders()]),
-      10000
+      5000
     );
     reaction(
       () => this.rootStore.accountStore.address,

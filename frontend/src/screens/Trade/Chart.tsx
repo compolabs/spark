@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
-import { useTradeVM } from "@screens/Trade/TradeVm";
+// import { AdvancedRealTimeChart } from "react-ts-tradingview-widgets";
+// import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
 
 interface IProps {}
@@ -23,16 +23,16 @@ const Root = styled.div`
 `;
 
 const Chart: React.FC<IProps> = () => {
-  const vm = useTradeVM();
+  // const vm = useTradeVM();
   return (
     <Root>
-      <AdvancedRealTimeChart
+      {/* <AdvancedRealTimeChart
         symbol={`${vm.token0.symbol}${vm.token1.symbol}`}
         interval="1"
         style="8"
         theme="dark"
         autosize
-      />
+      /> */}
     </Root>
   );
 };

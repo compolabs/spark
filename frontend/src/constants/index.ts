@@ -20,7 +20,8 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
   {}
 );
 
-export const NODE_URL = "https://beta-3.fuel.network/graphql";
+// export const NODE_URL = "https://beta-3.fuel.network/graphql";
+export const NODE_URL = "http://127.0.0.1:4000/graphql";
 export const EXPLORER_URL =
   "https://fuellabs.github.io/block-explorer-v2/beta-3/#";
 export const FAUCET_URL = "https://faucet-beta-3.fuel.network";

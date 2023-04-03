@@ -188,22 +188,23 @@ class AccountStore {
     return this.address != null;
   }
 
-  loginWithMnemonicPhrase = (mnemonicPhrase?: string) => {
-    const mnemonic =
-      mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
-    const seed = Mnemonic.mnemonicToSeed(mnemonic);
-    const wallet = Wallet.fromPrivateKey(seed, NODE_URL);
+  loginWithMnemonicPhrase = (mnemonic?: string) => {
+    if (mnemonic == null) return;
+    // const mnemonic =
+    //   mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
+    // const seed = Mnemonic.mnemonicToSeed(mnemonic);
+    const wallet = Wallet.fromPrivateKey(mnemonic, NODE_URL);
     this.setAddress(wallet.address.toAddress());
     this.setMnemonicPhrase(mnemonic);
     this.rootStore.settingsStore.setLoginModalOpened(false);
-    if (mnemonicPhrase == null) {
-      this.rootStore.notificationStore.toast("First you need to mint ETH", {
-        link: `${window.location.origin}/#${ROUTES.FAUCET}`,
-        linkTitle: "Go to Faucet",
-        type: "info",
-        title: "Attention",
-      });
-    }
+    // if (mnemonicPhrase == null) {
+    //   this.rootStore.notificationStore.toast("First you need to mint ETH", {
+    //     link: `${window.location.origin}/#${ROUTES.FAUCET}`,
+    //     linkTitle: "Go to Faucet",
+    //     type: "info",
+    //     title: "Attention",
+    //   });
+    // }
   };
 
   getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
@@ -214,8 +215,11 @@ class AccountStore {
       case LOGIN_TYPE.GENERATE_FROM_SEED:
       case LOGIN_TYPE.PASTE_SEED:
         if (this.mnemonicPhrase == null) return null;
-        const seed = Mnemonic.mnemonicToSeed(this.mnemonicPhrase);
-        return Wallet.fromPrivateKey(seed, new Provider(NODE_URL));
+        // const seed = Mnemonic.mnemonicToSeed(this.mnemonicPhrase);
+        return Wallet.fromPrivateKey(
+          this.mnemonicPhrase,
+          new Provider(NODE_URL)
+        );
     }
     return null;
   };
