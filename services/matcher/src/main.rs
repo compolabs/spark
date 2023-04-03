@@ -4,7 +4,7 @@ use crate::utils::{
 };
 use dotenv::dotenv;
 use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
-use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
+// use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
 use std::{env, fs, str::FromStr, thread::sleep, time::Duration};
 use utils::{
     limit_orders_utils::{LimitOrdersContract, Order, Status},
@@ -12,7 +12,8 @@ use utils::{
 };
 mod utils;
 
-const RPC: &str = "beta-3.fuel.network";
+// const RPC: &str = "beta-3.fuel.network";
+const RPC: &str = "127.0.0.1:4000";
 const LIMIT_ORDERS_ADDRESS: &str =
     "0xd331d875edc2bbdcc04f5f087b80f227ad537306a5a8785dd2a56eb752006979";
 
@@ -40,13 +41,13 @@ async fn main() {
     let tokens = tokens.as_array().unwrap();
 
     //discord
-    let token = env::var("DISCORD_TOKEN").expect("❌ Expected a token in the environment");
-    let client = Client::builder(&token, GatewayIntents::default())
-        .await
-        .expect("Err creating client");
-    let channel_id = env::var("CHANNEL_ID").expect("❌ Expected a channel id in the environment");
+    // let token = env::var("DISCORD_TOKEN").expect("❌ Expected a token in the environment");
+    // let client = Client::builder(&token, GatewayIntents::default())
+    //     .await
+    //     .expect("Err creating client");
+    // let channel_id = env::var("CHANNEL_ID").expect("❌ Expected a channel id in the environment");
 
-    let channel = ChannelId(channel_id.parse::<u64>().unwrap());
+    // let channel = ChannelId(channel_id.parse::<u64>().unwrap());
 
     print_swaygang_sign("✅ Matcher is alive");
     loop {
@@ -104,10 +105,11 @@ async fn main() {
                             order_b.amount_0 as f64 / 10f64.powf(b_decimals),
                             order_b.amount_1 as f64 / 10f64.powf(a_decimals),
                         );
-                        channel
-                            .say(client.cache_and_http.http.clone(), msg)
-                            .await
-                            .unwrap();
+                        // channel
+                        //     .say(client.cache_and_http.http.clone(), msg)
+                        //     .await
+                        //     .unwrap();
+                        println!("{msg}");
                         continue 'a_order_cycle;
                     } else {
                         println!(
