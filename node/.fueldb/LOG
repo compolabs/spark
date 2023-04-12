@@ -2044,3 +2044,5 @@ Block cache entry stats(count,size,portion): Misc(1,0.00 KB,0%)
 ** File Read Latency Histogram By Level [column-19] **
 
 ** File Read Latency Histogram By Level [column-20] **
+2023/04/12-22:29:57.499852 4364731776 [db/db_impl/db_impl.cc:480] Shutdown: canceling all background work
+2023/04/12-22:29:57.501354 4364731776 [db/db_impl/db_impl.cc:710] Shutdown complete
