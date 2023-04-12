@@ -4,8 +4,8 @@ import BN from "@src/utils/BN";
 import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { OrderOutput, StatusOutput } from "@src/contracts/LimitOrdersAbi";
-import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
+import { orderService } from "@src/services";
 
 export class Order {
   asset0: string;
@@ -18,8 +18,8 @@ export class Order {
   owner: string;
   id: string;
   timestamp: string;
-  matcher_fee: BN;
-  matcher_fee_used: BN;
+  // matcher_fee: BN;
+  // matcher_fee_used: BN;
 
   constructor(orderOutput: OrderOutput) {
     this.id = orderOutput.id.toString();
@@ -32,8 +32,8 @@ export class Order {
     this.fulfilled1 = new BN(orderOutput.fulfilled1.toString());
     this.owner = orderOutput.owner.value;
     this.timestamp = orderOutput.timestamp.toString();
-    this.matcher_fee = new BN(orderOutput.matcher_fee.toString());
-    this.matcher_fee_used = new BN(orderOutput.matcher_fee_used.toString());
+    // this.matcher_fee = new BN(orderOutput.matcher_fee.toString());
+    // this.matcher_fee_used = new BN(orderOutput.matcher_fee_used.toString());
   }
 
   get token0() {
@@ -97,17 +97,17 @@ class OrdersStore {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.init().then(() => this.setInitialized(true));
-    setInterval(
-      () => Promise.all([this.updateActiveOrders(), this.fetchNewOrders()]),
-      10000
-    );
+    // setInterval(
+    //   () => Promise.all([this.updateActiveOrders(), this.fetchNewOrders()]),
+    //   10000
+    // );
     reaction(
       () => this.rootStore.accountStore.address,
       () =>
         Promise.all([
           this.init(),
-          this.updateActiveOrders(),
-          this.fetchNewOrders(),
+          // this.updateActiveOrders(),
+          // this.fetchNewOrders(),
         ])
     );
   }
@@ -124,80 +124,86 @@ class OrdersStore {
     );
     await this.fetchAllOrders();
   };
+
   fetchAllOrders = async () => {
-    let ordersAmount = await this.getOrdersAmount();
-    if (this.limitOrdersContract === null || ordersAmount == null) return;
-    let functions = this.limitOrdersContract.functions;
-    const length = new BN(ordersAmount.toString())
-      .div(10)
-      .toDecimalPlaces(0, BigNumber.ROUND_CEIL)
-      .toNumber();
-    let chunks = await Promise.all(
-      Array.from({ length }, (_, i) =>
-        functions
-          .orders(i * 10)
-          .get()
-          .then((res) =>
-            res.value
-              .filter((v) => v != null)
-              .map((v) => new Order(v as OrderOutput))
-          )
-      )
-    );
-    this.orders = chunks.flat();
+    const v = await orderService.getOrders();
+    console.log("orders", v);
   };
 
-  fetchNewOrders = async () => {
-    let ordersAmount = await this.getOrdersAmount();
-    let functions = this.limitOrdersContract?.functions;
-    let ordersLength = this.orders.length;
-    if (functions == null || ordersAmount == null || ordersLength === 0) return;
-    let firstOrderId = this.orders[0].id;
-    let length = new BN(ordersAmount.toString())
-      .minus(ordersLength)
-      .div(10)
-      .toDecimalPlaces(0, BigNumber.ROUND_CEIL)
-      .toNumber();
-    if (length === 0) return;
-    let chunks = await Promise.all(
-      Array.from({ length }, (_, i) =>
-        functions!
-          .orders(i * 10)
-          .get()
-          .then((res) =>
-            res.value
-              .filter((v) => v != null && v.id.gt(firstOrderId))
-              .map((v) => new Order(v as OrderOutput))
-          )
-      )
-    );
-    this.orders = [...chunks.flat(), ...this.orders];
-  };
+  // fetchAllOrders = async () => {
+  //   let ordersAmount = await this.getOrdersAmount();
+  //   if (this.limitOrdersContract === null || ordersAmount == null) return;
+  //   let functions = this.limitOrdersContract.functions;
+  //   const length = new BN(ordersAmount.toString())
+  //     .div(10)
+  //     .toDecimalPlaces(0, BigNumber.ROUND_CEIL)
+  //     .toNumber();
+  //   let chunks = await Promise.all(
+  //     Array.from({ length }, (_, i) =>
+  //       functions
+  //         .orders(i * 10)
+  //         .get()
+  //         .then((res) =>
+  //           res.value
+  //             .filter((v) => v != null)
+  //             .map((v) => new Order(v as OrderOutput))
+  //         )
+  //     )
+  //   );
+  //   this.orders = chunks.flat();
+  // };
+  //
+  // fetchNewOrders = async () => {
+  //   let ordersAmount = await this.getOrdersAmount();
+  //   let functions = this.limitOrdersContract?.functions;
+  //   let ordersLength = this.orders.length;
+  //   if (functions == null || ordersAmount == null || ordersLength === 0) return;
+  //   let firstOrderId = this.orders[0].id;
+  //   let length = new BN(ordersAmount.toString())
+  //     .minus(ordersLength)
+  //     .div(10)
+  //     .toDecimalPlaces(0, BigNumber.ROUND_CEIL)
+  //     .toNumber();
+  //   if (length === 0) return;
+  //   let chunks = await Promise.all(
+  //     Array.from({ length }, (_, i) =>
+  //       functions!
+  //         .orders(i * 10)
+  //         .get()
+  //         .then((res) =>
+  //           res.value
+  //             .filter((v) => v != null && v.id.gt(firstOrderId))
+  //             .map((v) => new Order(v as OrderOutput))
+  //         )
+  //     )
+  //   );
+  //   this.orders = [...chunks.flat(), ...this.orders];
+  // };
 
-  updateActiveOrders = async () => {
-    let functions = this.limitOrdersContract?.functions;
-    if (functions == null) return;
-    const activeOrders = this.orders.filter((o) => o.status.Active != null);
-    const chunks = sliceIntoChunks(activeOrders, 10).map((chunk) =>
-      chunk
-        .map((o) => o.id.toString())
-        .concat(Array(10 - chunk.length).fill("0"))
-    );
-    let res = await Promise.all(
-      chunks.map((chunk) =>
-        functions
-          ?.orders_by_id(chunk as any)
-          .get()
-          .then((res) => res.value)
-      )
-    );
-    res.flat().forEach((order) => {
-      if (order != null) {
-        const i = this.orders.findIndex((o) => o.id === order.id.toString());
-        this.orders[i] = new Order(order);
-      }
-    });
-  };
+  // updateActiveOrders = async () => {
+  //   let functions = this.limitOrdersContract?.functions;
+  //   if (functions == null) return;
+  //   const activeOrders = this.orders.filter((o) => o.status.Active != null);
+  //   const chunks = sliceIntoChunks(activeOrders, 10).map((chunk) =>
+  //     chunk
+  //       .map((o) => o.id.toString())
+  //       .concat(Array(10 - chunk.length).fill("0"))
+  //   );
+  //   let res = await Promise.all(
+  //     chunks.map((chunk) =>
+  //       functions
+  //         ?.orders_by_id(chunk as any)
+  //         .get()
+  //         .then((res) => res.value)
+  //     )
+  //   );
+  //   res.flat().forEach((order) => {
+  //     if (order != null) {
+  //       const i = this.orders.findIndex((o) => o.id === order.id.toString());
+  //       this.orders[i] = new Order(order);
+  //     }
+  //   });
+  // };
 
   getOrdersAmount = () =>
     this.limitOrdersContract?.functions

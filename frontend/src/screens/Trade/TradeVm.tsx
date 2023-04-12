@@ -10,6 +10,7 @@ import {
 } from "@src/constants";
 import BN from "@src/utils/BN";
 import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
+import { orderService } from "@src/services";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -157,15 +158,26 @@ class TradeVm {
   }
 
   createOrder = async (action: OrderAction) => {
+    console.log("createOrder");
     const { accountStore } = this.rootStore;
-    if (accountStore.address == null) return;
+    if (accountStore.address == null) {
+      console.log("return 1");
+      return;
+    }
     const wallet = await accountStore.getWallet();
-    if (wallet == null) return;
+    if (wallet == null) {
+      console.log("return wallet");
+      return;
+    }
     const limitOrdersContract = LimitOrdersAbi__factory.connect(
       CONTRACT_ADDRESSES.limitOrders,
       wallet
     );
-    if (limitOrdersContract == null) return;
+    console.log("limitOrdersContract", limitOrdersContract);
+    if (limitOrdersContract == null) {
+      console.log("return 2");
+      return;
+    }
     let token0 = null;
     let token1 = null;
     let amount0 = null;
@@ -182,25 +194,45 @@ class TradeVm {
       amount0 = this.sellAmount.toString();
       amount1 = this.sellTotal.toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
+    if (
+      token0 == null ||
+      token1 == null ||
+      amount0 == null ||
+      amount1 == null
+    ) {
+      console.log("return 3");
       return;
+    }
 
     this.setLoading(true);
     try {
       await this.deposit(limitOrdersContract);
-      await limitOrdersContract.functions
+      const txResult = await limitOrdersContract.functions
         .create_order({ value: token1 }, amount1, this.matcherFee)
         .callParams({ forward: { amount: amount0, assetId: token0 } })
         .txParams({ gasPrice: 1 })
-        .call()
-        .then(
-          ({ transactionResult }) =>
-            transactionResult &&
-            this.notifyThatActionIsSuccessful(
-              "Order has been placed",
-              transactionResult.transactionId ?? ""
-            )
-        );
+        .call();
+
+      if (txResult.transactionResult.transactionId != null) {
+        const order = orderService.createOrder({
+          id: txResult.transactionResult.transactionId,
+          owner: this.rootStore.accountStore.address ?? "",
+          asset0: this.assetId0,
+          amount0,
+          asset1: this.assetId1,
+          amount1,
+        });
+        console.log(order);
+      }
+
+      // .then(
+      //   ({ transactionResult }) =>
+      //     transactionResult &&
+      //     this.notifyThatActionIsSuccessful(
+      //       "Order has been placed",
+      //       transactionResult.transactionId ?? ""
+      //     )
+      // );
     } catch (e) {
       const error = JSON.parse(JSON.stringify(e)).toString();
       this.rootStore.notificationStore.toast(error.error, {
@@ -209,10 +241,10 @@ class TradeVm {
       });
       console.error(e);
     } finally {
-      await Promise.all([
-        this.rootStore.ordersStore.updateActiveOrders(),
-        this.rootStore.ordersStore.fetchNewOrders(),
-      ]);
+      // await Promise.all([
+      //   this.rootStore.ordersStore.updateActiveOrders(),
+      //   this.rootStore.ordersStore.fetchNewOrders(),
+      // ]);
       this.setLoading(false);
     }
   };
