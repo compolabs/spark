@@ -6,6 +6,7 @@ import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { OrderOutput, StatusOutput } from "@src/contracts/LimitOrdersAbi";
 import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
+import { log } from "console";
 
 export class Order {
   asset0: string;
@@ -118,6 +119,7 @@ class OrdersStore {
       this.setInitialized(true);
       return;
     }
+    console.log(CONTRACT_ADDRESSES.limitOrders);
     this.limitOrdersContract = LimitOrdersAbi__factory.connect(
       CONTRACT_ADDRESSES.limitOrders,
       wallet

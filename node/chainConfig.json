@@ -12,18 +12,18 @@
     "initial_state": {
       "coins": [
         {
-          "owner": "0x94ffcc53b892684acefaebc8a3d4a595e528a8cf664eeb3ef36f1020b0809d0d",
+          "owner": "0x2ce05bde9ada2d2c58b5eb9f08be34df19375d618626c324f75dfdbd226c8d88",
           "amount": "0xFFFFFFFFFFFFFFFF",
           "asset_id": "0x0000000000000000000000000000000000000000000000000000000000000000"
         },
         {
-          "owner": "0x80d5e88c2b23ec2be6b2e76f3499a1a2755bb2773363785111a719513fb57b8e",
-          "amount": "0xFFFFFFFFFFFFFFFF",
+          "owner": "0xccc4f9249536cf89ab0f31bb52fa06c00ea0387dcac5830924ecf56f2dded3a5",
+          "amount": "0x00000000FFFFFFFF",
           "asset_id": "0x0000000000000000000000000000000000000000000000000000000000000000"
         },
         {
-          "owner": "0xf13c949256d0e119fecaec414ea452f21f9dc1870fb6262ff53b37c32cab4749",
-          "amount": "0xFFFFFFFFFFFFFFFF",
+          "owner": "0x330e6922460257edbaac821df96a555bc745041c97ff5411ec83f2b29f471c27",
+          "amount": "0x00000000FFFFFFFF",
           "asset_id": "0x0000000000000000000000000000000000000000000000000000000000000000"
         }
       ]

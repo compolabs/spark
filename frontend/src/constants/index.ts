@@ -28,7 +28,7 @@ export const FAUCET_URL = "https://faucet-beta-3.fuel.network";
 
 export const CONTRACT_ADDRESSES = {
   limitOrders:
-    "0xd331d875edc2bbdcc04f5f087b80f227ad537306a5a8785dd2a56eb752006979",
+    "0xe4d7a3e894d153794293b245bc6f78022bfbd1e77352debaeb39263d0056858d",
 };
 
 export interface IToken {

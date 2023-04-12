@@ -1,4 +1,4 @@
-use std::io::Write;
+use std::{io::Write, str::FromStr};
 
 use dotenv::dotenv;
 use fuels::{prelude::*, types::SizedAsciiString};
@@ -81,6 +81,8 @@ async fn deploy_token_contract(mut deploy_config: DeployConfig) {
     };
 
     let wallet = WalletUnlocked::new_from_private_key(secret.parse().unwrap(), Some(provider));
+
+    println!("address = {:?}", wallet.address());
 
     // let mut rng = rand::thread_rng();
     // let salt = rng.gen::<[u8; 32]>();

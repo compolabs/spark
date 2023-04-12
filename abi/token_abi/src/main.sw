@@ -1,4 +1,4 @@
-library token_abi;
+library;
 
 abi Token {
     // Initialize contract

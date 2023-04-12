@@ -6,7 +6,7 @@ name = "tests"
 version = "0.0.0"
 
 [dev-dependencies]
-fuels = { version = "0.38.1", features = ["fuel-core-lib"] }
+fuels = { version = "0.39", features = ["fuel-core-lib"] }
 tokio = { version = "1.12", features = ["rt", "macros"] }
 
 
