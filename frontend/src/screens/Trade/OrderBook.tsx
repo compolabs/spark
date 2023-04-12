@@ -79,7 +79,8 @@ const OrderBook: React.FC<IProps> = () => {
       if (a.price == null && b.price != null) return 1;
       if (a.price == null && b.price == null) return -1;
       return a.price!.lt(b.price!) ? 1 : -1;
-    });
+    })
+    .slice(orderFilter === 0 ? -12 : -25);
 
   const sellOrders = activeOrdersForCurrentPair
     .filter((o) => o.asset0 === vm.assetId1)
@@ -88,7 +89,8 @@ const OrderBook: React.FC<IProps> = () => {
       if (a.reversePrice == null && b.reversePrice != null) return 1;
       if (a.reversePrice == null && b.reversePrice == null) return -1;
       return a.reversePrice!.lt(b.reversePrice!) ? -1 : 1;
-    });
+    })
+    .slice(orderFilter === 0 ? -12 : -25);
 
   const filters = [sellAndBuy, buy, sell];
   const columns = [
