@@ -31,7 +31,8 @@ const OrderHistory: React.FC<IProps> = () => {
   const { ordersStore, accountStore } = useStores();
 
   const userOrders = ordersStore.orders
-    .filter((o) => o.status.Active == null)
+    // .filter((o) => o.status.Active == null)
+    .filter((o) => o.status === "Active")
     .filter((o) => o.owner === accountStore.ethFormatWallet);
 
   const columns = [

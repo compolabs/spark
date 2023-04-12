@@ -206,24 +206,39 @@ class TradeVm {
 
     this.setLoading(true);
     try {
-      await this.deposit(limitOrdersContract);
-      const txResult = await limitOrdersContract.functions
-        .create_order({ value: token1 }, amount1, this.matcherFee)
-        .callParams({ forward: { amount: amount0, assetId: token0 } })
-        .txParams({ gasPrice: 1 })
-        .call();
+      // await this.deposit(limitOrdersContract);
+      // const txResult = await limitOrdersContract.functions
+      //   .create_order({ value: token1 }, amount1, this.matcherFee)
+      //   .callParams({ forward: { amount: amount0, assetId: token0 } })
+      //   .txParams({ gasPrice: 1 })
+      //   .call();
 
-      if (txResult.transactionResult.transactionId != null) {
-        const order = orderService.createOrder({
-          id: txResult.transactionResult.transactionId,
-          owner: this.rootStore.accountStore.address ?? "",
-          asset0: this.assetId0,
-          amount0,
-          asset1: this.assetId1,
-          amount1,
-        });
-        console.log(order);
-      }
+      const order = orderService.createOrder({
+        id: "1",
+        owner: this.rootStore.accountStore.address ?? "",
+        asset0: this.assetId0,
+        amount0,
+        asset1: this.assetId1,
+        amount1,
+        timestamp: "",
+      });
+
+      // if (txResult.transactionResult.transactionId != null) {
+      //   const order = orderService.createOrder({
+      //     id: txResult.transactionResult.transactionId,
+      //     owner: this.rootStore.accountStore.address ?? "",
+      //     asset0: this.assetId0,
+      //     amount0,
+      //     asset1: this.assetId1,
+      //     amount1,
+      //     timestamp: "",
+      //   });
+      //   this.notifyThatActionIsSuccessful(
+      //     "Order has been placed",
+      //     txResult.transactionResult.transactionId ?? ""
+      //   );
+      //   console.log(order);
+      // }
 
       // .then(
       //   ({ transactionResult }) =>

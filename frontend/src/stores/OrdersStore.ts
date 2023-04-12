@@ -6,13 +6,15 @@ import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { OrderOutput, StatusOutput } from "@src/contracts/LimitOrdersAbi";
 import dayjs from "dayjs";
 import { orderService } from "@src/services";
+import { IOrder } from "@src/services/orderService";
 
 export class Order {
   asset0: string;
   amount0: BN;
   asset1: string;
   amount1: BN;
-  status: StatusOutput;
+  // status: StatusOutput;
+  status: string;
   fulfilled0: BN;
   fulfilled1: BN;
   owner: string;
@@ -21,17 +23,29 @@ export class Order {
   // matcher_fee: BN;
   // matcher_fee_used: BN;
 
-  constructor(orderOutput: OrderOutput) {
+  // constructor(orderOutput: OrderOutput) {
+  constructor(orderOutput: IOrder) {
     this.id = orderOutput.id.toString();
-    this.asset0 = orderOutput.asset0.value;
+    this.asset0 = orderOutput.asset0;
     this.amount0 = new BN(orderOutput.amount0.toString());
-    this.asset1 = orderOutput.asset1.value;
+    this.asset1 = orderOutput.asset1;
     this.amount1 = new BN(orderOutput.amount1.toString());
-    this.status = orderOutput.status;
-    this.fulfilled0 = new BN(orderOutput.fulfilled0.toString());
-    this.fulfilled1 = new BN(orderOutput.fulfilled1.toString());
-    this.owner = orderOutput.owner.value;
-    this.timestamp = orderOutput.timestamp.toString();
+    this.status = "Active";
+    this.fulfilled0 = new BN(0);
+    this.fulfilled1 = new BN(0);
+    this.owner = orderOutput.owner;
+    this.timestamp = orderOutput.timestamp ?? "1";
+
+    // this.id = orderOutput.id.toString();
+    // this.asset0 = orderOutput.asset0.value;
+    // this.amount0 = new BN(orderOutput.amount0.toString());
+    // this.asset1 = orderOutput.asset1.value;
+    // this.amount1 = new BN(orderOutput.amount1.toString());
+    // this.status = orderOutput.status;
+    // this.fulfilled0 = new BN(orderOutput.fulfilled0.toString());
+    // this.fulfilled1 = new BN(orderOutput.fulfilled1.toString());
+    // this.owner = orderOutput.owner.value;
+    // this.timestamp = orderOutput.timestamp.toString();
     // this.matcher_fee = new BN(orderOutput.matcher_fee.toString());
     // this.matcher_fee_used = new BN(orderOutput.matcher_fee_used.toString());
   }
@@ -97,10 +111,7 @@ class OrdersStore {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.init().then(() => this.setInitialized(true));
-    // setInterval(
-    //   () => Promise.all([this.updateActiveOrders(), this.fetchNewOrders()]),
-    //   10000
-    // );
+    setInterval(() => Promise.all([this.fetchAllOrders()]), 10000);
     reaction(
       () => this.rootStore.accountStore.address,
       () =>
@@ -127,6 +138,7 @@ class OrdersStore {
 
   fetchAllOrders = async () => {
     const v = await orderService.getOrders();
+    this.orders = v.map((o) => new Order(o));
     console.log("orders", v);
   };
 

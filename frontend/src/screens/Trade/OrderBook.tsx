@@ -65,7 +65,8 @@ const OrderBook: React.FC<IProps> = () => {
   const { ordersStore, accountStore, settingsStore } = useStores();
   const [orderFilter, setOrderFilter] = useState(0);
   const activeOrdersForCurrentPair = ordersStore.orders
-    .filter((o) => o.status.Active != null)
+    // .filter((o) => o.status.Active != null)
+    .filter((o) => o.status === "Active")
     .filter(
       (o) =>
         (vm.assetId1 === o.asset0 && vm.assetId0 === o.asset1) ||

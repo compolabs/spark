@@ -36,8 +36,10 @@ const OpenedOrders: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [cancelOrderId, setCancelOrderId] = useState<null | string>(null);
   const userOrders = ordersStore.orders
-    .filter((o) => o.status.Active != null)
+    // .filter((o) => o.status.Active != null)
+    .filter((o) => o.status === "Active")
     .filter((o) => o.owner === accountStore.ethFormatWallet);
+
   const columns = [
     "Date",
     "Pair",

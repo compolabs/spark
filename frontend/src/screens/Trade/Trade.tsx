@@ -12,6 +12,7 @@ import OrderDesktop from "@screens/Trade/Order/OrderDesktop";
 import OrderMobile from "@screens/Trade/Order/OrderMobile";
 import TradingViewWidget from "./Chart";
 import SizedBox from "@components/SizedBox";
+import { Address } from "fuels";
 
 interface IProps {}
 

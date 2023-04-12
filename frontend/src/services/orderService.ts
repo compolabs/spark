@@ -7,10 +7,11 @@ export interface IOrder {
   amount0: string;
   asset1: string;
   amount1: string;
+  timestamp: string;
 }
 
 const orderService = {
-  getOrders: async (): Promise<[]> => {
+  getOrders: async (): Promise<IOrder[]> => {
     const url = `${process.env.REACT_APP_API_BASE}/api/v1/orders`;
     const { data } = await axios.get(url);
     return data;
