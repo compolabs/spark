@@ -1,8 +1,9 @@
 use std::{collections::HashMap, fs, str::FromStr};
 
 use fuels::{
-    prelude::*,
-    tx::{Input, Output},
+    prelude::{WalletUnlocked, BASE_ASSET_ID},
+    test_helpers::{launch_custom_provider_and_get_wallets, WalletsConfig},
+    types::{AssetId, ContractId},
 };
 
 use crate::utils::number_utils::parse_units;
@@ -62,93 +63,96 @@ pub async fn init_tokens(admin: &WalletUnlocked) -> HashMap<String, Asset> {
     assets
 }
 
-pub struct TransactionParameters {
-    pub inputs: Vec<Input>,
-    pub outputs: Vec<Output>,
-}
+// pub mod scripts {
+//     use super::*;
+//     use fuels::prelude::Bech32Address;
+//     use fuels::prelude::Provider;
+//     use fuels::prelude::ResourceFilter;
+//     use fuels::tx::Input;
+//     use fuels::tx::Output;
+//     use fuels::types::Address;
+//     // use fuels::types::input::Input;
+//     use fuels::{tx::TxPointer, types::resource::Resource};
+//     pub struct TransactionParameters {
+//         pub inputs: Vec<Input>,
+//         pub outputs: Vec<Output>,
+//     }
 
-pub mod scripts {
-    use super::*;
-    use fuels::{
-        tx::{Input, Output, TxPointer},
-        types::resource::Resource,
-    };
+//     pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
 
-    pub const MAXIMUM_INPUT_AMOUNT: u64 = 1_000_000;
+//     async fn transaction_input_coin(
+//         provider: &Provider,
+//         from: &Bech32Address,
+//         asset_id: AssetId,
+//         amount: u64,
+//     ) -> Vec<Input> {
+//         let filter = ResourceFilter {
+//             from: from.clone(),
+//             asset_id,
+//             amount,
+//             ..Default::default()
+//         };
+//         let coins = &provider.get_spendable_resources(filter).await.unwrap();
 
-    async fn transaction_input_coin(
-        provider: &Provider,
-        from: &Bech32Address,
-        asset_id: AssetId,
-        amount: u64,
-    ) -> Vec<Input> {
-        let filter = ResourceFilter {
-            from: from.clone(),
-            asset_id,
-            amount,
-            ..Default::default()
-        };
-        let coins = &provider.get_spendable_resources(filter).await.unwrap();
+//         let input_coins: Vec<Input> = coins
+//             .iter()
+//             .map(|coin| {
+//                 let (coin_utxo_id, coin_amount) = match coin {
+//                     Resource::Coin(coin) => (coin.utxo_id, coin.amount),
+//                     _ => panic!("Resource type does not match"),
+//                 };
+//                 Input::CoinSigned {
+//                     utxo_id: coin_utxo_id,
+//                     owner: Address::from(from),
+//                     amount: coin_amount,
+//                     asset_id,
+//                     tx_pointer: TxPointer::default(),
+//                     witness_index: 0,
+//                     maturity: 0,
+//                 }
+//             })
+//             .collect();
 
-        let input_coins: Vec<Input> = coins
-            .iter()
-            .map(|coin| {
-                let (coin_utxo_id, coin_amount) = match coin {
-                    Resource::Coin(coin) => (coin.utxo_id, coin.amount),
-                    _ => panic!("Resource type does not match"),
-                };
-                Input::CoinSigned {
-                    utxo_id: coin_utxo_id,
-                    owner: Address::from(from),
-                    amount: coin_amount,
-                    asset_id,
-                    tx_pointer: TxPointer::default(),
-                    witness_index: 0,
-                    maturity: 0,
-                }
-            })
-            .collect();
+//         input_coins
+//     }
 
-        input_coins
-    }
+//     fn transaction_output_variable() -> Output {
+//         Output::Variable {
+//             amount: 0,
+//             to: Address::zeroed(),
+//             asset_id: AssetId::default(),
+//         }
+//     }
 
-    fn transaction_output_variable() -> Output {
-        Output::Variable {
-            amount: 0,
-            to: Address::zeroed(),
-            asset_id: AssetId::default(),
-        }
-    }
+//     pub async fn transaction_inputs_outputs(
+//         wallet: &WalletUnlocked,
+//         provider: &Provider,
+//         assets: &Vec<AssetId>,
+//         amounts: Option<&Vec<u64>>,
+//     ) -> TransactionParameters {
+//         let mut input_coins: Vec<Input> = vec![]; // capacity depends on wallet resources
+//         let mut output_variables: Vec<Output> = Vec::with_capacity(assets.len());
 
-    pub async fn transaction_inputs_outputs(
-        wallet: &WalletUnlocked,
-        provider: &Provider,
-        assets: &Vec<AssetId>,
-        amounts: Option<&Vec<u64>>,
-    ) -> TransactionParameters {
-        let mut input_coins: Vec<Input> = vec![]; // capacity depends on wallet resources
-        let mut output_variables: Vec<Output> = Vec::with_capacity(assets.len());
+//         for (asset_index, asset) in assets.iter().enumerate() {
+//             input_coins.extend(
+//                 transaction_input_coin(
+//                     provider,
+//                     wallet.address(),
+//                     *asset,
+//                     if amounts.is_some() {
+//                         *amounts.unwrap().get(asset_index).unwrap()
+//                     } else {
+//                         MAXIMUM_INPUT_AMOUNT
+//                     },
+//                 )
+//                 .await,
+//             );
+//             output_variables.push(transaction_output_variable());
+//         }
 
-        for (asset_index, asset) in assets.iter().enumerate() {
-            input_coins.extend(
-                transaction_input_coin(
-                    provider,
-                    wallet.address(),
-                    *asset,
-                    if amounts.is_some() {
-                        *amounts.unwrap().get(asset_index).unwrap()
-                    } else {
-                        MAXIMUM_INPUT_AMOUNT
-                    },
-                )
-                .await,
-            );
-            output_variables.push(transaction_output_variable());
-        }
-
-        TransactionParameters {
-            inputs: input_coins,
-            outputs: output_variables,
-        }
-    }
-}
+//         TransactionParameters {
+//             inputs: input_coins,
+//             outputs: output_variables,
+//         }
+//     }
+// }

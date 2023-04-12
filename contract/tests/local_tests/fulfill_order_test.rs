@@ -1,5 +1,6 @@
 use std::str::FromStr;
 
+use fuels::prelude::ViewOnlyAccount;
 use fuels::tx::{Address, AssetId};
 
 use crate::utils::cotracts_utils::limit_orders_utils::limit_orders_abi_calls::*;
@@ -41,7 +42,7 @@ async fn fulfill_order_test() {
     token_abi_calls::mint_and_transfer(&usdc_instance, create_order_args.amount0, alice_address)
         .await;
 
-    let alice_instance = instance.with_wallet(alice.clone()).unwrap();
+    let alice_instance = instance.with_account(alice.clone()).unwrap();
     assert!(create_order(&alice_instance, &create_order_args)
         .await
         .is_err());
@@ -52,7 +53,7 @@ async fn fulfill_order_test() {
         .unwrap()
         .value;
 
-    let bob_instance = instance.with_wallet(bob.clone()).unwrap();
+    let bob_instance = instance.with_account(bob.clone()).unwrap();
     token_abi_calls::mint_and_transfer(&uni_instance, create_order_args.amount1, bob_address).await;
 
     let fulfill_order_args = FulfillOrderArguments {

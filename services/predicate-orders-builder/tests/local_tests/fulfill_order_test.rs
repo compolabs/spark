@@ -1,21 +1,18 @@
 use std::collections::HashMap;
 
-use fuels::prelude::{abigen, TxParameters};
+use fuels::accounts::predicate::Predicate;
+use fuels::prelude::ViewOnlyAccount;
 use fuels::tx::Address;
 
-use crate::utils::cotracts_utils::limit_orders_utils::{
-    limit_orders_interactions, LimitOrdersPredicate,
+use crate::utils::cotracts_utils::limit_orders_utils::limit_orders_interactions::{
+    build_predicate, create_order, fulfill_order,
 };
 use crate::utils::cotracts_utils::token_utils::{token_abi_calls, TokenContract};
-use crate::utils::local_tests_utils::scripts::transaction_inputs_outputs;
 use crate::utils::{get_balance, local_tests_utils::*, print_title};
 
 // Alice wants to exchange 1000 USDC for 200 UNI
 // Bob wants to exchange 200 UNI for 1000 USDC
-abigen!(Script(
-    name = "Script",
-    abi = "create_order_script/out/debug/create_order_script-abi.json"
-));
+
 #[tokio::test]
 async fn fulfill_order_test() {
     print_title("Fulfill Order Test");
@@ -26,7 +23,7 @@ async fn fulfill_order_test() {
     let alice_address = Address::from(alice.address());
     let bob = wallets[2].clone();
     let bob_address = Address::from(bob.address());
-    let provider = alice.get_provider().unwrap();
+    let provider = alice.provider().unwrap();
 
     println!("alice_address = {:?}", alice_address);
     println!("bob_address = {:?}", bob_address);
@@ -59,67 +56,47 @@ async fn fulfill_order_test() {
     req.insert("asset1", format!("0x{}", uni.asset_id.to_string()));
     req.insert("amount1", amount1.to_string());
     req.insert("owner", format!("0x{}", alice.address().hash().to_string()));
+    println!("Backend Request Json = {:?}\n", req);
 
-    println!("Backend Request Json = {:?}", req);
-    println!("");
+    let (id, code) = build_predicate(req).await;
+    println!("Backend Response = id:{id}, code:{:?}...]\n", &code[..20]);
 
-    let client = reqwest::Client::new();
-    let res = client
-        .post("http://localhost:8080/create")
-        .json(&req)
-        .send()
-        .await
-        .unwrap();
-    let raw_code = res.text().await.unwrap();
-
-    println!("Backend Response = {:?}...]", &raw_code[..50]);
-    println!("");
-
-    let code: serde_json::Value = serde_json::from_str(&raw_code).unwrap();
-    let code: Vec<u8> = code
-        .as_str()
-        .unwrap()
-        .split(',')
-        .map(|b| b.replace("[", "").replace("]", "").parse::<u8>().unwrap())
-        .collect();
-
-    let predicate = LimitOrdersPredicate::new(code);
+    let predicate: Predicate =
+        Predicate::from_code(code.clone().into()).with_provider(alice.provider().unwrap().clone());
 
     // ==================== ALICE CREATES THE ORDER (TRANSFER) ====================
     // Alice transfer amount0 of  usdc.asset_id to the predicate root
     assert!(alice.get_asset_balance(&usdc.asset_id).await.unwrap() == amount0);
-    let bin_path = "create_order_script/out/debug/create_order_script.bin";
-    let instance = Script::new(alice.clone(), bin_path);
+    let receipts = create_order(
+        &alice,
+        id,
+        &predicate,
+        &usdc_instance,
+        amount0,
+        &uni_instance,
+        amount1,
+    )
+    .await;
+    // dbg!(&receipts);
+    let _receipts = receipts.unwrap();
+    // println!(
+    //     "logs =  {:?}",
+    //     receipts.get_logs_with_type::<CreateOrderParams>().unwrap()
+    // );
 
-    let assets = vec![usdc.asset_id];
-    let transaction_parameters =
-        transaction_inputs_outputs(&alice, &provider, &assets, Some(&vec![amount0])).await;
-
-    instance
-        .main(amount0, usdc.contract_id, predicate.address().into())
-        .tx_params(TxParameters::default().set_gas_price(1))
-        .with_inputs(transaction_parameters.inputs)
-        .with_outputs(transaction_parameters.outputs)
-        .call()
-        .await
-        .unwrap();
-
-    let initial_taker_offered_token_balance =
-        get_balance(provider, bob.address(), usdc.asset_id).await;
-    let initial_taker_asked_token_balance =
-        get_balance(provider, bob.address(), uni.asset_id).await;
-    let initial_receiver_balance = get_balance(provider, alice.address(), uni.asset_id).await;
+    let initial_bob_usdc_balance = get_balance(provider, bob.address(), usdc.asset_id).await;
+    let initial_bob_uni_balance = get_balance(provider, bob.address(), uni.asset_id).await;
+    let initial_alice_uni_balance = get_balance(provider, alice.address(), uni.asset_id).await;
 
     // The predicate root has received the coin
-    assert_eq!(
-        get_balance(provider, predicate.address(), usdc.asset_id).await,
-        amount0
-    );
+    let predicate_usdc_balance = get_balance(provider, predicate.address(), usdc.asset_id).await;
+    assert_eq!(predicate_usdc_balance, amount0);
 
     println!("Alice transfers 1000 USDC to predicate\n");
 
-    let _res = limit_orders_interactions::fulfill_order(
+    let _res = fulfill_order(
         &predicate,
+        code.clone(),
         &bob,
         &alice_address,
         usdc.asset_id,
@@ -133,25 +110,19 @@ async fn fulfill_order_test() {
     println!("Bob transfers 200 UNI to predicate, thus closing the order\n");
 
     let predicate_balance = get_balance(provider, predicate.address(), usdc.asset_id).await;
-    let taker_asked_token_balance = get_balance(provider, bob.address(), uni.asset_id).await;
-    let taker_offered_token_balance = get_balance(provider, bob.address(), usdc.asset_id).await;
-    let receiver_balance = get_balance(provider, &alice.address(), uni.asset_id).await;
+    let bob_uni_balance = get_balance(provider, bob.address(), uni.asset_id).await;
+    let bob_usdc_balance = get_balance(provider, bob.address(), usdc.asset_id).await;
+    let alice_uni_balance = get_balance(provider, &alice.address(), uni.asset_id).await;
 
     // The predicate root's coin has been spent
     assert_eq!(predicate_balance, 0);
 
     // Receiver has been paid `ask_amount`
-    assert_eq!(receiver_balance, initial_receiver_balance + amount1);
+    assert_eq!(alice_uni_balance, initial_alice_uni_balance + amount1);
 
     // Taker has sent `ask_amount` of the asked token and received `amount0` of the offered token in return
-    assert_eq!(
-        taker_asked_token_balance,
-        initial_taker_asked_token_balance - amount1
-    );
-    assert_eq!(
-        taker_offered_token_balance,
-        initial_taker_offered_token_balance + amount0
-    );
+    assert_eq!(bob_uni_balance, initial_bob_uni_balance - amount1);
+    assert_eq!(bob_usdc_balance, initial_bob_usdc_balance + amount0);
 
     println!("Alice balance 200 UNI");
     println!("Bob balance 1000 USDC\n\n");

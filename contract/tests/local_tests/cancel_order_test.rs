@@ -1,3 +1,4 @@
+use fuels::prelude::ViewOnlyAccount;
 use fuels::tx::Address;
 
 use crate::utils::cotracts_utils::limit_orders_utils::limit_orders_abi_calls::{
@@ -35,7 +36,7 @@ async fn cancel_order_test() {
     token_abi_calls::mint_and_transfer(&usdc_instance, args.amount0, alice_address).await;
     let usdc_balance = alice.get_asset_balance(&usdc.asset_id).await.unwrap();
 
-    let alice_instance = instance.with_wallet(alice.clone()).unwrap();
+    let alice_instance = instance.with_account(alice.clone()).unwrap();
     assert!(create_order(&alice_instance, &args).await.is_err());
     deposit(&alice_instance, 2000).await.unwrap();
 

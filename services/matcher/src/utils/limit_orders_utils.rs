@@ -8,7 +8,7 @@ abigen!(Contract(
 
 pub mod limit_orders_abi_calls {
 
-    use fuels::programs::call_response::FuelCallResponse;
+    use fuels::{programs::call_response::FuelCallResponse, prelude::WalletUnlocked};
 
     use super::*;
 
@@ -33,7 +33,7 @@ pub mod limit_orders_abi_calls {
     // }
 
     pub async fn orders_by_id(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         ids: [u64; 10],
     ) -> (
         Option<Order>,
@@ -80,7 +80,7 @@ pub mod limit_orders_abi_calls {
     //         .value
     // }
     pub async fn get_orders(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         offset: u64,
     ) -> (
         Option<Order>,
@@ -203,7 +203,7 @@ pub mod limit_orders_abi_calls {
     //         .await
     // }
     pub async fn match_orders(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         order_id_a: u64,
         order_id_b: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {

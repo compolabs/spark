@@ -1,27 +1,33 @@
 mod utils;
-use actix_web::{post, App, HttpResponse, HttpServer, Responder};
+use actix_web::{post, web, App, HttpServer};
+use rand::{distributions::Alphanumeric, thread_rng, Rng};
+use std::process::Command;
 use utils::print_title;
-use std::{process::Command, str::FromStr};
-use toml_edit::{value, Document};
 
 use execute::Execute;
-use fuels::{
-    signers::fuel_crypto::rand::{distributions::Alphanumeric, thread_rng, Rng},
-    types::{Address, AssetId},
-};
 
 use crate::utils::get_file_as_byte_vec;
+use serde::Serialize;
 
 const DIR_PATH: &str = "/Users/alexey/projects/fuel/limit_orders/services/predicate-orders-builder";
 
-// TODO: Add token id into responce and add return code by id
-// struct ResponseData {
-//     code: Vec<u8>,
-//     id: String,
-// }
+#[derive(Serialize)]
+pub struct ResponseData {
+    code: String,
+    id: String,
+}
+
+impl ResponseData {
+    fn default() -> Self {
+        ResponseData {
+            code: "".to_string(),
+            id: "".to_string(),
+        }
+    }
+}
 
 #[post("/create")]
-async fn create_order_post(req_body_str: String) -> impl Responder {
+async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
     let req_body: serde_json::Value = serde_json::from_str(&req_body_str).unwrap();
     let req_body = req_body.as_object().unwrap().clone();
 
@@ -31,41 +37,53 @@ async fn create_order_post(req_body_str: String) -> impl Responder {
     let amount1 = req_body["amount1"].as_str().unwrap();
     let owner = req_body["owner"].as_str().unwrap();
 
-    if AssetId::from_str(asset1).is_err()
-        || Address::from_str(owner).is_err()
-        || amount1.parse::<u64>().is_err()
-        || amount0.parse::<u64>().is_err()
-        || AssetId::from_str(asset0).is_err()
-    {
-        return HttpResponse::BadRequest().body("Bad Request");
-    }
+    //TODO ADD VALIDATION
+    // if AssetId::from_str(asset1).is_err()
+    //     || Address::from_str(owner).is_err()
+    //     || amount1.parse::<u64>().is_err()
+    //     || amount0.parse::<u64>().is_err()
+    //     || AssetId::from_str(asset0).is_err()
+    // {
+    //     return web::Json(ResponseData::default());
+    // }
 
-    let rand_string: String = thread_rng()
+    let id: String = thread_rng()
         .sample_iter(&Alphanumeric)
         .take(30)
         .map(char::from)
         .collect();
 
     let template_path = format!("{DIR_PATH}/order-template");
-    let order_directory = format!("{DIR_PATH}/orders/{rand_string}");
-    
+    let order_directory = format!("{DIR_PATH}/orders/{id}");
+
     utils::copy_recursively(template_path, order_directory.clone()).unwrap();
-    
-    let forc_toml_path = format!("{order_directory}/Forc.toml");
-    let forc_toml = std::fs::read_to_string(&forc_toml_path).expect("Cannom fimd Forc.toml");
-    let mut forc_toml = forc_toml.parse::<Document>().expect("invalid forc_toml");
 
-    // these constants will be deprecated, check out new 'configurable' block (just like 'storage' in contracts)
-    forc_toml["constants"]["ASK_TOKEN_CONFIG"]["type"] = value("b256");
-    forc_toml["constants"]["ASK_TOKEN_CONFIG"]["value"] = value(asset1);
+    // let forc_toml_path = format!("{order_directory}/Forc.toml");
+    // let forc_toml = std::fs::read_to_string(&forc_toml_path).expect("Cannom fimd Forc.toml");
+    // let mut forc_toml = forc_toml.parse::<Document>().expect("invalid forc_toml");
 
-    forc_toml["constants"]["ASK_AMOUNT"]["type"] = value("u64");
-    forc_toml["constants"]["ASK_AMOUNT"]["value"] = value(amount1);
+    // //FIXME these constants will be deprecated, check out new 'configurable' block (just like 'storage' in contracts)
+    // forc_toml["constants"]["ASK_TOKEN_CONFIG"]["type"] = value("b256");
+    // forc_toml["constants"]["ASK_TOKEN_CONFIG"]["value"] = value(asset1);
 
-    forc_toml["constants"]["RECEIVER_CONFIG"]["type"] = value("b256");
-    forc_toml["constants"]["RECEIVER_CONFIG"]["value"] = value(owner);
+    // forc_toml["constants"]["ASK_AMOUNT"]["type"] = value("u64");
+    // forc_toml["constants"]["ASK_AMOUNT"]["value"] = value(amount1);
 
-    std::fs::write(forc_toml_path, forc_toml.to_string()).unwrap();
+    // forc_toml["constants"]["RECEIVER_CONFIG"]["type"] = value("b256");
+    // forc_toml["constants"]["RECEIVER_CONFIG"]["value"] = value(owner);
+
+    // std::fs::write(forc_toml_path, forc_toml.to_string()).unwrap();
+    let predicate_code_path = format!("{order_directory}/src/main.sw");
+    let predicate_code = std::fs::read_to_string(&predicate_code_path)
+        .expect("Cannom fimd main.sw")
+        .replace("<AMOUNT0>", amount0)
+        .replace("<ASSET0>", asset0)
+        .replace("<AMOUNT1>", amount1)
+        .replace("<ASSET1>", asset1)
+        .replace("<OWNER>", owner)
+        .replace("<ORDER_ID>", format!("\"{id}\"").as_str());
+    std::fs::write(predicate_code_path, predicate_code.to_string()).unwrap();
+
     let output_directory = format!("{order_directory}/out");
 
     let forc_path = format!("{DIR_PATH}/forc");
@@ -76,37 +94,18 @@ async fn create_order_post(req_body_str: String) -> impl Responder {
     first_command.arg("--output-directory");
     first_command.arg(output_directory.clone());
 
-    if first_command.execute_check_exit_status_code(0).is_err() {
-        let msg = format!(
-            "The path `{}` is not a correct FFmpeg executable binary file. {}",
-            forc_path,
-            first_command
-                .execute_check_exit_status_code(0)
-                .err()
-                .unwrap()
-        );
-        eprintln!("{}", msg);
-        HttpResponse::BadRequest().body(msg)
+    let exec = first_command.execute();
+    if exec.is_err() {
+        eprintln!("Failed. with error {:#?}", exec.err());
+        web::Json(ResponseData::default())
     } else {
-        if let Some(exit_code) = first_command.execute().unwrap() {
-            if exit_code == 0 {
-                let path = format!("{output_directory}/swap-predicate.bin");
-                let code = get_file_as_byte_vec(&path);
-                // let data = ResponseData {
-                //     id: rand_string,
-                //     code: get_file_as_byte_vec(&path),
-                // };
-                // HttpResponse::Ok().body(serde_json::to_string::<ResponseData>(&data).unwrap())
-                let serialized_data = serde_json::to_string(&code).unwrap();
-                HttpResponse::Ok().json(serialized_data)
-            } else {
-                eprintln!("Failed. with code {exit_code}");
-                HttpResponse::BadRequest().body("Failed.")
-            }
-        } else {
-            eprintln!("Interrupted!");
-            HttpResponse::BadRequest().body("Interrupted!")
-        }
+        exec.unwrap();
+        let code = get_file_as_byte_vec(&format!("{output_directory}/swap-predicate.bin"));
+        let data = ResponseData {
+            id,
+            code: serde_json::to_string(&code).unwrap(),
+        };
+        web::Json(data)
     }
 }
 

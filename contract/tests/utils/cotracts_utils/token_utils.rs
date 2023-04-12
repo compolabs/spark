@@ -1,7 +1,6 @@
 use crate::utils::number_utils::parse_units;
-use fuels::prelude::{abigen, Contract, DeployConfiguration};
+use fuels::prelude::{abigen, Contract, DeployConfiguration, WalletUnlocked};
 use fuels::{
-    signers::WalletUnlocked,
     tx::Address,
     types::{AssetId, ContractId, SizedAsciiString},
 };
@@ -19,7 +18,7 @@ pub struct Asset {
     pub config: DeployTokenConfig,
     pub contract_id: ContractId,
     pub asset_id: AssetId,
-    pub instance: Option<TokenContract>,
+    pub instance: Option<TokenContract<WalletUnlocked>>,
     pub default_price: u64,
 }
 
@@ -34,12 +33,12 @@ pub mod token_abi_calls {
 
     use super::*;
 
-    pub async fn mint(c: &TokenContract) -> FuelCallResponse<()> {
+    pub async fn mint(c: &TokenContract<WalletUnlocked>) -> FuelCallResponse<()> {
         let res = c.methods().mint().append_variable_outputs(1).call().await;
         res.unwrap()
     }
     pub async fn mint_and_transfer(
-        c: &TokenContract,
+        c: &TokenContract<WalletUnlocked>,
         amount: u64,
         recipient: Address,
     ) -> FuelCallResponse<()> {
@@ -51,7 +50,7 @@ pub mod token_abi_calls {
         res.call().await.unwrap()
     }
     pub async fn initialize(
-        c: &TokenContract,
+        c: &TokenContract<WalletUnlocked>,
         config: TokenInitializeConfig,
         mint_amount: u64,
         address: Address,
@@ -67,7 +66,7 @@ pub mod token_abi_calls {
 pub async fn get_token_contract_instance(
     wallet: &WalletUnlocked,
     deploy_config: &DeployTokenConfig,
-) -> TokenContract {
+) -> TokenContract<WalletUnlocked> {
     let mut name = deploy_config.name.clone();
     let mut symbol = deploy_config.symbol.clone();
     let decimals = deploy_config.decimals;
@@ -77,7 +76,7 @@ pub async fn get_token_contract_instance(
 
     let id = Contract::deploy(
         "./tests/artefacts/token/token_contract.bin",
-        &wallet,
+        &wallet.clone(),
         DeployConfiguration::default().set_salt(salt),
     )
     .await

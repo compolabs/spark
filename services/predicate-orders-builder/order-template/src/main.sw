@@ -1,5 +1,6 @@
 predicate;
-
+mod utils; 
+use utils::*;
 use std::{
     inputs::{
         input_count,
@@ -13,20 +14,21 @@ use std::{
     },
 };
 
-const GTF_OUTPUT_COIN_TO = 0x202;
-const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
 
-/// Order / OTC swap Predicate
+
+const AMOUNT0: u64 = <AMOUNT0>;
+const ASSET0: b256 = <ASSET0>;
+const AMOUNT1: u64 = <AMOUNT1>;
+const ASSET1: b256 = <ASSET1>;
+const OWNER: b256 = <OWNER>;
+const ORDER_ID: str[30] = <ORDER_ID>;
+
+const OUTPUT_COIN_INDEX = 0u8;
+
 fn main() -> bool {
-    const ASK_TOKEN = ContractId {
-        value: ASK_TOKEN_CONFIG,
-    };
-    const RECEIVER = Address::from(RECEIVER_CONFIG);
-
-    // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)
+    let owner = Address::from(OWNER);
     if input_count() == 2u8 {
-        if input_owner(0).unwrap() == RECEIVER
-            || input_owner(1).unwrap() == RECEIVER
+        if input_owner(0).unwrap() == owner || input_owner(1).unwrap() == owner
         {
             return true;
         };
@@ -43,11 +45,13 @@ fn main() -> bool {
     };
 
     // Since output is known to be a Coin, the following are always valid
-    let to = Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO));
-    let asset_id = ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
+    let to = Address::from(output_coin_to(output_index));
+    let asset_id = ContractId::from(output_coin_asset_id(output_index));
 
     let amount = output_amount(output_index);
 
     // Evaluate the predicate
-    (to == RECEIVER) && (amount == ASK_AMOUNT) && (asset_id == ASK_TOKEN)
+    (to == owner) && (amount == AMOUNT1) && (asset_id == ContractId::from(ASSET1))
 }
+
+
