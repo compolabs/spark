@@ -1,3 +1,4 @@
+use fuels::prelude::WalletUnlocked;
 use tuple_conv::RepeatedTuple;
 
 use super::cotracts_utils::limit_orders_utils::{
@@ -6,7 +7,7 @@ use super::cotracts_utils::limit_orders_utils::{
 
 pub struct OrdersFetcher {
     pub orders: Vec<Order>,
-    instance: LimitOrdersContract,
+    instance: LimitOrdersContract<WalletUnlocked>,
 }
 
 fn pad_zeroes<const A: usize, const B: usize>(arr: [u64; A]) -> [u64; B] {
@@ -17,7 +18,7 @@ fn pad_zeroes<const A: usize, const B: usize>(arr: [u64; A]) -> [u64; B] {
 }
 
 impl OrdersFetcher {
-    pub fn new(instance: LimitOrdersContract) -> OrdersFetcher {
+    pub fn new(instance: LimitOrdersContract<WalletUnlocked>) -> OrdersFetcher {
         OrdersFetcher {
             orders: vec![],
             instance,

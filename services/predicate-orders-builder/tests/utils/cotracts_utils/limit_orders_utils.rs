@@ -1,34 +1,82 @@
 use fuels::prelude::abigen;
 
-abigen!(Predicate(
-    name = "LimitOrdersPredicate",
-    abi = "tests/artefacts/predicate-abi.json"
-));
+abigen!(
+    Predicate(
+        name = "LimitOrdersPredicate",
+        abi = "tests/artefacts/predicate-abi.json"
+    ),
+    Script(
+        name = "CreateOrderScript",
+        abi = "create_order_script/out/debug/create_order_script-abi.json"
+    )
+);
 
 pub mod limit_orders_interactions {
 
-    use super::*;
-    use fuels::core::abi_encoder::UnresolvedBytes;
+    use std::collections::HashMap;
+
+    use crate::utils::cotracts_utils::token_utils::TokenContract;
+
+    use fuels::accounts::predicate::Predicate;
+    use fuels::prelude::Account;
     use fuels::prelude::ResourceFilter;
+    use fuels::prelude::TxParameters;
+    use fuels::prelude::WalletUnlocked;
     use fuels::programs::call_response::FuelCallResponse;
     use fuels::programs::script_calls::ScriptCallHandler;
-    use fuels::tx::{AssetId, Input, Output, TxPointer};
+    use fuels::tx::AssetId;
+    use fuels::tx::Output;
+    use fuels::tx::Receipt;
+    use fuels::types::coin::Coin;
+    use fuels::types::input::Input;
     use fuels::types::resource::Resource;
+    use fuels::types::unresolved_bytes::UnresolvedBytes;
     use fuels::types::Address;
-    use fuels::{prelude::TxParameters, signers::WalletUnlocked};
+
+    // FIXME
+    // pub async fn create_order(
+    //     wallet: &WalletUnlocked,
+    //     id: String,
+    //     predicate: &Predicate,
+    //     asset0: &TokenContract<WalletUnlocked>,
+    //     amount0: u64,
+    //     asset1: &TokenContract<WalletUnlocked>,
+    //     amount1: u64,
+    // ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
+    //     let bin_path = "create_order_script/out/debug/create_order_script.bin";
+    //     let instance = CreateOrderScript::new(wallet.clone(), bin_path);
+    //     let provider = wallet.provider().unwrap();
+    //     let assets: Vec<AssetId> = vec![AssetId::from(*ContractId::from(asset0.contract_id()))];
+    //     let transaction_parameters =
+    //         transaction_inputs_outputs(&wallet, &provider, &assets, Some(&vec![amount0])).await;
+
+    //     let params = CreateOrderParams {
+    //         id: SizedAsciiString::<30>::new(id).unwrap(),
+    //         predicate_address: predicate.address().into(),
+    //         asset_0: asset0.contract_id().into(),
+    //         amount_0: amount0,
+    //         asset_1: asset1.contract_id().into(),
+    //         amount_1: amount1,
+    //         owner: Address::from(wallet.address()),
+    //     };
+
+    //     instance
+    //         .main(params)
+    //         .tx_params(TxParameters::default().set_gas_price(1))
+    //         .with_inputs(transaction_parameters.inputs)
+    //         .with_outputs(transaction_parameters.outputs)
+    //         .call()
+    //         .await
+    // }
 
     pub async fn cancel_order(
-        predicate: &LimitOrdersPredicate,
+        predicate: &Predicate,
+        predicate_code: Vec<u8>,
         wallet: &WalletUnlocked,
         asset0: AssetId,
         amount0: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-        // predicate
-        //     .receive(wallet, amount0, asset0, None)
-        //     .await
-        //     .unwrap();
-        //-------------------------------------------------------------------------------------
-        let provider = wallet.get_provider().unwrap();
+        let provider = wallet.provider().unwrap();
         // Get predicate coin to unlock
         let filter = ResourceFilter {
             from: predicate.address().clone(),
@@ -47,15 +95,30 @@ pub mod limit_orders_interactions {
         };
 
         // Offered asset coin belonging to the predicate root
-        let input_predicate = Input::CoinPredicate {
-            utxo_id: predicate_coin_utxo_id,
-            tx_pointer: TxPointer::default(),
-            owner: predicate.address().into(),
+        // let input_predicate = Input::CoinPredicate {
+        //     utxo_id: predicate_coin_utxo_id,
+        //     tx_pointer: TxPointer::default(),
+        //     owner: predicate.address().into(),
+        //     amount: amount0,
+        //     asset_id: asset0,
+        //     maturity: 0,
+        //     predicate: predicate.code(),
+        //     predicate_data: vec![],
+        // };
+
+        let coin = Coin {
             amount: amount0,
+            block_created: 0,
             asset_id: asset0,
+            utxo_id: predicate_coin_utxo_id,
             maturity: 0,
-            predicate: predicate.code(),
-            predicate_data: vec![],
+            owner: predicate.address().clone(),
+            status: fuels::types::coin::CoinStatus::default(),
+        };
+        let input_predicate = Input::ResourcePredicate {
+            resource: Resource::Coin(coin),
+            code: predicate_code.clone().into(),
+            data: predicate.data().clone(),
         };
 
         // Use a change output to send the unlocked coins back to the wallet
@@ -65,7 +128,7 @@ pub mod limit_orders_interactions {
             asset_id: asset0,
         };
 
-        let script_call = ScriptCallHandler::<()>::new(
+        let script_call = ScriptCallHandler::new(
             vec![],
             UnresolvedBytes::default(),
             wallet.clone(),
@@ -80,7 +143,8 @@ pub mod limit_orders_interactions {
     }
 
     pub async fn fulfill_order(
-        predicate: &LimitOrdersPredicate,
+        predicate: &Predicate,
+        predicate_code: Vec<u8>,
         wallet: &WalletUnlocked,
         order_owner_address: &Address,
         asset0: AssetId,
@@ -88,7 +152,7 @@ pub mod limit_orders_interactions {
         asset1: AssetId,
         amount1: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-        let provider = wallet.get_provider().unwrap();
+        let provider = wallet.provider().unwrap();
 
         // ==================== BOB SIDE CALL ====================
         // Get predicate coin to unlock
@@ -125,27 +189,54 @@ pub mod limit_orders_interactions {
 
         // Offered asset coin belonging to the predicate root
         // CoinPredicate
-        let input_predicate = Input::CoinPredicate {
-            utxo_id: predicate_coin_utxo_id,
-            tx_pointer: TxPointer::default(),
-            owner: predicate.address().into(),
+        // let input_predicate = Input::CoinPredicate {
+        //     utxo_id: predicate_coin_utxo_id,
+        //     tx_pointer: TxPointer::default(),
+        //     owner: predicate.address().into(),
+        //     amount: amount0,
+        //     asset_id: asset0,
+        //     maturity: 0,
+        //     predicate: predicate.code(),
+        //     predicate_data: vec![],
+        // };
+        let coin = Coin {
             amount: amount0,
+            block_created: 0,
             asset_id: asset0,
+            utxo_id: predicate_coin_utxo_id,
             maturity: 0,
-            predicate: predicate.code(),
-            predicate_data: vec![],
+            owner: predicate.address().clone(),
+            status: fuels::types::coin::CoinStatus::default(),
+        };
+        let input_predicate = Input::ResourcePredicate {
+            resource: Resource::Coin(coin),
+            code: predicate_code.clone().into(),
+            data: predicate.data().clone(),
         };
 
         // Asked asset coin belonging to the wallet taking the order
         // CoinSigned
-        let input_from_taker = Input::CoinSigned {
-            utxo_id: swap_coin_utxo_id,
-            tx_pointer: TxPointer::default(),
-            owner: Address::from(wallet.address()),
+        // let input_from_taker = Input::CoinSigned {
+        //     utxo_id: swap_coin_utxo_id,
+        //     tx_pointer: TxPointer::default(),
+        //     owner: Address::from(wallet.address()),
+        //     amount: swap_coin_amount,
+        //     asset_id: asset1,
+        //     witness_index: 0,
+        //     maturity: 0,
+        // };
+        let coin = Coin {
             amount: swap_coin_amount,
+            block_created: 0,
             asset_id: asset1,
-            witness_index: 0,
+            utxo_id: swap_coin_utxo_id,
             maturity: 0,
+            owner: wallet.address().clone(),
+            status: fuels::types::coin::CoinStatus::default(),
+        };
+        let input_from_taker = Input::ResourceSigned {
+            resource: Resource::Coin(coin),
+            witness_index: 0,
         };
 
         // Output for the asked coin transferred from the taker to the receiver
@@ -172,7 +263,7 @@ pub mod limit_orders_interactions {
             asset_id: asset1,
         };
 
-        let script_call = ScriptCallHandler::<()>::new(
+        let script_call = ScriptCallHandler::new(
             vec![],
             UnresolvedBytes::default(),
             wallet.clone(),
@@ -188,5 +279,65 @@ pub mod limit_orders_interactions {
         .tx_params(TxParameters::default().set_gas_price(1));
 
         script_call.call().await
+    }
+
+    pub async fn create_order(
+        wallet: &WalletUnlocked,
+        _id: String,
+        predicate: &Predicate,
+        asset0: &TokenContract<WalletUnlocked>,
+        amount0: u64,
+        _asset1: &TokenContract<WalletUnlocked>,
+        _amount1: u64,
+    ) -> Result<(String, Vec<Receipt>), fuels::prelude::Error> {
+        let asset_id = AssetId::from(*asset0.contract_id().hash());
+        wallet
+            .transfer(
+                predicate.address(),
+                amount0,
+                asset_id,
+                TxParameters::default(),
+            )
+            .await
+    }
+
+    pub async fn _cancel_order(
+        predicate: &Predicate,
+        wallet: &WalletUnlocked,
+        asset0: AssetId,
+        amount0: u64,
+    ) -> Result<(String, Vec<Receipt>), fuels::prelude::Error> {
+        predicate
+            .transfer(wallet.address(), amount0, asset0, TxParameters::default())
+            .await
+    }
+
+    pub async fn _fulfill_order(
+        predicate: &Predicate,
+        wallet: &WalletUnlocked,
+        asset1: AssetId,
+        amount1: u64,
+    ) -> Result<(String, Vec<Receipt>), fuels::prelude::Error> {
+        predicate
+            .transfer(wallet.address(), amount1, asset1, TxParameters::default())
+            .await
+    }
+
+    pub async fn build_predicate(req: HashMap<&str, String>) -> (String, Vec<u8>) {
+        let client = reqwest::Client::new();
+        let url = "http://localhost:8080/create";
+        let res = client.post(url).json(&req).send().await.unwrap();
+        let res = res.text().await.unwrap();
+        let res: serde_json::Value = serde_json::from_str(&res).unwrap();
+        let res = res.as_object().unwrap().clone();
+        let id = res["id"].as_str().unwrap();
+        let code = res["code"].as_str().unwrap();
+        let code: Vec<u8> = code
+            .clone()
+            .split(',')
+            .map(|b| b.replace("[", "").replace("]", "").parse::<u8>().unwrap())
+            .collect();
+
+        (id.to_string(), code)
     }
 }

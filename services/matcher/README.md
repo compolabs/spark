@@ -4,7 +4,22 @@ The master branch contains the latest work-in-progress version of Spark Order Ma
 
 ## About
 
-This repository contains a Order Matching Engine for Fuel blockchain which allows users to match limit orders on-chain. Limit order itself is a data structure created off-chain.
+This repository contains a program that matches orders on the Fuel Network, allowing users to trade cryptocurrencies with each other. 
+Limit order itself is a data structure created off-chain.
+
+The matching engine works by using a smart contract that calculates the prices of different orders and then matches them based on those prices. 
+Users create limit orders, which are a way to specify a buying or selling price for a cryptocurrency. The matching engine then matches the buy and sell orders with the best possible price. 
+Once matched, the orders are executed by transferring cryptocurrency from one user to another, according to the agreed upon price. The program includes various test cases to ensure its proper functioning.
+
+The architecture of the Spark Order Matching Engine is based on a smart contract that uses a matching function to calculate the prices of the assets being traded. The engine also calculates the lowest price of an order and transfers the assets accordingly.
+
+**To explain the process, let us consider a few examples:**
+
+**Example 1:** If there are two orders, Order0 and Order1, where Order0 is for 20k USDT for 1 BTC at a price of 0.00005 and Order1 is for 0.51 BTC for 10k USDT at a price of 0.000051. The engine calculates that the order with the lowest price is Order0, and transfers 10k USDT from Order0 to Order1, and 0.5 BTC from Order1 to Order0. The remaining 0.01 BTC is transferred to the owner of Order1.
+
+**Example 2:** If Order0 is for 10k USDT for 0.5 BTC at a price of 0.00005 and Order1 is for 1.02 BTC for 20k USDT at a price of 0.000051. The engine calculates that the order with the lowest price is Order0, and transfers 10k USDT from Order0 to Order1, and 0.5 BTC from Order1 to Order0. The remaining 0.01 BTC is transferred to the owner of Order1.
+
+The engine also includes a set of test cases to ensure that the orders are matched correctly. 
 
 
 ## Order Matching Engine Architecture  

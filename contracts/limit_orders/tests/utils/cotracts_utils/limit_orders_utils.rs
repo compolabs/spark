@@ -1,7 +1,6 @@
-use fuels::prelude::{abigen, DeployConfiguration};
+use fuels::prelude::{abigen, DeployConfiguration, WalletUnlocked};
 use fuels::{
     prelude::{Contract, StorageConfiguration, TxParameters},
-    signers::WalletUnlocked,
 };
 
 abigen!(Contract(
@@ -9,12 +8,12 @@ abigen!(Contract(
     abi = "out/debug/limit_orders-abi.json"
 ),);
 
-pub async fn deploy_limit_orders_contract(admin: &WalletUnlocked) -> LimitOrdersContract {
+pub async fn deploy_limit_orders_contract(admin: &WalletUnlocked) -> LimitOrdersContract<WalletUnlocked> {
     let storage = StorageConfiguration::default()
         .set_storage_path(String::from("./out/debug/limit_orders-storage_slots.json"));
     let id = Contract::deploy(
         "./out/debug/limit_orders.bin",
-        &admin,
+        &admin.clone(),
         DeployConfiguration::default().set_storage_configuration(storage),
     )
     .await
@@ -51,7 +50,7 @@ pub mod limit_orders_abi_calls {
     //         .value
     // }
     pub async fn get_trades(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         offset: u64,
     ) -> (
         Option<Trade>,
@@ -74,7 +73,7 @@ pub mod limit_orders_abi_calls {
             .value
     }
     pub async fn get_orders(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         offset: u64,
     ) -> (
         Option<Order>,
@@ -98,14 +97,14 @@ pub mod limit_orders_abi_calls {
     }
 
     pub async fn order_by_id(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         id: u64,
     ) -> Result<FuelCallResponse<Order>, fuels::prelude::Error> {
         contract.methods().order_by_id(id).simulate().await
     }
 
     pub async fn orders_by_id(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         ids: [u64; 10],
     ) -> (
         Option<Order>,
@@ -129,7 +128,7 @@ pub mod limit_orders_abi_calls {
     }
 
     pub async fn deposit(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         amount: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
         let call_params = CallParameters::default().set_amount(amount);
@@ -166,7 +165,7 @@ pub mod limit_orders_abi_calls {
     }
 
     pub async fn create_order(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         args: &CreatreOrderArguments,
     ) -> Result<FuelCallResponse<u64>, fuels::prelude::Error> {
         let call_params = CallParameters::default()
@@ -186,7 +185,7 @@ pub mod limit_orders_abi_calls {
     }
 
     pub async fn cancel_order(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         id: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
         let tx_params = TxParameters::default().set_gas_price(1);
@@ -206,7 +205,7 @@ pub mod limit_orders_abi_calls {
     }
 
     pub async fn fulfill_order(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         args: &FulfillOrderArguments,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
         let call_params = CallParameters::default()
@@ -224,7 +223,7 @@ pub mod limit_orders_abi_calls {
             .await
     }
     pub async fn match_orders(
-        contract: &LimitOrdersContract,
+        contract: &LimitOrdersContract<WalletUnlocked>,
         order_id_a: u64,
         order_id_b: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {

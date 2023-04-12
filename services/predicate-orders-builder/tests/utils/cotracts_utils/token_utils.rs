@@ -1,12 +1,8 @@
 use std::io::Write;
 
+use fuels::{types::{ContractId, AssetId, SizedAsciiString, Address}, prelude::{WalletUnlocked, abigen, DeployConfiguration, Contract}};
+
 use crate::utils::number_utils::parse_units;
-use fuels::prelude::{abigen, Contract, DeployConfiguration};
-use fuels::{
-    signers::WalletUnlocked,
-    tx::Address,
-    types::{AssetId, ContractId, SizedAsciiString},
-};
 
 pub struct DeployTokenConfig {
     pub name: String,
@@ -19,7 +15,7 @@ pub struct Asset {
     pub config: DeployTokenConfig,
     pub contract_id: ContractId,
     pub asset_id: AssetId,
-    pub instance: Option<TokenContract>,
+    pub instance: Option<TokenContract<WalletUnlocked>>,
     pub default_price: u64,
 }
 
@@ -30,28 +26,29 @@ abigen!(Contract(
 
 pub mod token_abi_calls {
 
-    use fuels::programs::call_response::FuelCallResponse;
+    use fuels::{prelude::TxParameters, programs::call_response::FuelCallResponse, types::Address};
 
     use super::*;
 
-    pub async fn mint(c: &TokenContract) -> FuelCallResponse<()> {
+    pub async fn mint(c: &TokenContract<WalletUnlocked>) -> FuelCallResponse<()> {
         let res = c.methods().mint().append_variable_outputs(1).call().await;
         res.unwrap()
     }
     pub async fn mint_and_transfer(
-        c: &TokenContract,
+        c: &TokenContract<WalletUnlocked>,
         amount: u64,
         recipient: Address,
     ) -> FuelCallResponse<()> {
-        let res = c
-            .methods()
+        c.methods()
             .mint_and_transfer(amount, recipient)
-            .append_variable_outputs(1);
-
-        res.call().await.unwrap()
+            .append_variable_outputs(1)
+            .tx_params(TxParameters::default().set_gas_price(1))
+            .call()
+            .await
+            .unwrap()
     }
     pub async fn initialize(
-        c: &TokenContract,
+        c: &TokenContract<WalletUnlocked>,
         config: TokenInitializeConfig,
         mint_amount: u64,
         address: Address,
@@ -67,7 +64,7 @@ pub mod token_abi_calls {
 pub async fn get_token_contract_instance(
     wallet: &WalletUnlocked,
     deploy_config: &DeployTokenConfig,
-) -> TokenContract {
+) -> TokenContract<WalletUnlocked> {
     let mut name = deploy_config.name.clone();
     let mut symbol = deploy_config.symbol.clone();
     let decimals = deploy_config.decimals;
@@ -78,7 +75,7 @@ pub async fn get_token_contract_instance(
 
     let id = Contract::deploy(
         "./tests/artefacts/token/token_contract.bin",
-        &wallet,
+        wallet,
         DeployConfiguration::default().set_salt(salt),
     )
     .await

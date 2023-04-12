@@ -105,9 +105,9 @@ async fn match_orders_negative_test() {
     //--------------- Negative test cases ---------
 
     let instance = deploy_limit_orders_contract(&admin).await;
-    let alice_instance = instance.with_wallet(alice.clone()).unwrap();
-    let bob_instance = instance.with_wallet(bob.clone()).unwrap();
-    let matcher_instance = instance.with_wallet(matcher.clone()).unwrap();
+    let alice_instance = instance.with_account(alice.clone()).unwrap();
+    let bob_instance = instance.with_account(bob.clone()).unwrap();
+    let matcher_instance = instance.with_account(matcher.clone()).unwrap();
 
     // let mut counter = 0;
     for test_case in TEST_CASES {
