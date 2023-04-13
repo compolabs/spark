@@ -8,117 +8,17 @@
     },
     {
       "typeId": 1,
-      "type": "(_, _, _, _, _, _, _, _, _, _)",
+      "type": "(_, _)",
       "components": [
         {
           "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
+          "type": 19,
+          "typeArguments": null
         },
         {
           "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "__tuple_element",
-          "type": 5,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 17,
-              "typeArguments": null
-            }
-          ]
+          "type": 19,
+          "typeArguments": null
         }
       ],
       "typeParameters": null
@@ -129,7 +29,7 @@
       "components": [
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -140,7 +40,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -151,7 +51,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -162,7 +62,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -173,7 +73,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -184,7 +84,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -195,7 +95,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -206,7 +106,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -217,7 +117,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -228,7 +128,7 @@
         },
         {
           "name": "__tuple_element",
-          "type": 5,
+          "type": 6,
           "typeArguments": [
             {
               "name": "",
@@ -242,24 +142,141 @@
     },
     {
       "typeId": 3,
-      "type": "[_; 10]",
+      "type": "(_, _, _, _, _, _, _, _, _, _)",
       "components": [
         {
-          "name": "__array_element",
-          "type": 19,
-          "typeArguments": null
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "__tuple_element",
+          "type": 6,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 19,
+              "typeArguments": null
+            }
+          ]
         }
       ],
       "typeParameters": null
     },
     {
       "typeId": 4,
+      "type": "[_; 10]",
+      "components": [
+        {
+          "name": "__array_element",
+          "type": 20,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 5,
       "type": "b256",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 5,
+      "typeId": 6,
       "type": "enum Option",
       "components": [
         {
@@ -269,16 +286,16 @@
         },
         {
           "name": "Some",
-          "type": 7,
+          "type": 8,
           "typeArguments": null
         }
       ],
       "typeParameters": [
-        7
+        8
       ]
     },
     {
-      "typeId": 6,
+      "typeId": 7,
       "type": "enum Status",
       "components": [
         {
@@ -300,72 +317,60 @@
       "typeParameters": null
     },
     {
-      "typeId": 7,
+      "typeId": 8,
       "type": "generic T",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 8,
+      "typeId": 9,
       "type": "str[13]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 9,
+      "typeId": 10,
       "type": "str[15]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 10,
+      "typeId": 11,
       "type": "str[18]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 11,
+      "typeId": 12,
       "type": "str[20]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 12,
+      "typeId": 13,
       "type": "str[22]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 13,
+      "typeId": 14,
       "type": "str[23]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 14,
+      "typeId": 15,
       "type": "str[28]",
       "components": null,
       "typeParameters": null
     },
     {
-      "typeId": 15,
+      "typeId": 16,
       "type": "struct Address",
       "components": [
         {
           "name": "value",
-          "type": 4,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": null
-    },
-    {
-      "typeId": 16,
-      "type": "struct ContractId",
-      "components": [
-        {
-          "name": "value",
-          "type": 4,
+          "type": 5,
           "typeArguments": null
         }
       ],
@@ -373,66 +378,11 @@
     },
     {
       "typeId": 17,
-      "type": "struct Order",
+      "type": "struct ContractId",
       "components": [
         {
-          "name": "asset0",
-          "type": 16,
-          "typeArguments": null
-        },
-        {
-          "name": "amount0",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
-          "name": "asset1",
-          "type": 16,
-          "typeArguments": null
-        },
-        {
-          "name": "amount1",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
-          "name": "status",
-          "type": 6,
-          "typeArguments": null
-        },
-        {
-          "name": "fulfilled0",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
-          "name": "fulfilled1",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
-          "name": "owner",
-          "type": 15,
-          "typeArguments": null
-        },
-        {
-          "name": "id",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
-          "name": "timestamp",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
-          "name": "matcher_fee",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
-          "name": "matcher_fee_used",
-          "type": 19,
+          "name": "value",
+          "type": 5,
           "typeArguments": null
         }
       ],
@@ -440,36 +390,66 @@
     },
     {
       "typeId": 18,
-      "type": "struct Trade",
+      "type": "struct Order",
       "components": [
         {
-          "name": "order_id",
-          "type": 19,
-          "typeArguments": null
-        },
-        {
           "name": "asset0",
-          "type": 16,
+          "type": 17,
           "typeArguments": null
         },
         {
           "name": "amount0",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         },
         {
           "name": "asset1",
-          "type": 16,
+          "type": 17,
           "typeArguments": null
         },
         {
           "name": "amount1",
-          "type": 19,
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "status",
+          "type": 7,
+          "typeArguments": null
+        },
+        {
+          "name": "fulfilled0",
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "fulfilled1",
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "owner",
+          "type": 16,
+          "typeArguments": null
+        },
+        {
+          "name": "id",
+          "type": 20,
           "typeArguments": null
         },
         {
           "name": "timestamp",
-          "type": 19,
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "matcher_fee",
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "matcher_fee_used",
+          "type": 20,
           "typeArguments": null
         }
       ],
@@ -477,6 +457,43 @@
     },
     {
       "typeId": 19,
+      "type": "struct Trade",
+      "components": [
+        {
+          "name": "order_id",
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "asset0",
+          "type": 17,
+          "typeArguments": null
+        },
+        {
+          "name": "amount0",
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "asset1",
+          "type": 17,
+          "typeArguments": null
+        },
+        {
+          "name": "amount1",
+          "type": 20,
+          "typeArguments": null
+        },
+        {
+          "name": "timestamp",
+          "type": 20,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 20,
       "type": "u64",
       "components": null,
       "typeParameters": null
@@ -487,7 +504,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         }
       ],
@@ -511,24 +528,24 @@
       "inputs": [
         {
           "name": "asset1",
-          "type": 16,
+          "type": 17,
           "typeArguments": null
         },
         {
           "name": "amount1",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         }
       ],
       "name": "create_order",
       "output": {
         "name": "",
-        "type": 19,
+        "type": 20,
         "typeArguments": null
       },
       "attributes": [
@@ -555,15 +572,15 @@
       },
       "attributes": [
         {
+          "name": "payable",
+          "arguments": []
+        },
+        {
           "name": "storage",
           "arguments": [
             "read",
             "write"
           ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
         }
       ]
     },
@@ -571,7 +588,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         }
       ],
@@ -599,14 +616,14 @@
       "inputs": [
         {
           "name": "address",
-          "type": 15,
+          "type": 16,
           "typeArguments": null
         }
       ],
       "name": "get_deposit_by_address",
       "output": {
         "name": "",
-        "type": 19,
+        "type": 20,
         "typeArguments": null
       },
       "attributes": [
@@ -622,19 +639,19 @@
       "inputs": [
         {
           "name": "order0_id",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         },
         {
           "name": "order1_id",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         }
       ],
       "name": "match_orders",
       "output": {
         "name": "",
-        "type": 0,
+        "type": 1,
         "typeArguments": null
       },
       "attributes": [
@@ -651,14 +668,14 @@
       "inputs": [
         {
           "name": "id",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         }
       ],
       "name": "order_by_id",
       "output": {
         "name": "",
-        "type": 17,
+        "type": 18,
         "typeArguments": null
       },
       "attributes": [
@@ -674,14 +691,14 @@
       "inputs": [
         {
           "name": "offset",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         }
       ],
       "name": "orders",
       "output": {
         "name": "",
-        "type": 1,
+        "type": 2,
         "typeArguments": null
       },
       "attributes": [
@@ -698,7 +715,7 @@
       "name": "orders_amount",
       "output": {
         "name": "",
-        "type": 19,
+        "type": 20,
         "typeArguments": null
       },
       "attributes": [
@@ -714,34 +731,11 @@
       "inputs": [
         {
           "name": "ids",
-          "type": 3,
+          "type": 4,
           "typeArguments": null
         }
       ],
       "name": "orders_by_id",
-      "output": {
-        "name": "",
-        "type": 1,
-        "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
-    },
-    {
-      "inputs": [
-        {
-          "name": "offset",
-          "type": 19,
-          "typeArguments": null
-        }
-      ],
-      "name": "trades",
       "output": {
         "name": "",
         "type": 2,
@@ -759,8 +753,31 @@
     {
       "inputs": [
         {
+          "name": "offset",
+          "type": 20,
+          "typeArguments": null
+        }
+      ],
+      "name": "trades",
+      "output": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
           "name": "amount",
-          "type": 19,
+          "type": 20,
           "typeArguments": null
         }
       ],
@@ -786,7 +803,7 @@
       "logId": 0,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 11,
         "typeArguments": null
       }
     },
@@ -794,7 +811,7 @@
       "logId": 1,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 11,
         "typeArguments": null
       }
     },
@@ -802,7 +819,7 @@
       "logId": 2,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 9,
         "typeArguments": null
       }
     },
@@ -810,7 +827,7 @@
       "logId": 3,
       "loggedType": {
         "name": "",
-        "type": 12,
+        "type": 13,
         "typeArguments": null
       }
     },
@@ -818,7 +835,7 @@
       "logId": 4,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 15,
         "typeArguments": null
       }
     },
@@ -826,7 +843,7 @@
       "logId": 5,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 11,
         "typeArguments": null
       }
     },
@@ -834,7 +851,7 @@
       "logId": 6,
       "loggedType": {
         "name": "",
-        "type": 9,
+        "type": 10,
         "typeArguments": null
       }
     },
@@ -842,7 +859,7 @@
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 11,
         "typeArguments": null
       }
     },
@@ -850,7 +867,7 @@
       "logId": 8,
       "loggedType": {
         "name": "",
-        "type": 12,
+        "type": 13,
         "typeArguments": null
       }
     },
@@ -858,7 +875,7 @@
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 9,
+        "type": 10,
         "typeArguments": null
       }
     },
@@ -866,7 +883,7 @@
       "logId": 10,
       "loggedType": {
         "name": "",
-        "type": 11,
+        "type": 12,
         "typeArguments": null
       }
     },
@@ -874,7 +891,7 @@
       "logId": 11,
       "loggedType": {
         "name": "",
-        "type": 11,
+        "type": 12,
         "typeArguments": null
       }
     },
@@ -882,7 +899,7 @@
       "logId": 12,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 14,
         "typeArguments": null
       }
     },
@@ -890,7 +907,7 @@
       "logId": 13,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 15,
         "typeArguments": null
       }
     },
@@ -898,7 +915,7 @@
       "logId": 14,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 15,
         "typeArguments": null
       }
     },
@@ -906,7 +923,7 @@
       "logId": 15,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 11,
         "typeArguments": null
       }
     },
@@ -914,7 +931,7 @@
       "logId": 16,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 11,
         "typeArguments": null
       }
     }

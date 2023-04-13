@@ -53,7 +53,7 @@ abi LimitOrders {
     fn fulfill_order(id: u64);
 
     #[storage(read, write)]
-    fn match_orders(order_id_a: u64, order_id_b: u64);
+    fn match_orders(order_id_a: u64, order_id_b: u64) ->(Trade, Trade) ;
 }
 
 enum Status {
@@ -339,7 +339,7 @@ impl LimitOrders for Contract {
 
     #[storage(read, write)]
         //TODO orders_ids_a: u64[], orders_ids_b: u64[]
-fn match_orders(order0_id: u64, order1_id: u64) {
+fn match_orders(order0_id: u64, order1_id: u64) -> (Trade, Trade) {
         let matcher = get_sender_or_throw();
         let order0 = storage.orders.get(order0_id);
         let order1 = storage.orders.get(order1_id);
@@ -447,5 +447,7 @@ fn match_orders(order0_id: u64, order1_id: u64) {
         storage.trades.push(trade1);
         storage.orders.insert(order0.id, order0);
         storage.orders.insert(order1.id, order1);
+
+        (trade0, trade1)
     }
 }

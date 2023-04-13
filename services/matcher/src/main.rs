@@ -3,9 +3,12 @@ use crate::utils::{
     print_swaygang_sign::print_swaygang_sign,
 };
 use dotenv::dotenv;
-use fuels::prelude::{Bech32ContractId, ContractId, Provider, WalletUnlocked};
+use fuels::{
+    prelude::{Bech32ContractId, Provider, WalletUnlocked},
+    types::ContractId,
+};
 // use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
-use std::{env, fs, str::FromStr, thread::sleep, time::Duration};
+use std::{collections::HashMap, env, fs, str::FromStr, thread::sleep, time::Duration};
 use utils::{
     limit_orders_utils::{LimitOrdersContract, Order, Status},
     orders_fetcher::OrdersFetcher,
@@ -15,7 +18,7 @@ mod utils;
 // const RPC: &str = "beta-3.fuel.network";
 const RPC: &str = "127.0.0.1:4000";
 const LIMIT_ORDERS_ADDRESS: &str =
-    "0xd331d875edc2bbdcc04f5f087b80f227ad537306a5a8785dd2a56eb752006979";
+    "0x7662a02959e3e2d681589261e95a7a4bc8ac66c6d66999a0fe01bb6c36ada7c6";
 
 #[tokio::main]
 async fn main() {
@@ -48,6 +51,9 @@ async fn main() {
     // let channel_id = env::var("CHANNEL_ID").expect("❌ Expected a channel id in the environment");
 
     // let channel = ChannelId(channel_id.parse::<u64>().unwrap());
+
+    let client = reqwest::Client::new();
+    let url = "http://localhost:5000/api/v1/trade";
 
     print_swaygang_sign("✅ Matcher is alive");
     loop {
@@ -109,7 +115,25 @@ async fn main() {
                         //     .say(client.cache_and_http.http.clone(), msg)
                         //     .await
                         //     .unwrap();
+                        let (trade0, trade1) = res.unwrap().value;
+
+                        let mut vec = vec![HashMap::new(), HashMap::new()];
+                        vec[0].insert("asset0", format!("0x{}", trade0.asset_0));
+                        vec[0].insert("amount0", trade0.amount_0.to_string());
+                        vec[0].insert("asset1", format!("0x{}", trade0.asset_1));
+                        vec[0].insert("amount1", trade0.amount_1.to_string());
+                        vec[0].insert("timestamp", trade0.timestamp.to_string());
+
+                        vec[1].insert("asset0", format!("0x{}", trade1.asset_0));
+                        vec[1].insert("amount0", trade1.amount_0.to_string());
+                        vec[1].insert("asset1", format!("0x{}", trade1.asset_1));
+                        vec[1].insert("amount1", trade1.amount_1.to_string());
+                        vec[1].insert("timestamp", trade1.timestamp.to_string());
+
+                        let _res = client.post(url).json(&vec).send().await.unwrap();
+
                         println!("{msg}");
+
                         continue 'a_order_cycle;
                     } else {
                         println!(
