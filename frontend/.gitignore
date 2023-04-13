@@ -23,3 +23,8 @@ yarn-error.log*
 
 .idea
 .env
+
+
+public/charting_library/
+public/datafeeds/
+src/charting_library/

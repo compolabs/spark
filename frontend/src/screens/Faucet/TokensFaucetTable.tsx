@@ -19,93 +19,87 @@ const TokensFaucetTable: React.FC<IProps> = () => {
   const vm = useFaucetVM();
   const [tokens, setTokens] = useState<any>([]);
   const ethBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.ETH);
-  useMemo(() => {
-    setTokens(
-      vm.faucetTokens.map((t) => ({
-        asset: (
-          <Row alignItems="center">
-            <TokenIcon size="small" src={t.logo} alt="logo" />
-            <SizedBox width={16} />
-            <Text size="medium" fitContent style={{ whiteSpace: "nowrap" }}>
-              {t.name}
-            </Text>
-          </Row>
-        ),
-        amount: (
-          <Column crossAxisSize="max">
-            <Text fitContent style={{ whiteSpace: "nowrap" }} weight={500}>
-              {`${t.mintAmount.toFormat()} ${t.symbol}`}
-            </Text>
-          </Column>
-        ),
-        balance: (
-          <Column crossAxisSize="max">
-            <Text fitContent style={{ whiteSpace: "nowrap" }} weight={500}>
-              {`${t.formatBalance?.toFormat(2)} ${t.symbol}`}
-            </Text>
-          </Column>
-        ),
-        btn: (() => {
-          if (!accountStore.isLoggedIn)
+  useMemo(
+    () => {
+      setTokens(
+        vm.faucetTokens.map((t) => ({
+          asset: (
+            <Row alignItems="center">
+              <TokenIcon size="small" src={t.logo} alt="logo" />
+              <SizedBox width={16} />
+              <Text size="medium" fitContent style={{ whiteSpace: "nowrap" }}>
+                {t.name}
+              </Text>
+            </Row>
+          ),
+          amount: (
+            <Column crossAxisSize="max">
+              <Text fitContent style={{ whiteSpace: "nowrap" }} weight={500}>
+                {`${t.mintAmount.toFormat()} ${t.symbol}`}
+              </Text>
+            </Column>
+          ),
+          balance: (
+            <Column crossAxisSize="max">
+              <Text fitContent style={{ whiteSpace: "nowrap" }} weight={500}>
+                {`${t.formatBalance?.toFormat(2)} ${t.symbol}`}
+              </Text>
+            </Column>
+          ),
+          btn: (() => {
+            if (!accountStore.isLoggedIn)
+              return (
+                <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>
+                  Connect wallet
+                </Button>
+              );
+            if (!vm.initialized)
+              return (
+                <Button fixed disabled>
+                  <Loading />
+                </Button>
+              );
+            if (ethBalance?.eq(0) && t.symbol !== "ETH")
+              return (
+                <Button fixed disabled>
+                  Mint
+                </Button>
+              );
+            if (vm.alreadyMintedTokens.includes(t.assetId))
+              return (
+                <Button fixed disabled>
+                  Minted
+                </Button>
+              );
             return (
               <Button
                 fixed
-                onClick={() => settingsStore.setLoginModalOpened(true)}
+                disabled={vm.loading || !vm.initialized}
+                onClick={() => {
+                  if (t.symbol === "ETH") {
+                    window.open(`${FAUCET_URL}/?address=${accountStore.address}`, "blank");
+                  } else {
+                    vm.mint(t.assetId);
+                  }
+                }}
               >
-                Connect wallet
+                {vm.loading && vm.actionTokenAssetId === t.assetId ? <Loading /> : "Mint"}
               </Button>
             );
-          if (!vm.initialized)
-            return (
-              <Button fixed disabled>
-                <Loading />
-              </Button>
-            );
-          if (ethBalance?.eq(0) && t.symbol !== "ETH")
-            return (
-              <Button fixed disabled>
-                Mint
-              </Button>
-            );
-          if (vm.alreadyMintedTokens.includes(t.assetId))
-            return (
-              <Button fixed disabled>
-                Minted
-              </Button>
-            );
-          return (
-            <Button
-              fixed
-              disabled={vm.loading || !vm.initialized}
-              onClick={() => {
-                if (t.symbol === "ETH") {
-                  window.open(
-                    `${FAUCET_URL}/?address=${accountStore.address}`,
-                    "blank"
-                  );
-                } else {
-                  vm.mint(t.assetId);
-                }
-              }}
-            >
-              {vm.loading && vm.actionTokenAssetId === t.assetId ? (
-                <Loading />
-              ) : (
-                "Mint"
-              )}
-            </Button>
-          );
-        })(),
-      }))
-    );
-  }, [
-    accountStore.address,
-    accountStore.balances,
-    accountStore.isLoggedIn,
-    settingsStore,
-    vm.loading,
-    vm.alreadyMintedTokens,
-  ]);
+          })(),
+        }))
+      );
+    },
+    // eslint-disable-next-line
+    [
+      accountStore.address,
+      accountStore.balances,
+      accountStore.isLoggedIn,
+      settingsStore,
+      vm.loading,
+      vm.alreadyMintedTokens,
+    ]
+  );
   const columns = React.useMemo(
     () => [
       { Header: "Asset", accessor: "asset" },

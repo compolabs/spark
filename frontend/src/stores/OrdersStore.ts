@@ -6,7 +6,6 @@ import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { OrderOutput, StatusOutput } from "@src/contracts/LimitOrdersAbi";
 import BigNumber from "bignumber.js";
 import dayjs from "dayjs";
-import { log } from "console";
 
 export class Order {
   asset0: string;
@@ -51,9 +50,7 @@ export class Order {
   }
 
   get fullFillPercent() {
-    return this.fulfilled0.eq(0)
-      ? 0
-      : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
+    return this.fulfilled0.eq(0) ? 0 : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
   }
 
   get priceFormatter() {
@@ -98,18 +95,10 @@ class OrdersStore {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.init().then(() => this.setInitialized(true));
-    setInterval(
-      () => Promise.all([this.updateActiveOrders(), this.fetchNewOrders()]),
-      5000
-    );
+    setInterval(() => Promise.all([this.updateActiveOrders(), this.fetchNewOrders()]), 5000);
     reaction(
       () => this.rootStore.accountStore.address,
-      () =>
-        Promise.all([
-          this.init(),
-          this.updateActiveOrders(),
-          this.fetchNewOrders(),
-        ])
+      () => Promise.all([this.init(), this.updateActiveOrders(), this.fetchNewOrders()])
     );
   }
 
@@ -139,11 +128,7 @@ class OrdersStore {
         functions
           .orders(i * 10)
           .get()
-          .then((res) =>
-            res.value
-              .filter((v) => v != null)
-              .map((v) => new Order(v as OrderOutput))
-          )
+          .then((res) => res.value.filter((v) => v != null).map((v) => new Order(v as OrderOutput)))
       )
     );
     this.orders = chunks.flat();
@@ -181,9 +166,7 @@ class OrdersStore {
     if (functions == null) return;
     const activeOrders = this.orders.filter((o) => o.status.Active != null);
     const chunks = sliceIntoChunks(activeOrders, 10).map((chunk) =>
-      chunk
-        .map((o) => o.id.toString())
-        .concat(Array(10 - chunk.length).fill("0"))
+      chunk.map((o) => o.id.toString()).concat(Array(10 - chunk.length).fill("0"))
     );
     let res = await Promise.all(
       chunks.map((chunk) =>
@@ -200,6 +183,8 @@ class OrdersStore {
       }
     });
   };
+
+  fetchTrades = async () => {};
 
   getOrdersAmount = () =>
     this.limitOrdersContract?.functions

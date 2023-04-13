@@ -8,7 +8,6 @@ import SizedBox from "@components/SizedBox";
 import { Column, Row } from "../Flex";
 import Button from "@components/Button";
 import TextArea from "@components/TextArea";
-import { isValidMnemonic } from "@src/utils/mnemonic";
 
 interface IProps {
   onClose: () => void;
@@ -73,10 +72,7 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
       <Root>
         <SizedBox height={34} />
         {!isImportInputOpened ? (
-          loginTypes.map(
-            (t, i) =>
-              t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
-          )
+          loginTypes.map((t, i) => t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />)
         ) : (
           <Column crossAxisSize="max">
             <TextArea
