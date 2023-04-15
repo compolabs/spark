@@ -40,8 +40,8 @@ const TVChartContainer = () => {
 
   const defaultProps: Omit<ChartContainerProps, "container"> = {
     // symbol: `${vm.token0.symbol}/${vm.token1.symbol}`,
-    symbol: "BTCUSDT",
-    interval: "D" as ResolutionString,
+    symbol: "BTCUSDC",
+    interval: "60" as ResolutionString,
     // datafeedUrl: "https://demo_feed.tradingview.com",
     datafeedUrl: "http://localhost:5000/api/v1",
     libraryPath: "/charting_library/",

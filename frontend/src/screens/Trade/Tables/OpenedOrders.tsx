@@ -69,9 +69,8 @@ const OpenedOrders: React.FC<IProps> = () => {
             alt="no-data"
           />
           <SizedBox height={12} />
-          <Text fitContent>
+          <Text fitContent style={{marginBottom: 24}}>
             You have no open orders.
-            <SizedBox height={24} />
           </Text>
         </Column>
       ) : (

@@ -10,7 +10,6 @@ import {
 } from "lightweight-charts";
 import { ChartVMProvider } from "@screens/Trade/Chart/ChartVm";
 import TVChartContainer from "@screens/Trade/Chart/TVChartContainer";
-import { version } from "@src/charting_library";
 interface IProps {}
 
 const Root = styled.div`
@@ -62,7 +61,6 @@ const ChartImpl: React.FC<IProps> = observer(() => {
 });
 
 const Chart: React.FC<IProps> = () => {
-  console.log(version());
   return (
     <ChartVMProvider>
       {/*<ChartImpl />*/}

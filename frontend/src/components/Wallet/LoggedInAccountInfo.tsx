@@ -97,7 +97,7 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
           content={<WalletActionsTooltip />}
         >
           <AddressContainer expanded={accountOpened}>
-            <Text size="small" weight={500}>
+            <Text size="small" weight={500} >
               {centerEllipsis(address ?? "", 10)}
             </Text>
             <SizedBox width={4} />
