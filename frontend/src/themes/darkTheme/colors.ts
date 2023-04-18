@@ -5,9 +5,10 @@ const colors = {
   neutral3: "#DFE5FA",
   neutral4: "#9A9ABD",
   neutral5: "#323846",
-  neutral6: "#0F141E",
-  neutral7: "#1A1D1F",
-  neutral8: "#111315",
+  neutral6: "#19202E",
+  neutral7: "#0F141E",
+  neutral8: "#1A1D1F",
+  neutral9: "#111315",
   primary01: "#5A81EA",
   primary02: "#3C69FF",
   primary03: "#00B493",
@@ -37,10 +38,10 @@ export default {
   divider: "rgba(223, 229, 250, 0.2)",
   switch: {
     background: colors.neutral5,
-    circleColor: colors.neutral6,
+    circleColor: colors.neutral7,
   },
   modal: {
-    background: colors.neutral7,
+    background: colors.neutral8,
     mask: "rgba(49, 58, 69, 0.8)",
   },
   table: {
@@ -56,18 +57,18 @@ export default {
     background: "#323846",
   },
   header: {
-    navLinkBackground: "#232935",
     walletInfoColor: colors.neutral4,
     walletAddressBackground: colors.neutral5,
     mobileMenuIconBackground: colors.neutral5,
     mobileMenuIconColor: colors.neutral2,
+    background: colors.neutral7,
   },
   skeleton: {
-    base: colors.neutral6,
+    base: colors.neutral7,
     highlight: colors.neutral5,
   },
   switchButtons: {
-    selectedBackground: colors.neutral6,
+    selectedBackground: colors.neutral7,
     selectedColor: colors.neutral3,
     secondaryBackground: colors.neutral5,
     secondaryColor: colors.neutral4,
@@ -99,14 +100,12 @@ export default {
   notifications: {
     boxShadow:
       "0px 0px 14px -4px rgba(227, 233, 249, 0.05), 0px 32px 48px -8px rgba(227, 233, 249, 0.1)",
-    background: colors.neutral7,
+    background: colors.neutral8,
     warningBackground: "rgb(150 93 85 / 60%)",
   },
   textArea: {
     borderColor: colors.neutral5,
   },
-  tokenDescGradient:
-    "linear-gradient(180deg, rgba(248, 248, 255, 0) 0%, #181931 100%)",
-  noNftGradient:
-    "-webkit-linear-gradient(rgba(255, 255, 255, 0), rgb(20 22 49) 57.65%);",
+  tokenDescGradient: "linear-gradient(180deg, rgba(248, 248, 255, 0) 0%, #181931 100%)",
+  noNftGradient: "-webkit-linear-gradient(rgba(255, 255, 255, 0), rgb(20 22 49) 57.65%);",
 };

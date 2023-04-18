@@ -104,13 +104,12 @@ const OrderBook: React.FC<IProps> = () => {
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
         <Text textAlign="center">Connect wallet to see orders</Text>
         <SizedBox height={12} />
-        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
-          Connect wallet
-        </Button>
+        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
       </Root>
     );
   return (
     <Root>
+      {/*Todo */}
       <Settings>
         {filters.map((image, index) => (
           <Icon
@@ -190,8 +189,8 @@ const OrderBook: React.FC<IProps> = () => {
               <Text size="small" type="error">
                 {o.reversePrice.toFormat(2)}
               </Text>
-              <Text size="small">{o.total}</Text>
-              <Text size="small">{o.amount}</Text>
+              <Text size="small">{o.totalLeft}</Text>
+              <Text size="small">{o.amountLeft}</Text>
             </Row>
           ))
         )}

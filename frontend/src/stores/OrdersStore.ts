@@ -74,12 +74,28 @@ export class Order {
 
   get amount() {
     const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
-    return am0.toFormat(am0.lt(0.01) ? 4 : 2);
+    return am0.toFormat(am0.lt(0.01) ? 9 : 2);
+  }
+
+  get amountLeft() {
+    const am0 = BN.formatUnits(
+      this.amount0.times(this.fulfilled0.div(this.amount0)),
+      this.token0.decimals
+    );
+    return am0.toFormat(am0.lt(0.01) ? 9 : 2);
   }
 
   get total() {
     const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
-    return am1.toFormat(am1.lt(0.01) ? 4 : 2);
+    return am1.toFormat(am1.lt(0.01) ? 9 : 2);
+  }
+
+  get totalLeft() {
+    const am1 = BN.formatUnits(
+      this.amount1.times(this.fulfilled1.div(this.amount1)),
+      this.token1.decimals
+    );
+    return am1.toFormat(am1.lt(0.01) ? 9 : 2);
   }
 }
 
@@ -162,6 +178,7 @@ class OrdersStore {
   };
 
   updateActiveOrders = async () => {
+    if (this.orders.length === 0) await this.fetchNewOrders();
     let functions = this.limitOrdersContract?.functions;
     if (functions == null) return;
     const activeOrders = this.orders.filter((o) => o.status.Active != null);

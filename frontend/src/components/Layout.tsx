@@ -3,7 +3,7 @@ import { Column } from "@components/Flex";
 
 const Layout = styled(Column)`
   width: 100%;
-  max-width: 1400px;
+  max-width: 1660px;
   align-items: center;
   min-height: calc(100vh - 140px);
 `;

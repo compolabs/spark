@@ -14,14 +14,14 @@ const Root = styled.div`
   width: 64px;
   height: 48px;
 
-  .menu-icon {
-    transform: scale(1.5);
-  }
+  //.menu-icon {
+  //  transform: scale(1.5);
+  //}
 
   .menu-icon {
     position: relative;
-    width: 13px;
-    height: 13px;
+    width: 20px;
+    height: 18px;
     cursor: pointer;
 
     .menu-icon__cheeckbox {
@@ -37,14 +37,12 @@ const Root = styled.div`
     }
 
     div {
-      margin: auto;
       position: absolute;
       top: 0;
       right: 0;
       left: 0;
       bottom: 0;
-      //width: 22px;
-      height: 6px;
+      height: 13px;
     }
 
     span {
@@ -53,15 +51,18 @@ const Root = styled.div`
       width: 100%;
       height: 1px;
       background: ${({ theme }) => theme.colors.header.mobileMenuIconColor};
-      border-radius: 4px;
       transition: all 0.2s cubic-bezier(0.1, 0.82, 0.76, 0.965);
-
+      flex-shrink: 0;
       &:first-of-type {
-        top: 0;
+        top: 0px;
+      }
+
+      &:nth-of-type(2) {
+        top: 6px;
       }
 
       &:last-of-type {
-        bottom: 1px;
+        bottom: 0px;
       }
     }
 
@@ -70,12 +71,16 @@ const Root = styled.div`
       span {
         &:first-of-type {
           transform: rotate(45deg);
-          top: 3px;
+          top: 6px;
+        }
+
+        &:nth-of-type(2) {
+          opacity: 0;
         }
 
         &:last-of-type {
           transform: rotate(-45deg);
-          bottom: 2px;
+          bottom: 6px;
         }
       }
     }
@@ -93,6 +98,7 @@ const MobileMenuIcon: React.FC<IProps> = ({ opened, onClick }) => {
           onChange={() => null}
         />
         <div>
+          <span></span>
           <span></span>
           <span></span>
         </div>

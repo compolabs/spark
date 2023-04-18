@@ -73,12 +73,12 @@ const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => {
     { name: "Faucet", link: ROUTES.FAUCET, outer: false },
     {
       name: "Docs",
-      link: "https://github.com/sway-gang/sway-network#readme",
+      link: "https://docs.allspark.gg/",
       outer: true,
     },
     {
       name: "Github",
-      link: "https://github.com/sway-gang/sway-exchange",
+      link: "https://github.com/compolabs/spark",
       outer: true,
     },
     {

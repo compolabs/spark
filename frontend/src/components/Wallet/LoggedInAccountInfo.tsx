@@ -2,16 +2,14 @@ import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { Row } from "@components/Flex";
 import SizedBox from "@components/SizedBox";
-import Text from "@components/Text";
 import { useStores } from "@stores";
 import Tooltip from "@components/Tooltip";
 import { observer } from "mobx-react-lite";
 import WalletActionsTooltip from "./WalletActionsTooltip";
 import centerEllipsis from "@src/utils/centerEllipsis";
-import TokenIcon from "@components/TokenIcon";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
+import * as identityImg from "identity-img";
 import { useTheme } from "@emotion/react";
-import BN from "@src/utils/BN";
+import EthBalance from "@components/Wallet/EthBalance";
 
 interface IProps {}
 
@@ -29,28 +27,22 @@ const Root = styled(Row)`
     cursor: pointer;
   }
 `;
-const Container = styled(Row)`
-  border: 2px solid
-    ${({ theme }) => theme.colors.header.walletAddressBackground};
-  border-radius: 4px;
-`;
-const BalanceContainer = styled(Row)`
-  align-items: center;
-  justify-content: center;
-  background: ${({ theme }) => theme.colors.mainBackground};
-  padding: 10px 16px;
-  border-radius: 4px;
-`;
+
 const AddressContainer = styled.div<{ expanded: boolean }>`
   display: flex;
-  border-radius: 4px 0 0 4px;
-  padding: 10px 16px;
-  background: ${({ theme }) => theme.colors.header.walletAddressBackground};
-
-  :hover {
-    // background: ${({ theme }) => theme.colors.neutral1};
-  }
-
+  align-items: center;
+  justify-content: center;
+  border: 2px solid ${({ theme }) => theme.colors.neutral1};
+  box-sizing: border-box;
+  padding: 0 16px;
+  border-radius: 4px;
+  height: 40px;
+  margin-left: 24px;
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: ${({ theme }) => theme.colors.neutral0};
   .avatar {
     transition: 0.4s;
     width: 24px;
@@ -61,33 +53,20 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
 
   .menu-arrow {
     transition: 0.4s;
-    transform: ${({ expanded }) =>
-      expanded ? "rotate(-90deg)" : "rotate(0deg)"};
+    transform: ${({ expanded }) => (expanded ? "rotate(-90deg)" : "rotate(0deg)")};
   }
 `;
 
 const LoggedInAccountInfo: React.FC<IProps> = () => {
   const { accountStore } = useStores();
   const { address } = accountStore;
+  const avatar = address && identityImg.create(address, { size: 24 * 3 });
   const theme = useTheme();
-  const eth = TOKENS_BY_SYMBOL.ETH;
-  const balance = accountStore.findBalanceByAssetId(eth.assetId);
-  const formattedBalance = BN.formatUnits(
-    balance?.balance ?? BN.ZERO,
-    eth?.decimals
-  );
   const [accountOpened, setAccountOpened] = useState<boolean>(false);
   return (
     <Root>
-      <SizedBox width={4} />
-      <Container justifyContent="center" alignItems="center">
-        <BalanceContainer>
-          <TokenIcon size="tiny" src={eth.logo} alt="token" />
-          <SizedBox width={4} />
-          <Text size="small" weight={500}>
-            {formattedBalance.toFormat(4)}
-          </Text>
-        </BalanceContainer>
+      <Row justifyContent="center" alignItems="center">
+        <EthBalance />
         <Tooltip
           config={{
             placement: "bottom-end",
@@ -97,18 +76,13 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
           content={<WalletActionsTooltip />}
         >
           <AddressContainer expanded={accountOpened}>
-            <Text size="small" weight={500} >
-              {centerEllipsis(address ?? "", 10)}
-            </Text>
+            <img className="avatar" src={avatar!} alt="avatar" />
+            {centerEllipsis(address ?? "", 8)}
             <SizedBox width={4} />
-            <img
-              src={theme.images.icons.arrowDown}
-              className="menu-arrow"
-              alt="arrow"
-            />
+            <img src={theme.images.icons.arrowDown} className="menu-arrow" alt="arrow" />
           </AddressContainer>
         </Tooltip>
-      </Container>
+      </Row>
     </Root>
   );
 };

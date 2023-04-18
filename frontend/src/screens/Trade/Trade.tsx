@@ -21,7 +21,7 @@ const Root = styled.div`
   flex-direction: column;
   gap: 4px;
   height: calc(100vh - 48px);
-  margin: 16px;
+  //margin: 16px;
 
   > div {
     border-radius: 4px;

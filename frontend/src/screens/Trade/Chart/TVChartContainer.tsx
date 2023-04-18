@@ -23,7 +23,9 @@ export interface ChartContainerProps {
   fullscreen: ChartingLibraryWidgetOptions["fullscreen"];
   autosize: ChartingLibraryWidgetOptions["autosize"];
   studiesOverrides: ChartingLibraryWidgetOptions["studies_overrides"];
+  overrides: ChartingLibraryWidgetOptions["overrides"];
   container: ChartingLibraryWidgetOptions["container"];
+  custom_css_url: ChartingLibraryWidgetOptions["custom_css_url"];
 }
 
 const getLanguageFromURL = (): LanguageCode | null => {
@@ -50,8 +52,15 @@ const TVChartContainer = () => {
     fullscreen: false,
     autosize: true,
     studiesOverrides: {},
+    overrides: {
+      "paneProperties.background": "#222936",
+      "paneProperties.backgroundType": "solid",
+      "scalesProperties.lineColor": "#878FA0",
+      "scalesProperties.textColor": "#878FA0",
+    },
+    custom_css_url: "src/screens/Trade/Chart/tw-styles.css",
   };
-
+  const { location } = window;
   useEffect(() => {
     const widgetOptions: ChartingLibraryWidgetOptions = {
       symbol: defaultProps.symbol as string,
@@ -72,7 +81,9 @@ const TVChartContainer = () => {
       fullscreen: defaultProps.fullscreen,
       autosize: defaultProps.autosize,
       studies_overrides: defaultProps.studiesOverrides,
+      overrides: defaultProps.overrides,
       theme: "Dark",
+      custom_css_url: `${location.origin}/tw-chart-styles.css`,
     };
 
     const tvWidget = new widget(widgetOptions);
@@ -84,7 +95,7 @@ const TVChartContainer = () => {
     //     button.addEventListener("click", () =>
     //       tvWidget.showNoticeDialog({
     //         title: "Notification",
-    //         body: "TradingView Charting Library API works correctly",
+    //         body: "Press and hold ⌘ while zooming to maintain the chart position",
     //         callback: () => {
     //           console.log("Noticed!");
     //         },
