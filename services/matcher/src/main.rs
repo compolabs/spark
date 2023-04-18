@@ -7,6 +7,7 @@ use fuels::{
     prelude::{Bech32ContractId, Provider, WalletUnlocked},
     types::ContractId,
 };
+use tai64::Tai64;
 // use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
 use std::{collections::HashMap, env, fs, str::FromStr, thread::sleep, time::Duration};
 use utils::{
@@ -122,13 +123,13 @@ async fn main() {
                         vec[0].insert("amount0", trade0.amount_0.to_string());
                         vec[0].insert("asset1", format!("0x{}", trade0.asset_1));
                         vec[0].insert("amount1", trade0.amount_1.to_string());
-                        vec[0].insert("timestamp", trade0.timestamp.to_string());
+                        vec[0].insert("timestamp", Tai64(trade0.timestamp).to_unix().to_string());
 
                         vec[1].insert("asset0", format!("0x{}", trade1.asset_0));
                         vec[1].insert("amount0", trade1.amount_0.to_string());
                         vec[1].insert("asset1", format!("0x{}", trade1.asset_1));
                         vec[1].insert("amount1", trade1.amount_1.to_string());
-                        vec[1].insert("timestamp", trade1.timestamp.to_string());
+                        vec[1].insert("timestamp", Tai64(trade1.timestamp).to_unix().to_string());
 
                         let _res = client.post(url).json(&vec).send().await.unwrap();
 

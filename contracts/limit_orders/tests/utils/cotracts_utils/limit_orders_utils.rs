@@ -226,7 +226,7 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract<WalletUnlocked>,
         order_id_a: u64,
         order_id_b: u64,
-    ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
+    ) -> Result<FuelCallResponse<(Trade, Trade)>, fuels::prelude::Error> {
         let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()
