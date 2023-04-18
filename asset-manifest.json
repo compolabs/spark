@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.ce76ff7c.css",
-    "main.js": "/static/js/main.76e1ea44.js",
+    "main.css": "/static/css/main.3da62014.css",
+    "main.js": "/static/js/main.ce50f34d.js",
     "static/media/Roboto-Medium.ttf": "/static/media/Roboto-Medium.7429a63c09f79a1760b0.ttf",
     "static/media/Roboto-Regular.ttf": "/static/media/Roboto-Regular.a8d6ac03c7b96b7acb62.ttf",
     "static/media/uni.svg": "/static/media/uni.6391a5f3e78c0e2f99a71c47e7e9c78d.svg",
@@ -23,9 +23,6 @@
     "static/media/BNB.svg": "/static/media/BNB.2b5bc0cd84912d20ca0de74170009610.svg",
     "static/media/BUSD.svg": "/static/media/BUSD.b8ba31028c9a61298ffb999f0740d766.svg",
     "static/media/success.svg": "/static/media/success.d4aa5ac2cf87bf6b3626a89ee8adda18.svg",
-    "static/media/buyOrderBookIcon.svg": "/static/media/buyOrderBookIcon.a3d9eb8ba7c52b95a0f992371a9298ae.svg",
-    "static/media/sellOrderBookIcon.svg": "/static/media/sellOrderBookIcon.13e50fd55182ac18fee9a5922b511139.svg",
-    "static/media/buyAndSellOrderBookIcon.svg": "/static/media/buyAndSellOrderBookIcon.db9c42c59c38a37f3257605e0cad0a6a.svg",
     "static/media/error.svg": "/static/media/error.c3fd708d211c86eb584ae02e52aa0a3c.svg",
     "static/media/warning.svg": "/static/media/warning.cb2ec9ac289b436331ebc6036f7e2d45.svg",
     "static/media/information.svg": "/static/media/information.d341d3c6daf19083c652d9b27d717aa0.svg",
@@ -34,11 +31,11 @@
     "static/media/close.svg": "/static/media/close.3d635b3db9108f8d154a7a3b5690f9a7.svg",
     "static/media/arrowDown.svg": "/static/media/arrowDown.439885b9fa0fcdee97792e471d44cb6c.svg",
     "static/media/darkArrowDown.svg": "/static/media/darkArrowDown.adec464f3dcbc33ddb97012c3224d7ba.svg",
-    "main.ce76ff7c.css.map": "/static/css/main.ce76ff7c.css.map",
-    "main.76e1ea44.js.map": "/static/js/main.76e1ea44.js.map"
+    "main.3da62014.css.map": "/static/css/main.3da62014.css.map",
+    "main.ce50f34d.js.map": "/static/js/main.ce50f34d.js.map"
   },
   "entrypoints": [
-    "static/css/main.ce76ff7c.css",
-    "static/js/main.76e1ea44.js"
+    "static/css/main.3da62014.css",
+    "static/js/main.ce50f34d.js"
   ]
 }
