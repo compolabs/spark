@@ -89,10 +89,7 @@ const Desktop = styled.div`
 `;
 
 const LogoContainer = styled.img`
-  height: 40px;
-  @media (min-width: 880px) {
-    height: 48px;
-  }
+  height: 100%;
 `;
 
 const Header: React.FC<IProps> = () => {

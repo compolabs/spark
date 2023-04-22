@@ -9,17 +9,32 @@ use fuels::{
 };
 use tai64::Tai64;
 // use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
+use serde::Deserialize;
 use std::{collections::HashMap, env, fs, str::FromStr, thread::sleep, time::Duration};
-use utils::{
-    limit_orders_utils::{LimitOrdersContract, Order, Status},
-    orders_fetcher::OrdersFetcher,
-};
+use utils::limit_orders_utils::LimitOrdersContract;
+
 mod utils;
 
 // const RPC: &str = "beta-3.fuel.network";
 const RPC: &str = "127.0.0.1:4000";
 const LIMIT_ORDERS_ADDRESS: &str =
     "0x7662a02959e3e2d681589261e95a7a4bc8ac66c6d66999a0fe01bb6c36ada7c6";
+
+#[derive(Deserialize, Debug)]
+pub struct OrderResponse {
+    asset0: ContractId,
+    amount0: String,
+    asset1: ContractId,
+    amount1: String,
+    status: String,
+    // fulfilled0: String,
+    // fulfilled1: String,
+    // owner: Address,
+    id: u64,
+    // timestamp: u64,
+    // matcher_fee: String,
+    // matcher_fee_used: String,
+}
 
 #[tokio::main]
 async fn main() {
@@ -35,9 +50,9 @@ async fn main() {
     let bech32_id = Bech32ContractId::from(ContractId::from_str(LIMIT_ORDERS_ADDRESS).unwrap());
     let instance = LimitOrdersContract::new(bech32_id.clone(), wallet.clone());
 
-    let mut orders_fetcher =
-        OrdersFetcher::new(LimitOrdersContract::new(bech32_id, wallet.clone()));
-    orders_fetcher.fetch_all_orders().await;
+    // let mut orders_fetcher =
+    // OrdersFetcher::new(LimitOrdersContract::new(bech32_id, wallet.clone()));
+    // orders_fetcher.fetch_all_orders().await;
 
     let tokens_json_str =
         fs::read_to_string("src/tokens.json").expect("Should have been able to read the file");
@@ -54,45 +69,49 @@ async fn main() {
     // let channel = ChannelId(channel_id.parse::<u64>().unwrap());
 
     let client = reqwest::Client::new();
-    let url = "http://localhost:5000/api/v1/trade";
 
     print_swaygang_sign("✅ Matcher is alive");
     loop {
-        orders_fetcher.update_active_orders().await;
-        orders_fetcher.fetch_new_orders().await;
-        let mut orders: Vec<Order> = orders_fetcher
-            .orders
-            .clone()
-            .into_iter()
-            .filter(|o| o.status == Status::Active)
-            .collect();
+        let url = "http://localhost:5000/api/v1/orders?status=Active";
+        let res = client.get(url).send().await;
+        if res.is_err() {
+            sleep(Duration::from_secs(10));
+            continue;
+        }
+        let orders = res.unwrap().text().await.unwrap();
+        let orders: Vec<OrderResponse> = serde_json::from_str(&orders).unwrap();
+        let mut fullfiled: Vec<u64> = vec![];
         let mut i = 0;
         'a_order_cycle: while i < orders.len() {
-            let order_a = &orders[i].clone();
+            let order_a = &orders[i];
             let mut j = 0;
 
             while j < orders.len() {
-                let order_b = orders[j].clone();
-                let price_a = order_a.amount_1 as f64 / order_a.amount_0 as f64;
-                let price_b = order_b.amount_0 as f64 / order_b.amount_1 as f64;
-                if order_a.asset_0 == order_b.asset_1
-                    && order_a.asset_1 == order_b.asset_0
+                let order_b = &orders[j];
+                let price_a = order_a.amount1.parse::<f64>().unwrap()
+                    / order_a.amount0.parse::<f64>().unwrap();
+                let price_b = order_b.amount0.parse::<f64>().unwrap()
+                    / order_b.amount1.parse::<f64>().unwrap();
+                if order_a.asset0 == order_b.asset1
+                    && order_a.asset1 == order_b.asset0
                     && price_a <= price_b
-                    && order_a.status == Status::Active
-                    && order_b.status == Status::Active
+                    && order_a.status == "Active"
+                    && order_b.status == "Active"
+                    && !fullfiled.contains(&order_a.id)
+                    && !fullfiled.contains(&order_b.id)
                 {
                     let res = match_orders(&instance, order_a.id, order_b.id).await;
                     if res.is_ok() {
-                        orders[i].status = Status::Completed;
-                        orders[j].status = Status::Completed;
+                        fullfiled.push(order_a.id);
+                        fullfiled.push(order_b.id);
 
                         let asset0 = tokens.into_iter().find(|t| {
                             t["asset_id"].as_str().unwrap()
-                                == format!("0x{}", order_a.asset_0.to_string())
+                                == format!("0x{}", order_a.asset0.to_string())
                         });
                         let asset1 = tokens.into_iter().find(|t| {
                             t["asset_id"].as_str().unwrap()
-                                == format!("0x{}", order_a.asset_1.to_string())
+                                == format!("0x{}", order_a.asset1.to_string())
                         });
                         if asset0.is_none() || asset1.is_none() {
                             println!("asset0/asset1 is not found");
@@ -106,11 +125,11 @@ async fn main() {
                         let msg = format!(
                             "Match 👩‍❤️‍👨!\n Order {}: {} {a_symbol} ➡️ {} {b_symbol}\n Order {}: {} {b_symbol} ➡️ {} {a_symbol}\n\n",
                             order_a.id,
-                            order_a.amount_0 as f64 / 10f64.powf(a_decimals),
-                            order_a.amount_1 as f64 / 10f64.powf(b_decimals),
+                            order_a.amount0.parse::<f64>().unwrap() / 10f64.powf(a_decimals),
+                            order_a.amount1.parse::<f64>().unwrap() / 10f64.powf(b_decimals),
                             order_b.id,
-                            order_b.amount_0 as f64 / 10f64.powf(b_decimals),
-                            order_b.amount_1 as f64 / 10f64.powf(a_decimals),
+                            order_b.amount0.parse::<f64>().unwrap() / 10f64.powf(b_decimals),
+                            order_b.amount1.parse::<f64>().unwrap() / 10f64.powf(a_decimals),
                         );
                         // channel
                         //     .say(client.cache_and_http.http.clone(), msg)
@@ -131,6 +150,7 @@ async fn main() {
                         vec[1].insert("amount1", trade1.amount_1.to_string());
                         vec[1].insert("timestamp", Tai64(trade1.timestamp).to_unix().to_string());
 
+                        let url = "http://localhost:5000/api/v1/trade";
                         let _res = client.post(url).json(&vec).send().await.unwrap();
 
                         println!("{msg}");

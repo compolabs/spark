@@ -5,14 +5,20 @@ use fuels::{
     prelude::{Bech32ContractId, Provider, WalletUnlocked},
     types::{Address, ContractId},
 };
+use serde_json::from_str;
 // use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
-use std::{collections::HashMap, env, fs, str::FromStr, thread::sleep, time::Duration};
-use utils::limit_orders_utils::{
-    limit_orders_abi_calls::{create_order, CreatreOrderArguments},
-    LimitOrdersContract, Status,
+use std::{
+    collections::HashMap, env, fs::read_to_string, str::FromStr, thread::sleep, time::Duration,
+};
+use utils::{
+    limit_orders_utils::{
+        limit_orders_abi_calls::{create_order, CreatreOrderArguments},
+        LimitOrdersContract,
+    },
+    token_utils::{token_abi_calls::mint_and_transfer, TokenContract},
 };
 mod utils;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
 // const RPC: &str = "beta-3.fuel.network";
 const RPC: &str = "127.0.0.1:4000";
@@ -56,10 +62,17 @@ async fn main() {
     let wallet = WalletUnlocked::new_from_private_key(secret.parse().unwrap(), Some(provider));
 
     let bech32_id = Bech32ContractId::from(ContractId::from_str(LIMIT_ORDERS_ADDRESS).unwrap());
-    let instance = LimitOrdersContract::new(bech32_id.clone(), wallet.clone());
+    let spark_instance = LimitOrdersContract::new(bech32_id.clone(), wallet.clone());
 
-    let tokens_json_str = fs::read_to_string("src/tokens.json").expect("No tokens.json");
-    let tokens: Vec<Token> = serde_json::from_str(tokens_json_str.as_str()).unwrap();
+    let token_configs: Vec<Token> = from_str(&read_to_string("src/tokens.json").unwrap()).unwrap();
+    let mut configs: HashMap<String, Token> = HashMap::new();
+    let mut token_instances: HashMap<String, TokenContract<WalletUnlocked>> = HashMap::new();
+    for config in token_configs {
+        let contract_id: Bech32ContractId = ContractId::from_str(&config.asset_id).unwrap().into();
+        let token_instance = TokenContract::new(contract_id, wallet.clone());
+        token_instances.insert(config.symbol, token_instance);
+        configs.insert(config.symbol, config);
+    }
 
     let client = reqwest::Client::new();
     // let url = format!("{backend_url}/allSymbols");
@@ -70,10 +83,8 @@ async fn main() {
     loop {
         for symbol in symbols.iter() {
             let split: Vec<&str> = symbol.split("/").collect();
-            let asset0 = (&tokens).into_iter().find(|t| t.symbol == split[0]);
-            let asset0 = asset0.unwrap();
-            let asset1 = (&tokens).into_iter().find(|t| t.symbol == split[1]);
-            let asset1 = asset1.unwrap();
+            let asset0 = &configs[split[0]];
+            let asset1 = &configs[split[1]];
 
             let price_decimal: u32 = 9;
             //TODO get price from oracle----------------------------------------------
@@ -81,17 +92,24 @@ async fn main() {
             let price1 = asset1.default_price;
             let price: f64 = price0 as f64 / price1 as f64 * 10u64.pow(price_decimal) as f64;
             //------------------------------------------------------------------------
-
-            let amount0 = 1000 / price0; //todo * decimal0 / 1e9
-                                         //TODO mint amount0
+            let amount0: u128 = 10u128.pow((9 + 3 + asset0.decimals).into()) / price0 as u128;
+            println!("amount0 = {:?}", amount0);
+            
+            mint_and_transfer(
+                &token_instances[&asset0.symbol],
+                amount0 as u64,
+                Address::from(wallet.address()),
+            )
+            .await;
+            //TODO mint amount0
             let args = CreatreOrderArguments {
                 asset0: AssetId::from_str(&asset0.asset_id).unwrap().into(),
-                amount0,
+                amount0: amount0 as u64,
                 asset1: ContractId::from_str(&asset1.asset_id).unwrap().into(),
                 amount1: 0, //TODO calc amount 1
                 matcher_fee: 1000,
             };
-            create_order(&instance, &args).await.unwrap();
+            create_order(&spark_instance, &args).await.unwrap();
 
             sleep(Duration::from_secs(10));
 

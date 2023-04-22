@@ -32,7 +32,7 @@ pub mod limit_orders_abi_calls {
     //         .value
     // }
 
-    pub async fn orders_by_id(
+    pub async fn _orders_by_id(
         contract: &LimitOrdersContract<WalletUnlocked>,
         ids: [u64; 10],
     ) -> (
@@ -79,7 +79,7 @@ pub mod limit_orders_abi_calls {
     //         .unwrap()
     //         .value
     // }
-    pub async fn get_orders(
+    pub async fn _get_orders(
         contract: &LimitOrdersContract<WalletUnlocked>,
         offset: u64,
     ) -> (

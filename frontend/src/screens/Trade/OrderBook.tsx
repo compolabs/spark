@@ -64,13 +64,11 @@ const OrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const { ordersStore, accountStore, settingsStore } = useStores();
   const [orderFilter, setOrderFilter] = useState(0);
-  const activeOrdersForCurrentPair = ordersStore.orders
-    .filter((o) => o.status.Active != null)
-    .filter(
-      (o) =>
-        (vm.assetId1 === o.asset0 && vm.assetId0 === o.asset1) ||
-        (vm.assetId1 === o.asset1 && vm.assetId0 === o.asset0)
-    );
+  const activeOrdersForCurrentPair = ordersStore.activeOrders.filter(
+    (o) =>
+      (vm.assetId1 === o.asset0 && vm.assetId0 === o.asset1) ||
+      (vm.assetId1 === o.asset1 && vm.assetId0 === o.asset0)
+  );
 
   const buyOrders = activeOrdersForCurrentPair
     .filter((o) => o.asset0 === vm.assetId0)

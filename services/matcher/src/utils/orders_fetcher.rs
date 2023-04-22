@@ -2,8 +2,7 @@ use fuels::prelude::WalletUnlocked;
 use tuple_conv::RepeatedTuple;
 
 use super::limit_orders_utils::{
-    limit_orders_abi_calls::{get_orders, orders_by_id},
-    LimitOrdersContract, Order, Status,
+    limit_orders_abi_calls::{orders_by_id, get_orders}, LimitOrdersContract, Order, Status,
 };
 
 pub struct OrdersFetcher {
