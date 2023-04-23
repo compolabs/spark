@@ -17,7 +17,7 @@ abigen!(
 );
 
 const RPC: &str = "beta-3.fuel.network";
-const SECRET: &str = "0da41b477ec84d3569179e48e608d5b3e5a2f7dab24be1ca0cd0da42e5e42781";
+const SECRET: &str = "";
 const CONTRACT: &str = "0x7662a02959e3e2d681589261e95a7a4bc8ac66c6d66999a0fe01bb6c36ada7c6";
 const BTC_ASSET_ID: &str = "0xf7d6d3344dd36493d7e6b02b16a679778ad24539e2698af02558868a6f2feb81";
 const USDC_ASSET_ID: &str = "0x56fb8789a590ea9c12af6fe6dc2b43f347700b049d4f823fd4476c6f366af201";
