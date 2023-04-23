@@ -55,12 +55,13 @@ const OrderRow = styled.div<{ noHover?: boolean }>`
     ${({ noHover }) => !noHover && "background:  #323846;"};
   }
 `;
-const Container = styled.div`
+const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
   width: 100%;
-  height: 100%;
+  ${({ fitContent }) => !fitContent && "height: 100%;"};
+  ${({ reverse }) => reverse && "flex-direction: column-reverse;"};
 `;
 const roundOptions = [2, 4, 5, 6].map((v) => ({
   title: `${v} decimals`,
@@ -104,6 +105,8 @@ const OrderBook: React.FC<IProps> = () => {
     `Total ${vm.token1.symbol}`,
   ];
 
+  const spread = 3.5;
+  const currentPrice = new BN(20000).toFormat();
   if (!accountStore.isLoggedIn)
     return (
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
@@ -116,7 +119,6 @@ const OrderBook: React.FC<IProps> = () => {
     );
   return (
     <Root>
-      {/*Todo */}
       <Row justifyContent="space-between" alignItems="center">
         <Settings>
           {filters.map((image, index) => (
@@ -146,32 +148,62 @@ const OrderBook: React.FC<IProps> = () => {
       </OrderRow>
       <Divider />
       <SizedBox height={8} />
-      <Container>
+      <Container
+        fitContent={orderFilter === 1 || orderFilter === 2}
+        reverse={orderFilter === 1}
+      >
         {!ordersStore.initialized ? (
           <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
         ) : (
-          orderFilter !== 2 &&
-          buyOrders.map((o, index) => (
-            <Row style={{ margin: "4px 0" }} key={index + "positive"}>
-              <Text
-                size="small"
-                type="green"
-                onClick={() => {
-                  const price = BN.parseUnits(o.price, vm.token1.decimals);
-                  vm.setSellPrice(price, true);
-                  vm.setBuyPrice(price, true);
-                }}
-              >
-                {o.price.toFormat(+round)}
-              </Text>
-              <Text size="small">{o.amount}</Text>
-              <Text size="small">{o.total}</Text>
-            </Row>
-          ))
+          <>
+            {orderFilter === 0 &&
+              Array.from({
+                length: buyOrders.length < 12 ? 13 - buyOrders.length : 0,
+              }).map((o, index) => (
+                <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Text
+                      size="small"
+                      textAlign={
+                        i === 0 ? undefined : i === 1 ? "center" : "right"
+                      }
+                    >
+                      -
+                    </Text>
+                  ))}
+                </Row>
+              ))}
+            {orderFilter !== 2 &&
+              buyOrders.map((o, index) => (
+                <Row style={{ margin: "4px 0" }} key={index + "positive"}>
+                  <Text
+                    size="small"
+                    type="green"
+                    onClick={() => {
+                      const price = BN.parseUnits(o.price, vm.token1.decimals);
+                      vm.setSellPrice(price, true);
+                      vm.setBuyPrice(price, true);
+                    }}
+                  >
+                    {o.price.toFormat(+round)}
+                  </Text>
+                  <Text textAlign="center" size="small">
+                    {o.amount}
+                  </Text>
+                  <Text textAlign="right" size="small">
+                    {o.total}
+                  </Text>
+                </Row>
+              ))}
+          </>
         )}
-        <SizedBox height={8} />
-        <Divider />
-        <SizedBox height={8} />
+        {orderFilter === 0 && (
+          <>
+            <SizedBox height={8} />
+            <Divider />
+            <SizedBox height={8} />
+          </>
+        )}
         <Row>
           {!ordersStore.initialized ? (
             <>
@@ -180,33 +212,72 @@ const OrderBook: React.FC<IProps> = () => {
               <Skeleton height={20} />
             </>
           ) : (
-            <></>
+            <Row>
+              <Text weight={500} size="small">
+                {currentPrice}
+              </Text>
+              <Text
+                textAlign="right"
+                type="secondary"
+                size="small"
+              >{`SPREAD ${spread} %`}</Text>
+            </Row>
           )}
         </Row>
-        <SizedBox height={8} />
-        <Divider />
-        <SizedBox height={8} />
+        {orderFilter === 0 && (
+          <>
+            <SizedBox height={8} />
+            <Divider />
+            <SizedBox height={8} />
+          </>
+        )}
         {!ordersStore.initialized ? (
           <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
         ) : (
-          orderFilter !== 1 &&
-          sellOrders.map((o, index) => (
-            <Row
-              style={{ margin: "4px 0" }}
-              key={index + "negative"}
-              onClick={() => {
-                const price = BN.parseUnits(o.reversePrice, vm.token1.decimals);
-                vm.setSellPrice(price, true);
-                vm.setBuyPrice(price, true);
-              }}
-            >
-              <Text size="small" type="error">
-                {o.reversePrice.toFormat(+round)}
-              </Text>
-              <Text size="small">{o.totalLeft}</Text>
-              <Text size="small">{o.amountLeft}</Text>
-            </Row>
-          ))
+          <>
+            {orderFilter !== 1 &&
+              sellOrders.map((o, index) => (
+                <Row
+                  style={{ margin: "4px 0" }}
+                  key={index + "negative"}
+                  onClick={() => {
+                    const price = BN.parseUnits(
+                      o.reversePrice,
+                      vm.token1.decimals
+                    );
+                    vm.setSellPrice(price, true);
+                    vm.setBuyPrice(price, true);
+                  }}
+                >
+                  <Text size="small" type="error">
+                    {o.reversePrice.toFormat(+round)}
+                  </Text>
+                  <Text textAlign="center" size="small">
+                    {o.totalLeft}
+                  </Text>
+                  <Text textAlign="right" size="small">
+                    {o.amountLeft}
+                  </Text>
+                </Row>
+              ))}
+            {orderFilter === 0 &&
+              Array.from({
+                length: sellOrders.length < 12 ? 13 - sellOrders.length : 0,
+              }).map((o, index) => (
+                <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <Text
+                      textAlign={
+                        i === 0 ? undefined : i === 1 ? "center" : "right"
+                      }
+                      size="small"
+                    >
+                      -
+                    </Text>
+                  ))}
+                </Row>
+              ))}
+          </>
         )}
       </Container>
     </Root>
