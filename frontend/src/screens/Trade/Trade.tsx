@@ -12,6 +12,7 @@ import OrderDesktop from "@screens/Trade/Order/OrderDesktop";
 import OrderMobile from "@screens/Trade/Order/OrderMobile";
 import TradingViewWidget from "./Chart";
 import SizedBox from "@components/SizedBox";
+import Trades from "@screens/Trade/Trades";
 
 interface IProps {}
 
@@ -21,18 +22,13 @@ const Root = styled.div`
   flex-direction: column;
   gap: 4px;
   height: calc(100vh - 48px);
-  //margin: 16px;
-
-  > div {
-    border-radius: 4px;
-  }
 
   @media (min-width: 880px) {
     height: calc(100vh - 62px);
     display: grid;
     grid-template:
       "orderbook chart pairs" 484px
-      "orderbook order pairs" 308px
+      "orderbook order trades" 308px
       "tables tables tables" 290px / minmax(250px, 340px) minmax(510px, 1fr) minmax(250px, 326px);
   }
 `;
@@ -51,6 +47,7 @@ const TradeImpl: React.FC<IProps> = () => {
                   <TradingViewWidget />
                   <OrderDesktop />
                   <PairsList />
+                  <Trades />
                   <Tables />
                   <SizedBox height={1} />
                 </>
@@ -58,6 +55,7 @@ const TradeImpl: React.FC<IProps> = () => {
                 <>
                   <MobileStats />
                   <PairsList />
+                  <Trades />
                   <TradingViewWidget />
                   <Tables />
                   <OrderMobile />
