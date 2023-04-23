@@ -12,8 +12,6 @@ import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import Skeleton from "react-loading-skeleton";
 import Button from "@components/Button";
-import Select from "@src/components/Select";
-import { Row } from "@src/components/Flex";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -36,10 +34,10 @@ const Icon = styled.img<{ selected?: boolean }>`
   margin-right: 8px;
   ${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
 `;
-const OrderRow = styled.div<{ noHover?: boolean }>`
+const Row = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  ${({ noHover }) => !noHover && "cursor: pointer;"};
+  cursor: pointer;
 
   text-align: center;
 
@@ -52,7 +50,7 @@ const OrderRow = styled.div<{ noHover?: boolean }>`
   }
 
   :hover {
-    ${({ noHover }) => !noHover && "background:  #323846;"};
+    background: #323846;
   }
 `;
 const Container = styled.div`
@@ -62,13 +60,8 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
 `;
-const roundOptions = [4, 5, 6].map((v) => ({
-  title: `${v} decimals`,
-  key: v.toString(),
-}));
 const OrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
-  const [round, setRound] = useState("4");
   const { ordersStore, accountStore, settingsStore } = useStores();
   const [orderFilter, setOrderFilter] = useState(0);
   const activeOrdersForCurrentPair = ordersStore.activeOrders.filter(
@@ -109,40 +102,32 @@ const OrderBook: React.FC<IProps> = () => {
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
         <Text textAlign="center">Connect wallet to see orders</Text>
         <SizedBox height={12} />
-        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
-          Connect wallet
-        </Button>
+        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
       </Root>
     );
   return (
     <Root>
-      <Row justifyContent="space-between" alignItems="center">
-        <Settings>
-          {filters.map((image, index) => (
-            <Icon
-              key={index}
-              src={image}
-              alt="filter"
-              selected={orderFilter === index}
-              onClick={() => ordersStore.initialized && setOrderFilter(index)}
-            />
-          ))}
-        </Settings>
-        <Select
-          options={roundOptions}
-          selected={roundOptions.find(({ key }) => key === round)}
-          onSelect={({ key }) => setRound(key)}
-        />
-      </Row>
+      {/*Todo */}
+      <Settings>
+        {filters.map((image, index) => (
+          <Icon
+            key={index}
+            src={image}
+            alt="filter"
+            selected={orderFilter === index}
+            onClick={() => ordersStore.initialized && setOrderFilter(index)}
+          />
+        ))}
+      </Settings>
       <SizedBox height={8} />
       <Divider />
-      <OrderRow noHover>
+      <Row>
         {columns.map((v) => (
           <Text size="small" key={v} type="secondary">
             {v}
           </Text>
         ))}
-      </OrderRow>
+      </Row>
       <Divider />
       <SizedBox height={8} />
       <Container>
@@ -161,7 +146,7 @@ const OrderBook: React.FC<IProps> = () => {
                   vm.setBuyPrice(price, true);
                 }}
               >
-                {o.price.toFormat(+round)}
+                {o.price.toFormat(2)}
               </Text>
               <Text size="small">{o.amount}</Text>
               <Text size="small">{o.total}</Text>
