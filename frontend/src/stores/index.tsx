@@ -5,6 +5,7 @@ import AccountStore from "./AccountStore";
 import SettingsStore from "./SettingsStore";
 import NotificationStore from "./NotificationStore";
 import OrdersStore from "./OrdersStore";
+import TradesStore from "./TradesStore";
 
 export {
   RootStore,
@@ -12,6 +13,7 @@ export {
   AccountStore,
   NotificationStore,
   OrdersStore,
+  TradesStore,
   storesContext,
   useStores,
 };
