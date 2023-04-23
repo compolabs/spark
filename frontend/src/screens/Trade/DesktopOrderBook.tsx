@@ -67,7 +67,7 @@ const roundOptions = [2, 4, 5, 6].map((v) => ({
   title: `${v} decimals`,
   key: v.toString(),
 }));
-const OrderBook: React.FC<IProps> = () => {
+const DesktopOrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [round, setRound] = useState("2");
   const { ordersStore, accountStore, settingsStore } = useStores();
@@ -283,4 +283,4 @@ const OrderBook: React.FC<IProps> = () => {
     </Root>
   );
 };
-export default observer(OrderBook);
+export default observer(DesktopOrderBook);
