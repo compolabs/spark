@@ -56,8 +56,7 @@ export class Order {
   }
 
   get time() {
-    const time = BigInt(this.timestamp) - BigInt(Math.pow(2, 62)) - BigInt(10);
-    return dayjs(Number(time) * 1000).format("DD-MMM MM:HH");
+    return dayjs(this.timestamp).format("DD-MMM MM:HH");
   }
 
   get fullFillPercent() {

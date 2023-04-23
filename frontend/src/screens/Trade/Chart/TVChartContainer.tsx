@@ -8,6 +8,7 @@ import {
 import * as React from "react";
 import { observer } from "mobx-react-lite";
 import { useTradeVM } from "@screens/Trade/TradeVm";
+import { BACKEND_URL } from "@src/constants";
 
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions["symbol"];
@@ -43,7 +44,7 @@ const TVChartContainer = () => {
   const defaultProps: Omit<ChartContainerProps, "container"> = {
     symbol: `${vm.token0.symbol}/${vm.token1.symbol}`,
     interval: "60" as ResolutionString,
-    datafeedUrl: "http://localhost:5000/api/v1",
+    datafeedUrl: BACKEND_URL,
     libraryPath: "/charting_library/",
     chartsStorageUrl: "https://saveload.tradingview.com",
     chartsStorageApiVersion: "1.1",
