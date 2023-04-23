@@ -60,7 +60,9 @@ export class Order {
   }
 
   get fullFillPercent() {
-    return this.fulfilled0.eq(0) ? 0 : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
+    return this.fulfilled0.eq(0)
+      ? 0
+      : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
   }
 
   get priceFormatter() {
@@ -88,24 +90,24 @@ export class Order {
   }
 
   get amountLeft() {
-    const am0 = BN.formatUnits(
-      this.amount0.times(this.fulfilled0.div(this.amount0)),
+    const amount = BN.formatUnits(
+      this.amount0.minus(this.fulfilled0),
       this.token0.decimals
     );
-    return am0.toFormat(am0.lt(0.01) ? 9 : 2);
+    return amount.toFormat(amount.lt(0.01) ? 6 : 2);
   }
 
   get total() {
     const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
-    return am1.toFormat(am1.lt(0.01) ? 9 : 2);
+    return am1.toFormat(am1.lt(0.01) ? 6 : 2);
   }
 
   get totalLeft() {
-    const am1 = BN.formatUnits(
-      this.amount1.times(this.fulfilled1.div(this.amount1)),
+    const left = BN.formatUnits(
+      this.amount1.minus(this.fulfilled1),
       this.token1.decimals
     );
-    return am1.toFormat(am1.lt(0.01) ? 9 : 2);
+    return left.toFormat(left.lt(0.01) ? 6 : 2);
   }
 }
 

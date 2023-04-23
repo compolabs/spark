@@ -62,13 +62,13 @@ const Container = styled.div`
   width: 100%;
   height: 100%;
 `;
-const roundOptions = [4, 5, 5].map((v) => ({
+const roundOptions = [2, 4, 5, 6].map((v) => ({
   title: `${v} decimals`,
   key: v.toString(),
 }));
 const OrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
-  const [round, setRound] = useState("4");
+  const [round, setRound] = useState("2");
   const { ordersStore, accountStore, settingsStore } = useStores();
   const [orderFilter, setOrderFilter] = useState(0);
   const activeOrdersForCurrentPair = ordersStore.activeOrders.filter(
@@ -162,7 +162,7 @@ const OrderBook: React.FC<IProps> = () => {
                   vm.setBuyPrice(price, true);
                 }}
               >
-                {o.price.toFormat(2)}
+                {o.price.toFormat(+round)}
               </Text>
               <Text size="small">{o.amount}</Text>
               <Text size="small">{o.total}</Text>
