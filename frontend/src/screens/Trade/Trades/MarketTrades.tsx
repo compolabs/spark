@@ -27,17 +27,13 @@ const Data = styled.div`
 const MarketTrades: React.FC<IProps> = () => {
   const length = 0;
   const vm = useTradeVM();
-  const columns = [
-    `Price (${vm.token1.symbol})`,
-    `Amount (${vm.token0.symbol})`,
-    "Time",
-  ];
+  const columns = [`Price (${vm.token1.symbol})`, `Amount (${vm.token0.symbol})`, "Time"];
   return (
     <Root>
-      {length == 0 ? (
+      {length === 0 ? (
         <Data>
-          {columns.map((v) => (
-            <Text size="small" type="secondary">
+          {columns.map((v, i) => (
+            <Text key={i} size="small" type="secondary">
               {v}
             </Text>
           ))}

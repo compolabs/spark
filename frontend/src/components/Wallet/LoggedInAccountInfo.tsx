@@ -10,7 +10,6 @@ import centerEllipsis from "@src/utils/centerEllipsis";
 import * as identityImg from "identity-img";
 import { useTheme } from "@emotion/react";
 import EthBalance from "@components/Wallet/EthBalance";
-import { Address } from "fuels";
 
 interface IProps {}
 

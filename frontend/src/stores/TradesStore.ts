@@ -1,5 +1,5 @@
 import RootStore from "@stores/RootStore";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 class TradesStore {
   public readonly rootStore: RootStore;

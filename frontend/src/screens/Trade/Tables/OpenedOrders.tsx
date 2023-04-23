@@ -35,18 +35,8 @@ const OpenedOrders: React.FC<IProps> = () => {
   const [openedModal, setModalOpened] = useState(false);
   const vm = useTradeVM();
   const [cancelOrderId, setCancelOrderId] = useState<null | string>(null);
-  // const userOrders = ordersStore.myOrders.filter((o) => o.status === "Active");
-  const userOrders = [] as Array<any>;
-  const columns = [
-    "Date",
-    "Pair",
-    "Type",
-    "Price",
-    "Amount",
-    "Status",
-    "Total",
-    "",
-  ];
+  const userOrders = ordersStore.myOrders.filter((o) => o.status === "Active");
+  const columns = ["Date", "Pair", "Type", "Price", "Amount", "Status", "Total", ""];
 
   return (
     <Root>
@@ -62,11 +52,7 @@ const OpenedOrders: React.FC<IProps> = () => {
       <SizedBox height={8} />
       {userOrders.length === 0 ? (
         <Column justifyContent="center" alignItems="center" crossAxisSize="max">
-          <Img
-            style={{ width: 100, height: 100 }}
-            src={notFound}
-            alt="no-data"
-          />
+          <Img style={{ width: 100, height: 100 }} src={notFound} alt="no-data" />
           <SizedBox height={12} />
           <Text fitContent style={{ marginBottom: 24 }}>
             You have no open orders.

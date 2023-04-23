@@ -1,4 +1,3 @@
-import styled from "@emotion/styled";
 import React from "react";
 import Img from "@components/Img";
 import notFound from "@src/assets/notFound.svg";
