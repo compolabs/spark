@@ -10,6 +10,7 @@ import centerEllipsis from "@src/utils/centerEllipsis";
 import * as identityImg from "identity-img";
 import { useTheme } from "@emotion/react";
 import EthBalance from "@components/Wallet/EthBalance";
+import { Address } from "fuels";
 
 interface IProps {}
 
@@ -43,6 +44,7 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
   font-size: 14px;
   line-height: 20px;
   color: ${({ theme }) => theme.colors.neutral0};
+
   .avatar {
     transition: 0.4s;
     width: 24px;
@@ -59,8 +61,8 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
 
 const LoggedInAccountInfo: React.FC<IProps> = () => {
   const { accountStore } = useStores();
-  const { address } = accountStore;
-  const avatar = address && identityImg.create(address, { size: 24 * 3 });
+  const { ethFormatWallet } = accountStore;
+  const avatar = ethFormatWallet && identityImg.create(ethFormatWallet, { size: 24 * 3 });
   const theme = useTheme();
   const [accountOpened, setAccountOpened] = useState<boolean>(false);
   return (
@@ -77,7 +79,7 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
         >
           <AddressContainer expanded={accountOpened}>
             <img className="avatar" src={avatar!} alt="avatar" />
-            {centerEllipsis(address ?? "", 8)}
+            {centerEllipsis(ethFormatWallet ?? "", 8)}
             <SizedBox width={4} />
             <img src={theme.images.icons.arrowDown} className="menu-arrow" alt="arrow" />
           </AddressContainer>

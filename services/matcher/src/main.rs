@@ -15,11 +15,11 @@ use utils::limit_orders_utils::LimitOrdersContract;
 
 mod utils;
 
-// const RPC: &str = "beta-3.fuel.network";
-const RPC: &str = "127.0.0.1:4000";
+// const RPC: &str = "127.0.0.1:4000";
+const RPC: &str = "beta-3.fuel.network";
 const LIMIT_ORDERS_ADDRESS: &str =
     "0x7662a02959e3e2d681589261e95a7a4bc8ac66c6d66999a0fe01bb6c36ada7c6";
-
+const BACKEND_URL: &str = "https://spark-data-service.herokuapp.com/api/v1";
 #[derive(Deserialize, Debug)]
 pub struct OrderResponse {
     asset0: ContractId,
@@ -72,7 +72,7 @@ async fn main() {
 
     print_swaygang_sign("✅ Matcher is alive");
     loop {
-        let url = "http://localhost:5000/api/v1/orders?status=Active";
+        let url = format!("{BACKEND_URL}/orders?status=Active");
         let res = client.get(url).send().await;
         if res.is_err() {
             sleep(Duration::from_secs(10));
@@ -150,7 +150,7 @@ async fn main() {
                         vec[1].insert("amount1", trade1.amount_1.to_string());
                         vec[1].insert("timestamp", Tai64(trade1.timestamp).to_unix().to_string());
 
-                        let url = "http://localhost:5000/api/v1/trade";
+                        let url = format!("{BACKEND_URL}/trade");
                         let _res = client.post(url).json(&vec).send().await.unwrap();
 
                         println!("{msg}");
