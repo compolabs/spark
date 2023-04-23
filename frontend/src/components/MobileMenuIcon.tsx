@@ -11,7 +11,6 @@ const Root = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 4px;
-  width: 64px;
   height: 48px;
 
   //.menu-icon {
@@ -53,6 +52,7 @@ const Root = styled.div`
       background: ${({ theme }) => theme.colors.header.mobileMenuIconColor};
       transition: all 0.2s cubic-bezier(0.1, 0.82, 0.76, 0.965);
       flex-shrink: 0;
+
       &:first-of-type {
         top: 0px;
       }

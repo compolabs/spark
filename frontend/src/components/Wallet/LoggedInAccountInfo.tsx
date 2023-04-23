@@ -54,19 +54,21 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
 
   .menu-arrow {
     transition: 0.4s;
-    transform: ${({ expanded }) => (expanded ? "rotate(-90deg)" : "rotate(0deg)")};
+    transform: ${({ expanded }) =>
+      expanded ? "rotate(-90deg)" : "rotate(0deg)"};
   }
 `;
 
 const LoggedInAccountInfo: React.FC<IProps> = () => {
   const { accountStore } = useStores();
   const { ethFormatWallet } = accountStore;
-  const avatar = ethFormatWallet && identityImg.create(ethFormatWallet, { size: 24 * 3 });
+  const avatar =
+    ethFormatWallet && identityImg.create(ethFormatWallet, { size: 24 * 3 });
   const theme = useTheme();
   const [accountOpened, setAccountOpened] = useState<boolean>(false);
   return (
     <Root>
-      <Row justifyContent="center" alignItems="center">
+      <Row justifyContent="space-between" alignItems="center">
         <EthBalance />
         <Tooltip
           config={{
@@ -80,7 +82,11 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
             <img className="avatar" src={avatar!} alt="avatar" />
             {centerEllipsis(ethFormatWallet ?? "", 8)}
             <SizedBox width={4} />
-            <img src={theme.images.icons.arrowDown} className="menu-arrow" alt="arrow" />
+            <img
+              src={theme.images.icons.arrowDown}
+              className="menu-arrow"
+              alt="arrow"
+            />
           </AddressContainer>
         </Tooltip>
       </Row>

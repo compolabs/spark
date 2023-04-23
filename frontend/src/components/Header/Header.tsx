@@ -11,6 +11,7 @@ import { useTheme } from "@emotion/react";
 import Text from "@components/Text";
 import MobileMenuIcon from "../MobileMenuIcon";
 import EthBalance from "@components/Wallet/EthBalance";
+import SizedBox from "@components/SizedBox";
 
 interface IProps {}
 
@@ -72,6 +73,8 @@ const MenuItem = styled(Text)<{ selected?: boolean }>`
 const Mobile = styled.div`
   display: flex;
   min-width: fit-content;
+  align-items: center;
+  justify-content: center;
   @media (min-width: 880px) {
     display: none;
   }
@@ -148,6 +151,7 @@ const Header: React.FC<IProps> = () => {
         </Row>
         <Mobile>
           <EthBalance />
+          <SizedBox width={12} />
           <MobileMenuIcon
             onClick={() => toggleMenu(!mobileMenuOpened)}
             opened={mobileMenuOpened}

@@ -6,6 +6,7 @@ import { ROUTES } from "@src/constants";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import Text from "@components/Text";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Row } from "../Flex";
 
 interface IProps {
   onClose: () => void;
@@ -16,7 +17,7 @@ const Root = styled.div<{ opened: boolean }>`
   z-index: 100;
   background: ${({ theme }) => `${theme.colors.modal.mask}`};
   position: absolute;
-  top: 64px;
+  top: 56px;
   left: 0;
   right: 0;
   height: calc(100vh - 64px);
@@ -27,7 +28,6 @@ const Root = styled.div<{ opened: boolean }>`
 `;
 const Body = styled.div`
   display: flex;
-  background: pink;
   width: 100%;
   flex-direction: column;
   background: ${({ theme }) => theme.colors.mainBackground};
