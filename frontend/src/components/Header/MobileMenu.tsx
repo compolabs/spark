@@ -6,7 +6,6 @@ import { ROUTES } from "@src/constants";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import Text from "@components/Text";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Row } from "../Flex";
 
 interface IProps {
   onClose: () => void;

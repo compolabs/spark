@@ -43,7 +43,7 @@ const OrderBookAndChartContainer = styled.div`
 `;
 const TradeImpl: React.FC<IProps> = () => {
   const { width } = useWindowSize();
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeTab, setActiveTab] = useState(1);
   return (
     <Layout>
       <Observer>
