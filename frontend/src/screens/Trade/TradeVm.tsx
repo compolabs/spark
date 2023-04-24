@@ -9,7 +9,7 @@ import {
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
 import BN from "@src/utils/BN";
-import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
+import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 
 const ctx = React.createContext<TradeVm | null>(null);
@@ -76,19 +76,6 @@ class TradeVm {
 
   searchValue = "";
   setSearchValue = (v: string) => (this.searchValue = v);
-
-  deposit = async (limitOrders: LimitOrdersAbi) => {
-    return limitOrders.functions
-      .deposit()
-      .callParams({
-        forward: {
-          amount: "100000",
-          assetId: TOKENS_BY_SYMBOL.ETH.assetId,
-        },
-      })
-      .txParams({ gasPrice: 1 })
-      .call();
-  };
 
   buyPrice: BN = BN.ZERO;
   setBuyPrice = (price: BN, sync?: boolean) => {
@@ -203,10 +190,18 @@ class TradeVm {
 
     this.setLoading(true);
     try {
-      await this.deposit(limitOrdersContract);
-      await limitOrdersContract.functions
-        .create_order({ value: token1 }, amount1, this.matcherFee)
-        .callParams({ forward: { amount: amount0, assetId: token0 } })
+      await limitOrdersContract
+        .multiCall([
+          limitOrdersContract.functions.deposit().callParams({
+            forward: {
+              amount: "100000",
+              assetId: TOKENS_BY_SYMBOL.ETH.assetId,
+            },
+          }),
+          limitOrdersContract.functions
+            .create_order({ value: token1 }, amount1, this.matcherFee)
+            .callParams({ forward: { amount: amount0, assetId: token0 } }),
+        ])
         .txParams({ gasPrice: 1 })
         .call()
         .then(
