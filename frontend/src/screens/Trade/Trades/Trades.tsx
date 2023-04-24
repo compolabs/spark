@@ -26,8 +26,8 @@ const Trades: React.FC<IProps> = () => {
   return (
     <Root>
       <Tabs
-        tabs={[{ name: "Market Trades" }]}
-        // tabs={[{ name: "Market Trades" }, { name: "My Trades" }]}
+        // tabs={[{ name: "Market Trades" }]}
+        tabs={[{ name: "Market Trades" }, { name: "My Trades" }]}
         activeTab={activeTab}
         setActive={(t) => setActiveTab(t)}
       />

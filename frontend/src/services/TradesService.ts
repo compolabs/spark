@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BACKEND_URL, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { BACKEND_URL, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 
@@ -20,11 +20,20 @@ export class Trade {
   amount1: BN;
   timestamp: number;
 
-  constructor(tradeOutput: ITradeResponse) {
-    this.asset0 = tradeOutput.asset0;
-    this.amount0 = new BN(tradeOutput.amount0.toString());
-    this.asset1 = tradeOutput.asset1;
-    this.amount1 = new BN(tradeOutput.amount1.toString());
+  constructor(tradeOutput: ITradeResponse, pairSymbol: string) {
+    const [symbol0] = pairSymbol.split("/");
+    const token0 = TOKENS_BY_SYMBOL[symbol0];
+
+    this.asset0 = token0.assetId === tradeOutput.asset0 ? tradeOutput.asset0 : tradeOutput.asset1;
+    this.amount0 =
+      token0.assetId === tradeOutput.asset0
+        ? new BN(tradeOutput.amount0.toString())
+        : new BN(tradeOutput.amount1.toString());
+    this.asset1 = token0.assetId === tradeOutput.asset0 ? tradeOutput.asset1 : tradeOutput.asset0;
+    this.amount1 =
+      token0.assetId === tradeOutput.asset0
+        ? new BN(tradeOutput.amount1.toString())
+        : new BN(tradeOutput.amount0.toString());
     this.timestamp = tradeOutput.timestamp;
   }
 
@@ -37,7 +46,7 @@ export class Trade {
   }
 
   get time() {
-    return dayjs(this.timestamp).format("HH:mm:ss");
+    return dayjs(this.timestamp * 1000).format("DD-MMM HH:mm:ss");
   }
 
   get priceFormatter() {
@@ -70,14 +79,8 @@ export class Trade {
   }
 }
 
-export const getActiveOrders = () =>
-  axios
-    .get(`${BACKEND_URL}/trades`)
-    .then((res) => res.data)
-    .then((arr: Array<ITradeResponse>) => arr.map((t) => new Trade(t)));
-
-export const getLatestTradesInPair = (symbol0: string, symbol1: string) =>
+export const getLatestTradesInPair = (symbol0: string, symbol1: string, pairSymbol: string) =>
   axios
     .get(`${BACKEND_URL}/trades/pair/${symbol0}/${symbol1}`)
     .then((res) => res.data)
-    .then((arr: Array<ITradeResponse>) => arr.map((t) => new Trade(t)));
+    .then((arr: Array<ITradeResponse>) => arr.map((t) => new Trade(t, pairSymbol)));

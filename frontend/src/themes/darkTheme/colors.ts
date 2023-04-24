@@ -3,7 +3,7 @@ const colors = {
   neutral1: "#F0F2FA",
   neutral2: "#E3E9F9",
   neutral3: "#DFE5FA",
-  neutral4: "#9A9ABD",
+  neutral4: "#959DAE",
   neutral5: "#323846",
   neutral6: "#19202E",
   neutral7: "#0F141E",
