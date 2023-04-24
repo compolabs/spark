@@ -19,14 +19,12 @@ const Root = styled.div`
   padding: 12px 16px;
 `;
 
-//todo change logic to get both trades with visa verse tokens too
 const Trades: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [activeTab, setActiveTab] = useState(0);
   return (
     <Root>
       <Tabs
-        // tabs={[{ name: "Market Trades" }]}
         tabs={[{ name: "Market Trades" }, { name: "My Trades" }]}
         activeTab={activeTab}
         setActive={(t) => setActiveTab(t)}

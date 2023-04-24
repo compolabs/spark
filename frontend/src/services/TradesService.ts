@@ -1,5 +1,9 @@
 import axios from "axios";
-import { BACKEND_URL, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import {
+  BACKEND_URL,
+  TOKENS_BY_ASSET_ID,
+  TOKENS_BY_SYMBOL,
+} from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 
@@ -24,12 +28,18 @@ export class Trade {
     const [symbol0] = pairSymbol.split("/");
     const token0 = TOKENS_BY_SYMBOL[symbol0];
 
-    this.asset0 = token0.assetId === tradeOutput.asset0 ? tradeOutput.asset0 : tradeOutput.asset1;
+    this.asset0 =
+      token0.assetId === tradeOutput.asset0
+        ? tradeOutput.asset0
+        : tradeOutput.asset1;
     this.amount0 =
       token0.assetId === tradeOutput.asset0
         ? new BN(tradeOutput.amount0.toString())
         : new BN(tradeOutput.amount1.toString());
-    this.asset1 = token0.assetId === tradeOutput.asset0 ? tradeOutput.asset1 : tradeOutput.asset0;
+    this.asset1 =
+      token0.assetId === tradeOutput.asset0
+        ? tradeOutput.asset1
+        : tradeOutput.asset0;
     this.amount1 =
       token0.assetId === tradeOutput.asset0
         ? new BN(tradeOutput.amount1.toString())
@@ -46,7 +56,7 @@ export class Trade {
   }
 
   get time() {
-    return dayjs(this.timestamp * 1000).format("DD-MMM HH:mm:ss");
+    return dayjs(this.timestamp * 1000).format("HH:mm:ss");
   }
 
   get priceFormatter() {
@@ -54,6 +64,10 @@ export class Trade {
     const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
     const price = am1.div(am0);
     return price.toFormat(price.lt(0.01) ? 4 : 2);
+  }
+  get amountFormatter() {
+    const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+    return am0.toFormat(am0.lt(0.01) ? 4 : 2);
   }
 
   get price() {
@@ -79,8 +93,14 @@ export class Trade {
   }
 }
 
-export const getLatestTradesInPair = (symbol0: string, symbol1: string, pairSymbol: string) =>
+export const getLatestTradesInPair = (
+  symbol0: string,
+  symbol1: string,
+  pairSymbol: string
+) =>
   axios
     .get(`${BACKEND_URL}/trades/pair/${symbol0}/${symbol1}`)
     .then((res) => res.data)
-    .then((arr: Array<ITradeResponse>) => arr.map((t) => new Trade(t, pairSymbol)));
+    .then((arr: Array<ITradeResponse>) =>
+      arr.map((t) => new Trade(t, pairSymbol))
+    );

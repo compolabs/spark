@@ -37,7 +37,11 @@ const TradeRecord = styled.div`
 const MarketTrades: React.FC<IProps> = () => {
   const length = 0;
   const vm = useTradeVM();
-  const columns = [`Price (${vm.token1.symbol})`, `Amount (${vm.token0.symbol})`, "Time"];
+  const columns = [
+    `Price (${vm.token1.symbol})`,
+    `Amount (${vm.token0.symbol})`,
+    "Time",
+  ];
   return (
     <Root>
       {length === 0 ? (
@@ -59,11 +63,15 @@ const MarketTrades: React.FC<IProps> = () => {
           <Trades>
             {vm.trades.map((trade, i) => (
               <TradeRecord key={i}>
-                <Text textAlign="left" size="small" type="secondary">
+                <Text
+                  textAlign="left"
+                  size="small"
+                  type={trade.asset0 === vm.assetId0 ? "green" : "error"}
+                >
                   {trade.priceFormatter}
                 </Text>
                 <Text textAlign="left" size="small" type="secondary">
-                  {trade.amount0.toFormat()}
+                  {trade.amountFormatter}
                 </Text>
                 <Text textAlign="right" size="small" type="secondary">
                   {trade.time}
