@@ -3,10 +3,11 @@ import React, { useState } from "react";
 import Tabs from "@components/Tabs";
 import { Row } from "@components/Flex";
 import Loading from "@components/Loading";
-import { useStores } from "@stores";
 import MarketTrades from "@screens/Trade/Trades/MarketTrades";
 import AccountTrades from "@screens/Trade/Trades/AccountTrades";
 import SizedBox from "@components/SizedBox";
+import { useTradeVM } from "@screens/Trade/TradeVm";
+import { observer } from "mobx-react-lite";
 
 interface IProps {}
 
@@ -18,18 +19,20 @@ const Root = styled.div`
   padding: 12px 16px;
 `;
 
+//todo change logic to get both trades with visa verse tokens too
 const Trades: React.FC<IProps> = () => {
-  const { tradesStore } = useStores();
+  const vm = useTradeVM();
   const [activeTab, setActiveTab] = useState(0);
   return (
     <Root>
       <Tabs
-        tabs={[{ name: "Market Trades" }, { name: "My Trades" }]}
+        tabs={[{ name: "Market Trades" }]}
+        // tabs={[{ name: "Market Trades" }, { name: "My Trades" }]}
         activeTab={activeTab}
         setActive={(t) => setActiveTab(t)}
       />
       <SizedBox height={8} />
-      {tradesStore.initialized ? (
+      {vm.trades.length > 0 ? (
         <>
           {activeTab === 0 && <MarketTrades />}
           {activeTab === 1 && <AccountTrades />}
@@ -42,4 +45,4 @@ const Trades: React.FC<IProps> = () => {
     </Root>
   );
 };
-export default Trades;
+export default observer(Trades);

@@ -10,6 +10,7 @@ import {
 } from "@src/constants";
 import BN from "@src/utils/BN";
 import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
+import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -33,10 +34,21 @@ class TradeVm {
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
+    this.getLatestTrades().then();
   }
 
+  getLatestTrades = async () => {
+    const data = await getLatestTradesInPair(
+      this.token0.symbol,
+      this.token1.symbol
+    );
+    this.setTrades(data);
+  };
   loading: boolean = false;
   private setLoading = (l: boolean) => (this.loading = l);
+
+  trades: Array<Trade> = [];
+  setTrades = (v: Array<Trade>) => (this.trades = v);
 
   activeModalAction: 0 | 1 = 0;
   setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
@@ -136,13 +148,19 @@ class TradeVm {
 
   get canBuy() {
     return (
-      this.buyAmount.gt(0) && this.buyPrice.gt(0) && this.buyTotal.gt(0) && !this.buyTotalError
+      this.buyAmount.gt(0) &&
+      this.buyPrice.gt(0) &&
+      this.buyTotal.gt(0) &&
+      !this.buyTotalError
     );
   }
 
   get canSell() {
     return (
-      this.sellAmount.gt(0) && this.sellPrice.gt(0) && this.sellTotal.gt(0) && !this.sellAmountError
+      this.sellAmount.gt(0) &&
+      this.sellPrice.gt(0) &&
+      this.sellTotal.gt(0) &&
+      !this.sellAmountError
     );
   }
 
@@ -176,7 +194,8 @@ class TradeVm {
       amount0 = this.sellAmount.toString();
       amount1 = this.sellTotal.toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
+      return;
 
     this.setLoading(true);
     try {

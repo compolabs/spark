@@ -1,7 +1,14 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction } from "mobx";
-import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
+import {
+  Address,
+  Mnemonic,
+  Provider,
+  Wallet,
+  WalletLocked,
+  WalletUnlocked,
+} from "fuels";
+import { IToken, NODE_URL, ROUTES, TOKENS_LIST } from "@src/constants";
 import Balance from "@src/entities/Balance";
 import BN from "@src/utils/BN";
 import { FuelProviderConfig } from "@fuel-wallet/sdk";
@@ -49,12 +56,15 @@ class AccountStore {
   handleAccEvent = (account: string) => this.setAddress(account);
   handleNetworkEvent = (network: FuelProviderConfig) => {
     if (network.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(`Please change network url to Testnet Beta 3`, {
-        link: NODE_URL,
-        linkTitle: "Go to Testnet Beta 3",
-        type: "error",
-        title: "Attention",
-      });
+      this.rootStore.notificationStore.toast(
+        `Please change network url to Testnet Beta 3`,
+        {
+          link: NODE_URL,
+          linkTitle: "Go to Testnet Beta 3",
+          type: "error",
+          title: "Attention",
+        }
+      );
     }
   };
 
@@ -80,14 +90,16 @@ class AccountStore {
     const assetBalances = TOKENS_LIST.map((asset) => {
       const t = balances.find(({ assetId }) => asset.assetId === assetId);
       const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-      if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+      if (t == null)
+        return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
       return new Balance({ balance, ...asset });
     });
     this.setAssetBalances(assetBalances);
   };
   findBalanceByAssetId = (assetId: string) =>
-    this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
+    this.assetBalances &&
+    this.assetBalances.find((balance) => balance.assetId === assetId);
 
   get balances() {
     const { accountStore } = this.rootStore;
@@ -152,12 +164,15 @@ class AccountStore {
     const account = await window.fuel.currentAccount();
     const provider = await fuel.getProvider();
     if (provider.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(`Please change network url to beta 3`, {
-        link: NODE_URL,
-        linkTitle: "Go to Beta 3",
-        type: "error",
-        title: "Attention",
-      });
+      this.rootStore.notificationStore.toast(
+        `Please change network url to beta 3`,
+        {
+          link: NODE_URL,
+          linkTitle: "Go to Beta 3",
+          type: "error",
+          title: "Attention",
+        }
+      );
     }
     this.setAddress(account);
   };
@@ -165,7 +180,9 @@ class AccountStore {
   getFormattedBalance = (token: IToken): string | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
     if (balance == null) return null;
-    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(4);
+    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(
+      4
+    );
   };
   getBalance = (token: IToken): BN | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
@@ -177,23 +194,22 @@ class AccountStore {
     return this.address != null;
   }
 
-  loginWithMnemonicPhrase = (mnemonic?: string) => {
-    if (mnemonic == null) return;
-    // const mnemonic =
-    //   mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
-    // const seed = Mnemonic.mnemonicToSeed(mnemonic);
-    const wallet = Wallet.fromPrivateKey(mnemonic, NODE_URL);
+  loginWithMnemonicPhrase = (mnemonicPhrase?: string) => {
+    const mnemonic =
+      mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
+    const seed = Mnemonic.mnemonicToSeed(mnemonic);
+    const wallet = Wallet.fromPrivateKey(seed, NODE_URL);
     this.setAddress(wallet.address.toAddress());
     this.setMnemonicPhrase(mnemonic);
     this.rootStore.settingsStore.setLoginModalOpened(false);
-    // if (mnemonicPhrase == null) {
-    //   this.rootStore.notificationStore.toast("First you need to mint ETH", {
-    //     link: `${window.location.origin}/#${ROUTES.FAUCET}`,
-    //     linkTitle: "Go to Faucet",
-    //     type: "info",
-    //     title: "Attention",
-    //   });
-    // }
+    if (mnemonicPhrase == null) {
+      this.rootStore.notificationStore.toast("First you need to mint ETH", {
+        link: `${window.location.origin}/#${ROUTES.FAUCET}`,
+        linkTitle: "Go to Faucet",
+        type: "info",
+        title: "Attention",
+      });
+    }
   };
 
   getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
@@ -205,7 +221,10 @@ class AccountStore {
       case LOGIN_TYPE.PASTE_SEED:
         if (this.mnemonicPhrase == null) return null;
         // const seed = Mnemonic.mnemonicToSeed(this.mnemonicPhrase);
-        return Wallet.fromPrivateKey(this.mnemonicPhrase, new Provider(NODE_URL));
+        return Wallet.fromPrivateKey(
+          this.mnemonicPhrase,
+          new Provider(NODE_URL)
+        );
     }
     return null;
   };
@@ -225,8 +244,6 @@ class AccountStore {
     return { value: Address.fromString(this.address).toB256() };
   }
 
-  isWavesKeeperInstalled = false;
-  setWavesKeeperInstalled = (state: boolean) => (this.isWavesKeeperInstalled = state);
 }
 
 export default AccountStore;
