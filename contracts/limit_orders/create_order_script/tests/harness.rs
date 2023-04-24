@@ -27,13 +27,14 @@ async fn test() {
     let provider = Provider::connect(RPC).await.unwrap();
     let wallet =
         WalletUnlocked::new_from_private_key(SECRET.parse().unwrap(), Some(provider.clone()));
+    
     let bin_path = "out/debug/create_order_script.bin";
-
     let script_instance = CreateOrderScript::new(wallet.clone(), bin_path);
+    
     let asset0 = ContractId::from_str(BTC_ASSET_ID).unwrap();
-    let amount0: u64 = 10000; //1000000
+    let amount0: u64 = 10000;
     let asset1: ContractId = ContractId::from_str(USDC_ASSET_ID).unwrap();
-    let amount1: u64 = 2000000; // 2300000000
+    let amount1: u64 = 2000000; 
 
     let contarct_id = Bech32ContractId::from(ContractId::from_str(CONTRACT).unwrap());
     let contract_instance = LimitOrdersContarct::new(contarct_id, wallet.clone());

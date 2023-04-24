@@ -48,7 +48,7 @@ const OrderDesktop: React.FC<IProps> = () => {
               <Img src={wallet} alt="wallet" />
               <SizedBox width={4} />
               <Text nowrap fitContent>
-                {balance0} {vm.token0.symbol}
+                {balance1} {vm.token1.symbol}
               </Text>
             </Row>
           )}
@@ -103,7 +103,7 @@ const OrderDesktop: React.FC<IProps> = () => {
               <Img src={wallet} alt="wallet" />
               <SizedBox width={4} />
               <Text nowrap fitContent>
-                {balance1} {vm.token1.symbol}
+                {balance0} {vm.token0.symbol}
               </Text>
             </Row>
           )}
@@ -126,6 +126,16 @@ const OrderDesktop: React.FC<IProps> = () => {
           error={vm.sellAmountError}
         />
         <SizedBox height={12} />
+        {/*Todo add slider*/}
+        {/*<Slider*/}
+        {/*  min={0}*/}
+        {/*  max={100}*/}
+        {/*  step={1}*/}
+        {/*  marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}*/}
+        {/*  // value={vm.providedPercentOfPool.toNumber()}*/}
+        {/*  // onChange={vm.setProvidedPercentOfPool}*/}
+        {/*/>*/}
+        {/*<SizedBox height={12} />*/}
         <TokenInput
           description="Total"
           decimals={vm.token1.decimals}

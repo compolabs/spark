@@ -39,8 +39,7 @@ const Icon = styled.img<{ selected?: boolean }>`
 `;
 const Container = styled.div<{ oneTab?: boolean }>`
   display: grid;
-  ${({ oneTab }) =>
-    oneTab ? "grid-template-columns: 1fr " : "grid-template-columns: 1fr 1fr"};
+  ${({ oneTab }) => (oneTab ? "grid-template-columns: 1fr " : "grid-template-columns: 1fr 1fr")};
   column-gap: 8px;
 `;
 const roundOptions = [2, 4, 5, 6].map((v) => ({
@@ -67,6 +66,8 @@ const OrderRow = styled.div<{ noHover?: boolean }>`
     ${({ noHover }) => !noHover && "background:  #323846;"};
   }
 `;
+
+/*Todo починить*/
 const MobileOrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [round, setRound] = useState("2");
@@ -106,9 +107,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
         <Text textAlign="center">Connect wallet to see orders</Text>
         <SizedBox height={12} />
-        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
-          Connect wallet
-        </Button>
+        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
       </Root>
     );
   if (activeOrdersForCurrentPair.length === 0)
@@ -164,10 +163,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
                       size="small"
                       type="green"
                       onClick={() => {
-                        const price = BN.parseUnits(
-                          o.price,
-                          vm.token1.decimals
-                        );
+                        const price = BN.parseUnits(o.price, vm.token1.decimals);
                         vm.setSellPrice(price, true);
                         vm.setBuyPrice(price, true);
                       }}
@@ -181,10 +177,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: buyOrders.length < 12 ? 13 - buyOrders.length : 0,
                 }).map((o, index) => (
-                  <Row
-                    style={{ margin: "4px 0" }}
-                    key={index + "negative-plug"}
-                  >
+                  <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
                     {Array.from({ length: 2 }).map((_, i) => (
                       <Text size="small" textAlign={i === 0 ? "left" : "right"}>
                         -
@@ -216,10 +209,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
                     style={{ margin: "4px 0" }}
                     key={index + "negative"}
                     onClick={() => {
-                      const price = BN.parseUnits(
-                        o.reversePrice,
-                        vm.token1.decimals
-                      );
+                      const price = BN.parseUnits(o.reversePrice, vm.token1.decimals);
                       vm.setSellPrice(price, true);
                       vm.setBuyPrice(price, true);
                     }}
@@ -236,10 +226,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: sellOrders.length < 12 ? 13 - sellOrders.length : 0,
                 }).map((o, index) => (
-                  <Row
-                    style={{ margin: "4px 0" }}
-                    key={index + "negative-plug"}
-                  >
+                  <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
                     {Array.from({ length: 2 }).map((_, i) => (
                       <Text textAlign={i === 0 ? "left" : "right"} size="small">
                         -

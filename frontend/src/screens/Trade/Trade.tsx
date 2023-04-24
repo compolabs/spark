@@ -58,7 +58,7 @@ const TradeImpl: React.FC<IProps> = () => {
                   <PairsList />
                   <Trades />
                   <Tables />
-                  <SizedBox height={1} />
+                  {/*<SizedBox height={1} />*/}
                 </>
               ) : (
                 <>
