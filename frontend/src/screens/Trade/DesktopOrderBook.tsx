@@ -68,6 +68,7 @@ const roundOptions = [2, 4, 5, 6].map((v) => ({
   title: `${v} decimals`,
   key: v.toString(),
 }));
+const filters = [sellAndBuy, sell, buy];
 const DesktopOrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [round, setRound] = useState("2");
@@ -100,7 +101,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
     .slice(orderFilter === 0 ? -13 : -25)
     .reverse();
 
-  const filters = [sellAndBuy, buy, sell];
   const columns = [
     `Price ${vm.token1.symbol}`,
     `Amount ${vm.token0.symbol}`,

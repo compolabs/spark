@@ -39,7 +39,8 @@ const Icon = styled.img<{ selected?: boolean }>`
 `;
 const Container = styled.div<{ oneTab?: boolean }>`
   display: grid;
-  ${({ oneTab }) => (oneTab ? "grid-template-columns: 1fr " : "grid-template-columns: 1fr 1fr")};
+  ${({ oneTab }) =>
+    oneTab ? "grid-template-columns: 1fr " : "grid-template-columns: 1fr 1fr"};
   column-gap: 8px;
 `;
 const roundOptions = [2, 4, 5, 6].map((v) => ({
@@ -68,6 +69,7 @@ const OrderRow = styled.div<{ noHover?: boolean }>`
 `;
 
 /*Todo починить*/
+const filters = [sellAndBuy, sell, buy];
 const MobileOrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [round, setRound] = useState("2");
@@ -97,9 +99,9 @@ const MobileOrderBook: React.FC<IProps> = () => {
       if (a.reversePrice == null && b.reversePrice == null) return -1;
       return a.reversePrice!.lt(b.reversePrice!) ? -1 : 1;
     })
-    .slice(-12);
+    .slice(-12)
+    .reverse();
 
-  const filters = [sellAndBuy, buy, sell];
   const columns = [`Amount ${vm.token0.symbol}`, `Price ${vm.token1.symbol}`];
 
   if (!accountStore.isLoggedIn)
@@ -107,7 +109,9 @@ const MobileOrderBook: React.FC<IProps> = () => {
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
         <Text textAlign="center">Connect wallet to see orders</Text>
         <SizedBox height={12} />
-        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
+        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
+          Connect wallet
+        </Button>
       </Root>
     );
   if (activeOrdersForCurrentPair.length === 0)
@@ -161,9 +165,12 @@ const MobileOrderBook: React.FC<IProps> = () => {
                     </Text>
                     <Text
                       size="small"
-                      type="green"
+                      type="error"
                       onClick={() => {
-                        const price = BN.parseUnits(o.price, vm.token1.decimals);
+                        const price = BN.parseUnits(
+                          o.price,
+                          vm.token1.decimals
+                        );
                         vm.setSellPrice(price, true);
                         vm.setBuyPrice(price, true);
                       }}
@@ -177,7 +184,10 @@ const MobileOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: buyOrders.length < 12 ? 13 - buyOrders.length : 0,
                 }).map((o, index) => (
-                  <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
+                  <Row
+                    style={{ margin: "4px 0" }}
+                    key={index + "negative-plug"}
+                  >
                     {Array.from({ length: 2 }).map((_, i) => (
                       <Text size="small" textAlign={i === 0 ? "left" : "right"}>
                         -
@@ -209,12 +219,15 @@ const MobileOrderBook: React.FC<IProps> = () => {
                     style={{ margin: "4px 0" }}
                     key={index + "negative"}
                     onClick={() => {
-                      const price = BN.parseUnits(o.reversePrice, vm.token1.decimals);
+                      const price = BN.parseUnits(
+                        o.reversePrice,
+                        vm.token1.decimals
+                      );
                       vm.setSellPrice(price, true);
                       vm.setBuyPrice(price, true);
                     }}
                   >
-                    <Text textAlign="left" size="small" type="error">
+                    <Text textAlign="left" size="small" type="green">
                       {o.reversePrice.toFormat(+round)}
                     </Text>
                     <Text textAlign="right" size="small">
@@ -226,7 +239,10 @@ const MobileOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: sellOrders.length < 12 ? 13 - sellOrders.length : 0,
                 }).map((o, index) => (
-                  <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
+                  <Row
+                    style={{ margin: "4px 0" }}
+                    key={index + "negative-plug"}
+                  >
                     {Array.from({ length: 2 }).map((_, i) => (
                       <Text textAlign={i === 0 ? "left" : "right"} size="small">
                         -
