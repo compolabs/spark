@@ -107,8 +107,8 @@ const allPairs = Object.keys(TOKENS_BY_SYMBOL).reduce(
       .map((symbol1) => ({
         token0: TOKENS_BY_SYMBOL[symbol0],
         token1: TOKENS_BY_SYMBOL[symbol1],
-        lastPrice: "",
-        change: "",
+        lastPrice: "-",
+        change: "-",
       }));
     return [...acc, ...batch];
   },

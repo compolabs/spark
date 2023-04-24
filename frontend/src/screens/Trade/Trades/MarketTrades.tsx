@@ -70,10 +70,10 @@ const MarketTrades: React.FC<IProps> = () => {
                 >
                   {trade.priceFormatter}
                 </Text>
-                <Text textAlign="left" size="small" type="secondary">
+                <Text textAlign="left" size="small">
                   {trade.amountFormatter}
                 </Text>
-                <Text textAlign="right" size="small" type="secondary">
+                <Text textAlign="right" size="small">
                   {trade.time}
                 </Text>
               </TradeRecord>

@@ -32,6 +32,10 @@ const Tab = styled.div<{ active?: boolean }>`
   user-select: none;
   transition: 0.4s;
 
+  p {
+    font-size: 13px;
+    line-height: 18px;
+  }
 }
 `;
 const Tabs: React.FC<IProps> = ({
