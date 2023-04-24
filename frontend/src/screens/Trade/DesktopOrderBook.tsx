@@ -107,8 +107,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
     `Total ${vm.token1.symbol}`,
   ];
 
-  const spread = 3.5;
-  const currentPrice = new BN(20000).toFormat();
   if (!accountStore.isLoggedIn)
     return (
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
@@ -243,13 +241,14 @@ const DesktopOrderBook: React.FC<IProps> = () => {
             ) : (
               <Row>
                 <Text weight={500} size="small">
-                  {currentPrice}
+                  {vm.latestTradePrice}
                 </Text>
-                <Text
-                  textAlign="right"
-                  type="secondary"
-                  size="small"
-                >{`SPREAD ${spread} %`}</Text>
+                {/*todo add spread calc*/}
+                {/*<Text*/}
+                {/*  textAlign="right"*/}
+                {/*  type="secondary"*/}
+                {/*  size="small"*/}
+                {/*>{`SPREAD ${spread} %`}</Text>*/}
               </Row>
             )}
           </Row>

@@ -33,7 +33,7 @@ const Column = styled.div`
   width: 100%;
 `;
 
-const OrderDesktop: React.FC<IProps> = () => {
+const CreateOrderDesktop: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const { accountStore, settingsStore } = useStores();
   const balance0 = accountStore.getFormattedBalance(vm.token0);
@@ -162,4 +162,4 @@ const OrderDesktop: React.FC<IProps> = () => {
     </Root>
   );
 };
-export default observer(OrderDesktop);
+export default observer(CreateOrderDesktop);

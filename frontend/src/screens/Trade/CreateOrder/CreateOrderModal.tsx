@@ -18,7 +18,7 @@ interface IProps {
   visible: boolean;
 }
 
-const OrderModal: React.FC<IProps> = ({ ...rest }) => {
+const CreateOrderModal: React.FC<IProps> = ({ ...rest }) => {
   const vm = useTradeVM();
   const { accountStore, settingsStore } = useStores();
   const balance0 = accountStore.getFormattedBalance(vm.token0);
@@ -123,4 +123,4 @@ const OrderModal: React.FC<IProps> = ({ ...rest }) => {
   );
 };
 
-export default observer(OrderModal);
+export default observer(CreateOrderModal);

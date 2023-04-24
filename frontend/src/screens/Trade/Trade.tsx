@@ -7,14 +7,14 @@ import PairsList from "@screens/Trade/PairsList";
 import Tables from "./Tables";
 import useWindowSize from "@src/hooks/useWindowSize";
 import MobileStats from "@screens/Trade/MobileStats";
-import OrderMobile from "@screens/Trade/Order/OrderMobile";
 import TradingViewWidget from "./Chart";
 import SizedBox from "@components/SizedBox";
 import Trades from "@screens/Trade/Trades";
 import Tabs from "@components/Tabs";
 import DesktopOrderBook from "./DesktopOrderBook";
 import MobileOrderBook from "@screens/Trade/MobileOrderBook";
-import OrderDesktop from "@screens/Trade/Order/OrderDesktop";
+import CreateOrderDesktop from "./CreateOrder/CreateOrderDesktop";
+import CreateOrderMobile from "./CreateOrder/CreateOrderMobile";
 
 interface IProps {}
 
@@ -54,7 +54,7 @@ const TradeImpl: React.FC<IProps> = () => {
                 <>
                   <DesktopOrderBook />
                   <TradingViewWidget />
-                  <OrderDesktop />
+                  <CreateOrderDesktop />
                   <PairsList />
                   <Trades />
                   <Tables />
@@ -76,7 +76,7 @@ const TradeImpl: React.FC<IProps> = () => {
                     {activeTab === 1 && <MobileOrderBook />}
                   </OrderBookAndChartContainer>
                   <Tables />
-                  <OrderMobile />
+                  <CreateOrderMobile />
                 </>
               )}
             </Root>

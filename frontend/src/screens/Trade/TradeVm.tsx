@@ -55,6 +55,11 @@ class TradeVm {
   trades: Array<Trade> = [];
   setTrades = (v: Array<Trade>) => (this.trades = v);
 
+  get latestTradePrice() {
+    if (this.trades.length === 0) return "...";
+    return this.trades[0].priceFormatter;
+  }
+
   activeModalAction: 0 | 1 = 0;
   setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
 
@@ -205,14 +210,14 @@ class TradeVm {
         ])
         .txParams({ gasPrice: 1 })
         .call()
-        .then(
-          ({ transactionResult }) =>
-            transactionResult &&
+        .then(({ transactionResult }) => {
+          transactionResult &&
             this.notifyThatActionIsSuccessful(
               "Order has been placed",
               transactionResult.transactionId ?? ""
-            )
-        );
+            );
+        })
+        .then(() => this.rootStore.ordersStore.updateMyOrders());
     } catch (e) {
       const error = JSON.parse(JSON.stringify(e)).toString();
       this.rootStore.notificationStore.toast(error.error, {
@@ -250,7 +255,8 @@ class TradeVm {
               "Order has been canceled",
               transactionResult.transactionId ?? ""
             )
-        );
+        )
+        .then(() => this.rootStore.ordersStore.updateMyOrders());
       //todo add update
     } catch (e) {
       this.notifyError(JSON.parse(JSON.stringify(e)).toString(), e);

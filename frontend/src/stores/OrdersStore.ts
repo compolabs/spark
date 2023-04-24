@@ -1,16 +1,22 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction } from "mobx";
-import { getActiveOrders, getOrdersByOwner, Order } from "@src/services/OrdersService";
+import {
+  getActiveOrders,
+  getOrdersByOwner,
+  Order,
+} from "@src/services/OrdersService";
 
 class OrdersStore {
   public readonly rootStore: RootStore;
   activeOrders: Order[] = [];
-  private setActiveOrders = (activeOrders: Order[]) => (this.activeOrders = activeOrders);
+  private setActiveOrders = (activeOrders: Order[]) =>
+    (this.activeOrders = activeOrders);
   myOrders: Order[] = [];
-  private setMyOrders = (myOrders: Order[]) => (this.myOrders = myOrders);
+  setMyOrders = (myOrders: Order[]) => (this.myOrders = myOrders);
 
   initialized: boolean = false;
   private setInitialized = (l: boolean) => (this.initialized = l);
+
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
