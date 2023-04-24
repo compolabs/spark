@@ -101,7 +101,24 @@ async fn main() {
                     && !fullfiled.contains(&order_b.id)
                 {
                     let res = match_orders(&instance, order_a.id, order_b.id).await;
-                    if res.is_ok() {
+                    let err = res.as_ref().err();
+                    if res.is_err() {
+                        println!("{}", err.unwrap().to_string());
+                    }
+                    //FIXME remove it when "tried to read 8 bytes from response but only had 0 remaining" error will be fixed
+                    // let continue_err =
+                    // "Revert transaction error: failed to decode log from require revert";
+                    // if res.is_err() && err.unwrap().to_string().contains(continue_err) {
+                    //     break 'a_order_cycle;
+                    // }
+                    let invalid_data_err = "Invalid data: tried to read 8 bytes from response but only had 0 remaining!";
+                    let decode_log_err =
+                        "Revert transaction error: failed to decode log from require revert";
+                    let is_ok_error = res.is_err()
+                        && (err.unwrap().to_string().contains(invalid_data_err)
+                            || err.unwrap().to_string().contains(decode_log_err));
+                    //-------------------------------------------------------------------------------------------------------
+                    if res.is_ok() || is_ok_error {
                         fullfiled.push(order_a.id);
                         fullfiled.push(order_b.id);
 
@@ -135,23 +152,27 @@ async fn main() {
                         //     .say(client.cache_and_http.http.clone(), msg)
                         //     .await
                         //     .unwrap();
-                        let (trade0, trade1) = res.unwrap().value;
+                        if res.is_ok() {
+                            let (trade0, trade1) = res.unwrap().value;
 
-                        let mut vec = vec![HashMap::new(), HashMap::new()];
-                        vec[0].insert("asset0", format!("0x{}", trade0.asset_0));
-                        vec[0].insert("amount0", trade0.amount_0.to_string());
-                        vec[0].insert("asset1", format!("0x{}", trade0.asset_1));
-                        vec[0].insert("amount1", trade0.amount_1.to_string());
-                        vec[0].insert("timestamp", Tai64(trade0.timestamp).to_unix().to_string());
+                            let mut vec = vec![HashMap::new(), HashMap::new()];
+                            vec[0].insert("asset0", format!("0x{}", trade0.asset_0));
+                            vec[0].insert("amount0", trade0.amount_0.to_string());
+                            vec[0].insert("asset1", format!("0x{}", trade0.asset_1));
+                            vec[0].insert("amount1", trade0.amount_1.to_string());
+                            vec[0]
+                                .insert("timestamp", Tai64(trade0.timestamp).to_unix().to_string());
 
-                        vec[1].insert("asset0", format!("0x{}", trade1.asset_0));
-                        vec[1].insert("amount0", trade1.amount_0.to_string());
-                        vec[1].insert("asset1", format!("0x{}", trade1.asset_1));
-                        vec[1].insert("amount1", trade1.amount_1.to_string());
-                        vec[1].insert("timestamp", Tai64(trade1.timestamp).to_unix().to_string());
+                            vec[1].insert("asset0", format!("0x{}", trade1.asset_0));
+                            vec[1].insert("amount0", trade1.amount_0.to_string());
+                            vec[1].insert("asset1", format!("0x{}", trade1.asset_1));
+                            vec[1].insert("amount1", trade1.amount_1.to_string());
+                            vec[1]
+                                .insert("timestamp", Tai64(trade1.timestamp).to_unix().to_string());
 
-                        let url = format!("{BACKEND_URL}/trade");
-                        let _res = client.post(url).json(&vec).send().await.unwrap();
+                            let url = format!("{BACKEND_URL}/trade");
+                            let _res = client.post(url).json(&vec).send().await.unwrap();
+                        }
 
                         println!("{msg}");
 
@@ -169,6 +190,6 @@ async fn main() {
             }
             i += 1;
         }
-        sleep(Duration::from_secs(10));
+        sleep(Duration::from_secs(1));
     }
 }

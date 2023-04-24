@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 dotenv = "0.15.0"
-fuels = { version = "0.39", features = ["fuel-core-lib"] }
+fuels = { version = "0.41.0", features = ["fuel-core-lib"] }
 reqwest = "0.11.16"
 serde = "1.0.160"
 serde_json = "1.0.93"
