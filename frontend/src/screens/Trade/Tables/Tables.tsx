@@ -31,12 +31,6 @@ const DContainer = styled.div`
   width: 100%;
   max-height: 166px;
   overflow-x: scroll;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
 `;
 const Container = styled.div`
   display: flex;

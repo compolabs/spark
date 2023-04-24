@@ -122,7 +122,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
     return (
       <Root
         style={{
-          height: "100%",
           alignItems: "center",
           justifyContent: "center",
         }}
