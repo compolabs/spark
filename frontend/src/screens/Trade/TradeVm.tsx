@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
@@ -35,6 +35,10 @@ class TradeVm {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.getLatestTrades().then();
+    reaction(
+      () => [this.assetId0, this.assetId1],
+      () => this.getLatestTrades()
+    );
   }
 
   getLatestTrades = async () => {

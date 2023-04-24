@@ -243,7 +243,6 @@ class AccountStore {
     if (this.address == null) return null;
     return { value: Address.fromString(this.address).toB256() };
   }
-
 }
 
 export default AccountStore;

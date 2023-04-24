@@ -114,7 +114,9 @@ const DesktopOrderBook: React.FC<IProps> = () => {
       <Root style={{ justifyContent: "center", alignItems: "center" }}>
         <Text textAlign="center">Connect wallet to see orders</Text>
         <SizedBox height={12} />
-        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
+        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
+          Connect wallet
+        </Button>
       </Root>
     );
   if (activeOrdersForCurrentPair.length === 0)
@@ -125,7 +127,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
           justifyContent: "center",
         }}
       >
-        <NoData text="No trades for this pair" />
+        <NoData text="No orders for this pair" />
       </Root>
     );
   else
@@ -160,7 +162,10 @@ const DesktopOrderBook: React.FC<IProps> = () => {
         </OrderRow>
         <Divider />
         <SizedBox height={8} />
-        <Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
+        <Container
+          fitContent={orderFilter === 1 || orderFilter === 2}
+          reverse={orderFilter === 1}
+        >
           {!ordersStore.initialized ? (
             <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
           ) : (
@@ -169,12 +174,17 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: buyOrders.length < 12 ? 13 - buyOrders.length : 0,
                 }).map((o, index) => (
-                  <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
+                  <Row
+                    style={{ margin: "4px 0" }}
+                    key={index + "negative-plug"}
+                  >
                     {Array.from({ length: 3 }).map((_, i) => (
                       <Text
                         key={index + "negative-plug" + i}
                         size="small"
-                        textAlign={i === 0 ? undefined : i === 1 ? "center" : "right"}
+                        textAlign={
+                          i === 0 ? undefined : i === 1 ? "center" : "right"
+                        }
                       >
                         -
                       </Text>
@@ -184,12 +194,18 @@ const DesktopOrderBook: React.FC<IProps> = () => {
               {orderFilter !== 2 &&
                 buyOrders.map((o, index) => (
                   //Todo add hover
-                  <Row style={{ margin: "4px 0", cursor: "pointer" }} key={index + "positive"}>
+                  <Row
+                    style={{ margin: "4px 0", cursor: "pointer" }}
+                    key={index + "positive"}
+                  >
                     <Text
                       size="small"
                       type="error"
                       onClick={() => {
-                        const price = BN.parseUnits(o.price, vm.token1.decimals);
+                        const price = BN.parseUnits(
+                          o.price,
+                          vm.token1.decimals
+                        );
                         vm.setBuyPrice(price, true);
                         // vm.setBuyAmount(new BN(o.amount), true);
                         vm.setSellPrice(BN.ZERO, true);
@@ -229,7 +245,11 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                 <Text weight={500} size="small">
                   {currentPrice}
                 </Text>
-                <Text textAlign="right" type="secondary" size="small">{`SPREAD ${spread} %`}</Text>
+                <Text
+                  textAlign="right"
+                  type="secondary"
+                  size="small"
+                >{`SPREAD ${spread} %`}</Text>
               </Row>
             )}
           </Row>
@@ -251,7 +271,10 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                     style={{ margin: "4px 0", cursor: "pointer" }}
                     key={index + "negative"}
                     onClick={() => {
-                      const price = BN.parseUnits(o.reversePrice, vm.token1.decimals);
+                      const price = BN.parseUnits(
+                        o.reversePrice,
+                        vm.token1.decimals
+                      );
                       vm.setSellPrice(price, true);
                       // vm.setSellAmount(new BN(o.amount), true);
                       vm.setBuyPrice(BN.ZERO, true);
@@ -275,11 +298,16 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: sellOrders.length < 12 ? 13 - sellOrders.length : 0,
                 }).map((o, index) => (
-                  <Row style={{ margin: "4px 0" }} key={index + "positive-plug"}>
+                  <Row
+                    style={{ margin: "4px 0" }}
+                    key={index + "positive-plug"}
+                  >
                     {Array.from({ length: 3 }).map((_, i) => (
                       <Text
                         key={index + "positive-plug" + i}
-                        textAlign={i === 0 ? undefined : i === 1 ? "center" : "right"}
+                        textAlign={
+                          i === 0 ? undefined : i === 1 ? "center" : "right"
+                        }
                         size="small"
                       >
                         -
