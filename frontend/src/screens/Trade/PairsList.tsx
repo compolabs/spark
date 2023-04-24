@@ -19,6 +19,14 @@ const Root = styled.div`
   padding: 12px 16px 0 16px;
 `;
 
+const Pairs = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 210px;
+  overflow-x: scroll;
+  -ms-overflow-style: none;
+`;
 const Title = styled(Text)`
   font-family: "Roboto", sans-serif;
   font-style: normal;
@@ -79,7 +87,10 @@ const Container = styled.div`
   width: 100%;
   overflow-x: scroll;
   -ms-overflow-style: none;
-  padding-bottom: 6px;
+  max-height: 210px;
+  @media (min-width: 880px) {
+    max-height: unset;
+  }
 `;
 
 type TPair = {
@@ -89,17 +100,20 @@ type TPair = {
   change: string;
 };
 
-const allPairs = Object.keys(TOKENS_BY_SYMBOL).reduce((acc, symbol0, _, arr) => {
-  const batch = arr
-    .filter((symbol1) => symbol1 !== symbol0)
-    .map((symbol1) => ({
-      token0: TOKENS_BY_SYMBOL[symbol0],
-      token1: TOKENS_BY_SYMBOL[symbol1],
-      lastPrice: "",
-      change: "",
-    }));
-  return [...acc, ...batch];
-}, [] as Array<TPair>);
+const allPairs = Object.keys(TOKENS_BY_SYMBOL).reduce(
+  (acc, symbol0, _, arr) => {
+    const batch = arr
+      .filter((symbol1) => symbol1 !== symbol0)
+      .map((symbol1) => ({
+        token0: TOKENS_BY_SYMBOL[symbol0],
+        token1: TOKENS_BY_SYMBOL[symbol1],
+        lastPrice: "",
+        change: "",
+      }));
+    return [...acc, ...batch];
+  },
+  [] as Array<TPair>
+);
 
 const PairsList: React.FC<IProps> = () => {
   const vm = useTradeVM();
@@ -148,7 +162,9 @@ const PairsList: React.FC<IProps> = () => {
               }
             }}
           >
-            <PairText style={{ paddingLeft: 8 }}>{`${token0.symbol}/${token1.symbol}`}</PairText>
+            <PairText
+              style={{ paddingLeft: 8 }}
+            >{`${token0.symbol}/${token1.symbol}`}</PairText>
             <PairText>{lastPrice}</PairText>
             <PairText>{change}%</PairText>
           </PairRow>
