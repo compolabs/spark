@@ -15,6 +15,7 @@ import DesktopOrderBook from "./DesktopOrderBook";
 import MobileOrderBook from "@screens/Trade/MobileOrderBook";
 import CreateOrderDesktop from "./CreateOrder/CreateOrderDesktop";
 import CreateOrderMobile from "./CreateOrder/CreateOrderMobile";
+import { Row } from "@src/components/Flex";
 
 interface IProps {}
 
@@ -29,6 +30,8 @@ const Root = styled.div`
     height: calc(100vh - 62px);
     display: grid;
     grid-template:
+      //"ticker ticker pairs" 48px
+
       "orderbook chart pairs" 484px
       "orderbook order trades" 308px
       "tables tables tables" 290px / minmax(250px, 340px) minmax(510px, 1fr) minmax(250px, 326px);
@@ -52,13 +55,13 @@ const TradeImpl: React.FC<IProps> = () => {
             <Root>
               {width && width >= 880 ? (
                 <>
+                  {/*<Row style={{ height: 64, gridArea: "ticker" }} mainAxisSize="stretch" />*/}
                   <DesktopOrderBook />
                   <TradingViewWidget />
                   <CreateOrderDesktop />
                   <PairsList />
                   <Trades />
                   <Tables />
-                  {/*<SizedBox height={1} />*/}
                 </>
               ) : (
                 <>

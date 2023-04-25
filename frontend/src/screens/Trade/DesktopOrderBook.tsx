@@ -228,7 +228,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                 <Text
                   type={vm.latestTrade?.type === TRADE_TYPE.SELL ? "error" : "green"}
                   weight={700}
-                  style={{ fontSize: 15 }}
+                  style={{ fontSize: 13 }}
                   size="small"
                 >
                   {vm.latestTrade?.priceFormatter}
