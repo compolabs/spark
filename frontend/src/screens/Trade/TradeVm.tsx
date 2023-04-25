@@ -188,8 +188,8 @@ class TradeVm {
     if (action === "sell") {
       token0 = this.assetId0;
       token1 = this.assetId1;
-      amount0 = this.sellAmount.toString();
-      amount1 = this.sellTotal.toString();
+      amount0 = this.sellAmount.toFixed(0).toString();
+      amount1 = this.sellTotal.toFixed(0).toString();
     }
     if (token0 == null || token1 == null || amount0 == null || amount1 == null)
       return;
