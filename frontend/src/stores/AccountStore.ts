@@ -28,7 +28,7 @@ class AccountStore {
     if (initState) {
       this.setLoginType(initState.loginType);
       this.setAddress(initState.address);
-      // this.setMnemonicPhrase(initState.mnemonicPhrase);
+      this.setPrivateKey(initState.privateKey);
       if (initState.loginType === LOGIN_TYPE.FUEL_WALLET) {
         document.addEventListener("FuelLoaded", this.onFuelLoaded);
       }

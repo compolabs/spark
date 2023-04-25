@@ -256,7 +256,11 @@ class TradeVm {
               transactionResult.transactionId ?? ""
             )
         )
-        .then(() => this.rootStore.ordersStore.updateMyOrders());
+        .then(() => {
+          const { myOrders } = this.rootStore.ordersStore;
+          const index = myOrders.findIndex((obj) => obj.id === id);
+          myOrders.splice(index, 1);
+        });
       //todo add update
     } catch (e) {
       this.notifyError(JSON.parse(JSON.stringify(e)).toString(), e);
