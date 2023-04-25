@@ -21,12 +21,23 @@ const Root = styled.div`
   width: 100%;
   margin: 0 16px;
 `;
-const OrderRow = styled.div`
+const TableTitleRow = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
+  padding: 8px 0;
+  p {
+    color: #959dae;
+  }
   @media (min-width: 880px) {
     height: 36px;
     grid-template-columns: repeat(8, 1fr);
+  }
+`;
+
+const OrderRow = styled(TableTitleRow)`
+  padding: 6px 0;
+  p {
+    color: #fff;
   }
 `;
 const OpenedOrders: React.FC<IProps> = () => {
@@ -41,17 +52,17 @@ const OpenedOrders: React.FC<IProps> = () => {
   return (
     <Root>
       {width && width >= 880 && userOrders.length > 0 && (
-        <OrderRow>
+        <TableTitleRow>
           {columns.map((value) => (
             <Text size="small" key={value}>
               {value}
             </Text>
           ))}
-        </OrderRow>
+        </TableTitleRow>
       )}
-      <SizedBox height={8} />
       {userOrders.length === 0 ? (
         <Column justifyContent="center" alignItems="center" crossAxisSize="max">
+          <SizedBox height={16} />
           <Img style={{ width: 100, height: 100 }} src={notFound} alt="no-data" />
           <SizedBox height={12} />
           <Text fitContent style={{ marginBottom: 24 }}>
@@ -62,15 +73,15 @@ const OpenedOrders: React.FC<IProps> = () => {
         userOrders.map((o) =>
           width && width >= 880 ? (
             <OrderRow key={o.id}>
-              <Text> {o.time}</Text>
-              <Text>{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
-              <Text>limit</Text>
-              <Text>{o.priceFormatter}</Text>
-              <Text>
+              <Text size="small"> {o.time}</Text>
+              <Text size="small">{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
+              <Text size="small">limit</Text>
+              <Text size="small">{o.priceFormatter}</Text>
+              <Text size="small">
                 {o.amount} {o.token0.symbol}
               </Text>
-              <Text>{o.fullFillPercent} %</Text>
-              <Text>
+              <Text size="small">{o.fullFillPercent} %</Text>
+              <Text size="small">
                 {o.total} {o.token1.symbol}
               </Text>
               <Text

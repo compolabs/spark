@@ -11,7 +11,7 @@ interface IProps {}
 
 const Root = styled(Row)`
   display: flex;
-  padding: 0 16px;
+  //padding: 0 16px;
   justify-content: space-between;
 `;
 

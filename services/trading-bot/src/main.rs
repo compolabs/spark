@@ -68,7 +68,7 @@ async fn main() {
     let secret = env::var("SECRET").expect("❌ Expected a account secret in the environment");
     let wallet = WalletUnlocked::new_from_private_key(secret.parse().unwrap(), Some(provider));
     let address = Address::from(wallet.address());
-
+    
     let bech32_id = Bech32ContractId::from(ContractId::from_str(CONTRACT_ADDRESS).unwrap());
     let spark_instance = LimitOrdersContract::new(bech32_id, wallet.clone());
 

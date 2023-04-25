@@ -1,9 +1,5 @@
 import axios from "axios";
-import {
-  BACKEND_URL,
-  TOKENS_BY_ASSET_ID,
-  TOKENS_BY_SYMBOL,
-} from "@src/constants";
+import { BACKEND_URL, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 
@@ -17,33 +13,30 @@ interface ITradeResponse {
   timestamp: number;
 }
 
+export enum TRADE_TYPE {
+  BUY,
+  SELL,
+}
+
+// BTC/USDC
 export class Trade {
-  asset0: string;
+  asset0: string; //BTC
   amount0: BN;
-  asset1: string;
+  asset1: string; //USDC
   amount1: BN;
   timestamp: number;
-
+  type: TRADE_TYPE;
   constructor(tradeOutput: ITradeResponse, pairSymbol: string) {
     const [symbol0] = pairSymbol.split("/");
     const token0 = TOKENS_BY_SYMBOL[symbol0];
 
-    this.asset0 =
-      token0.assetId === tradeOutput.asset0
-        ? tradeOutput.asset0
-        : tradeOutput.asset1;
+    this.type = token0.assetId === tradeOutput.asset0 ? TRADE_TYPE.SELL : TRADE_TYPE.BUY;
+    this.asset0 = this.type === TRADE_TYPE.SELL ? tradeOutput.asset0 : tradeOutput.asset1;
     this.amount0 =
-      token0.assetId === tradeOutput.asset0
-        ? new BN(tradeOutput.amount0.toString())
-        : new BN(tradeOutput.amount1.toString());
-    this.asset1 =
-      token0.assetId === tradeOutput.asset0
-        ? tradeOutput.asset1
-        : tradeOutput.asset0;
+      this.type === TRADE_TYPE.SELL ? new BN(tradeOutput.amount0) : new BN(tradeOutput.amount1);
+    this.asset1 = this.type === TRADE_TYPE.SELL ? tradeOutput.asset1 : tradeOutput.asset0;
     this.amount1 =
-      token0.assetId === tradeOutput.asset0
-        ? new BN(tradeOutput.amount1.toString())
-        : new BN(tradeOutput.amount0.toString());
+      this.type === TRADE_TYPE.SELL ? new BN(tradeOutput.amount1) : new BN(tradeOutput.amount0);
     this.timestamp = tradeOutput.timestamp;
   }
 
@@ -93,14 +86,8 @@ export class Trade {
   }
 }
 
-export const getLatestTradesInPair = (
-  symbol0: string,
-  symbol1: string,
-  pairSymbol: string
-) =>
+export const getLatestTradesInPair = (symbol0: string, symbol1: string, pairSymbol: string) =>
   axios
     .get(`${BACKEND_URL}/trades/pair/${symbol0}/${symbol1}`)
     .then((res) => res.data)
-    .then((arr: Array<ITradeResponse>) =>
-      arr.map((t) => new Trade(t, pairSymbol))
-    );
+    .then((arr: Array<ITradeResponse>) => arr.map((t) => new Trade(t, pairSymbol)));

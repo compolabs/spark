@@ -26,25 +26,21 @@ const Tab = styled.div<{ active?: boolean }>`
   padding-bottom: 12px;
   border-bottom: 4px solid #7075e9;
   cursor: pointer;
-  border-bottom: ${({ active }) =>
-    active ? "4px solid #5A81EA" : "4px solid transparent"};
+  border-bottom: ${({ active }) => (active ? "4px solid #5A81EA" : "4px solid transparent")};
   margin-bottom: -1px;
   user-select: none;
   transition: 0.4s;
-
   p {
+    transition: 0.4s;
+    color: ${({ active }) => (active ? "#FFFFFF" : "#959DAE")};
     font-size: 13px;
     line-height: 18px;
+    :hover {
+      color: #fff;
+    }
   }
-}
 `;
-const Tabs: React.FC<IProps> = ({
-  tabs,
-  activeTab,
-  setActive,
-  style,
-  tabStyle,
-}) => {
+const Tabs: React.FC<IProps> = ({ tabs, activeTab, setActive, style, tabStyle }) => {
   return (
     <Root style={style}>
       {tabs.map(({ additionalInfo, name }, index) => (
@@ -57,9 +53,7 @@ const Tabs: React.FC<IProps> = ({
           <Text weight={500}>
             {name}
             {additionalInfo != null && additionalInfo !== 0 && (
-              <span style={{ color: "#8082C5", marginLeft: 10 }}>
-                {additionalInfo}
-              </span>
+              <span style={{ color: "#8082C5", marginLeft: 10 }}>{additionalInfo}</span>
             )}
           </Text>
         </Tab>

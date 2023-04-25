@@ -55,9 +55,9 @@ class TradeVm {
   trades: Array<Trade> = [];
   setTrades = (v: Array<Trade>) => (this.trades = v);
 
-  get latestTradePrice() {
-    if (this.trades.length === 0) return "...";
-    return this.trades[0].priceFormatter;
+  get latestTrade() {
+    if (this.trades.length === 0) return null;
+    return this.trades[0];
   }
 
   activeModalAction: 0 | 1 = 0;
@@ -145,19 +145,13 @@ class TradeVm {
 
   get canBuy() {
     return (
-      this.buyAmount.gt(0) &&
-      this.buyPrice.gt(0) &&
-      this.buyTotal.gt(0) &&
-      !this.buyTotalError
+      this.buyAmount.gt(0) && this.buyPrice.gt(0) && this.buyTotal.gt(0) && !this.buyTotalError
     );
   }
 
   get canSell() {
     return (
-      this.sellAmount.gt(0) &&
-      this.sellPrice.gt(0) &&
-      this.sellTotal.gt(0) &&
-      !this.sellAmountError
+      this.sellAmount.gt(0) && this.sellPrice.gt(0) && this.sellTotal.gt(0) && !this.sellAmountError
     );
   }
 
@@ -191,8 +185,7 @@ class TradeVm {
       amount0 = this.sellAmount.toString();
       amount1 = this.sellTotal.toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
-      return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
 
     this.setLoading(true);
     try {

@@ -5,6 +5,7 @@ import { observer } from "mobx-react-lite";
 import Text from "@src/components/Text";
 import NoData from "@components/NoData";
 import SizedBox from "@components/SizedBox";
+import { TRADE_TYPE } from "@src/services/TradesService";
 
 interface IProps {}
 
@@ -37,11 +38,7 @@ const TradeRecord = styled.div`
 const MarketTrades: React.FC<IProps> = () => {
   const length = 0;
   const vm = useTradeVM();
-  const columns = [
-    `Price (${vm.token1.symbol})`,
-    `Amount (${vm.token0.symbol})`,
-    "Time",
-  ];
+  const columns = [`Price (${vm.token1.symbol})`, `Amount (${vm.token0.symbol})`, "Time"];
   return (
     <Root>
       {length === 0 ? (
@@ -66,7 +63,7 @@ const MarketTrades: React.FC<IProps> = () => {
                 <Text
                   textAlign="left"
                   size="small"
-                  type={trade.asset0 === vm.assetId0 ? "green" : "error"}
+                  type={trade.type === TRADE_TYPE.BUY ? "green" : "error"}
                 >
                   {trade.priceFormatter}
                 </Text>
