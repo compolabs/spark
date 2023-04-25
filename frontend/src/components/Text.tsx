@@ -6,7 +6,7 @@ type TTextAlign = "center" | "left" | "right" | "justify" | "end";
 
 const Text = styled.p<{
   type?: TTextType;
-  weight?: 400 | 500;
+  weight?: 400 | 500 | 700;
   size?: TTextSize;
   fitContent?: boolean;
   nowrap?: boolean;

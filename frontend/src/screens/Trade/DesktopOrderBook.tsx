@@ -89,7 +89,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
       if (a.price == null && b.price == null) return -1;
       return a.price!.lt(b.price!) ? 1 : -1;
     })
-    .slice(orderFilter === 0 ? -13 : -25);
+    .slice(orderFilter === 0 ? -15 : -25);
 
   const sellOrders = activeOrdersForCurrentPair
     .filter((o) => o.asset0 === vm.assetId1)
@@ -99,7 +99,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
       if (a.reversePrice == null && b.reversePrice == null) return -1;
       return a.reversePrice!.lt(b.reversePrice!) ? -1 : 1;
     })
-    .slice(orderFilter === 0 ? -13 : -25)
+    .slice(orderFilter === 0 ? -15 : -25)
     .reverse();
 
   const columns = [
@@ -161,12 +161,12 @@ const DesktopOrderBook: React.FC<IProps> = () => {
         <SizedBox height={8} />
         <Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
           {!ordersStore.initialized ? (
-            <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
+            <Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
           ) : (
             <>
               {orderFilter === 0 &&
                 Array.from({
-                  length: buyOrders.length < 12 ? 13 - buyOrders.length : 0,
+                  length: buyOrders.length < 12 ? 15 - buyOrders.length : 0,
                 }).map((o, index) => (
                   <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
                     {Array.from({ length: 3 }).map((_, i) => (
@@ -227,7 +227,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
               <Row>
                 <Text
                   type={vm.latestTrade?.type === TRADE_TYPE.SELL ? "error" : "green"}
-                  weight={500}
+                  weight={700}
+                  style={{ fontSize: 15 }}
                   size="small"
                 >
                   {vm.latestTrade?.priceFormatter}
@@ -249,7 +250,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
             </>
           )}
           {!ordersStore.initialized ? (
-            <Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
+            <Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
           ) : (
             <>
               {orderFilter !== 1 &&
@@ -281,7 +282,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                 ))}
               {orderFilter === 0 &&
                 Array.from({
-                  length: sellOrders.length < 12 ? 13 - sellOrders.length : 0,
+                  length: sellOrders.length < 12 ? 15 - sellOrders.length : 0,
                 }).map((o, index) => (
                   <Row style={{ margin: "4px 0" }} key={index + "positive-plug"}>
                     {Array.from({ length: 3 }).map((_, i) => (

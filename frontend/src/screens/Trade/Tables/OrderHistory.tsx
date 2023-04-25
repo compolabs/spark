@@ -45,7 +45,7 @@ const OrderHistory: React.FC<IProps> = () => {
 
   const userOrders = ordersStore.myOrders.filter((o) => o.status !== "Active");
 
-  const columns = ["Date", "Pair", "Type", "Price", "Amount", "Status", "Total"];
+  const columns = ["Date", "Pair", "Side", "Price", "Amount", "Status", "Total"];
 
   return (
     <Root>
