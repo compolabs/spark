@@ -89,7 +89,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
       if (a.price == null && b.price == null) return -1;
       return a.price!.lt(b.price!) ? 1 : -1;
     })
-    .slice(-12);
+    .slice(-13);
 
   const sellOrders = activeOrdersForCurrentPair
     .filter((o) => o.asset0 === vm.assetId1)
@@ -99,7 +99,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
       if (a.reversePrice == null && b.reversePrice == null) return -1;
       return a.reversePrice!.lt(b.reversePrice!) ? -1 : 1;
     })
-    .slice(-12)
+    .slice(-13)
     .reverse();
 
   const columns = [`Amount ${vm.token0.symbol}`, `Price ${vm.token1.symbol}`];
@@ -182,7 +182,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
                 ))}
               {orderFilter === 0 &&
                 Array.from({
-                  length: buyOrders.length < 12 ? 13 - buyOrders.length : 0,
+                  length: buyOrders.length < 13 ? 13 - buyOrders.length : 0,
                 }).map((o, index) => (
                   <Row
                     style={{ margin: "4px 0" }}
@@ -237,7 +237,7 @@ const MobileOrderBook: React.FC<IProps> = () => {
                 ))}
               {orderFilter === 0 &&
                 Array.from({
-                  length: sellOrders.length < 12 ? 13 - sellOrders.length : 0,
+                  length: sellOrders.length < 13 ? 13 - sellOrders.length : 0,
                 }).map((o, index) => (
                   <Row
                     style={{ margin: "4px 0" }}
