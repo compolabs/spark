@@ -36,8 +36,8 @@ const WalletActionsTooltip: React.FC<IProps> = () => {
     });
   };
   const handleCopySeed = () => {
-    if (accountStore.mnemonicPhrase == null) return;
-    copy(accountStore.mnemonicPhrase);
+    if (accountStore.privateKey == null) return;
+    copy(accountStore.privateKey);
     notificationStore.toast("Don't share it with anyone", {
       type: "success",
       title: "Your seed was copied",
@@ -54,7 +54,7 @@ const WalletActionsTooltip: React.FC<IProps> = () => {
         <>
           <SizedBox height={10} />
           <Text onClick={handleCopySeed} className="menu-item">
-            Copy seed
+            Copy private key
           </Text>
         </>
       )}

@@ -41,7 +41,7 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
     //   setErr(true);
     //   return;
     // }
-    onLogin(LOGIN_TYPE.PASTE_SEED, seed);
+    onLogin(LOGIN_TYPE.PRIVATE_KEY, seed);
     setImportInputOpened(false);
     setSeed("");
     setErr(false);
@@ -49,14 +49,14 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   };
 
   const loginTypes = [
-    {
-      title: "Generate account",
-      isActive: true,
-      onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
-    },
+    // {
+    //   title: "Generate account",
+    //   isActive: true,
+    //   onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
+    // },
     {
       title: "Paste private key",
-      type: LOGIN_TYPE.PASTE_SEED,
+      type: LOGIN_TYPE.PRIVATE_KEY,
       isActive: true,
       onClick: () => setImportInputOpened(true),
     },
@@ -72,7 +72,10 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
       <Root>
         <SizedBox height={34} />
         {!isImportInputOpened ? (
-          loginTypes.map((t, i) => t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />)
+          loginTypes.map(
+            (t, i) =>
+              t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
+          )
         ) : (
           <Column crossAxisSize="max">
             <TextArea
@@ -86,7 +89,7 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
             <SizedBox height={10} />
             <Row>
               <Button fixed onClick={handlePastInput}>
-                Paste Seed
+                Paste from buffer
               </Button>
               <SizedBox width={10} />
               <Button onClick={handleLoginWithSeed} fixed>
