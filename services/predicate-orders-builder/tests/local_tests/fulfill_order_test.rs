@@ -25,6 +25,7 @@ async fn fulfill_order_test() {
     let bob_address = Address::from(bob.address());
     let provider = alice.provider().unwrap();
 
+    println!("admin_address = {:?}", alice_address);
     println!("alice_address = {:?}", alice_address);
     println!("bob_address = {:?}", bob_address);
     println!("");

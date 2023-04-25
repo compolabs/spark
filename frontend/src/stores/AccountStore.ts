@@ -1,22 +1,21 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction } from "mobx";
 import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import { IToken, NODE_URL, ROUTES, TOKENS_LIST } from "@src/constants";
+import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
 import Balance from "@src/entities/Balance";
 import BN from "@src/utils/BN";
-import { Mnemonic } from "@fuel-ts/mnemonic";
 import { FuelProviderConfig } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
   FUEL_WALLET = "FUEL_WALLET",
   GENERATE_FROM_SEED = "GENERATE_FROM_SEED",
-  PASTE_SEED = "PASTE_SEED",
+  PRIVATE_KEY = "PRIVATE_KEY",
 }
 
 export interface ISerializedAccountStore {
   address: string | null;
   loginType: LOGIN_TYPE | null;
-  mnemonicPhrase: string | null;
+  privateKey: string | null;
 }
 
 class AccountStore {
@@ -29,7 +28,7 @@ class AccountStore {
     if (initState) {
       this.setLoginType(initState.loginType);
       this.setAddress(initState.address);
-      this.setMnemonicPhrase(initState.mnemonicPhrase);
+      this.setPrivateKey(initState.privateKey);
       if (initState.loginType === LOGIN_TYPE.FUEL_WALLET) {
         document.addEventListener("FuelLoaded", this.onFuelLoaded);
       }
@@ -65,8 +64,8 @@ class AccountStore {
   public address: string | null = null;
   setAddress = (address: string | null) => (this.address = address);
 
-  public mnemonicPhrase: string | null = null;
-  setMnemonicPhrase = (seed: string | null) => (this.mnemonicPhrase = seed);
+  public privateKey: string | null = null;
+  setPrivateKey = (key: string | null) => (this.privateKey = key);
 
   public loginType: LOGIN_TYPE | null = null;
   setLoginType = (loginType: LOGIN_TYPE | null) => (this.loginType = loginType);
@@ -113,7 +112,7 @@ class AccountStore {
   serialize = (): ISerializedAccountStore => ({
     address: this.address,
     loginType: this.loginType,
-    mnemonicPhrase: this.mnemonicPhrase,
+    privateKey: this.privateKey,
   });
 
   login = async (loginType: LOGIN_TYPE, phrase?: string) => {
@@ -123,9 +122,8 @@ class AccountStore {
         await this.loginWithFuelWallet();
         await this.onFuelLoaded();
         break;
-      case LOGIN_TYPE.GENERATE_FROM_SEED:
-      case LOGIN_TYPE.PASTE_SEED:
-        await this.loginWithMnemonicPhrase(phrase);
+      case LOGIN_TYPE.PRIVATE_KEY:
+        await this.loginWithPrivateKey(phrase);
         break;
       default:
         return;
@@ -137,12 +135,12 @@ class AccountStore {
         await window.fuel.disconnect();
       } catch (e) {
         this.setAddress(null);
-        this.setMnemonicPhrase(null);
+        // this.setMnemonicPhrase(null);
         this.setLoginType(null);
       }
     }
     this.setAddress(null);
-    this.setMnemonicPhrase(null);
+    // this.setMnemonicPhrase(null);
     this.setLoginType(null);
   };
 
@@ -188,22 +186,23 @@ class AccountStore {
     return this.address != null;
   }
 
-  loginWithMnemonicPhrase = (mnemonicPhrase?: string) => {
-    const mnemonic =
-      mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
-    const seed = Mnemonic.mnemonicToSeed(mnemonic);
-    const wallet = Wallet.fromPrivateKey(seed, NODE_URL);
+  loginWithPrivateKey = (key?: string) => {
+    if (key == null) return;
+    // const mnemonic =
+    //   mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
+    // const seed = Mnemonic.mnemonicToSeed(mnemonic);
+    const wallet = Wallet.fromPrivateKey(key, NODE_URL);
     this.setAddress(wallet.address.toAddress());
-    this.setMnemonicPhrase(mnemonic);
+    this.setPrivateKey(key);
     this.rootStore.settingsStore.setLoginModalOpened(false);
-    if (mnemonicPhrase == null) {
-      this.rootStore.notificationStore.toast("First you need to mint ETH", {
-        link: `${window.location.origin}/#${ROUTES.FAUCET}`,
-        linkTitle: "Go to Faucet",
-        type: "info",
-        title: "Attention",
-      });
-    }
+    // if (mnemonicPhrase == null) {
+    //   this.rootStore.notificationStore.toast("First you need to mint ETH", {
+    //     link: `${window.location.origin}/#${ROUTES.FAUCET}`,
+    //     linkTitle: "Go to Faucet",
+    //     type: "info",
+    //     title: "Attention",
+    //   });
+    // }
   };
 
   getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
@@ -211,11 +210,9 @@ class AccountStore {
     switch (this.loginType) {
       case LOGIN_TYPE.FUEL_WALLET:
         return window.fuel?.getWallet(this.address);
-      case LOGIN_TYPE.GENERATE_FROM_SEED:
-      case LOGIN_TYPE.PASTE_SEED:
-        if (this.mnemonicPhrase == null) return null;
-        const seed = Mnemonic.mnemonicToSeed(this.mnemonicPhrase);
-        return Wallet.fromPrivateKey(seed, new Provider(NODE_URL));
+      case LOGIN_TYPE.PRIVATE_KEY:
+        if (this.privateKey == null) return null;
+        return Wallet.fromPrivateKey(this.privateKey, new Provider(NODE_URL));
     }
     return null;
   };
@@ -234,10 +231,6 @@ class AccountStore {
     if (this.address == null) return null;
     return { value: Address.fromString(this.address).toB256() };
   }
-
-  isWavesKeeperInstalled = false;
-  setWavesKeeperInstalled = (state: boolean) =>
-    (this.isWavesKeeperInstalled = state);
 }
 
 export default AccountStore;

@@ -29,6 +29,12 @@ a {
     font-weight: 500;
 }
 
+@font-face {
+    font-family: 'Roboto';
+    src: local('Roboto'), url(assets/fonts/Roboto-Bold.ttf) format('truetype');
+    font-weight: 700;
+}
+
 
 .Toastify__toast-icon {
     display: none !important;

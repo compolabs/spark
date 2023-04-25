@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
@@ -9,7 +9,8 @@ import {
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
 import BN from "@src/utils/BN";
-import { LimitOrdersAbi, LimitOrdersAbi__factory } from "@src/contracts";
+import { LimitOrdersAbi__factory } from "@src/contracts";
+import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -33,10 +34,31 @@ class TradeVm {
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
+    this.getLatestTrades().then();
+    reaction(
+      () => [this.assetId0, this.assetId1],
+      () => this.getLatestTrades()
+    );
   }
 
+  getLatestTrades = async () => {
+    const data = await getLatestTradesInPair(
+      this.token0.symbol,
+      this.token1.symbol,
+      `${this.token0.symbol}/${this.token1.symbol}`
+    );
+    this.setTrades(data);
+  };
   loading: boolean = false;
   private setLoading = (l: boolean) => (this.loading = l);
+
+  trades: Array<Trade> = [];
+  setTrades = (v: Array<Trade>) => (this.trades = v);
+
+  get latestTrade() {
+    if (this.trades.length === 0) return null;
+    return this.trades[0];
+  }
 
   activeModalAction: 0 | 1 = 0;
   setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
@@ -60,19 +82,6 @@ class TradeVm {
 
   searchValue = "";
   setSearchValue = (v: string) => (this.searchValue = v);
-
-  deposit = async (limitOrders: LimitOrdersAbi) => {
-    return limitOrders.functions
-      .deposit()
-      .callParams({
-        forward: {
-          amount: "100000",
-          assetId: TOKENS_BY_SYMBOL.ETH.assetId,
-        },
-      })
-      .txParams({ gasPrice: 1 })
-      .call();
-  };
 
   buyPrice: BN = BN.ZERO;
   setBuyPrice = (price: BN, sync?: boolean) => {
@@ -179,28 +188,36 @@ class TradeVm {
     if (action === "sell") {
       token0 = this.assetId0;
       token1 = this.assetId1;
-      amount0 = this.sellAmount.toString();
-      amount1 = this.sellTotal.toString();
+      amount0 = this.sellAmount.toFixed(0).toString();
+      amount1 = this.sellTotal.toFixed(0).toString();
     }
     if (token0 == null || token1 == null || amount0 == null || amount1 == null)
       return;
 
     this.setLoading(true);
     try {
-      await this.deposit(limitOrdersContract);
-      await limitOrdersContract.functions
-        .create_order({ value: token1 }, amount1, this.matcherFee)
-        .callParams({ forward: { amount: amount0, assetId: token0 } })
+      await limitOrdersContract
+        .multiCall([
+          limitOrdersContract.functions.deposit().callParams({
+            forward: {
+              amount: "100000",
+              assetId: TOKENS_BY_SYMBOL.ETH.assetId,
+            },
+          }),
+          limitOrdersContract.functions
+            .create_order({ value: token1 }, amount1, this.matcherFee)
+            .callParams({ forward: { amount: amount0, assetId: token0 } }),
+        ])
         .txParams({ gasPrice: 1 })
         .call()
-        .then(
-          ({ transactionResult }) =>
-            transactionResult &&
+        .then(({ transactionResult }) => {
+          transactionResult &&
             this.notifyThatActionIsSuccessful(
               "Order has been placed",
               transactionResult.transactionId ?? ""
-            )
-        );
+            );
+        })
+        .then(() => this.rootStore.ordersStore.updateMyOrders());
     } catch (e) {
       const error = JSON.parse(JSON.stringify(e)).toString();
       this.rootStore.notificationStore.toast(error.error, {
@@ -209,10 +226,7 @@ class TradeVm {
       });
       console.error(e);
     } finally {
-      await Promise.all([
-        this.rootStore.ordersStore.updateActiveOrders(),
-        this.rootStore.ordersStore.fetchNewOrders(),
-      ]);
+      await this.rootStore.ordersStore.sync();
       this.setLoading(false);
     }
   };
@@ -241,7 +255,12 @@ class TradeVm {
               "Order has been canceled",
               transactionResult.transactionId ?? ""
             )
-        );
+        )
+        .then(() => {
+          const { myOrders } = this.rootStore.ordersStore;
+          const index = myOrders.findIndex((obj) => obj.id === id);
+          myOrders.splice(index, 1);
+        });
       //todo add update
     } catch (e) {
       this.notifyError(JSON.parse(JSON.stringify(e)).toString(), e);

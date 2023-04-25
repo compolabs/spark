@@ -8,7 +8,7 @@ abigen!(Contract(
 
 pub mod limit_orders_abi_calls {
 
-    use fuels::{programs::call_response::FuelCallResponse, prelude::WalletUnlocked};
+    use fuels::{prelude::WalletUnlocked, programs::call_response::FuelCallResponse};
 
     use super::*;
 
@@ -32,7 +32,7 @@ pub mod limit_orders_abi_calls {
     //         .value
     // }
 
-    pub async fn orders_by_id(
+    pub async fn _orders_by_id(
         contract: &LimitOrdersContract<WalletUnlocked>,
         ids: [u64; 10],
     ) -> (
@@ -79,7 +79,7 @@ pub mod limit_orders_abi_calls {
     //         .unwrap()
     //         .value
     // }
-    pub async fn get_orders(
+    pub async fn _get_orders(
         contract: &LimitOrdersContract<WalletUnlocked>,
         offset: u64,
     ) -> (
@@ -93,14 +93,9 @@ pub mod limit_orders_abi_calls {
         Option<Order>,
         Option<Order>,
         Option<Order>,
-    ) { 
-        contract
-            .methods()
-            .orders(offset)
-            .simulate()
-            .await
-            .unwrap()
-            .value
+    ) {
+        let res = contract.clone().methods().orders(offset).simulate().await;
+        res.unwrap().value
     }
 
     // pub async fn order_by_id(
@@ -206,7 +201,7 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract<WalletUnlocked>,
         order_id_a: u64,
         order_id_b: u64,
-    ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
+    ) -> Result<FuelCallResponse<(Trade, Trade)>, fuels::prelude::Error> {
         let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()

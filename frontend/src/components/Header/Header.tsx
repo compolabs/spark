@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { Column, Row } from "@components/Flex";
 import MobileMenu from "@components/Header/MobileMenu";
-import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react-lite";
 import { useLocation, useNavigate } from "react-router-dom";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
@@ -11,27 +10,33 @@ import { ROUTES } from "@src/constants";
 import { useTheme } from "@emotion/react";
 import Text from "@components/Text";
 import MobileMenuIcon from "../MobileMenuIcon";
+import EthBalance from "@components/Wallet/EthBalance";
+import SizedBox from "@components/SizedBox";
 
 interface IProps {}
 
 const Root = styled(Column)`
   width: 100%;
-  background: ${({ theme }) => theme.colors.mainBackground};
-  align-items: center;
+  background: ${({ theme }) => theme.colors.header.background};
   z-index: 102;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  height: 56px;
+  @media (min-width: 880px) {
+    height: 64px;
+  }
 `;
 
 const TopMenu = styled.header`
-  margin-top: 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
   padding: 0 16px;
-  max-width: 1440px;
+  max-width: 1660px;
   z-index: 102;
   box-sizing: border-box;
-  background: ${({ theme }) => theme.colors.mainBackground};
 
   .logo {
     height: 30px;
@@ -44,26 +49,31 @@ const TopMenu = styled.header`
     cursor: pointer;
   }
 `;
-const MenuItem = styled.div<{ selected?: boolean }>`
+const MenuItem = styled(Text)<{ selected?: boolean }>`
+  transition: 0.4s;
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+
   cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  padding: 12px 16px;
-  margin: 0 4px;
-  border-radius: 4px;
+  padding: 0 12px;
 
-  div {
-    color: ${({ selected, theme }) =>
-      selected ? "#3C69FF" : theme.colors.header.navLinkBackground};
-  })
-
+  color: ${({ selected, theme }) => (selected ? theme.colors.primary02 : theme.colors.neutral0)};
+  :hover {
+    opacity: ${({ selected }) => (selected ? 1 : 0.8)};
+  }
 `;
 
 const Mobile = styled.div`
   display: flex;
   min-width: fit-content;
+  align-items: center;
+  justify-content: center;
   @media (min-width: 880px) {
     display: none;
   }
@@ -81,6 +91,11 @@ const Desktop = styled.div`
   }
 `;
 
+const LogoContainer = styled.img`
+  height: calc(100% - 2px);
+  padding-top: 2px;
+`;
+
 const Header: React.FC<IProps> = () => {
   const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
   const location = useLocation();
@@ -95,14 +110,10 @@ const Header: React.FC<IProps> = () => {
   const menuItems = [
     { name: "Trade", link: ROUTES.TRADE, outer: false },
     { name: "Faucet", link: ROUTES.FAUCET, outer: false },
-    {
-      name: "Docs",
-      link: "https://github.com/sway-gang/sway-network#readme",
-      outer: true,
-    },
+    { name: "Docs", link: "https://docs.allspark.gg/", outer: true },
     {
       name: "Github",
-      link: "https://github.com/sway-gang/sway-exchange",
+      link: "https://github.com/compolabs/spark",
       outer: true,
     },
     {
@@ -115,52 +126,31 @@ const Header: React.FC<IProps> = () => {
   return (
     <Root>
       <TopMenu>
-        <Row alignItems="center" crossAxisSize="max">
-          <img
-            style={{ height: 16 }}
-            src={theme.images.icons.logo}
-            alt="logo"
-          />
+        <Row alignItems="center" crossAxisSize="max" justifyContent="space-between">
+          <LogoContainer src={theme.images.icons.logo} alt="logo" />
           <Desktop>
-            <SizedBox width={40} />
             {menuItems.map(({ name, link, outer }) => (
               <MenuItem
                 key={name}
                 selected={isRoutesEquals(link, location.pathname)}
-                onClick={() =>
-                  outer ? window.open(link, "_self") : navigate(link)
-                }
+                onClick={() => (outer ? window.open(link, "_blank") : navigate(link))}
               >
-                <Text
-                  size="small"
-                  weight={500}
-                  style={{
-                    color: isRoutesEquals(link, location.pathname)
-                      ? "#3C69FF"
-                      : "white",
-                  }}
-                >
-                  {name}
-                </Text>
+                {name}
               </MenuItem>
             ))}
           </Desktop>
+          <Desktop>
+            <Wallet />
+          </Desktop>
         </Row>
         <Mobile>
-          <MobileMenuIcon
-            onClick={() => toggleMenu(!mobileMenuOpened)}
-            opened={mobileMenuOpened}
-          />
+          <EthBalance />
+          <SizedBox width={12} />
+          <MobileMenuIcon onClick={() => toggleMenu(!mobileMenuOpened)} opened={mobileMenuOpened} />
         </Mobile>
-        <Desktop>
-          <Wallet />
-        </Desktop>
       </TopMenu>
       <Mobile>
-        <MobileMenu
-          opened={mobileMenuOpened}
-          onClose={() => toggleMenu(false)}
-        />
+        <MobileMenu opened={mobileMenuOpened} onClose={() => toggleMenu(false)} />
       </Mobile>
     </Root>
   );

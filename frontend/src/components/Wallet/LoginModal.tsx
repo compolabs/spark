@@ -8,7 +8,6 @@ import SizedBox from "@components/SizedBox";
 import { Column, Row } from "../Flex";
 import Button from "@components/Button";
 import TextArea from "@components/TextArea";
-import { isValidMnemonic } from "@src/utils/mnemonic";
 
 interface IProps {
   onClose: () => void;
@@ -37,12 +36,12 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
     setErr(false);
   };
   const handleLoginWithSeed = () => {
-    const valid = isValidMnemonic(seed);
-    if (!valid) {
-      setErr(true);
-      return;
-    }
-    onLogin(LOGIN_TYPE.PASTE_SEED, seed);
+    // const valid = isValidMnemonic(seed);
+    // if (!valid) {
+    //   setErr(true);
+    //   return;
+    // }
+    onLogin(LOGIN_TYPE.PRIVATE_KEY, seed);
     setImportInputOpened(false);
     setSeed("");
     setErr(false);
@@ -50,14 +49,14 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   };
 
   const loginTypes = [
+    // {
+    //   title: "Generate account",
+    //   isActive: true,
+    //   onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
+    // },
     {
-      title: "Generate account",
-      isActive: true,
-      onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
-    },
-    {
-      title: "Paste seed",
-      type: LOGIN_TYPE.PASTE_SEED,
+      title: "Paste private key",
+      type: LOGIN_TYPE.PRIVATE_KEY,
       isActive: true,
       onClick: () => setImportInputOpened(true),
     },
@@ -90,7 +89,7 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
             <SizedBox height={10} />
             <Row>
               <Button fixed onClick={handlePastInput}>
-                Paste Seed
+                Paste from buffer
               </Button>
               <SizedBox width={10} />
               <Button onClick={handleLoginWithSeed} fixed>

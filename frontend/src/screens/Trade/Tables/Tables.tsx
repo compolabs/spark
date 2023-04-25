@@ -21,7 +21,7 @@ const Root = styled.div`
   max-height: 230px;
 `;
 const TabsContainer = styled.div`
-  padding: 12px 16px;
+  padding: 12px 16px 0 12px;
   display: flex;
   width: 100%;
   box-sizing: border-box;
@@ -29,14 +29,8 @@ const TabsContainer = styled.div`
 const DContainer = styled.div`
   display: flex;
   width: 100%;
-  max-height: 166px;
+  max-height: 184px;
   overflow-x: scroll;
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  ::-webkit-scrollbar {
-    display: none;
-  }
 `;
 const Container = styled.div`
   display: flex;
@@ -56,9 +50,7 @@ const Tables: React.FC<IProps> = () => {
           <SizedBox height={24} />
           <Text textAlign="center">Connect wallet to trade</Text>
           <SizedBox height={8} />
-          <Button onClick={() => settingsStore.setLoginModalOpened(true)}>
-            Connect wallet
-          </Button>
+          <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
         </Container>
       </Root>
     );

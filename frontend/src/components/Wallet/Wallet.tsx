@@ -5,14 +5,14 @@ import { observer } from "mobx-react-lite";
 import LoggedInAccountInfo from "@components/Wallet/LoggedInAccountInfo";
 import LoginModal from "./LoginModal";
 import Button from "@components/Button";
+import { Row } from "@components/Flex";
 
 interface IProps {}
 
-const Root = styled.div`
+const Root = styled(Row)`
   display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+  //padding: 0 16px;
+  justify-content: space-between;
 `;
 
 const Wallet: React.FC<IProps> = () => {

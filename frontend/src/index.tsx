@@ -29,9 +29,7 @@ autorun(
   { delay: 1000 }
 );
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   // <React.StrictMode>
   <storesContext.Provider value={mobxStore}>
@@ -43,9 +41,7 @@ root.render(
         icon={<div />}
         position="bottom-right"
         autoClose={500000}
-        closeButton={({ closeToast }) => (
-          <CloseIcon onClick={(e) => closeToast(e as any)} />
-        )}
+        closeButton={({ closeToast }) => <CloseIcon onClick={(e) => closeToast(e as any)} />}
         hideProgressBar
         newestOnTop={true}
         closeOnClick={false}
@@ -61,19 +57,19 @@ root.render(
   // </React.StrictMode>
 );
 
-console.log(
-  `
-  
-  ██████  █     █░ ▄▄▄     ▓██   ██▓     ▄████  ▄▄▄       ███▄    █   ▄████ 
-▒██    ▒ ▓█░ █ ░█░▒████▄    ▒██  ██▒    ██▒ ▀█▒▒████▄     ██ ▀█   █  ██▒ ▀█▒
-░ ▓██▄   ▒█░ █ ░█ ▒██  ▀█▄   ▒██ ██░   ▒██░▄▄▄░▒██  ▀█▄  ▓██  ▀█ ██▒▒██░▄▄▄░
-  ▒   ██▒░█░ █ ░█ ░██▄▄▄▄██  ░ ▐██▓░   ░▓█  ██▓░██▄▄▄▄██ ▓██▒  ▐▌██▒░▓█  ██▓
-▒██████▒▒░░██▒██▓  ▓█   ▓██▒ ░ ██▒▓░   ░▒▓███▀▒ ▓█   ▓██▒▒██░   ▓██░░▒▓███▀▒
-▒ ▒▓▒ ▒ ░░ ▓░▒ ▒   ▒▒   ▓▒█░  ██▒▒▒     ░▒   ▒  ▒▒   ▓▒█░░ ▒░   ▒ ▒  ░▒   ▒ 
-░ ░▒  ░ ░  ▒ ░ ░    ▒   ▒▒ ░▓██ ░▒░      ░   ░   ▒   ▒▒ ░░ ░░   ░ ▒░  ░   ░ 
-░  ░  ░    ░   ░    ░   ▒   ▒ ▒ ░░     ░ ░   ░   ░   ▒      ░   ░ ░ ░ ░   ░ 
-      ░      ░          ░  ░░ ░              ░       ░  ░         ░       ░ 
-                            ░ ░                                             
-
-  `
-);
+// console.log(
+//   `
+//
+//   ██████  █     █░ ▄▄▄     ▓██   ██▓     ▄████  ▄▄▄       ███▄    █   ▄████
+// ▒██    ▒ ▓█░ █ ░█░▒████▄    ▒██  ██▒    ██▒ ▀█▒▒████▄     ██ ▀█   █  ██▒ ▀█▒
+// ░ ▓██▄   ▒█░ █ ░█ ▒██  ▀█▄   ▒██ ██░   ▒██░▄▄▄░▒██  ▀█▄  ▓██  ▀█ ██▒▒██░▄▄▄░
+//   ▒   ██▒░█░ █ ░█ ░██▄▄▄▄██  ░ ▐██▓░   ░▓█  ██▓░██▄▄▄▄██ ▓██▒  ▐▌██▒░▓█  ██▓
+// ▒██████▒▒░░██▒██▓  ▓█   ▓██▒ ░ ██▒▓░   ░▒▓███▀▒ ▓█   ▓██▒▒██░   ▓██░░▒▓███▀▒
+// ▒ ▒▓▒ ▒ ░░ ▓░▒ ▒   ▒▒   ▓▒█░  ██▒▒▒     ░▒   ▒  ▒▒   ▓▒█░░ ▒░   ▒ ▒  ░▒   ▒
+// ░ ░▒  ░ ░  ▒ ░ ░    ▒   ▒▒ ░▓██ ░▒░      ░   ░   ▒   ▒▒ ░░ ░░   ░ ▒░  ░   ░
+// ░  ░  ░    ░   ░    ░   ▒   ▒ ▒ ░░     ░ ░   ░   ░   ▒      ░   ░ ░ ░ ░   ░
+//       ░      ░          ░  ░░ ░              ░       ░  ░         ░       ░
+//                             ░ ░
+//
+//   `
+// );

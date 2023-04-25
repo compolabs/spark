@@ -1,0 +1,20 @@
+[package]
+authors = ["Alex Nagorny <alex@swaygang.com>"]
+edition = "2021"
+license = "Apache-2.0"
+name = "tests"
+version = "0.0.0"
+
+[dev-dependencies]
+fuels = { version = "0.39", features = ["fuel-core-lib"] }
+tokio = { version = "1.12", features = ["rt", "macros"] }
+
+
+[[test]]
+harness = true
+name = "tests"
+path = "tests/harness.rs"
+
+[dependencies]
+dotenv = "0.15.0"
+rand = "0.8.5"

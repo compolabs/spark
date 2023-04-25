@@ -4,7 +4,7 @@ import { useTradeVM } from "@screens/Trade/TradeVm";
 import { observer } from "mobx-react-lite";
 import Input from "@src/components/Input";
 import SizedBox from "@components/SizedBox";
-import { TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
+import { IToken, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import { Row } from "@src/components/Flex";
 import Text from "@components/Text";
 import { useStores } from "@stores";
@@ -16,13 +16,30 @@ const Root = styled.div`
   flex-direction: column;
   grid-area: pairs;
   background: #222936;
-  padding: 12px 16px;
+  padding: 12px 16px 0 16px;
 `;
-const PairRow = styled.div`
+
+const Pairs = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 210px;
+  overflow-x: scroll;
+  -ms-overflow-style: none;
+`;
+const Title = styled(Text)`
+  font-family: "Roboto", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 11px;
+  line-height: 13px;
+  color: #959dae;
+  text-align: left;
+`;
+
+const TitleRow = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-
-  margin: 3px 0;
   text-align: center;
 
   p:last-of-type {
@@ -34,42 +51,70 @@ const PairRow = styled.div`
   }
 `;
 
-const Tokens = styled(Row)`
-  p {
-    cursor: pointer;
-    margin-right: 7px;
+const PairRow = styled(TitleRow)`
+  padding: 6px 0;
+  border-radius: 4px;
+  transition: 0.4s;
 
-    :hover {
-      color: #25b05b;
-    }
+  :hover {
+    background: #323846;
   }
 `;
-const allPairs = [
-  {
-    token0: TOKENS_BY_SYMBOL.UNI,
-    token1: TOKENS_BY_SYMBOL.BTC,
-    lastPrice: "0.00",
-    change: "2.0",
+
+const TokensFilterItem = styled(Text)<{ active: boolean }>`
+  font-family: "Roboto", sans-serif;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 18px;
+  cursor: pointer;
+  margin-right: 7px;
+  transition: 0.4s;
+  width: fit-content;
+  color: ${({ active }) => (active ? "#FFFFFF" : "#B7BFD1")};
+  :hover {
+    color: #fff;
+  }
+`;
+
+const PairText = styled(Title)`
+  color: #fff;
+`;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  overflow-x: scroll;
+  -ms-overflow-style: none;
+  max-height: 210px;
+  @media (min-width: 880px) {
+    max-height: unset;
+  }
+`;
+
+type TPair = {
+  token0: IToken;
+  token1: IToken;
+  lastPrice: string;
+  change: string;
+};
+
+const allPairs = Object.keys(TOKENS_BY_SYMBOL).reduce(
+  (acc, symbol0, _, arr) => {
+    const batch = arr
+      .filter((symbol1) => symbol1 !== symbol0)
+      .map((symbol1) => ({
+        token0: TOKENS_BY_SYMBOL[symbol0],
+        token1: TOKENS_BY_SYMBOL[symbol1],
+        lastPrice: "-",
+        change: "-",
+      }));
+    return [...acc, ...batch];
   },
-  {
-    token0: TOKENS_BY_SYMBOL.ETH,
-    token1: TOKENS_BY_SYMBOL.BTC,
-    lastPrice: "0.00",
-    change: "2.0",
-  },
-  {
-    token0: TOKENS_BY_SYMBOL.ETH,
-    token1: TOKENS_BY_SYMBOL.USDC,
-    lastPrice: "0.00",
-    change: "2.0",
-  },
-  {
-    token0: TOKENS_BY_SYMBOL.BTC,
-    token1: TOKENS_BY_SYMBOL.USDC,
-    lastPrice: "0.00",
-    change: "2.0",
-  },
-];
+  [] as Array<TPair>
+);
+
 const PairsList: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const { accountStore } = useStores();
@@ -84,39 +129,47 @@ const PairsList: React.FC<IProps> = () => {
         suffixCondition={vm.searchValue.length > 1}
       />
       <SizedBox height={12} />
-      <Tokens>
+      <Row>
         {TOKENS_LIST.map(({ assetId, symbol }) => (
-          <Text
-            fitContent
-            key={assetId}
+          <TokensFilterItem
             onClick={() => setTokenFilter(assetId)}
-            type={tokenFilter === assetId ? "green" : "primary"}
+            key={assetId}
+            active={tokenFilter === assetId}
           >
             {symbol}
-          </Text>
+          </TokensFilterItem>
         ))}
-      </Tokens>
+      </Row>
       <SizedBox height={12} />
-      <PairRow>
-        <Text type="secondary">Pair</Text>
-        <Text type="secondary">Last Price</Text>
-        <Text type="secondary">Change</Text>
-      </PairRow>
-      {allPairs.map(({ token0, token1, lastPrice, change }, index) => (
-        <PairRow key={index + "stat"}>
-          <Text
-            style={{ cursor: "pointer" }}
+      <TitleRow>
+        <Title style={{ paddingLeft: 8 }}>Pair</Title>
+        <Title>Last Price</Title>
+        <Title textAlign="right">Change</Title>
+      </TitleRow>
+      <Container>
+        {allPairs.map(({ token0, token1, lastPrice, change }, index) => (
+          <PairRow
+            key={index + "stat"}
+            style={{
+              cursor: index === 0 ? "pointer" : "not-allowed",
+              opacity: index === 0 ? 1 : 0.5,
+            }}
             onClick={() => {
+              if (index !== 0) return; //TODO
               if (accountStore.isLoggedIn) {
                 vm.setAssetId0(token0.assetId);
                 vm.setAssetId1(token1.assetId);
               }
             }}
-          >{`${token0.symbol}/${token1.symbol}`}</Text>
-          <Text>{lastPrice}</Text>
-          <Text>{change}%</Text>
-        </PairRow>
-      ))}
+          >
+            <PairText
+              style={{ paddingLeft: 8 }}
+            >{`${token0.symbol}/${token1.symbol}`}</PairText>
+            <PairText>{lastPrice}</PairText>
+            <PairText>{change}%</PairText>
+          </PairRow>
+        ))}
+      </Container>
     </Root>
   );
 };

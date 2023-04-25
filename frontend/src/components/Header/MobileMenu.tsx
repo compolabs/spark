@@ -16,7 +16,7 @@ const Root = styled.div<{ opened: boolean }>`
   z-index: 100;
   background: ${({ theme }) => `${theme.colors.modal.mask}`};
   position: absolute;
-  top: 64px;
+  top: 56px;
   left: 0;
   right: 0;
   height: calc(100vh - 64px);
@@ -27,7 +27,6 @@ const Root = styled.div<{ opened: boolean }>`
 `;
 const Body = styled.div`
   display: flex;
-  background: pink;
   width: 100%;
   flex-direction: column;
   background: ${({ theme }) => theme.colors.mainBackground};
@@ -73,12 +72,12 @@ const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => {
     { name: "Faucet", link: ROUTES.FAUCET, outer: false },
     {
       name: "Docs",
-      link: "https://github.com/sway-gang/sway-network#readme",
+      link: "https://docs.allspark.gg/",
       outer: true,
     },
     {
       name: "Github",
-      link: "https://github.com/sway-gang/sway-exchange",
+      link: "https://github.com/compolabs/spark",
       outer: true,
     },
     {
