@@ -38,7 +38,7 @@ pub struct OrderResponse {
     amount1: String,
     // status: String,
     // fulfilled0: String,
-    // fulfilled1: String,
+    fulfilled1: String,
     // owner: Address,
     // id: u64,
     // timestamp: u64,
@@ -68,7 +68,7 @@ async fn main() {
     let secret = env::var("SECRET").expect("❌ Expected a account secret in the environment");
     let wallet = WalletUnlocked::new_from_private_key(secret.parse().unwrap(), Some(provider));
     let address = Address::from(wallet.address());
-    
+
     let bech32_id = Bech32ContractId::from(ContractId::from_str(CONTRACT_ADDRESS).unwrap());
     let spark_instance = LimitOrdersContract::new(bech32_id, wallet.clone());
 
@@ -97,7 +97,7 @@ async fn main() {
     // let url = format!("{backend_url}/allSymbols");
     // let symbols = client.get(url).send().await.unwrap().text().await.unwrap();
     // let symbols: Vec<String> = serde_json::from_str(&symbols).unwrap();
-    let symbols = vec!["BTC/USDC"];
+    let symbols = vec!["BTC/USDC", "USDC/BTC"];
     print_swaygang_sign("✅ Trading bot is alive");
 
     loop {
@@ -115,7 +115,6 @@ async fn main() {
                 .unwrap()
                 .value
                 .price as u128;
-            // let price0 = 20000_000_000_000;
             let price1 = methods
                 .get_price(asset1.contract_id.clone())
                 .simulate()
@@ -123,7 +122,6 @@ async fn main() {
                 .unwrap()
                 .value
                 .price as u128;
-            // let price1 = 1_000_000_000;
             let price = price0 * 10u128.pow(price_decimal) / price1;
             let amount0 = 10u128.pow(9 + 3 + asset0.decimals) / price0;
             let amount1 =
@@ -136,10 +134,10 @@ async fn main() {
                 amount1 as f64 / 10f64.powf(asset1.decimals.into()),
                 asset1.symbol
             );
-            mint_and_transfer(&asset0.instance, amount0 as u64, address).await;
+            if wallet.get_asset_balance(&asset0.asset_id).await.unwrap() < amount0 as u64 {
+                mint_and_transfer(&asset0.instance, amount0 as u64, address).await;
+            }
             sleep(Duration::from_secs(1));
-            let balance = wallet.get_asset_balance(&asset0.asset_id).await.unwrap();
-            assert!(balance > amount0 as u64);
             let args = CreatreOrderArguments {
                 asset0: asset0.asset_id.clone(),
                 amount0: amount0 as u64,
@@ -163,7 +161,7 @@ async fn main() {
 
             let mut amount1: u128 = 0;
             for order in orders.iter() {
-                amount1 += order.amount1.parse::<u128>().unwrap()
+                amount1 += order.amount1.parse::<u128>().unwrap() - order.fulfilled1.parse::<u128>().unwrap()
             }
             let amount0 = amount1 * 10u128.pow(9 + asset0.decimals - asset1.decimals) / price;
 
@@ -174,10 +172,10 @@ async fn main() {
                 amount0 as f64 / 10f64.powf(asset0.decimals.into()),
                 asset0.symbol
             );
-            mint_and_transfer(&asset1.instance, amount1 as u64, address).await;
+            if wallet.get_asset_balance(&asset1.asset_id).await.unwrap() < amount1 as u64 {
+                mint_and_transfer(&asset1.instance, amount1 as u64, address).await;
+            }
             sleep(Duration::from_secs(1));
-            let balance = wallet.get_asset_balance(&asset1.asset_id).await.unwrap();
-            assert!(balance > amount1 as u64);
             let args = CreatreOrderArguments {
                 asset0: asset1.asset_id.clone(),
                 amount0: amount1 as u64,

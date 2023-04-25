@@ -9,7 +9,7 @@ abigen!(Contract(
 pub mod limit_orders_abi_calls {
 
     use fuels::{
-        prelude::{CallParameters, WalletUnlocked},
+        prelude::{CallParameters, WalletUnlocked, BASE_ASSET_ID},
         programs::call_response::FuelCallResponse,
         types::ContractId,
     };
@@ -151,10 +151,21 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract<WalletUnlocked>,
         args: &CreatreOrderArguments,
     ) -> Result<FuelCallResponse<u64>, fuels::prelude::Error> {
+        let tx_params = TxParameters::default().set_gas_price(1);
+        let call_params = CallParameters::default()
+            .set_amount(1000)
+            .set_asset_id(BASE_ASSET_ID);
+        contract
+            .methods()
+            .deposit()
+            .tx_params(tx_params)
+            .call_params(call_params)
+            .unwrap()
+            .call()
+            .await;
         let call_params = CallParameters::default()
             .set_amount(args.amount0)
             .set_asset_id(args.asset0);
-        let tx_params = TxParameters::default().set_gas_price(1);
         contract
             .methods()
             .create_order(args.asset1, args.amount1, args.matcher_fee)

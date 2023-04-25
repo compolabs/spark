@@ -85,9 +85,20 @@ async fn main() {
         'a_order_cycle: while i < orders.len() {
             let order_a = &orders[i];
             let mut j = 0;
-
             while j < orders.len() {
                 let order_b = &orders[j];
+                let url = format!("{BACKEND_URL}/orders?id={}&id={}", order_a.id, order_b.id);
+                let mut res = client.get(url.clone()).send().await;
+                if res.is_err() {
+                    sleep(Duration::from_secs(1));
+                    res = client.get(url).send().await;
+                }
+                if res.is_err() {
+                    continue;
+                }
+                let res = res.unwrap().text().await.unwrap();
+                let res: Vec<OrderResponse> = serde_json::from_str(&res).unwrap();
+
                 let price_a = order_a.amount1.parse::<f64>().unwrap()
                     / order_a.amount0.parse::<f64>().unwrap();
                 let price_b = order_b.amount0.parse::<f64>().unwrap()
@@ -99,18 +110,15 @@ async fn main() {
                     && order_b.status == "Active"
                     && !fullfiled.contains(&order_a.id)
                     && !fullfiled.contains(&order_b.id)
+                    && res[0].status == "Active"
+                    && res[1].status == "Active"
                 {
                     let res = match_orders(&instance, order_a.id, order_b.id).await;
                     let err = res.as_ref().err();
                     if res.is_err() {
                         println!("{}", err.unwrap().to_string());
                     }
-                    //FIXME remove it when "tried to read 8 bytes from response but only had 0 remaining" error will be fixed
-                    // let continue_err =
-                    // "Revert transaction error: failed to decode log from require revert";
-                    // if res.is_err() && err.unwrap().to_string().contains(continue_err) {
-                    //     break 'a_order_cycle;
-                    // }
+
                     let invalid_data_err = "Invalid data: tried to read 8 bytes from response but only had 0 remaining!";
                     let decode_log_err =
                         "Revert transaction error: failed to decode log from require revert";
@@ -190,6 +198,5 @@ async fn main() {
             }
             i += 1;
         }
-        sleep(Duration::from_secs(1));
     }
 }
