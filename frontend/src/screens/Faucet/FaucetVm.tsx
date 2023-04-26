@@ -132,7 +132,6 @@ class FaucetVM {
 
   mint = async (assetId?: string) => {
     if (assetId == null || this.alreadyMintedTokens.includes(assetId)) {
-      console.log("return 1");
       return;
     }
     if (this.rootStore.accountStore.loginType === LOGIN_TYPE.FUEL_WALLET) {
@@ -147,6 +146,11 @@ class FaucetVM {
     this._setLoading(true);
     this.setActionTokenAssetId(assetId);
     const { accountStore, notificationStore } = this.rootStore;
+    // if (accountStore.loginType === LOGIN_TYPE.FUELET) {
+    //   //TransactionRequestLike
+    //   const tx = tokenContract.functions.mint().txParams({ gasPrice: 1 });
+    //   return;
+    // }
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
     const tokenContract = TokenContractAbi__factory.connect(assetId, wallet);

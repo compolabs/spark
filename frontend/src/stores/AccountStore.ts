@@ -8,8 +8,8 @@ import { FuelProviderConfig } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
   FUEL_WALLET = "FUEL_WALLET",
-  GENERATE_FROM_SEED = "GENERATE_FROM_SEED",
   PRIVATE_KEY = "PRIVATE_KEY",
+  FUELET = "FUELET",
 }
 
 export interface ISerializedAccountStore {
@@ -122,6 +122,9 @@ class AccountStore {
         await this.loginWithFuelWallet();
         await this.onFuelLoaded();
         break;
+      case LOGIN_TYPE.FUELET:
+        await this.loginWithFuelet();
+        break;
       case LOGIN_TYPE.PRIVATE_KEY:
         await this.loginWithPrivateKey(phrase);
         break;
@@ -130,17 +133,22 @@ class AccountStore {
     }
   };
   disconnect = async () => {
-    if (this.loginType === LOGIN_TYPE.FUEL_WALLET) {
-      try {
-        await window.fuel.disconnect();
-      } catch (e) {
-        this.setAddress(null);
-        // this.setMnemonicPhrase(null);
-        this.setLoginType(null);
+    try {
+      switch (this.loginType) {
+        case LOGIN_TYPE.FUEL_WALLET:
+          await window.fuel.disconnect();
+          break;
+        case LOGIN_TYPE.FUELET:
+          await window.fuelet.disconnect();
+          break;
+        default:
+          break;
       }
+    } catch (e) {
+      this.setAddress(null);
+      this.setLoginType(null);
     }
     this.setAddress(null);
-    // this.setMnemonicPhrase(null);
     this.setLoginType(null);
   };
 
@@ -168,6 +176,19 @@ class AccountStore {
     }
     this.setAddress(account);
   };
+  loginWithFuelet = async () => {
+    //await fuelet.connect();
+    const fuelet = window.fuelet;
+    const res = await fuelet?.connect({ url: NODE_URL });
+    console.log("res");
+    if (!res) {
+      this.rootStore.notificationStore.toast("User denied", {
+        type: "error",
+      });
+      return;
+    }
+    this.setAddress(res.account.bech32Address);
+  };
 
   getFormattedBalance = (token: IToken): string | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
@@ -188,21 +209,10 @@ class AccountStore {
 
   loginWithPrivateKey = (key?: string) => {
     if (key == null) return;
-    // const mnemonic =
-    //   mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
-    // const seed = Mnemonic.mnemonicToSeed(mnemonic);
     const wallet = Wallet.fromPrivateKey(key, NODE_URL);
     this.setAddress(wallet.address.toAddress());
     this.setPrivateKey(key);
     this.rootStore.settingsStore.setLoginModalOpened(false);
-    // if (mnemonicPhrase == null) {
-    //   this.rootStore.notificationStore.toast("First you need to mint ETH", {
-    //     link: `${window.location.origin}/#${ROUTES.FAUCET}`,
-    //     linkTitle: "Go to Faucet",
-    //     type: "info",
-    //     title: "Attention",
-    //   });
-    // }
   };
 
   getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {

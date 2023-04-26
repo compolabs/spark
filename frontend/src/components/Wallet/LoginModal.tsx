@@ -49,11 +49,11 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   };
 
   const loginTypes = [
-    // {
-    //   title: "Generate account",
-    //   isActive: true,
-    //   onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
-    // },
+    {
+      title: "Fuelet",
+      isActive: window.fuelet != null,
+      onClick: handleLogin(LOGIN_TYPE.FUELET),
+    },
     {
       title: "Paste private key",
       type: LOGIN_TYPE.PRIVATE_KEY,

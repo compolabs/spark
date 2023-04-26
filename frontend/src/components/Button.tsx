@@ -22,6 +22,7 @@ const Button = styled.button<{
 
   width: ${({ fixed }) => (fixed ? "100%" : "fit-content")};
   padding: 8px 16px;
+  cursor: pointer;
 
   ${({ kind, theme }) =>
     (() => {
