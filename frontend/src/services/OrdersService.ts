@@ -16,6 +16,9 @@ interface IOrderResponse {
   timestamp: number;
   matcher_fee: string;
   matcher_fee_used: string;
+  type: "SELL" | "BUY";
+  price: number;
+  market: string;
 }
 
 export class Order {
@@ -31,6 +34,9 @@ export class Order {
   timestamp: string;
   matcher_fee: BN;
   matcher_fee_used: BN;
+  type: "SELL" | "BUY";
+  price: number;
+  market: string;
 
   constructor(orderOutput: IOrderResponse) {
     this.id = orderOutput.id.toString();
@@ -45,6 +51,9 @@ export class Order {
     this.timestamp = orderOutput.timestamp.toString();
     this.matcher_fee = new BN(orderOutput.matcher_fee.toString());
     this.matcher_fee_used = new BN(orderOutput.matcher_fee_used.toString());
+    this.type = orderOutput.type;
+    this.price = orderOutput.price;
+    this.market = orderOutput.market;
   }
 
   get token0() {
@@ -70,17 +79,17 @@ export class Order {
     return `${price.toFormat(price.lt(0.01) ? 4 : 2)} ${this.token1.symbol}`;
   }
 
-  get price() {
-    const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
-    const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
-    return am1.div(am0);
-  }
+  // get price() {
+  //   const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+  //   const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+  //   return am1.div(am0);
+  // }
 
-  get reversePrice() {
-    const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
-    const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
-    return am0.div(am1);
-  }
+  // get reversePrice() {
+  //   const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+  //   const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+  //   return am0.div(am1);
+  // }
 
   get amount() {
     const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
@@ -103,15 +112,31 @@ export class Order {
   }
 }
 
-export const getActiveOrders = () =>
-  axios
-    .get(`${BACKEND_URL}/orders/?status=Active`)
-    .then((res) => res.data)
-    .then((arr: Array<IOrderResponse>) => arr.map((o) => new Order(o)));
+export const getActiveOrders = (): Promise<Order[]> => new Promise(() => [] as Order[]);
+// axios
+//   .get(`${BACKEND_URL}/orders/?status=Active`)
+//   .then((res) => res.data)
+//   .then((arr: Array<IOrderResponse>) => arr.map((o) => new Order(o)));
 
-export const getOrdersByOwner = (owner: string) =>
+type TOrderbookResponse = {
+  myOrders: Array<IOrderResponse>;
+  orderbook: { buy: Array<IOrderResponse>; sell: Array<IOrderResponse> };
+};
+
+export const getOrderbook = (
+  owner: string,
+  symbol: string
+): Promise<{
+  myOrders: Array<Order>;
+  orderbook: { buy: Array<Order>; sell: Array<Order> };
+}> =>
   axios
-    // .get(`${BACKEND_URL}/orders/?status=Active`)
-    .get(`${BACKEND_URL}/orders/?owner=${owner}`)
+    .get(`${BACKEND_URL}/orderbook?address=${owner}&symbol=${symbol}`)
     .then((res) => res.data)
-    .then((arr: Array<IOrderResponse>) => arr.map((o) => new Order(o)));
+    .then((res: TOrderbookResponse) => ({
+      myOrders: res.myOrders.map((o) => new Order(o)),
+      orderbook: {
+        sell: res.orderbook.sell.map((o) => new Order(o)),
+        buy: res.orderbook.buy.map((o) => new Order(o)),
+      },
+    }));
