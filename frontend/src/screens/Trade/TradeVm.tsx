@@ -42,11 +42,7 @@ class TradeVm {
   }
 
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(
-      this.token0.symbol,
-      this.token1.symbol,
-      `${this.token0.symbol}/${this.token1.symbol}`
-    );
+    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -145,19 +141,13 @@ class TradeVm {
 
   get canBuy() {
     return (
-      this.buyAmount.gt(0) &&
-      this.buyPrice.gt(0) &&
-      this.buyTotal.gt(0) &&
-      !this.buyTotalError
+      this.buyAmount.gt(0) && this.buyPrice.gt(0) && this.buyTotal.gt(0) && !this.buyTotalError
     );
   }
 
   get canSell() {
     return (
-      this.sellAmount.gt(0) &&
-      this.sellPrice.gt(0) &&
-      this.sellTotal.gt(0) &&
-      !this.sellAmountError
+      this.sellAmount.gt(0) && this.sellPrice.gt(0) && this.sellTotal.gt(0) && !this.sellAmountError
     );
   }
 
@@ -191,8 +181,7 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
-      return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
 
     this.setLoading(true);
     try {
@@ -217,7 +206,7 @@ class TradeVm {
               transactionResult.transactionId ?? ""
             );
         })
-        .then(() => this.rootStore.ordersStore.updateMyOrders());
+        .then(() => this.rootStore.ordersStore.sync());
     } catch (e) {
       const error = JSON.parse(JSON.stringify(e)).toString();
       this.rootStore.notificationStore.toast(error.error, {

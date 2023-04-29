@@ -86,8 +86,8 @@ export class Trade {
   }
 }
 
-export const getLatestTradesInPair = (symbol0: string, symbol1: string, pairSymbol: string) =>
-  axios
-    .get(`${BACKEND_URL}/trades/pair/${symbol0}/${symbol1}`)
-    .then((res) => res.data)
-    .then((arr: Array<ITradeResponse>) => arr.map((t) => new Trade(t, pairSymbol)));
+export const getLatestTradesInPair = (symbol: string) => [];
+// axios
+//   .get(`${BACKEND_URL}/trades?symbol=${symbol}`)
+//   .then((res) => res.data)
+//   .then((arr: Array<ITradeResponse>) => arr.map((t) => new Trade(t, symbol)));
