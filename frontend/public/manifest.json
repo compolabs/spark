@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Spark",
+  "name": "Decentralized order book built on Fuel",
   "icons": [
     {
       "src": "favicon.ico",
