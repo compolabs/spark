@@ -92,8 +92,22 @@ const Desktop = styled.div`
 `;
 
 const LogoContainer = styled.img`
-  height: calc(100% - 2px);
-  padding-top: 2px;
+  height: 48px;
+  transition: transform 0.7s ease-in-out;
+  &:hover {
+    animation-name: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+  @keyframes rotate {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 const Header: React.FC<IProps> = () => {
