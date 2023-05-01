@@ -185,13 +185,15 @@ async fn main() {
                 };
             }
 
+            let limit = 10u128.pow(9 + 7 + asset1.decimals) / price1;
+
             let mut amount1: u128 = 0;
             if orderbook.sell.len() > 0 && orderbook.sell[0].asset1 == asset1.contract_id {
                 for order in orderbook.sell.iter() {
                     let order_price = order.amount1.parse::<u128>().unwrap()
                         * 10u128.pow(price_decimal + asset0.decimals - asset1.decimals)
                         / order.amount0.parse::<u128>().unwrap();
-                    if order_price < price_buy {
+                    if order_price < price_buy && amount1 <= limit {
                         amount1 += order.amount1.parse::<u128>().unwrap()
                             - order.fulfilled1.parse::<u128>().unwrap()
                     }
@@ -203,12 +205,14 @@ async fn main() {
             let amount0 = amount1 * 10u128.pow(9 + asset0.decimals - asset1.decimals) / price_buy;
 
             println!(
-                "🟢 {symbol}  Buy order: {} {} -> {} {} | price = {}",
+                "🟢 {symbol}  Buy order: {} {} -> {} {} | price = {} | limit = {:?} {}",
                 amount1 as f64 / 10f64.powf(asset1.decimals.into()),
                 asset1.symbol,
                 amount0 as f64 / 10f64.powf(asset0.decimals.into()),
                 asset0.symbol,
-                price_buy as f64 / 10f64.powf(9.0)
+                price_buy as f64 / 10f64.powf(9.0),
+                limit as f64 / 10f64.powf(asset1.decimals as f64),
+                asset1.symbol
             );
             if wallet.get_asset_balance(&asset1.asset_id).await.unwrap() < amount1 as u64 {
                 let res = mint_and_transfer(&asset1.instance, amount1 as u64, address).await;
