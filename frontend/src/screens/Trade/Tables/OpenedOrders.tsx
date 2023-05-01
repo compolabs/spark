@@ -82,10 +82,12 @@ const OpenedOrders: React.FC<IProps> = () => {
               </Text>
               <Text size="small">
                 {o.amount} {o.token0.symbol}
+                {/*{o.amount} {o.type === "BUY" ? o.token0.symbol : o.token1.symbol}*/}
               </Text>
               <Text size="small">{o.fullFillPercent} %</Text>
               <Text size="small">
                 {o.total} {o.token1.symbol}
+                {/*{o.total} {o.type === "BUY" ? o.token1.symbol : o.token0.symbol}*/}
               </Text>
               <Text
                 style={{ cursor: "pointer" }}

@@ -65,7 +65,7 @@ export class Order {
   }
 
   get time() {
-    return dayjs(+this.timestamp * 1000).format("DD-MMM hh:mm:ss");
+    return dayjs(+this.timestamp * 1000).format("DD-MMM HH:mm:ss");
   }
 
   get fullFillPercent() {
