@@ -1,18 +1,19 @@
+import * as React from "react";
 import { useEffect, useRef } from "react";
 import {
-  widget,
   ChartingLibraryWidgetOptions,
   LanguageCode,
   ResolutionString,
+  widget,
 } from "@src/charting_library";
-import * as React from "react";
 import { observer } from "mobx-react-lite";
 import { useTradeVM } from "@screens/Trade/TradeVm";
-import { BACKEND_URL } from "@src/constants";
+import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
 
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions["symbol"];
   interval: ChartingLibraryWidgetOptions["interval"];
+  timeframe: ChartingLibraryWidgetOptions["timeframe"];
 
   // BEWARE: no trailing slash is expected in feed URL
   datafeedUrl: string;
@@ -43,10 +44,11 @@ const TVChartContainer = () => {
 
   const defaultProps: Omit<ChartContainerProps, "container"> = {
     symbol: `${vm.token0.symbol}/${vm.token1.symbol}`,
-    interval: "60" as ResolutionString,
-    datafeedUrl: BACKEND_URL,
+    interval: "30" as ResolutionString,
+    timeframe: "1D" as ResolutionString,
+    datafeedUrl: TV_DATAFEED,
     libraryPath: "/charting_library/",
-    chartsStorageUrl: "https://saveload.tradingview.com",
+    chartsStorageUrl: CHARTS_STORAGE,
     chartsStorageApiVersion: "1.1",
     clientId: "tradingview.com",
     userId: "public_user_id",
@@ -69,6 +71,7 @@ const TVChartContainer = () => {
       // tslint:disable-next-line:no-any
       datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(defaultProps.datafeedUrl),
       interval: defaultProps.interval as ChartingLibraryWidgetOptions["interval"],
+      timeframe: defaultProps.timeframe,
       container: chartContainerRef.current,
       library_path: defaultProps.libraryPath as string,
 

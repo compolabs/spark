@@ -12,6 +12,7 @@ import { useStores } from "@stores";
 import Dialog from "@components/Dialog";
 import Button from "@components/Button";
 import { useTradeVM } from "@screens/Trade/TradeVm";
+import BN from "@src/utils/BN";
 
 interface IProps {}
 
@@ -73,16 +74,20 @@ const OpenedOrders: React.FC<IProps> = () => {
         userOrders.map((o) =>
           width && width >= 880 ? (
             <OrderRow key={o.id}>
-              <Text size="small"> {o.time}</Text>
-              <Text size="small">{`${o.token0.symbol}/${o.token1.symbol}`}</Text>
-              <Text size="small">limit</Text>
-              <Text size="small">{o.priceFormatter}</Text>
+              <Text size="small">{o.time}</Text>
+              <Text size="small">{o.market}</Text>
+              <Text size="small">{o.type}</Text>
+              <Text size="small">
+                {new BN(o.price).toFormat(2)} {o.market.split("/")[1]}
+              </Text>
               <Text size="small">
                 {o.amount} {o.token0.symbol}
+                {/*{o.amount} {o.type === "BUY" ? o.token0.symbol : o.token1.symbol}*/}
               </Text>
               <Text size="small">{o.fullFillPercent} %</Text>
               <Text size="small">
                 {o.total} {o.token1.symbol}
+                {/*{o.total} {o.type === "BUY" ? o.token1.symbol : o.token0.symbol}*/}
               </Text>
               <Text
                 style={{ cursor: "pointer" }}
