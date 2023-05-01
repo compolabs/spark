@@ -13,6 +13,7 @@ import { TV_DATAFEED } from "@src/constants";
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions["symbol"];
   interval: ChartingLibraryWidgetOptions["interval"];
+  timeframe: ChartingLibraryWidgetOptions["timeframe"];
 
   // BEWARE: no trailing slash is expected in feed URL
   datafeedUrl: string;
@@ -43,7 +44,8 @@ const TVChartContainer = () => {
 
   const defaultProps: Omit<ChartContainerProps, "container"> = {
     symbol: `${vm.token0.symbol}/${vm.token1.symbol}`,
-    interval: "60" as ResolutionString,
+    interval: "30" as ResolutionString,
+    timeframe: "1D" as ResolutionString,
     datafeedUrl: TV_DATAFEED,
     libraryPath: "/charting_library/",
     chartsStorageUrl: "https://saveload.tradingview.com",
@@ -69,6 +71,7 @@ const TVChartContainer = () => {
       // tslint:disable-next-line:no-any
       datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(defaultProps.datafeedUrl),
       interval: defaultProps.interval as ChartingLibraryWidgetOptions["interval"],
+      timeframe: defaultProps.timeframe,
       container: chartContainerRef.current,
       library_path: defaultProps.libraryPath as string,
 
