@@ -235,7 +235,7 @@ async fn main() {
             // if res.is_err() {
             //     dbg!(res.err());
             // }
-            sleep(Duration::from_secs(15));
+            sleep(Duration::from_secs(300));
         }
     }
 }
