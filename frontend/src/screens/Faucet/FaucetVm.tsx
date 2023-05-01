@@ -2,12 +2,7 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
-import {
-  EXPLORER_URL,
-  TOKENS_BY_ASSET_ID,
-  TOKENS_BY_SYMBOL,
-  TOKENS_LIST,
-} from "@src/constants";
+import { EXPLORER_URL, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import { TokenContractAbi__factory } from "@src/contracts";
 import { LOGIN_TYPE } from "@stores/AccountStore";
@@ -44,8 +39,7 @@ class FaucetVM {
   private _setLoading = (l: boolean) => (this.loading = l);
 
   alreadyMintedTokens: string[] = [];
-  private setAlreadyMintedTokens = (l: string[]) =>
-    (this.alreadyMintedTokens = l);
+  private setAlreadyMintedTokens = (l: string[]) => (this.alreadyMintedTokens = l);
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
@@ -78,11 +72,7 @@ class FaucetVM {
     const promise = new Promise((resolve, reject) => {
       this.rejectUpdateStatePromise = reject;
       resolve(
-        Promise.all(
-          tokensContracts.map((v) =>
-            v.functions.already_minted(addressInput).get()
-          )
-        )
+        Promise.all(tokensContracts.map((v) => v.functions.already_minted(addressInput).get()))
       );
     });
     promise
@@ -117,10 +107,7 @@ class FaucetVM {
     return TOKENS_LIST.map((b) => {
       const balance = accountStore.findBalanceByAssetId(b.assetId);
       const mintAmount = new BN(faucetAmounts[b.symbol] ?? 0);
-      const formatBalance = BN.formatUnits(
-        balance?.balance ?? BN.ZERO,
-        b.decimals
-      );
+      const formatBalance = BN.formatUnits(balance?.balance ?? BN.ZERO, b.decimals);
       return {
         ...TOKENS_BY_ASSET_ID[b.assetId],
         ...balance,
@@ -136,21 +123,13 @@ class FaucetVM {
     }
     if (this.rootStore.accountStore.loginType === LOGIN_TYPE.FUEL_WALLET) {
       const addedAssets: Array<Asset> = await window?.fuel.assets();
-      if (
-        addedAssets != null &&
-        !addedAssets.some((v) => v.assetId === assetId)
-      ) {
+      if (addedAssets != null && !addedAssets.some((v) => v.assetId === assetId)) {
         await this.addAsset(assetId);
       }
     }
     this._setLoading(true);
     this.setActionTokenAssetId(assetId);
     const { accountStore, notificationStore } = this.rootStore;
-    // if (accountStore.loginType === LOGIN_TYPE.FUELET) {
-    //   //TransactionRequestLike
-    //   const tx = tokenContract.functions.mint().txParams({ gasPrice: 1 });
-    //   return;
-    // }
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
     const tokenContract = TokenContractAbi__factory.connect(assetId, wallet);
@@ -163,15 +142,12 @@ class FaucetVM {
       if (transactionResult != null) {
         this.setAlreadyMintedTokens([...this.alreadyMintedTokens, assetId]);
         const token = TOKENS_BY_ASSET_ID[assetId];
-        this.rootStore.notificationStore.toast(
-          `You have successfully minted ${token.symbol}`,
-          {
-            link: `${EXPLORER_URL}/transaction/${transactionResult.transactionId}`,
-            linkTitle: "View on Explorer",
-            type: "success",
-            title: "Transaction is completed!",
-          }
-        );
+        this.rootStore.notificationStore.toast(`You have successfully minted ${token.symbol}`, {
+          link: `${EXPLORER_URL}/transaction/${transactionResult.transactionId}`,
+          linkTitle: "View on Explorer",
+          type: "success",
+          title: "Transaction is completed!",
+        });
       }
       await this.rootStore.accountStore.updateAccountBalances();
     } catch (e) {
