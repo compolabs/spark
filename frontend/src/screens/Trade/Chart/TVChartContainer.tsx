@@ -8,7 +8,7 @@ import {
 } from "@src/charting_library";
 import { observer } from "mobx-react-lite";
 import { useTradeVM } from "@screens/Trade/TradeVm";
-import { TV_DATAFEED } from "@src/constants";
+import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
 
 export interface ChartContainerProps {
   symbol: ChartingLibraryWidgetOptions["symbol"];
@@ -48,7 +48,7 @@ const TVChartContainer = () => {
     timeframe: "1D" as ResolutionString,
     datafeedUrl: TV_DATAFEED,
     libraryPath: "/charting_library/",
-    chartsStorageUrl: "https://saveload.tradingview.com",
+    chartsStorageUrl: CHARTS_STORAGE,
     chartsStorageApiVersion: "1.1",
     clientId: "tradingview.com",
     userId: "public_user_id",
