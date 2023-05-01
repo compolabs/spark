@@ -49,16 +49,10 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   };
 
   const loginTypes = [
-    // {
-    //   title: "Generate account",
-    //   isActive: true,
-    //   onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
-    // },
     {
-      title: "Paste private key",
-      type: LOGIN_TYPE.PRIVATE_KEY,
-      isActive: true,
-      onClick: () => setImportInputOpened(true),
+      title: "Fuelet",
+      isActive: window.fuelet != null,
+      onClick: handleLogin(LOGIN_TYPE.FUELET),
     },
     {
       title: "Fuel wallet",
@@ -66,16 +60,19 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
       isActive: window.fuel != null,
       onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET),
     },
+    {
+      title: "Paste private key",
+      type: LOGIN_TYPE.PRIVATE_KEY,
+      isActive: true,
+      onClick: () => setImportInputOpened(true),
+    },
   ];
   return (
     <Dialog style={{ maxWidth: 360 }} {...rest}>
       <Root>
         <SizedBox height={34} />
         {!isImportInputOpened ? (
-          loginTypes.map(
-            (t, i) =>
-              t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
-          )
+          loginTypes.map((t, i) => t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />)
         ) : (
           <Column crossAxisSize="max">
             <TextArea

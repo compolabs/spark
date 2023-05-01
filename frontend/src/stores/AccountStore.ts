@@ -8,8 +8,8 @@ import { FuelProviderConfig } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
   FUEL_WALLET = "FUEL_WALLET",
-  GENERATE_FROM_SEED = "GENERATE_FROM_SEED",
   PRIVATE_KEY = "PRIVATE_KEY",
+  FUELET = "FUELET",
 }
 
 export interface ISerializedAccountStore {
@@ -42,22 +42,19 @@ class AccountStore {
   }
 
   onFuelLoaded = () => {
-    if (window.fuel == null) return;
-    window?.fuel?.on(window?.fuel.events.currentAccount, this.handleAccEvent);
-    window?.fuel?.on(window?.fuel.events?.network, this.handleNetworkEvent);
+    if (this.walletInstance == null) return;
+    this.walletInstance.on(window?.fuel.events.currentAccount, this.handleAccEvent);
+    this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
   };
   handleAccEvent = (account: string) => this.setAddress(account);
   handleNetworkEvent = (network: FuelProviderConfig) => {
     if (network.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(
-        `Please change network url to Testnet Beta 3`,
-        {
-          link: NODE_URL,
-          linkTitle: "Go to Testnet Beta 3",
-          type: "error",
-          title: "Attention",
-        }
-      );
+      this.rootStore.notificationStore.toast(`Please change network url to Testnet Beta 3`, {
+        link: NODE_URL,
+        linkTitle: "Go to Testnet Beta 3",
+        type: "error",
+        title: "Attention",
+      });
     }
   };
 
@@ -83,16 +80,14 @@ class AccountStore {
     const assetBalances = TOKENS_LIST.map((asset) => {
       const t = balances.find(({ assetId }) => asset.assetId === assetId);
       const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-      if (t == null)
-        return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+      if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
       return new Balance({ balance, ...asset });
     });
     this.setAssetBalances(assetBalances);
   };
   findBalanceByAssetId = (assetId: string) =>
-    this.assetBalances &&
-    this.assetBalances.find((balance) => balance.assetId === assetId);
+    this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
 
   get balances() {
     const { accountStore } = this.rootStore;
@@ -119,6 +114,7 @@ class AccountStore {
     this.setLoginType(loginType);
     switch (loginType) {
       case LOGIN_TYPE.FUEL_WALLET:
+      case LOGIN_TYPE.FUELET:
         await this.loginWithFuelWallet();
         await this.onFuelLoaded();
         break;
@@ -130,41 +126,45 @@ class AccountStore {
     }
   };
   disconnect = async () => {
-    if (this.loginType === LOGIN_TYPE.FUEL_WALLET) {
-      try {
-        await window.fuel.disconnect();
-      } catch (e) {
-        this.setAddress(null);
-        // this.setMnemonicPhrase(null);
-        this.setLoginType(null);
-      }
+    try {
+      this.walletInstance.disconnect();
+    } catch (e) {
+      this.setAddress(null);
+      this.setLoginType(null);
     }
     this.setAddress(null);
-    // this.setMnemonicPhrase(null);
     this.setLoginType(null);
   };
 
+  get walletInstance() {
+    switch (this.loginType) {
+      case LOGIN_TYPE.FUEL_WALLET:
+        return window.fuel;
+      case LOGIN_TYPE.FUELET:
+        return window.fuelet;
+      default:
+        return null;
+    }
+  }
+
   loginWithFuelWallet = async () => {
-    const fuel = window.fuel;
-    const res = await fuel?.connect({ url: NODE_URL });
+    if (this.walletInstance == null) throw new Error("There is no wallet instance");
+    const res = await this.walletInstance.connect({ url: NODE_URL });
     if (!res) {
       this.rootStore.notificationStore.toast("User denied", {
         type: "error",
       });
       return;
     }
-    const account = await window.fuel.currentAccount();
-    const provider = await fuel.getProvider();
+    const account = await this.walletInstance.currentAccount();
+    const provider = await this.walletInstance.getProvider();
     if (provider.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(
-        `Please change network url to beta 3`,
-        {
-          link: NODE_URL,
-          linkTitle: "Go to Beta 3",
-          type: "error",
-          title: "Attention",
-        }
-      );
+      this.rootStore.notificationStore.toast(`Please change network url to beta 3`, {
+        link: NODE_URL,
+        linkTitle: "Go to Beta 3",
+        type: "error",
+        title: "Attention",
+      });
     }
     this.setAddress(account);
   };
@@ -172,9 +172,7 @@ class AccountStore {
   getFormattedBalance = (token: IToken): string | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
     if (balance == null) return null;
-    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(
-      4
-    );
+    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(4);
   };
   getBalance = (token: IToken): BN | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
@@ -188,28 +186,18 @@ class AccountStore {
 
   loginWithPrivateKey = (key?: string) => {
     if (key == null) return;
-    // const mnemonic =
-    //   mnemonicPhrase == null ? Mnemonic.generate(16) : mnemonicPhrase;
-    // const seed = Mnemonic.mnemonicToSeed(mnemonic);
     const wallet = Wallet.fromPrivateKey(key, NODE_URL);
     this.setAddress(wallet.address.toAddress());
     this.setPrivateKey(key);
     this.rootStore.settingsStore.setLoginModalOpened(false);
-    // if (mnemonicPhrase == null) {
-    //   this.rootStore.notificationStore.toast("First you need to mint ETH", {
-    //     link: `${window.location.origin}/#${ROUTES.FAUCET}`,
-    //     linkTitle: "Go to Faucet",
-    //     type: "info",
-    //     title: "Attention",
-    //   });
-    // }
   };
 
   getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
     if (this.address == null) return null;
     switch (this.loginType) {
       case LOGIN_TYPE.FUEL_WALLET:
-        return window.fuel?.getWallet(this.address);
+      case LOGIN_TYPE.FUELET:
+        return this.walletInstance.getWallet(this.address);
       case LOGIN_TYPE.PRIVATE_KEY:
         if (this.privateKey == null) return null;
         return Wallet.fromPrivateKey(this.privateKey, new Provider(NODE_URL));
