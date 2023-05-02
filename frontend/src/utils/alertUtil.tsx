@@ -8,6 +8,7 @@ import { Column, Row } from "@components/Flex";
 import Text from "@components/Text";
 import { TNotifyOptions } from "@stores/NotificationStore";
 import { TypeOptions } from "react-toastify";
+import { Anchor } from "@src/components/Anchor";
 
 const Root = styled.div`
   display: flex;
@@ -57,9 +58,9 @@ const getAlert = (
             {content}
           </Text>
           {link && (
-            <Link target="_blank" href={link}>
+            <Anchor href={link}>
               <Text type="secondary">{linkTitle || link}</Text>
-            </Link>
+            </Anchor>
           )}
         </Column>
       </Body>

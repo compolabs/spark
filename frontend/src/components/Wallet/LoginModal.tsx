@@ -8,6 +8,7 @@ import SizedBox from "@components/SizedBox";
 import { Column, Row } from "../Flex";
 import Button from "@components/Button";
 import TextArea from "@components/TextArea";
+import { Anchor } from "../Anchor";
 
 interface IProps {
   onClose: () => void;
@@ -21,6 +22,12 @@ const Root = styled.div`
   align-items: center;
   justify-content: center;
 `;
+const FuelWalletNotInstalled = styled.a`
+  align-self: flex-start;
+  padding: 10px 0;
+  font-size: 15px;
+  color: ${({theme}) => theme.colors.text}
+`
 const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   const [isImportInputOpened, setImportInputOpened] = useState(false);
   const [err, setErr] = useState(false);
@@ -63,18 +70,26 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
     {
       title: "Fuel wallet",
       type: LOGIN_TYPE.FUEL_WALLET,
-      isActive: window.fuel != null,
+      isActive: window.fuel !== undefined,
       onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET),
     },
   ];
   return (
-    <Dialog style={{ maxWidth: 360 }} {...rest}>
+    <Dialog style={{ maxWidth: 360 }} title={'Connect through'} {...rest}>
       <Root>
         <SizedBox height={34} />
         {!isImportInputOpened ? (
           loginTypes.map(
-            (t, i) =>
-              t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
+            (t, i) => (
+              t.type === LOGIN_TYPE.FUEL_WALLET
+                ? t.isActive
+                  ? <LoginType {...t} key={i} onClick={t.onClick} />
+                  : <FuelWalletNotInstalled>
+                      <Anchor href='https://wallet.fuel.network/docs/install/'
+                        rel='noopener noreferrer'>Install </Anchor> and connect Fuel Wallet
+                    </FuelWalletNotInstalled>
+                : t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
+            )
           )
         ) : (
           <Column crossAxisSize="max">
