@@ -9,6 +9,9 @@ import { Column, Row } from "../Flex";
 import Button from "@components/Button";
 import TextArea from "@components/TextArea";
 import { Anchor } from "../Anchor";
+import Img from "../Img";
+import Text from "../Text";
+import logo from "@src/assets/icons/dark-logo.svg";
 
 interface IProps {
   onClose: () => void;
@@ -67,16 +70,25 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
       isActive: window.fuel !== undefined,
       onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET),
     },
-    {
-      title: "Paste private key",
-      type: LOGIN_TYPE.PRIVATE_KEY,
-      isActive: true,
-      onClick: () => setImportInputOpened(true),
-    },
+    // {
+    //   title: "Paste private key",
+    //   type: LOGIN_TYPE.PRIVATE_KEY,
+    //   isActive: true,
+    //   onClick: () => setImportInputOpened(true),
+    // },
   ];
   return (
     <Dialog style={{ maxWidth: 360 }} title={'Connect through'} {...rest}>
       <Root>
+        <Img height="60" width="60" src={logo} />
+        <SizedBox height={4} />
+        <Text fitContent size="medium">
+          Connect wallet
+        </Text>
+        <SizedBox height={4} />
+        <Text fitContent type="secondary" size="tiny">
+          To start using Spark
+        </Text>
         <SizedBox height={34} />
         {!isImportInputOpened ? (
           loginTypes.map(
