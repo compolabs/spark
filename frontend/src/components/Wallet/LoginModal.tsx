@@ -61,13 +61,13 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   const loginTypes = [
     {
       title: "Fuelet",
-      isActive: window.fuelet !== undefined,
+      isActive: window.fuelet != null,
       onClick: handleLogin(LOGIN_TYPE.FUELET),
     },
     {
       title: "Fuel wallet",
       type: LOGIN_TYPE.FUEL_WALLET,
-      isActive: window.fuel !== undefined,
+      isActive: window.fuel != null,
       onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET),
     },
     // {
@@ -96,7 +96,7 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
               t.type === LOGIN_TYPE.FUEL_WALLET
                 ? t.isActive
                   ? <LoginType {...t} key={i} onClick={t.onClick} />
-                  : <FuelWalletNotInstalled>
+                  : <FuelWalletNotInstalled key={i}>
                       <Anchor href='https://wallet.fuel.network/docs/install/'
                         rel='noopener noreferrer'>Install </Anchor> and connect Fuel Wallet
                     </FuelWalletNotInstalled>
