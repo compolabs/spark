@@ -102,15 +102,10 @@ const DesktopOrderBook: React.FC<IProps> = () => {
     `Total ${vm.token1.symbol}`,
   ];
 
-  if (!accountStore.isLoggedIn)
-    return (
-      <Root style={{ justifyContent: "center", alignItems: "center" }}>
-        <Text textAlign="center">Connect wallet to see orders</Text>
-        <SizedBox height={12} />
-        <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
-      </Root>
-    );
-  if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
+  if (
+    ordersStore.orderbook.buy.length === 0 &&
+    ordersStore.orderbook.sell.length === 0
+  )
     return (
       <Root
         style={{
@@ -153,7 +148,10 @@ const DesktopOrderBook: React.FC<IProps> = () => {
         </OrderRow>
         <Divider />
         <SizedBox height={8} />
-        <Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
+        <Container
+          fitContent={orderFilter === 1 || orderFilter === 2}
+          reverse={orderFilter === 1}
+        >
           {!ordersStore.initialized ? (
             <Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
           ) : (
@@ -190,11 +188,16 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: sellOrders.length < 15 ? 14 - sellOrders.length : 0,
                 }).map((o, index) => (
-                  <Row style={{ margin: "4px 0" }} key={index + "positive-plug"}>
+                  <Row
+                    style={{ margin: "4px 0" }}
+                    key={index + "positive-plug"}
+                  >
                     {Array.from({ length: 3 }).map((_, i) => (
                       <Text
                         key={index + "positive-plug" + i}
-                        textAlign={i === 0 ? undefined : i === 1 ? "center" : "right"}
+                        textAlign={
+                          i === 0 ? undefined : i === 1 ? "center" : "right"
+                        }
                         size="small"
                       >
                         -
@@ -221,7 +224,9 @@ const DesktopOrderBook: React.FC<IProps> = () => {
             ) : (
               <Row>
                 <Text
-                  type={vm.latestTrade?.type === TRADE_TYPE.SELL ? "error" : "green"}
+                  type={
+                    vm.latestTrade?.type === TRADE_TYPE.SELL ? "error" : "green"
+                  }
                   weight={700}
                   style={{ fontSize: 13 }}
                   size="small"
@@ -252,12 +257,17 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                 Array.from({
                   length: buyOrders.length < 15 ? 14 - buyOrders.length : 0,
                 }).map((o, index) => (
-                  <Row style={{ margin: "4px 0" }} key={index + "negative-plug"}>
+                  <Row
+                    style={{ margin: "4px 0" }}
+                    key={index + "negative-plug"}
+                  >
                     {Array.from({ length: 3 }).map((_, i) => (
                       <Text
                         key={index + "negative-plug" + i}
                         size="small"
-                        textAlign={i === 0 ? undefined : i === 1 ? "center" : "right"}
+                        textAlign={
+                          i === 0 ? undefined : i === 1 ? "center" : "right"
+                        }
                       >
                         -
                       </Text>
@@ -267,12 +277,18 @@ const DesktopOrderBook: React.FC<IProps> = () => {
               {orderFilter !== 1 &&
                 buyOrders.map((o, index) => (
                   //Todo add hover
-                  <Row style={{ margin: "4px 0", cursor: "pointer" }} key={index + "positive"}>
+                  <Row
+                    style={{ margin: "4px 0", cursor: "pointer" }}
+                    key={index + "positive"}
+                  >
                     <Text
                       size="small"
                       type="green"
                       onClick={() => {
-                        const price = BN.parseUnits(o.price, vm.token1.decimals);
+                        const price = BN.parseUnits(
+                          o.price,
+                          vm.token1.decimals
+                        );
                         vm.setSellPrice(price, true);
                         // vm.setBuyAmount(new BN(o.amount), true);
                         vm.setBuyPrice(BN.ZERO, true);

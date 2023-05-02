@@ -15,7 +15,6 @@ import DesktopOrderBook from "./DesktopOrderBook";
 import MobileOrderBook from "@screens/Trade/MobileOrderBook";
 import CreateOrderDesktop from "./CreateOrder/CreateOrderDesktop";
 import CreateOrderMobile from "./CreateOrder/CreateOrderMobile";
-import { Row } from "@src/components/Flex";
 
 interface IProps {}
 
