@@ -8,6 +8,9 @@ import SizedBox from "@components/SizedBox";
 import { Column, Row } from "../Flex";
 import Button from "@components/Button";
 import TextArea from "@components/TextArea";
+import Img from "../Img";
+import Text from "../Text";
+import logo from "@src/assets/icons/dark-logo.svg";
 
 interface IProps {
   onClose: () => void;
@@ -60,19 +63,31 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
       isActive: window.fuel != null,
       onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET),
     },
-    {
-      title: "Paste private key",
-      type: LOGIN_TYPE.PRIVATE_KEY,
-      isActive: true,
-      onClick: () => setImportInputOpened(true),
-    },
+    // {
+    //   title: "Paste private key",
+    //   type: LOGIN_TYPE.PRIVATE_KEY,
+    //   isActive: true,
+    //   onClick: () => setImportInputOpened(true),
+    // },
   ];
   return (
     <Dialog style={{ maxWidth: 360 }} {...rest}>
       <Root>
+        <Img height="60" width="60" src={logo} />
+        <SizedBox height={4} />
+        <Text fitContent size="medium">
+          Connect wallet
+        </Text>
+        <SizedBox height={4} />
+        <Text fitContent type="secondary" weight={500} size="tiny">
+          To start using Spark
+        </Text>
         <SizedBox height={34} />
         {!isImportInputOpened ? (
-          loginTypes.map((t, i) => t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />)
+          loginTypes.map(
+            (t, i) =>
+              t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
+          )
         ) : (
           <Column crossAxisSize="max">
             <TextArea
