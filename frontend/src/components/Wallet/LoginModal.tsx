@@ -92,16 +92,18 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
         <SizedBox height={34} />
         {!isImportInputOpened ? (
           loginTypes.map(
-            (t, i) => (
-              t.type === LOGIN_TYPE.FUEL_WALLET
-                ? t.isActive
-                  ? <LoginType {...t} key={i} onClick={t.onClick} />
-                  : <FuelWalletNotInstalled key={i}>
-                      <Anchor href='https://wallet.fuel.network/docs/install/'
-                        rel='noopener noreferrer'>Install </Anchor> and connect Fuel Wallet
-                    </FuelWalletNotInstalled>
-                : t.isActive && <LoginType {...t} key={i} onClick={t.onClick} />
-            )
+            (t, i) => {
+              if (t.isActive) {
+                return <LoginType {...t} key={i} onClick={t.onClick} />
+              } else {
+                if (t.type === LOGIN_TYPE.FUEL_WALLET) {
+                  return <FuelWalletNotInstalled key={i}>
+                    <Anchor href='https://wallet.fuel.network/docs/install/'
+                      rel='noopener noreferrer'>Install </Anchor> and connect Fuel Wallet
+                  </FuelWalletNotInstalled>
+                } else return null
+              }
+            }
           )
         ) : (
           <Column crossAxisSize="max">
