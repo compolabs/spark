@@ -69,7 +69,9 @@ export class Order {
   }
 
   get fullFillPercent() {
-    return this.fulfilled0.eq(0) ? 0 : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
+    return this.fulfilled0.eq(0)
+      ? 0
+      : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
   }
 
   get priceFormatter() {
@@ -97,7 +99,10 @@ export class Order {
   }
 
   get amountLeft() {
-    const amount = BN.formatUnits(this.amount0.minus(this.fulfilled0), this.token0.decimals);
+    const amount = BN.formatUnits(
+      this.amount0.minus(this.fulfilled0),
+      this.token0.decimals
+    );
     return amount.toFormat(amount.lt(0.01) ? 6 : 2);
   }
 
@@ -107,12 +112,16 @@ export class Order {
   }
 
   get totalLeft() {
-    const left = BN.formatUnits(this.amount1.minus(this.fulfilled1), this.token1.decimals);
+    const left = BN.formatUnits(
+      this.amount1.minus(this.fulfilled1),
+      this.token1.decimals
+    );
     return left.toFormat(left.lt(0.01) ? 6 : 2);
   }
 }
 
-export const getActiveOrders = (): Promise<Order[]> => new Promise(() => [] as Order[]);
+export const getActiveOrders = (): Promise<Order[]> =>
+  new Promise(() => [] as Order[]);
 // axios
 //   .get(`${BACKEND_URL}/orders/?status=Active`)
 //   .then((res) => res.data)

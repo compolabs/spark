@@ -22,7 +22,10 @@ class OrdersStore {
   }
 
   sync = () =>
-    getOrderbook(this.rootStore.accountStore.ethFormatWallet ?? "", "BTC/USDC").then((res) => {
+    getOrderbook(
+      this.rootStore.accountStore.ethFormatWallet ?? "",
+      "BTC/USDC"
+    ).then((res) => {
       this.setOrderbook(res.orderbook);
       this.setMyOrders(res.myOrders);
     });

@@ -11,7 +11,6 @@ import { useTradeVM } from "@screens/Trade/TradeVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import Skeleton from "react-loading-skeleton";
-import Button from "@components/Button";
 import { Row } from "@src/components/Flex";
 import Select from "@src/components/Select";
 import NoData from "@components/NoData";
@@ -38,7 +37,7 @@ const Icon = styled.img<{ selected?: boolean }>`
   margin-right: 8px;
   ${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
 `;
-const OrderRow = styled.div<{ noHover?: boolean }>`
+const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   ${({ noHover }) => !noHover && "cursor: pointer;"};
@@ -57,6 +56,22 @@ const OrderRow = styled.div<{ noHover?: boolean }>`
     ${({ noHover }) => !noHover && "background:  #323846;"};
   }
 `;
+const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
+  position: relative;
+  cursor: pointer;
+  margin: 4px 0;
+
+  .progress-bar {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background: ${({ type }) =>
+      type === "buy" ? "rgba(37, 176, 91, 0.1)" : "rgba(229, 73, 77, 0.1)"};
+    transition: all 0.3s;
+    width: ${({ percent }) => (percent != null ? `${percent}%` : `0%`)};
+  }
+`;
 const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
   display: flex;
   flex-direction: column;
@@ -73,7 +88,7 @@ const filters = [sellAndBuy, sell, buy];
 const DesktopOrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [round, setRound] = useState("2");
-  const { ordersStore, accountStore, settingsStore } = useStores();
+  const { ordersStore } = useStores();
   const [orderFilter, setOrderFilter] = useState(0);
 
   const buyOrders = ordersStore.orderbook.buy
@@ -85,7 +100,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
       return a.price < b.price ? 1 : -1;
     })
     .reverse()
-    .slice(orderFilter === 0 ? -15 : -40)
+    .slice(orderFilter === 0 ? -15 : -35)
     .reverse();
   const sellOrders = ordersStore.orderbook.sell
     .slice()
@@ -95,7 +110,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
       if (a.price == null && b.price == null) return -1;
       return a.price < b.price ? 1 : -1;
     })
-    .slice(orderFilter === 0 ? -15 : -40);
+    .slice(orderFilter === 0 ? -15 : -35);
   const columns = [
     `Price ${vm.token1.symbol}`,
     `Amount ${vm.token0.symbol}`,
@@ -139,13 +154,13 @@ const DesktopOrderBook: React.FC<IProps> = () => {
         </Row>
         <SizedBox height={8} />
         <Divider />
-        <OrderRow noHover>
+        <Columns noHover>
           {columns.map((v) => (
             <Text size="small" key={v} type="secondary">
               {v}
             </Text>
           ))}
-        </OrderRow>
+        </Columns>
         <Divider />
         <SizedBox height={8} />
         <Container
@@ -159,8 +174,9 @@ const DesktopOrderBook: React.FC<IProps> = () => {
               {orderFilter !== 2 &&
                 sellOrders.map((o, index) => (
                   //Todo add hover
-                  <Row
-                    style={{ margin: "4px 0", cursor: "pointer" }}
+                  <OrderRow
+                    type="sell"
+                    percent={+new BN(o.fullFillPercent).toFormat(2)}
                     key={index + "negative"}
                     onClick={() => {
                       const price = BN.parseUnits(o.price, vm.token1.decimals);
@@ -182,7 +198,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                     <Text textAlign="right" size="small">
                       {o.totalLeft}
                     </Text>
-                  </Row>
+                    <span className="progress-bar" />
+                  </OrderRow>
                 ))}
               {orderFilter === 0 &&
                 Array.from({
@@ -277,8 +294,9 @@ const DesktopOrderBook: React.FC<IProps> = () => {
               {orderFilter !== 1 &&
                 buyOrders.map((o, index) => (
                   //Todo add hover
-                  <Row
-                    style={{ margin: "4px 0", cursor: "pointer" }}
+                  <OrderRow
+                    percent={+new BN(o.fullFillPercent).toFormat(0)}
+                    type="buy"
                     key={index + "positive"}
                   >
                     <Text
@@ -305,7 +323,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                     <Text textAlign="right" size="small">
                       {o.amountLeft}
                     </Text>
-                  </Row>
+                    <span className="progress-bar" />
+                  </OrderRow>
                 ))}
             </>
           )}
