@@ -26,20 +26,23 @@ const Trades: React.FC<IProps> = () => {
     <Root>
       <Tabs
         tabs={[{ name: "Market Trades" }, { name: "My Trades" }]}
+        // tabs={[{ name: "Market Trades" }]}
         activeTab={activeTab}
         setActive={(t) => setActiveTab(t)}
       />
       <SizedBox height={8} />
-      {vm.trades.length > 0 ? (
-        <>
-          {activeTab === 0 && <MarketTrades />}
-          {activeTab === 1 && <AccountTrades />}
-        </>
-      ) : (
-        <Row justifyContent="center">
-          <Loading />
-        </Row>
-      )}
+      {activeTab === 0 && <AccountTrades />}
+      {activeTab === 1 && <AccountTrades />}
+      {/*{vm.trades.length > 0 ? (*/}
+      {/*  <>*/}
+      {/*    {activeTab === 0 && <MarketTrades />}*/}
+      {/*    {activeTab === 1 && <AccountTrades />}*/}
+      {/*  </>*/}
+      {/*) : (*/}
+      {/*  <Row justifyContent="center">*/}
+      {/*    <Loading />*/}
+      {/*  </Row>*/}
+      {/*)}*/}
     </Root>
   );
 };

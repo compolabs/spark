@@ -56,22 +56,22 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
   };
 
   const loginTypes = [
-    // {
-    //   title: "Generate account",
-    //   isActive: true,
-    //   onClick: handleLogin(LOGIN_TYPE.GENERATE_FROM_SEED),
-    // },
     {
-      title: "Paste private key",
-      type: LOGIN_TYPE.PRIVATE_KEY,
-      isActive: true,
-      onClick: () => setImportInputOpened(true),
+      title: "Fuelet",
+      isActive: window.fuelet !== undefined,
+      onClick: handleLogin(LOGIN_TYPE.FUELET),
     },
     {
       title: "Fuel wallet",
       type: LOGIN_TYPE.FUEL_WALLET,
       isActive: window.fuel !== undefined,
       onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET),
+    },
+    {
+      title: "Paste private key",
+      type: LOGIN_TYPE.PRIVATE_KEY,
+      isActive: true,
+      onClick: () => setImportInputOpened(true),
     },
   ];
   return (

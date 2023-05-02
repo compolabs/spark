@@ -1,11 +1,12 @@
-use crate::utils::print_swaygang_sign::print_swaygang_sign;
+use crate::utils::{
+    limit_orders_utils::limit_orders_abi_calls::deposit, print_swaygang_sign::print_swaygang_sign,
+};
 use dotenv::dotenv;
 use fuels::{
     prelude::{abigen, Bech32ContractId, Provider, ViewOnlyAccount, WalletUnlocked},
     types::{Address, AssetId, ContractId},
 };
 use serde_json::from_str;
-// use serenity::{model::prelude::ChannelId, prelude::GatewayIntents, Client};
 use std::{
     collections::HashMap, env, fs::read_to_string, str::FromStr, thread::sleep, time::Duration,
 };
@@ -27,14 +28,13 @@ use serde::Deserialize;
 const RPC: &str = "beta-3.fuel.network";
 const CONTRACT_ADDRESS: &str = "0x7662a02959e3e2d681589261e95a7a4bc8ac66c6d66999a0fe01bb6c36ada7c6";
 const ORACLE_ADDRESS: &str = "0xcff9283e360854a2f4523c6e5a569a9032a222b8ea6d91cdd1506f0375e5afb5";
-const BACKEND_URL: &str = "https://spark-data-service.herokuapp.com/api/v1";
-// const BACKEND_URL: &str = "http://localhost:5000/api/v1";
+const BACKEND_URL: &str = "https://allspark-backend.herokuapp.com/api/v1";
 
 #[derive(Deserialize)]
-pub struct OrderResponse {
+pub struct Order {
     // asset0: ContractId,
-    // amount0: String,
-    // asset1: ContractId,
+    amount0: String,
+    asset1: ContractId,
     amount1: String,
     // status: String,
     // fulfilled0: String,
@@ -44,6 +44,16 @@ pub struct OrderResponse {
     // timestamp: u64,
     // matcher_fee: String,
     // matcher_fee_used: String,
+}
+#[derive(Deserialize)]
+pub struct Orderbook {
+    sell: Vec<Order>,
+    buy: Vec<Order>,
+}
+
+#[derive(Deserialize)]
+pub struct OrderResponse {
+    orderbook: Orderbook,
 }
 
 #[derive(Deserialize)]
@@ -97,7 +107,8 @@ async fn main() {
     // let url = format!("{backend_url}/allSymbols");
     // let symbols = client.get(url).send().await.unwrap().text().await.unwrap();
     // let symbols: Vec<String> = serde_json::from_str(&symbols).unwrap();
-    let symbols = vec!["BTC/USDC", "USDC/BTC"];
+    // let symbols = vec!["USDC/BTC", "BTC/USDC"];
+    let symbols = vec!["USDC/BTC", "BTC/USDC"];
     print_swaygang_sign("✅ Trading bot is alive");
 
     loop {
@@ -122,22 +133,30 @@ async fn main() {
                 .unwrap()
                 .value
                 .price as u128;
+
             let price = price0 * 10u128.pow(price_decimal) / price1;
+            println!("🪬 Oracle price = {:?}\n", price);
+            let price_buy: u128 = price * 11 / 10;
+            let price_sell: u128 = price * 9 / 10;
             let amount0 = 10u128.pow(9 + 3 + asset0.decimals) / price0;
-            let amount1 =
-                price * amount0 / 10u128.pow(price_decimal + asset0.decimals - asset1.decimals);
-            println!("price = {:?}", price);
+            let amount1 = price_sell * amount0
+                / 10u128.pow(price_decimal + asset0.decimals - asset1.decimals);
             println!(
-                "Sell order: {} {} -> {} {}",
+                "🔴 {symbol} Sell order: {} {} -> {} {} | price = {}",
                 amount0 as f64 / 10f64.powf(asset0.decimals.into()),
                 asset0.symbol,
                 amount1 as f64 / 10f64.powf(asset1.decimals.into()),
-                asset1.symbol
+                asset1.symbol,
+                price_sell as f64 / 10f64.powf(9.0)
             );
             if wallet.get_asset_balance(&asset0.asset_id).await.unwrap() < amount0 as u64 {
-                mint_and_transfer(&asset0.instance, amount0 as u64, address).await;
+                let res = mint_and_transfer(&asset0.instance, amount0 as u64, address).await;
+                if res.is_err() {
+                    continue;
+                }
             }
             sleep(Duration::from_secs(1));
+
             let args = CreatreOrderArguments {
                 asset0: asset0.asset_id.clone(),
                 amount0: amount0 as u64,
@@ -145,35 +164,61 @@ async fn main() {
                 amount1: amount1 as u64,
                 matcher_fee: 1000,
             };
+            let _res = deposit(&spark_instance, 1000).await;
             let res = create_order(&spark_instance, &args).await;
-            println!("✅ Sell order created; OK={}", res.is_ok());
-            if res.is_err() {
-                dbg!(res);
-            }
-            sleep(Duration::from_secs(10));
+            println!("Sell order created; OK={}\n", res.is_ok());
+            // if res.is_err() {
+            // dbg!(res.err());
+            // }
+            sleep(Duration::from_secs(15));
 
-            let search = format!(
-                "maxPrice={price}&priceDecimal={price_decimal}&status=Active&symbol={symbol}"
-            );
-            let url = format!("{BACKEND_URL}/orders?{search}");
-            let orders = client.get(url).send().await.unwrap().text().await.unwrap();
-            let orders: Vec<OrderResponse> = serde_json::from_str(&orders).unwrap();
+            // let url = format!("{BACKEND_URL}/orderbook?symbol={symbol}");
+            let url = format!("{BACKEND_URL}/orderbook?symbol=BTC/USDC"); //FIXME
+            let res = client.get(url).send().await.unwrap().text().await.unwrap();
+            let res: OrderResponse = serde_json::from_str(&res).unwrap();
+            let mut orderbook = res.orderbook;
+            //FIXME
+            if symbol.eq(&String::from("USDC/BTC")) {
+                orderbook = Orderbook {
+                    buy: orderbook.sell,
+                    sell: orderbook.buy,
+                };
+            }
+
+            let limit = 10u128.pow(9 + 7 + asset1.decimals) / price1;
 
             let mut amount1: u128 = 0;
-            for order in orders.iter() {
-                amount1 += order.amount1.parse::<u128>().unwrap() - order.fulfilled1.parse::<u128>().unwrap()
+            if orderbook.sell.len() > 0 && orderbook.sell[0].asset1 == asset1.contract_id {
+                for order in orderbook.sell.iter() {
+                    let order_price = order.amount1.parse::<u128>().unwrap()
+                        * 10u128.pow(price_decimal + asset0.decimals - asset1.decimals)
+                        / order.amount0.parse::<u128>().unwrap();
+                    if order_price < price_buy && amount1 <= limit {
+                        amount1 += order.amount1.parse::<u128>().unwrap()
+                            - order.fulfilled1.parse::<u128>().unwrap()
+                    }
+                }
             }
-            let amount0 = amount1 * 10u128.pow(9 + asset0.decimals - asset1.decimals) / price;
+            if amount1 == 0 {
+                continue;
+            }
+            let amount0 = amount1 * 10u128.pow(9 + asset0.decimals - asset1.decimals) / price_buy;
 
             println!(
-                "Buy order: {} {} -> {} {}",
+                "🟢 {symbol}  Buy order: {} {} -> {} {} | price = {} | limit = {:?} {}",
                 amount1 as f64 / 10f64.powf(asset1.decimals.into()),
                 asset1.symbol,
                 amount0 as f64 / 10f64.powf(asset0.decimals.into()),
-                asset0.symbol
+                asset0.symbol,
+                price_buy as f64 / 10f64.powf(9.0),
+                limit as f64 / 10f64.powf(asset1.decimals as f64),
+                asset1.symbol
             );
             if wallet.get_asset_balance(&asset1.asset_id).await.unwrap() < amount1 as u64 {
-                mint_and_transfer(&asset1.instance, amount1 as u64, address).await;
+                let res = mint_and_transfer(&asset1.instance, amount1 as u64, address).await;
+                if res.is_err() {
+                    continue;
+                }
             }
             sleep(Duration::from_secs(1));
             let args = CreatreOrderArguments {
@@ -184,12 +229,13 @@ async fn main() {
                 matcher_fee: 1000,
             };
 
+            let _res = deposit(&spark_instance, 1000).await;
             let res = create_order(&spark_instance, &args).await;
-            println!("✅ Buy order created; OK={}", res.is_ok());
-            if res.is_err() {
-                dbg!(res);
-            }
-            sleep(Duration::from_secs(120));
+            println!("Buy order created; OK={}\n", res.is_ok());
+            // if res.is_err() {
+            //     dbg!(res.err());
+            // }
+            sleep(Duration::from_secs(300));
         }
     }
 }

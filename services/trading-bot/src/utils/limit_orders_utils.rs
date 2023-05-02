@@ -109,22 +109,22 @@ pub mod limit_orders_abi_calls {
     //     contract.methods().order_by_id(id).simulate().await
     // }
 
-    // pub async fn deposit(
-    //     contract: &LimitOrdersContract,
-    //     amount: u64,
-    // ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
-    //     let call_params = CallParameters::new(Some(amount), Some(BASE_ASSET_ID), None);
-    //     let tx_params = TxParameters::new(Some(100), Some(100_000_000), Some(0));
-    //     contract
-    //         .methods()
-    //         .deposit()
-    //         .call_params(call_params)
-    //         // .unwrap()
-    //         .tx_params(tx_params)
-    //         // .append_variable_outputs(1)
-    //         .call()
-    //         .await
-    // }
+    pub async fn deposit(
+        contract: &LimitOrdersContract<WalletUnlocked>,
+        amount: u64,
+    ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
+        let call_params = CallParameters::default()
+            .set_amount(amount)
+            .set_asset_id(BASE_ASSET_ID);
+        contract
+            .methods()
+            .deposit()
+            .tx_params(TxParameters::default().set_gas_price(1))
+            .call_params(call_params)
+            .unwrap()
+            .call()
+            .await
+    }
     // pub async fn withdraw(
     //     contract: &LimitOrdersContract,
     //     amount: u64,
@@ -151,25 +151,13 @@ pub mod limit_orders_abi_calls {
         contract: &LimitOrdersContract<WalletUnlocked>,
         args: &CreatreOrderArguments,
     ) -> Result<FuelCallResponse<u64>, fuels::prelude::Error> {
-        let tx_params = TxParameters::default().set_gas_price(1);
-        let call_params = CallParameters::default()
-            .set_amount(1000)
-            .set_asset_id(BASE_ASSET_ID);
-        contract
-            .methods()
-            .deposit()
-            .tx_params(tx_params)
-            .call_params(call_params)
-            .unwrap()
-            .call()
-            .await;
         let call_params = CallParameters::default()
             .set_amount(args.amount0)
             .set_asset_id(args.asset0);
         contract
             .methods()
             .create_order(args.asset1, args.amount1, args.matcher_fee)
-            .tx_params(tx_params)
+            .tx_params(TxParameters::default().set_gas_price(1))
             .call_params(call_params)
             .unwrap()
             .call()
