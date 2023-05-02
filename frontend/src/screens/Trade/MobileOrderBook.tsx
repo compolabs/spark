@@ -1,74 +1,77 @@
-import styled from "@emotion/styled";
-import React, { HTMLAttributes, useState } from "react";
+// import styled from "@emotion/styled";
+// import React, { HTMLAttributes, useState } from "react";
+import React, { HTMLAttributes } from "react";
 import { observer } from "mobx-react-lite";
-import sell from "@src/assets/icons/sellOrderBookIcon.svg";
-import buy from "@src/assets/icons/buyOrderBookIcon.svg";
-import sellAndBuy from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
-import SizedBox from "@components/SizedBox";
-import Text from "@components/Text";
-import { useTradeVM } from "@screens/Trade/TradeVm";
-import BN from "@src/utils/BN";
-import { useStores } from "@stores";
-import Skeleton from "react-loading-skeleton";
-import Button from "@components/Button";
-import { Column, Row } from "@src/components/Flex";
-import Select from "@src/components/Select";
-import NoData from "@components/NoData";
+// import sell from "@src/assets/icons/sellOrderBookIcon.svg";
+// import buy from "@src/assets/icons/buyOrderBookIcon.svg";
+// import sellAndBuy from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
+// import SizedBox from "@components/SizedBox";
+// import Text from "@components/Text";
+// import { useTradeVM } from "@screens/Trade/TradeVm";
+// import BN from "@src/utils/BN";
+// import { useStores } from "@stores";
+// import Skeleton from "react-loading-skeleton";
+// import Button from "@components/Button";
+// import { Column, Row } from "@src/components/Flex";
+// import Select from "@src/components/Select";
+// import NoData from "@components/NoData";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  background: #222936;
-  grid-area: orderbook;
-  padding: 8px 12px;
-  min-width: 400px;
-`;
-
-const Settings = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-`;
-const Icon = styled.img<{ selected?: boolean }>`
-  cursor: pointer;
-  margin-right: 8px;
-  ${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
-`;
-const Container = styled.div<{ oneTab?: boolean }>`
-  display: grid;
-  ${({ oneTab }) => (oneTab ? "grid-template-columns: 1fr " : "grid-template-columns: 1fr 1fr")};
-  column-gap: 8px;
-`;
-const roundOptions = [2, 4, 5, 6].map((v) => ({
-  title: `${v} decimals`,
-  key: v.toString(),
-}));
-const OrderRow = styled.div<{ noHover?: boolean }>`
-  display: grid;
-  width: 100%;
-  grid-template-columns: repeat(2, 1fr);
-  ${({ noHover }) => !noHover && "cursor: pointer;"};
-
-  text-align: center;
-
-  p:last-of-type {
-    text-align: end;
-  }
-
-  p:first-of-type {
-    text-align: start;
-  }
-
-  :hover {
-    ${({ noHover }) => !noHover && "background:  #323846;"};
-  }
-`;
+// const Root = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   background: #222936;
+//   grid-area: orderbook;
+//   padding: 8px 12px;
+//   min-width: 400px;
+// `;
+//
+// const Settings = styled.div`
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   width: 100%;
+// `;
+// const Icon = styled.img<{ selected?: boolean }>`
+//   cursor: pointer;
+//   margin-right: 8px;
+//   ${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
+// `;
+// const Container = styled.div<{ oneTab?: boolean }>`
+//   display: grid;
+//   ${({ oneTab }) =>
+//     oneTab ? "grid-template-columns: 1fr " : "grid-template-columns: 1fr 1fr"};
+//   column-gap: 8px;
+// `;
+// const roundOptions = [2, 4, 5, 6].map((v) => ({
+//   title: `${v} decimals`,
+//   key: v.toString(),
+// }));
+// const OrderRow = styled.div<{ noHover?: boolean }>`
+//   display: grid;
+//   width: 100%;
+//   grid-template-columns: repeat(2, 1fr);
+//   ${({ noHover }) => !noHover && "cursor: pointer;"};
+//
+//   text-align: center;
+//
+//   p:last-of-type {
+//     text-align: end;
+//   }
+//
+//   p:first-of-type {
+//     text-align: start;
+//   }
+//
+//   :hover {
+//     ${({ noHover }) => !noHover && "background:  #323846;"};
+//   }
+// `;
 
 /*Todo починить*/
-const filters = [sellAndBuy, sell, buy];
+
+// const filters = [sellAndBuy, sell, buy];
 const MobileOrderBook: React.FC<IProps> = () => {
   return null;
   // const vm = useTradeVM();
