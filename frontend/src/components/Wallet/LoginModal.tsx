@@ -83,6 +83,19 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
           To start using Spark
         </Text>
         <SizedBox height={34} />
+        {window.fuel == null && window.fuelet == null && (
+          <Column justifyContent="center" alignItems="center">
+            <Text>No wallet was detected</Text>
+            <SizedBox height={8} />
+            <Button
+              onClick={() =>
+                window.open("https://wallet.fuel.network/docs/install/")
+              }
+            >
+              Go to wallet
+            </Button>
+          </Column>
+        )}
         {!isImportInputOpened ? (
           loginTypes.map(
             (t, i) =>
