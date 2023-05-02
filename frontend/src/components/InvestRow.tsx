@@ -29,8 +29,8 @@ const Root = styled.div<{ withClickLogic?: boolean }>`
 const DefaultIcon = styled.div`
   width: 40px;
   height: 40px;
-  color: ${({ theme }) => theme.colors.neutral1};
-  border: 1px solid ${({ theme }) => theme.colors.neutral1};
+  color: ${({ theme }) => theme.colors.grey100};
+  border: 1px solid ${({ theme }) => theme.colors.grey100};
   border-radius: 8px;
 `;
 const InvestRow: React.FC<IProps> = ({

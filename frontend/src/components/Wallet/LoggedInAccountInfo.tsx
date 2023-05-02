@@ -32,7 +32,7 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid ${({ theme }) => theme.colors.neutral1};
+  border: 2px solid ${({ theme }) => theme.colors.grey100};
   box-sizing: border-box;
   padding: 0 16px;
   border-radius: 4px;
@@ -42,7 +42,7 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
   font-weight: 400;
   font-size: 14px;
   line-height: 20px;
-  color: ${({ theme }) => theme.colors.neutral0};
+  color: ${({ theme }) => theme.colors.white100};
 
   .avatar {
     transition: 0.4s;

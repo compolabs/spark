@@ -18,13 +18,13 @@ const Root = styled.div<{ type: "warning" | "info" | "error" }>`
     (() => {
       switch (type) {
         case "warning":
-          return `background: ${theme.colors.secondary2};`;
+          return `background: ${theme.colors.red200};`;
         case "info":
-          return `background: ${theme.colors.primary01};`;
+          return `background: ${theme.colors.blue100};`;
         case "error":
-          return `background: ${theme.colors.primary01};`;
+          return `background: ${theme.colors.blue100};`;
         default:
-          return `background: ${theme.colors.primary01};`;
+          return `background: ${theme.colors.blue100};`;
       }
     })()}
   border-radius: 4px;

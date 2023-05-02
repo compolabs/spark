@@ -26,9 +26,9 @@ const Text = styled.p<{
         case "primary":
           return `color: ${theme.colors?.text};`;
         case "secondary":
-          return `color: ${theme.colors?.neutral4};`;
+          return `color: ${theme.colors?.grey100};`;
         case "error":
-          return `color: ${theme.colors?.secondary1};`;
+          return `color: ${theme.colors?.red100};`;
         case "green":
           return `color: #25B05B;`;
         default:

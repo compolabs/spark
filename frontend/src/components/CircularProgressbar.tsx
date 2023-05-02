@@ -13,17 +13,17 @@ const Root = styled.div<{ red?: boolean }>`
   height: 32px;
 
   .CircularProgressbar .CircularProgressbar-trail {
-    stroke: ${({ theme, red }) => (red ? theme.colors.secondary1 : "#363970")};
+    stroke: ${({ theme, red }) => (red ? theme.colors.red100 : "#363970")};
   }
 
   .CircularProgressbar .CircularProgressbar-path {
     stroke: ${({ theme, red }) =>
-      red ? theme.colors.secondary1 : theme.colors.primary03};
+      red ? theme.colors.red100 : theme.colors.green100};
   }
 
   .CircularProgressbar .CircularProgressbar-text {
     fill: ${({ theme, red }) =>
-      red ? theme.colors.secondary1 : theme.colors.primary03};
+      red ? theme.colors.red100 : theme.colors.green100};
   }
 
   .CircularProgressbar .CircularProgressbar-text {

@@ -3,7 +3,7 @@ import styled from "@emotion/styled";
 
 const Root = styled.input<{ small?: boolean }>`
   font-size: ${({ small }) => (small ? "16px;" : "20px")};
-  caret-color: ${({ theme }) => theme.colors.primary01};
+  caret-color: ${({ theme }) => theme.colors.blue100};
   font-style: normal;
   font-weight: 400;
   font-size: 15px;

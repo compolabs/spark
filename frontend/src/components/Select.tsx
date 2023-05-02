@@ -26,7 +26,7 @@ const Root = styled.div<{ focused?: boolean }>`
   font-weight: 400;
   font-size: 16px;
   line-height: 24px;
-  color: ${({ theme }) => theme.colors.neutral5};
+  color: ${({ theme }) => theme.colors.grey200};
   align-items: center;
   white-space: nowrap;
 

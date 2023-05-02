@@ -18,7 +18,7 @@ const Loading: React.FC<IProps> = ({ big, ...rest }) => {
   return (
     <span
       {...rest}
-      style={{ width: 10, color: theme.colors.neutral1, ...rest.style }}
+      style={{ width: 10, color: theme.colors.grey100, ...rest.style }}
     >
       {big
         ? Array.from({ length }, () => "●").join("")

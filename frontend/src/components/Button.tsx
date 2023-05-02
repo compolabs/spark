@@ -63,7 +63,7 @@ const Button = styled.button<{
   :disabled {
     border: 1px solid ${({ theme }) => theme.colors.button.backgroundDisabled};
     background: ${({ theme }) => theme.colors.button.backgroundDisabled};
-    color: ${({ theme }) => theme.colors.neutral4};
+    color: ${({ theme }) => theme.colors.grey100};
     opacity: 0.6;
     cursor: not-allowed;
   }

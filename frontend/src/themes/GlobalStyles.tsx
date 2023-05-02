@@ -83,7 +83,7 @@ body {
 }
 
 .custom-notification .rc-notification-notice-close > svg > path {
-    fill: ${theme.colors.neutral4};
+    fill: ${theme.colors.grey100};
 }
 
 .recharts-default-tooltip { 

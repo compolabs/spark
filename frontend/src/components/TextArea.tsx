@@ -27,7 +27,7 @@ const Root = styled.textarea<{ error?: boolean }>`
   color: ${({ theme }) => theme.colors.text};
   border: 1px solid
     ${({ theme, error }) =>
-      error ? theme.colors.secondary1 : theme.colors.textArea.borderColor};
+      error ? theme.colors.red100 : theme.colors.textArea.borderColor};
   width: calc(100% - 6px);
   min-height: 160px;
 
