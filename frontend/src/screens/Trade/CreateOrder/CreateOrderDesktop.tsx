@@ -21,7 +21,6 @@ const Root = styled.div`
   @media (min-width: 880px) {
     flex-direction: row;
   }
-
   background: #222936;
   grid-area: order;
   padding: 13px;

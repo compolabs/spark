@@ -54,11 +54,11 @@ export default {
   },
   tooltip: {
     border: "none",
-    background: "#323846",
+    background: colors.grey200,
     hoverElement: "#242A3C",
   },
   tokenTooltip: {
-    background: "#323846",
+    background: colors.grey200,
   },
   header: {
     walletInfoColor: colors.grey100,
@@ -81,8 +81,8 @@ export default {
   },
   dashboard: {
     tokenRowSelected: "#313A45",
-    tokenRowColor: "#323846",
-    cardBackground: "#323846",
+    tokenRowColor: colors.grey200,
+    cardBackground: colors.grey200,
   },
   supplyBtn: {
     background: "#1F262B",
@@ -91,7 +91,7 @@ export default {
   },
 
   card: {
-    background: "#323846",
+    background: colors.grey200,
     border: colors.grey200,
   },
   icon: {
