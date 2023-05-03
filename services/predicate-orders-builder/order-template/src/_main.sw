@@ -1,78 +1,102 @@
 predicate;
-
+mod utils;
+use utils::*;
 use std::{
+    b512::B512,
+    constants::ZERO_B256,
+    ecr::ec_recover_address,
     inputs::{
         input_count,
         input_owner,
+        input_predicate_data,
     },
     outputs::{
         Output,
         output_amount,
-        output_pointer,
         output_type,
     },
+    revert::require,
 };
 
-const GTF_OUTPUT_COIN_TO = 0x202;
-const GTF_OUTPUT_COIN_ASSET_ID = 0x204;
-//------------------------------------------------------------------------
-// configurable {
-//     ASK_AMOUNT: u64 = 0,
-//     ASK_TOKEN_CONFIG: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
-//     RECEIVER_CONFIG: b256 = 0x0000000000000000000000000000000000000000000000000000000000000000,
-// }
-//------------------------------------------------------------------------
-const ASK_AMOUNT: u64 = <ASK_AMOUNT>;
-const ASK_TOKEN_CONFIG: b256 = <ASK_TOKEN_CONFIG>;
-const RECEIVER_CONFIG: b256 = <RECEIVER_CONFIG>;
-//------------------------------------------------------------------------
+pub struct LimitOrder {
+    asset0: b256,
+    amount0: u64,
+    asset1: b256,
+    amount1: u64,
+    owner: b256,
+    id: str[30], //u64,
+}
 
-/// Order / OTC swap Predicate
-fn main() -> bool {
-    const ASK_TOKEN = ContractId {
-        value: ASK_TOKEN_CONFIG,
-    };
-    const RECEIVER = Address::from(RECEIVER_CONFIG);
+// const SPENDING_SCRIPT_HASH = 0x7895d0059c0d0c1de8de15795191a1c1d01cd970db75fa42e15dc96e051b5570; //FIXME
 
-    // Check if the transaction contains a single input coin from the receiver, to cancel their own order (in addition to this predicate)
+// ПЛАН-КАПКАН
+// получаем balance предиката
+// считаем цену price = order.amount0 / order.amount1
+// если input_owner == order.owner то возаращаем ему balance
+// проверяем tx_script_bytecode_hash
+// // INPUTS //
+// получаем количество и асет текущего инпута 
+// amount0 = input_coin_amount
+// amount1 = input_coin_amount / price
+// input_coin_asset_id == ORDER.asset0 && input_coin_amount <= balance * price
+// // OUTPUTS //
+// verify_output_coin
+// output_coin_asset_id == ORDER.asset1; 
+// output_amount == amount1; 
+// output_coin_to == ORDER.owner
+
+
+const ORDER = LimitOrder {
+    //------------------------------
+    asset0: 0x4e68158aa0dd81c438160a6ef38829363cf96eeef1ae5c6cb3cccb1c52a7e685,
+    amount0: 1000000000,
+    asset1: 0x35395f5b21b3e93e0dd4e476bc8d92a989185cf050a71aff861667d5a1ddefe3,
+    amount1: 200000000000,
+    owner: 0x5d99ee966b42cd8fc7bdd1364b389153a9e78b42b7d4a691470674e817888d4e,
+    id: "------------------------------",
+    //------------------------------
+    // asset0: <ASSET0>,
+    // amount0: <AMOUNT0>,
+    // asset1
+: <ASSET1>,
+    // amount1:<AMOUNT1>,
+    // owner: <OWNER>,
+    // id: <ORDER_ID>,
+    //------------------------------
+};
+const OUTPUT_COIN_INDEX = 0u8;
+fn main(take_coin: b256, min_take_amount: u64, maker: b256) -> bool {
+    // CANCELLATION //
+    let owner = Address::from(ORDER.owner);
     if input_count() == 2u8 {
-        if input_owner(0).unwrap() == RECEIVER
-            || input_owner(1).unwrap() == RECEIVER
+        if input_owner(0).unwrap() == owner
+            || input_owner(1).unwrap() == owner
         {
             return true;
         };
     };
+ 
+   // INPUTS //
+    // assert(tx_script_bytecode_hash() == SPENDING_SCRIPT_HASH); //FIXME
+    assert(input_coin_asset_id(0) == ORDER.asset0);
+    assert(input_coin_amount(0) >= ORDER.amount0);
+    /*todo: The gas coin stuff, note: that if this is the same coin as the take
+     coin then we will need to verify slightly differently
+     let gas_coin = input_coin_asset_id(1);
+     let gas_coin_amount = input_coin_amount(1);
+     assert(gas_coin_amount >= tx_gas_price() * MIN_GAS);
+     assert(tx_gas_limit() >= MIN_GAS);*/
 
-    // Otherwise, evaluate the terms of the order:
-    // The output which pays the receiver must be the first output
-    let output_index = 0;
-
-    // Revert if output is not an Output::Coin
-    match output_type(output_index) {
+    // OUTPUTS //
+    // assert(output_count() == 2); //FIXME
+    match output_type(OUTPUT_COIN_INDEX) { // assert(verify_output_coin(OUTPUT_COIN_INDEX));
         Output::Coin => (),
         _ => revert(0),
     };
-
-    // Since output is known to be a Coin, the following are always valid
-    let to = Address::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_TO));
-    let asset_id = ContractId::from(__gtf::<b256>(output_index, GTF_OUTPUT_COIN_ASSET_ID));
-
-    let amount = output_amount(output_index);
-
-    // Evaluate the predicate
-    (to == RECEIVER) && (amount == ASK_AMOUNT) && (asset_id == ASK_TOKEN)
+    assert(output_coin_asset_id(OUTPUT_COIN_INDEX) == ORDER.asset1);
+    assert(output_amount(OUTPUT_COIN_INDEX) >= ORDER.amount1);
+    // this is the one that is failing, its because maker above is set to 0, which is incorrect
+    // just need to pass this thing in args (along with all other params)
+    assert(output_coin_to(OUTPUT_COIN_INDEX) == ORDER.owner); //maker
+    true
 }
-
-
-    // assert(tx_script_bytecode_hash() == SPENDING_SCRIPT_HASH);
-  
-    // assert(input_coin_asset_id(0) == ASSET1);
-    // assert(input_coin_amount(0) >= AMOUNT1);
-
-    // assert(output_count() == 2);
-    // assert(verify_output_coin(OUTPUT_COIN_INDEX));
-    // assert(output_coin_asset_id(OUTPUT_COIN_INDEX) == ASSET0);
-    // assert(output_coin_amount(OUTPUT_COIN_INDEX) >= AMOUNT0);
-
-    // assert(output_coin_to(OUTPUT_COIN_INDEX) == OWNER);
-    

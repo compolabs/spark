@@ -143,8 +143,8 @@ pub mod limit_orders_interactions {
     }
 
     pub async fn fulfill_order(
-        predicate: &Predicate,
-        predicate_code: Vec<u8>,
+        base_predicate: (&Predicate, Vec<u8>),
+        partial_fullfill_params: Option<(&Predicate, Vec<u8>, u64)>,
         wallet: &WalletUnlocked,
         order_owner_address: &Address,
         asset0: AssetId,
@@ -152,6 +152,7 @@ pub mod limit_orders_interactions {
         asset1: AssetId,
         amount1: u64,
     ) -> Result<FuelCallResponse<()>, fuels::prelude::Error> {
+        let (predicate, predicate_code) = base_predicate;
         let provider = wallet.provider().unwrap();
 
         // ==================== BOB SIDE CALL ====================
@@ -174,11 +175,7 @@ pub mod limit_orders_interactions {
             amount: 1,
             ..Default::default()
         };
-        let swap_coin = &provider
-            .get_spendable_resources(filter)
-            // .get_spendable_resources(wallet.address(), asset1, 1)
-            .await
-            .unwrap()[0];
+        let swap_coin = &provider.get_spendable_resources(filter).await.unwrap()[0];
         let (swap_coin_utxo_id, swap_coin_amount) = match swap_coin {
             Resource::Coin(coin) => (coin.utxo_id, coin.amount),
             _ => panic!(),
@@ -186,21 +183,13 @@ pub mod limit_orders_interactions {
 
         // Configure inputs and outputs to send coins from the predicate root to another address
         // The predicate allows to spend its tokens if `ask_amount` is sent to the receiver.
-
-        // Offered asset coin belonging to the predicate root
-        // CoinPredicate
-        // let input_predicate = Input::CoinPredicate {
-        //     utxo_id: predicate_coin_utxo_id,
-        //     tx_pointer: TxPointer::default(),
-        //     owner: predicate.address().into(),
-        //     amount: amount0,
-        //     asset_id: asset0,
-        //     maturity: 0,
-        //     predicate: predicate.code(),
-        //     predicate_data: vec![],
-        // };
         let coin = Coin {
-            amount: amount0,
+            //TODO
+            amount: if partial_fullfill_params.is_some() {
+                partial_fullfill_params.clone().unwrap().2
+            } else {
+                amount0
+            },
             block_created: 0,
             asset_id: asset0,
             utxo_id: predicate_coin_utxo_id,
@@ -215,16 +204,6 @@ pub mod limit_orders_interactions {
         };
 
         // Asked asset coin belonging to the wallet taking the order
-        // CoinSigned
-        // let input_from_taker = Input::CoinSigned {
-        //     utxo_id: swap_coin_utxo_id,
-        //     tx_pointer: TxPointer::default(),
-        //     owner: Address::from(wallet.address()),
-        //     amount: swap_coin_amount,
-        //     asset_id: asset1,
-        //     witness_index: 0,
-        //     maturity: 0,
-        // };
         let coin = Coin {
             amount: swap_coin_amount,
             block_created: 0,
@@ -263,6 +242,22 @@ pub mod limit_orders_interactions {
             asset_id: asset1,
         };
 
+        // Partial fulfill output
+        // Output
+        let partial_fulfill_output = Output::Coin {
+            to: if partial_fullfill_params.is_some() {
+                Address::from(partial_fullfill_params.clone().unwrap().0.address())
+            } else {
+                *order_owner_address
+            },
+            amount: if partial_fullfill_params.is_some() {
+                partial_fullfill_params.clone().unwrap().2 - amount0
+            } else {
+                0
+            },
+            asset_id: asset0,
+        };
+
         let script_call = ScriptCallHandler::new(
             vec![],
             UnresolvedBytes::default(),
@@ -274,6 +269,7 @@ pub mod limit_orders_interactions {
         .with_outputs(vec![
             output_to_receiver,
             output_to_taker,
+            partial_fulfill_output,
             output_asked_change,
         ])
         .tx_params(TxParameters::default().set_gas_price(1));
