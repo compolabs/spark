@@ -63,8 +63,7 @@ const MenuItem = styled(Text)<{ selected?: boolean }>`
   align-items: center;
   padding: 0 12px;
 
-  color: ${({ selected, theme }) =>
-    selected ? theme.colors.blue200 : theme.colors.white100};
+  color: ${({ selected, theme }) => (selected ? theme.colors.blue200 : theme.colors.white100)};
 
   :hover {
     opacity: ${({ selected }) => (selected ? 1 : 0.8)};
@@ -94,24 +93,24 @@ const Desktop = styled.div`
 `;
 
 const LogoContainer = styled.img`
-  height: 48px;
+  height: 28px;
   transition: transform 0.7s ease-in-out;
 
-  &:hover {
-    animation-name: rotate;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-  }
-
-  @keyframes rotate {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
+  //&:hover {
+  //  animation-name: rotate;
+  //  animation-duration: 1s;
+  //  animation-iteration-count: infinite;
+  //  animation-timing-function: linear;
+  //}
+  //
+  //@keyframes rotate {
+  //  from {
+  //    transform: rotate(0deg);
+  //  }
+  //  to {
+  //    transform: rotate(360deg);
+  //  }
+  //}
 `;
 
 const Header: React.FC<IProps> = () => {
@@ -144,20 +143,14 @@ const Header: React.FC<IProps> = () => {
   return (
     <Root>
       <TopMenu>
-        <Row
-          alignItems="center"
-          crossAxisSize="max"
-          justifyContent="space-between"
-        >
+        <Row alignItems="center" crossAxisSize="max" justifyContent="space-between">
           <LogoContainer src={theme.images.icons.logo} alt="logo" />
           <Desktop>
             {menuItems.map(({ name, link, outer }) => (
               <MenuItem
                 key={name}
                 selected={isRoutesEquals(link, location.pathname)}
-                onClick={() =>
-                  outer ? window.open(link, "_blank") : navigate(link)
-                }
+                onClick={() => (outer ? window.open(link, "_blank") : navigate(link))}
               >
                 {name}
               </MenuItem>
@@ -170,17 +163,11 @@ const Header: React.FC<IProps> = () => {
         <Mobile>
           <EthBalance />
           <SizedBox width={12} />
-          <MobileMenuIcon
-            onClick={() => toggleMenu(!mobileMenuOpened)}
-            opened={mobileMenuOpened}
-          />
+          <MobileMenuIcon onClick={() => toggleMenu(!mobileMenuOpened)} opened={mobileMenuOpened} />
         </Mobile>
       </TopMenu>
       <Mobile>
-        <MobileMenu
-          opened={mobileMenuOpened}
-          onClose={() => toggleMenu(false)}
-        />
+        <MobileMenu opened={mobileMenuOpened} onClose={() => toggleMenu(false)} />
       </Mobile>
     </Root>
   );
