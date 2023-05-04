@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
@@ -39,10 +39,27 @@ class TradeVm {
       () => [this.assetId0, this.assetId1],
       () => this.getLatestTrades()
     );
+    when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
   }
 
+  setMarketPrice = () => {
+    const { orderbook } = this.rootStore.ordersStore;
+    const buyPrice = BN.parseUnits(
+      orderbook.buy[0].price,
+      this.token0.decimals
+    );
+    const sellPrice = BN.parseUnits(
+      orderbook.sell[0].price,
+      this.token1.decimals
+    );
+    this.setBuyPrice(sellPrice);
+    this.setSellPrice(buyPrice);
+  };
+
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
+    const data = await getLatestTradesInPair(
+      `${this.token0.symbol}/${this.token1.symbol}`
+    );
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -82,6 +99,7 @@ class TradeVm {
   buyPrice: BN = BN.ZERO;
   setBuyPrice = (price: BN, sync?: boolean) => {
     this.buyPrice = price;
+    if (price.eq(0)) this.setBuyTotal(BN.ZERO);
     if (this.buyAmount.gt(0) && price.gt(0) && sync) {
       const v1 = BN.formatUnits(price, this.token1.decimals);
       const v2 = BN.formatUnits(this.buyAmount, this.token0.decimals);
@@ -95,23 +113,38 @@ class TradeVm {
     if (this.buyPrice.gt(0) && amount.gt(0) && sync) {
       const v1 = BN.formatUnits(this.buyPrice, this.token1.decimals);
       const v2 = BN.formatUnits(amount, this.token0.decimals);
-      this.setBuyTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
+      const total = BN.parseUnits(v2.times(v1), this.token1.decimals);
+      this.setBuyTotal(total);
+      const balance = this.rootStore.accountStore.getBalance(this.token1);
+      if (balance == null) return;
+      const percent = total.times(100).div(balance);
+      this.setBuyPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
+
+  buyPercent: BN = new BN(0);
+  setBuyPercent = (value: number | number[]) =>
+    (this.buyPercent = new BN(value.toString()));
 
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
     this.buyTotal = total;
-    if (this.buyAmount.gt(0) && this.buyPrice.gt(0) && sync) {
+    if (this.buyPrice.gt(0) && sync) {
       const v1 = BN.formatUnits(this.buyPrice, this.token1.decimals);
       const v2 = BN.formatUnits(total, this.token1.decimals);
       this.setBuyAmount(BN.parseUnits(v2.div(v1), this.token0.decimals));
+      //todo add
+      const balance = this.rootStore.accountStore.getBalance(this.token1);
+      if (balance == null) return;
+      const percent = total.times(100).div(balance);
+      this.setBuyPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
 
   sellPrice: BN = BN.ZERO;
   setSellPrice = (price: BN, sync?: boolean) => {
     this.sellPrice = price;
+    if (price.eq(0)) this.setSellTotal(BN.ZERO);
     if (this.sellAmount.gt(0) && price.gt(0) && sync) {
       const v1 = BN.formatUnits(price, this.token1.decimals);
       const v2 = BN.formatUnits(this.sellAmount, this.token0.decimals);
@@ -122,12 +155,20 @@ class TradeVm {
   sellAmount: BN = BN.ZERO;
   setSellAmount = (amount: BN, sync?: boolean) => {
     this.sellAmount = amount;
+    if (amount.eq(0)) this.setSellTotal(BN.ZERO);
     if (this.sellPrice.gt(0) && amount.gt(0) && sync) {
       const v1 = BN.formatUnits(this.sellPrice, this.token1.decimals);
       const v2 = BN.formatUnits(amount, this.token0.decimals);
       this.setSellTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
+      const balance = this.rootStore.accountStore.getBalance(this.token0);
+      if (balance == null) return;
+      const percent = amount.times(100).div(balance);
+      this.setSellPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
+  sellPercent: BN = new BN(0);
+  setSellPercent = (value: number | number[]) =>
+    (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -135,19 +176,30 @@ class TradeVm {
     if (this.sellAmount.gt(0) && this.sellPrice.gt(0) && sync) {
       const v1 = BN.formatUnits(this.sellPrice, this.token1.decimals);
       const v2 = BN.formatUnits(total, this.token1.decimals);
-      this.setSellAmount(BN.parseUnits(v2.div(v1), this.token0.decimals));
+      const amount = BN.parseUnits(v2.div(v1), this.token0.decimals);
+      this.setSellAmount(amount);
+      const balance = this.rootStore.accountStore.getBalance(this.token0);
+      if (balance == null) return;
+      const percent = amount.times(100).div(balance);
+      this.setSellPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
 
   get canBuy() {
     return (
-      this.buyAmount.gt(0) && this.buyPrice.gt(0) && this.buyTotal.gt(0) && !this.buyTotalError
+      this.buyAmount.gt(0) &&
+      this.buyPrice.gt(0) &&
+      this.buyTotal.gt(0) &&
+      !this.buyTotalError
     );
   }
 
   get canSell() {
     return (
-      this.sellAmount.gt(0) && this.sellPrice.gt(0) && this.sellTotal.gt(0) && !this.sellAmountError
+      this.sellAmount.gt(0) &&
+      this.sellPrice.gt(0) &&
+      this.sellTotal.gt(0) &&
+      !this.sellAmountError
     );
   }
 
@@ -181,7 +233,8 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
+      return;
 
     this.setLoading(true);
     try {

@@ -43,18 +43,27 @@ class AccountStore {
 
   onFuelLoaded = () => {
     if (this.walletInstance == null) return;
-    this.walletInstance.on(window?.fuel.events.currentAccount, this.handleAccEvent);
-    this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
+    this.walletInstance.on(
+      window?.fuel.events.currentAccount,
+      this.handleAccEvent
+    );
+    this.walletInstance.on(
+      window?.fuel.events?.network,
+      this.handleNetworkEvent
+    );
   };
   handleAccEvent = (account: string) => this.setAddress(account);
   handleNetworkEvent = (network: FuelProviderConfig) => {
     if (network.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(`Please change network url to Testnet Beta 3`, {
-        link: NODE_URL,
-        linkTitle: "Go to Testnet Beta 3",
-        type: "error",
-        title: "Attention",
-      });
+      this.rootStore.notificationStore.toast(
+        `Please change network url to Testnet Beta 3`,
+        {
+          link: NODE_URL,
+          linkTitle: "Go to Testnet Beta 3",
+          type: "error",
+          title: "Attention",
+        }
+      );
     }
   };
 
@@ -80,14 +89,16 @@ class AccountStore {
     const assetBalances = TOKENS_LIST.map((asset) => {
       const t = balances.find(({ assetId }) => asset.assetId === assetId);
       const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-      if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+      if (t == null)
+        return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
       return new Balance({ balance, ...asset });
     });
     this.setAssetBalances(assetBalances);
   };
   findBalanceByAssetId = (assetId: string) =>
-    this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
+    this.assetBalances &&
+    this.assetBalances.find((balance) => balance.assetId === assetId);
 
   get balances() {
     const { accountStore } = this.rootStore;
@@ -148,7 +159,8 @@ class AccountStore {
   }
 
   loginWithFuelWallet = async () => {
-    if (this.walletInstance == null) throw new Error("There is no wallet instance");
+    if (this.walletInstance == null)
+      throw new Error("There is no wallet instance");
     const res = await this.walletInstance.connect({ url: NODE_URL });
     if (!res) {
       this.rootStore.notificationStore.toast("User denied", {
@@ -159,12 +171,15 @@ class AccountStore {
     const account = await this.walletInstance.currentAccount();
     const provider = await this.walletInstance.getProvider();
     if (provider.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(`Please change network url to beta 3`, {
-        link: NODE_URL,
-        linkTitle: "Go to Beta 3",
-        type: "error",
-        title: "Attention",
-      });
+      this.rootStore.notificationStore.toast(
+        `Please change network url to beta 3`,
+        {
+          link: NODE_URL,
+          linkTitle: "Go to Beta 3",
+          type: "error",
+          title: "Attention",
+        }
+      );
     }
     this.setAddress(account);
   };
@@ -172,7 +187,9 @@ class AccountStore {
   getFormattedBalance = (token: IToken): string | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
     if (balance == null) return null;
-    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(4);
+    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(
+      4
+    );
   };
   getBalance = (token: IToken): BN | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
