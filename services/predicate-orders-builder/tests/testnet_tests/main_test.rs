@@ -76,11 +76,9 @@ async fn main_test() {
     //     receipts.get_logs_with_type::<CreateOrderParams>().unwrap()
     // );
 
-    
-
     let receipts = fulfill_order(
-        &predicate,
-        code.clone(),
+        (&predicate, code.clone()),
+        None,
         &bob,
         &alice.address().into(),
         AssetId::from(*usdc.contract_id().hash()),
