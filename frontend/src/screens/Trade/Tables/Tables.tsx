@@ -1,14 +1,12 @@
 import styled from "@emotion/styled";
 import Tabs from "@src/components/Tabs";
 import React, { useState } from "react";
-import SizedBox from "@components/SizedBox";
 import OpenedOrders from "@screens/Trade/Tables/OpenedOrders";
 import OrderHistory from "@screens/Trade/Tables/OrderHistory";
 import { observer } from "mobx-react-lite";
 import { useStores } from "@stores";
 import { Row } from "@src/components/Flex";
 import Text from "@components/Text";
-import Button from "@components/Button";
 import Loading from "@components/Loading";
 
 interface IProps {}
@@ -39,21 +37,18 @@ const Container = styled.div`
   align-items: center;
   justify-content: center;
 `;
+const Block = styled(Row)`
+  padding: 32px 0;
+`;
+const ConnectBtn = styled(Text)`
+  cursor: pointer;
+  padding: 32px 0;
+  color: #3c69ff;
+`;
 
 const Tables: React.FC<IProps> = () => {
   const [activeTab, setActiveTab] = useState(0);
   const { accountStore, ordersStore, settingsStore } = useStores();
-  if (!accountStore.isLoggedIn)
-    return (
-      <Root>
-        <Container>
-          <SizedBox height={24} />
-          <Text textAlign="center">Connect wallet to trade</Text>
-          <SizedBox height={8} />
-          <Button onClick={() => settingsStore.setLoginModalOpened(true)}>Connect wallet</Button>
-        </Container>
-      </Root>
-    );
   return (
     <Root>
       <TabsContainer>
@@ -65,15 +60,26 @@ const Tables: React.FC<IProps> = () => {
       </TabsContainer>
       <Container>
         <DContainer>
-          {ordersStore.initialized ? (
-            <>
-              {activeTab === 0 && <OpenedOrders />}
-              {activeTab === 1 && <OrderHistory />}
-            </>
+          {accountStore.isLoggedIn ? (
+            ordersStore.initialized ? (
+              <>
+                {activeTab === 0 && <OpenedOrders />}
+                {activeTab === 1 && <OrderHistory />}
+              </>
+            ) : (
+              <Row justifyContent="center">
+                <Loading />
+              </Row>
+            )
           ) : (
-            <Row justifyContent="center">
-              <Loading />
-            </Row>
+            <Block>
+              <ConnectBtn
+                textAlign="center"
+                onClick={() => settingsStore.setLoginModalOpened(true)}
+              >
+                Connect wallet to trade
+              </ConnectBtn>
+            </Block>
           )}
         </DContainer>
       </Container>
