@@ -77,11 +77,10 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
           marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
           value={vm.buyPercent.toNumber()}
           onChange={(v) => {
-            //todo check
             vm.setBuyPercent(v);
             const amount = accountStore.getBalance(vm.token1);
             if (amount != null) {
-              vm.setBuyTotal(amount?.times(+v).div(100));
+              vm.setBuyTotal(amount?.times(+v).div(100), true);
             }
           }}
         />
@@ -105,7 +104,7 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
             kind="green"
             fixed
             onClick={() => vm.createOrder("buy")}
-            // disabled={vm.loading || !vm.canBuy}
+            disabled={vm.loading || !vm.canBuy}
           >
             {vm.loading ? <Loading /> : `Buy ${vm.token0.symbol}`}
           </Button>
@@ -157,7 +156,7 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
             vm.setSellPercent(v);
             const amount = accountStore.getBalance(vm.token0);
             if (amount != null) {
-              vm.setSellAmount(amount?.times(+v).div(100));
+              vm.setSellAmount(amount?.times(+v).div(100), true);
             }
           }}
         />
@@ -178,7 +177,7 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
           <Button
             kind="danger"
             fixed
-            // disabled={vm.loading || !vm.canSell}
+            disabled={vm.loading || !vm.canSell}
             onClick={() => vm.createOrder("sell")}
           >
             {vm.loading ? <Loading /> : `Sell ${vm.token0.symbol}`}

@@ -53,7 +53,6 @@ class TradeVm {
       this.token1.decimals
     );
     this.setBuyPrice(sellPrice);
-    console.log("buyPrice", buyPrice);
     this.setSellPrice(buyPrice);
   };
 
@@ -100,6 +99,7 @@ class TradeVm {
   buyPrice: BN = BN.ZERO;
   setBuyPrice = (price: BN, sync?: boolean) => {
     this.buyPrice = price;
+    if (price.eq(0)) this.setBuyTotal(BN.ZERO);
     if (this.buyAmount.gt(0) && price.gt(0) && sync) {
       const v1 = BN.formatUnits(price, this.token1.decimals);
       const v2 = BN.formatUnits(this.buyAmount, this.token0.decimals);
@@ -113,7 +113,12 @@ class TradeVm {
     if (this.buyPrice.gt(0) && amount.gt(0) && sync) {
       const v1 = BN.formatUnits(this.buyPrice, this.token1.decimals);
       const v2 = BN.formatUnits(amount, this.token0.decimals);
-      this.setBuyTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
+      const total = BN.parseUnits(v2.times(v1), this.token1.decimals);
+      this.setBuyTotal(total);
+      const balance = this.rootStore.accountStore.getBalance(this.token1);
+      if (balance == null) return;
+      const percent = total.times(100).div(balance);
+      this.setBuyPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
 
@@ -124,16 +129,22 @@ class TradeVm {
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
     this.buyTotal = total;
-    if (this.buyAmount.gt(0) && this.buyPrice.gt(0) && sync) {
+    if (this.buyPrice.gt(0) && sync) {
       const v1 = BN.formatUnits(this.buyPrice, this.token1.decimals);
       const v2 = BN.formatUnits(total, this.token1.decimals);
       this.setBuyAmount(BN.parseUnits(v2.div(v1), this.token0.decimals));
+      //todo add
+      const balance = this.rootStore.accountStore.getBalance(this.token1);
+      if (balance == null) return;
+      const percent = total.times(100).div(balance);
+      this.setBuyPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
 
   sellPrice: BN = BN.ZERO;
   setSellPrice = (price: BN, sync?: boolean) => {
     this.sellPrice = price;
+    if (price.eq(0)) this.setSellTotal(BN.ZERO);
     if (this.sellAmount.gt(0) && price.gt(0) && sync) {
       const v1 = BN.formatUnits(price, this.token1.decimals);
       const v2 = BN.formatUnits(this.sellAmount, this.token0.decimals);
@@ -144,10 +155,15 @@ class TradeVm {
   sellAmount: BN = BN.ZERO;
   setSellAmount = (amount: BN, sync?: boolean) => {
     this.sellAmount = amount;
+    if (amount.eq(0)) this.setSellTotal(BN.ZERO);
     if (this.sellPrice.gt(0) && amount.gt(0) && sync) {
       const v1 = BN.formatUnits(this.sellPrice, this.token1.decimals);
       const v2 = BN.formatUnits(amount, this.token0.decimals);
       this.setSellTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
+      const balance = this.rootStore.accountStore.getBalance(this.token0);
+      if (balance == null) return;
+      const percent = amount.times(100).div(balance);
+      this.setSellPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
   sellPercent: BN = new BN(0);
@@ -160,7 +176,12 @@ class TradeVm {
     if (this.sellAmount.gt(0) && this.sellPrice.gt(0) && sync) {
       const v1 = BN.formatUnits(this.sellPrice, this.token1.decimals);
       const v2 = BN.formatUnits(total, this.token1.decimals);
-      this.setSellAmount(BN.parseUnits(v2.div(v1), this.token0.decimals));
+      const amount = BN.parseUnits(v2.div(v1), this.token0.decimals);
+      this.setSellAmount(amount);
+      const balance = this.rootStore.accountStore.getBalance(this.token0);
+      if (balance == null) return;
+      const percent = amount.times(100).div(balance);
+      this.setSellPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
     }
   };
 

@@ -1,12 +1,7 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction } from "mobx";
 import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import {
-  IToken,
-  NODE_URL,
-  TOKENS_BY_SYMBOL,
-  TOKENS_LIST,
-} from "@src/constants";
+import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
 import Balance from "@src/entities/Balance";
 import BN from "@src/utils/BN";
 import { FuelProviderConfig } from "@fuel-wallet/sdk";
