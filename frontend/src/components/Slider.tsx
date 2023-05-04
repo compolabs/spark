@@ -8,6 +8,7 @@ const Root = styled.div`
     border: 3px solid #495060;
     background-color: #495060;
   }
+
   .rc-slider-mark-text {
     display: none;
   }
@@ -22,8 +23,10 @@ const Slider: React.FC<SliderProps> = (props) => {
         activeDotStyle={{ backgroundColor: "#5A81EA", borderColor: "#5A81EA" }}
         railStyle={{ backgroundColor: "#495060" }}
         handleStyle={{
-          border: "3px solid #7075E9",
-          boxShadow: "0px 4px 16px rgba(112, 117, 233, 0.32)",
+          border: "3px solid #5A81EA",
+          boxShadow: "none",
+          backgroundColor: "#222936",
+          opacity: 1,
           width: 16,
           height: 16,
           marginTop: -6,

@@ -11,6 +11,7 @@ import Img from "@components/Img";
 import wallet from "@src/assets/icons/wallet.svg";
 import { useStores } from "@stores";
 import Loading from "@components/Loading";
+import Slider from "@src/components/Slider";
 
 interface IProps {}
 
@@ -69,21 +70,42 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
           assetId={vm.assetId0}
         />
         <SizedBox height={12} />
-        <TokenInput
-          description="Total"
-          decimals={vm.token1.decimals}
-          amount={vm.buyTotal}
-          setAmount={(v) => vm.setBuyTotal(v, true)}
-          assetId={vm.assetId1}
-          error={vm.buyTotalError}
+        <Slider
+          min={0}
+          max={100}
+          step={1}
+          marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
+          value={vm.buyPercent.toNumber()}
+          onChange={(v) => {
+            //todo check
+            vm.setBuyPercent(v);
+            const amount = accountStore.getBalance(vm.token1);
+            if (amount != null) {
+              vm.setBuyTotal(amount?.times(+v).div(100));
+            }
+          }}
         />
+        {accountStore.isLoggedIn && (
+          <>
+            <SizedBox height={12} />
+            <TokenInput
+              description="Total"
+              decimals={vm.token1.decimals}
+              amount={vm.buyTotal}
+              setAmount={(v) => vm.setBuyTotal(v, true)}
+              assetId={vm.assetId1}
+              error={vm.buyTotalError}
+            />
+          </>
+        )}
+
         <SizedBox height={12} />
         {accountStore.isLoggedIn ? (
           <Button
             kind="green"
             fixed
             onClick={() => vm.createOrder("buy")}
-            disabled={vm.loading || !vm.canBuy}
+            // disabled={vm.loading || !vm.canBuy}
           >
             {vm.loading ? <Loading /> : `Buy ${vm.token0.symbol}`}
           </Button>
@@ -125,29 +147,38 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
           error={vm.sellAmountError}
         />
         <SizedBox height={12} />
-        {/*Todo add slider*/}
-        {/*<Slider*/}
-        {/*  min={0}*/}
-        {/*  max={100}*/}
-        {/*  step={1}*/}
-        {/*  marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}*/}
-        {/*  // value={vm.providedPercentOfPool.toNumber()}*/}
-        {/*  // onChange={vm.setProvidedPercentOfPool}*/}
-        {/*/>*/}
-        {/*<SizedBox height={12} />*/}
-        <TokenInput
-          description="Total"
-          decimals={vm.token1.decimals}
-          amount={vm.sellTotal}
-          setAmount={(v) => vm.setSellTotal(v, true)}
-          assetId={vm.assetId1}
+        <Slider
+          min={0}
+          max={100}
+          step={1}
+          marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
+          value={vm.sellPercent.toNumber()}
+          onChange={(v) => {
+            vm.setSellPercent(v);
+            const amount = accountStore.getBalance(vm.token0);
+            if (amount != null) {
+              vm.setSellAmount(amount?.times(+v).div(100));
+            }
+          }}
         />
         <SizedBox height={12} />
+        {accountStore.isLoggedIn && (
+          <>
+            <TokenInput
+              description="Total"
+              decimals={vm.token1.decimals}
+              amount={vm.sellTotal}
+              setAmount={(v) => vm.setSellTotal(v, true)}
+              assetId={vm.assetId1}
+            />
+            <SizedBox height={12} />
+          </>
+        )}
         {accountStore.isLoggedIn ? (
           <Button
             kind="danger"
             fixed
-            disabled={vm.loading || !vm.canSell}
+            // disabled={vm.loading || !vm.canSell}
             onClick={() => vm.createOrder("sell")}
           >
             {vm.loading ? <Loading /> : `Sell ${vm.token0.symbol}`}

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
@@ -39,10 +39,28 @@ class TradeVm {
       () => [this.assetId0, this.assetId1],
       () => this.getLatestTrades()
     );
+    when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
   }
 
+  setMarketPrice = () => {
+    const { orderbook } = this.rootStore.ordersStore;
+    const buyPrice = BN.parseUnits(
+      orderbook.buy[0].price,
+      this.token0.decimals
+    );
+    const sellPrice = BN.parseUnits(
+      orderbook.sell[0].price,
+      this.token1.decimals
+    );
+    this.setBuyPrice(sellPrice);
+    console.log("buyPrice", buyPrice);
+    this.setSellPrice(buyPrice);
+  };
+
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
+    const data = await getLatestTradesInPair(
+      `${this.token0.symbol}/${this.token1.symbol}`
+    );
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -99,6 +117,10 @@ class TradeVm {
     }
   };
 
+  buyPercent: BN = new BN(0);
+  setBuyPercent = (value: number | number[]) =>
+    (this.buyPercent = new BN(value.toString()));
+
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
     this.buyTotal = total;
@@ -128,6 +150,9 @@ class TradeVm {
       this.setSellTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
     }
   };
+  sellPercent: BN = new BN(0);
+  setSellPercent = (value: number | number[]) =>
+    (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -141,13 +166,19 @@ class TradeVm {
 
   get canBuy() {
     return (
-      this.buyAmount.gt(0) && this.buyPrice.gt(0) && this.buyTotal.gt(0) && !this.buyTotalError
+      this.buyAmount.gt(0) &&
+      this.buyPrice.gt(0) &&
+      this.buyTotal.gt(0) &&
+      !this.buyTotalError
     );
   }
 
   get canSell() {
     return (
-      this.sellAmount.gt(0) && this.sellPrice.gt(0) && this.sellTotal.gt(0) && !this.sellAmountError
+      this.sellAmount.gt(0) &&
+      this.sellPrice.gt(0) &&
+      this.sellTotal.gt(0) &&
+      !this.sellAmountError
     );
   }
 
@@ -181,7 +212,8 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
+      return;
 
     this.setLoading(true);
     try {
