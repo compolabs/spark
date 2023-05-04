@@ -11,6 +11,8 @@ import {
 import BN from "@src/utils/BN";
 import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
+import { CreateOrderScriptAbi__factory } from "@src/scripts";
+import axios from "axios";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -208,6 +210,79 @@ class TradeVm {
   get matcherFee() {
     return "1000";
   }
+
+  createPredicateOrder = async (action: OrderAction) => {
+    const { accountStore } = this.rootStore;
+    if (accountStore.address == null) return;
+    const wallet = await accountStore.getWallet();
+    if (wallet == null) return;
+    const createOrderScript =
+      CreateOrderScriptAbi__factory.createInstance(wallet);
+
+    if (createOrderScript == null) return;
+    let token0 = null;
+    let token1 = null;
+    let amount0 = null;
+    let amount1 = null;
+    if (action === "buy") {
+      token0 = this.assetId1;
+      token1 = this.assetId0;
+      amount0 = this.buyTotal.toString();
+      amount1 = this.buyAmount.toString();
+    }
+    if (action === "sell") {
+      token0 = this.assetId0;
+      token1 = this.assetId1;
+      amount0 = this.sellAmount.toFixed(0).toString();
+      amount1 = this.sellTotal.toFixed(0).toString();
+    }
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
+      return;
+
+    //let mut req = HashMap::new();
+    //     req.insert("asset0", format!("0x{}", usdc.contract_id().hash));
+    //     req.insert("amount0", amount0.to_string());
+    //     req.insert("asset1", format!("0x{}", uni.contract_id().hash));
+    //     req.insert("amount1", amount1.to_string());
+    //     req.insert("owner", format!("0x{}", alice.address().hash));
+    //     println!("Backend Request Json = {:?}\n", req);
+
+    const orderObj = {
+      asset0: token0,
+      amount0: amount0,
+      asset1: token1,
+      amount1: amount1,
+      owner: this.rootStore.accountStore.address,
+    };
+
+    //{  id: string,
+    // predicate_address: AddressInput,
+    // amount0: BigNumberish,
+    // asset0: ContractIdInput,
+    // amount1: BigNumberish,
+    // asset1: ContractIdInput,
+    // owner: AddressInput
+    // }
+    const createPredicate = axios.post(
+      "http://localhost:8080/create",
+      orderObj
+    );
+    console.log(createPredicate);
+    // const orderObject = {
+    //   id: "1",
+    //   predicate_address: { value: "" },
+    //   amount0: amount0,
+    //   asset0: { value: token0 },
+    //   amount1: amount1,
+    //   asset1: { value: token1 },
+    //   owner: { value: this.rootStore.accountStore.address },
+    // } as CreateOrderParamsInput;
+    // const { value, logs } = await createOrderScript.functions
+    //   .main(orderObject)
+    //   .call();
+    // console.log("value", value);
+    // console.log("logs", logs);
+  };
 
   createOrder = async (action: OrderAction) => {
     const { accountStore } = this.rootStore;

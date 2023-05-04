@@ -9,7 +9,7 @@ use execute::Execute;
 use crate::utils::get_file_as_byte_vec;
 use serde::Serialize;
 
-const DIR_PATH: &str = "/Users/alexey/projects/fuel/limit_orders/services/predicate-orders-builder";
+const DIR_PATH: &str = "/Users/lidia/projects/fuel/spark/services/predicate-orders-builder";
 
 #[derive(Serialize)]
 pub struct ResponseData {
@@ -55,6 +55,8 @@ async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
 
     let template_path = format!("{DIR_PATH}/order-template");
     let order_directory = format!("{DIR_PATH}/orders/{id}");
+    println!("{template_path}");
+    println!("{order_directory}");
 
     utils::copy_recursively(template_path, order_directory.clone()).unwrap();
 
