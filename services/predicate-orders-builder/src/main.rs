@@ -1,4 +1,5 @@
 mod utils;
+use actix_cors::Cors;
 use actix_web::{post, web, App, HttpServer};
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use std::process::Command;
@@ -115,7 +116,7 @@ async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
 async fn main() -> std::io::Result<()> {
     print_title("✅ Backend is alive");
     HttpServer::new(|| {
-        App::new().service(create_order_post)
+        App::new().wrap(Cors::default()).service(create_order_post)
         // .route("/get_code", web::get().to(get_code))
     })
     .bind(("127.0.0.1", 8080))?
