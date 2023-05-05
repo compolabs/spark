@@ -75,27 +75,35 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
       <Root>
         <Img height="60" width="60" src={logo} />
         <SizedBox height={4} />
-        <Text fitContent size="medium">
-          Connect wallet
-        </Text>
-        <SizedBox height={4} />
-        <Text fitContent type="secondary" weight={500} size="tiny">
-          To start using Spark
-        </Text>
-        <SizedBox height={34} />
-        {window.fuel == null && window.fuelet == null && (
-          <Column justifyContent="center" alignItems="center">
-            <Text>No wallet was detected</Text>
-            <SizedBox height={8} />
-            <Button
+        {window.fuel == null && window.fuelet == null ? (
+          <>
+            <Text fitContent size="medium">
+              No wallet was detected
+            </Text>
+            <SizedBox height={12} />
+            <Text
+              fitContent
+              style={{ cursor: "pointer" }}
+              type="link"
               onClick={() =>
                 window.open("https://wallet.fuel.network/docs/install/")
               }
             >
               Go to wallet
-            </Button>
-          </Column>
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text fitContent size="medium">
+              Connect wallet
+            </Text>
+            <SizedBox height={4} />
+            <Text fitContent type="secondary" weight={500} size="tiny">
+              To start using Spark
+            </Text>
+          </>
         )}
+        <SizedBox height={34} />
         {!isImportInputOpened ? (
           loginTypes.map(
             (t, i) =>

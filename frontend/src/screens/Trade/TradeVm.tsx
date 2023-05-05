@@ -187,6 +187,7 @@ class TradeVm {
 
   get canBuy() {
     return (
+      this.rootStore.accountStore.isLoggedIn &&
       this.buyAmount.gt(0) &&
       this.buyPrice.gt(0) &&
       this.buyTotal.gt(0) &&
@@ -196,6 +197,7 @@ class TradeVm {
 
   get canSell() {
     return (
+      this.rootStore.accountStore.isLoggedIn &&
       this.sellAmount.gt(0) &&
       this.sellPrice.gt(0) &&
       this.sellTotal.gt(0) &&

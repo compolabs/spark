@@ -12,6 +12,7 @@ import Button from "@components/Button";
 import { useStores } from "@stores";
 import TokenInput from "@src/components/TokenInput";
 import Loading from "@components/Loading";
+import Slider from "@components/Slider";
 
 interface IProps {
   onClose: () => void;
@@ -74,6 +75,34 @@ const CreateOrderModal: React.FC<IProps> = ({ ...rest }) => {
         }
         assetId={vm.assetId0}
         error={vm.activeModalAction === 1 ? vm.sellAmountError : false}
+      />
+      <SizedBox height={12} />
+      <Slider
+        min={0}
+        max={100}
+        step={1}
+        marks={{ 0: 0, 25: 25, 50: 50, 75: 75, 100: 100 }}
+        value={
+          vm.activeModalAction === 1
+            ? vm.sellPercent.toNumber()
+            : vm.buyPercent.toNumber()
+        }
+        onChange={(v) => {
+          if (vm.activeModalAction === 1) {
+            vm.setSellPercent(v);
+            const amount = accountStore.getBalance(vm.token0);
+            if (amount != null) {
+              vm.setSellAmount(amount?.times(+v).div(100), true);
+            }
+          }
+          if (vm.activeModalAction === 0) {
+            vm.setBuyPercent(v);
+            const amount = accountStore.getBalance(vm.token1);
+            if (amount != null) {
+              vm.setBuyTotal(amount?.times(+v).div(100), true);
+            }
+          }
+        }}
       />
       <SizedBox height={12} />
       <TokenInput
