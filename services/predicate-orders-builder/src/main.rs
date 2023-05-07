@@ -2,15 +2,14 @@ mod utils;
 use actix_cors::Cors;
 use actix_web::{post, web, App, HttpServer};
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
-use std::process::Command;
+use reqwest::header;
+use std::{fs, path::PathBuf, process::Command};
 use utils::print_title;
 
 use execute::Execute;
 
 use crate::utils::get_file_as_byte_vec;
 use serde::Serialize;
-
-const DIR_PATH: &str = "/Users/lidia/projects/fuel/spark/services/predicate-orders-builder";
 
 #[derive(Serialize)]
 pub struct ResponseData {
@@ -29,6 +28,13 @@ impl ResponseData {
 
 #[post("/create")]
 async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
+    let srcdir = PathBuf::from("./");
+    let dir_path = fs::canonicalize(&srcdir)
+        .unwrap()
+        .into_os_string()
+        .into_string()
+        .unwrap();
+
     let req_body: serde_json::Value = serde_json::from_str(&req_body_str).unwrap();
     let req_body = req_body.as_object().unwrap().clone();
 
@@ -54,10 +60,8 @@ async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
         .map(char::from)
         .collect();
 
-    let template_path = format!("{DIR_PATH}/order-template");
-    let order_directory = format!("{DIR_PATH}/orders/{id}");
-    println!("{template_path}");
-    println!("{order_directory}");
+    let template_path = format!("{dir_path}/order-template");
+    let order_directory = format!("{dir_path}/orders/{id}");
 
     utils::copy_recursively(template_path, order_directory.clone()).unwrap();
 
@@ -89,7 +93,7 @@ async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
 
     let output_directory = format!("{order_directory}/out");
 
-    let forc_path = format!("{DIR_PATH}/forc");
+    let forc_path = format!("{dir_path}/forc");
     let mut first_command = Command::new(&forc_path);
     first_command.arg("build");
     first_command.arg("--path");
@@ -116,7 +120,15 @@ async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
 async fn main() -> std::io::Result<()> {
     print_title("✅ Backend is alive");
     HttpServer::new(|| {
-        App::new().wrap(Cors::default()).service(create_order_post)
+        let cors = Cors::default()
+            .allowed_origin("http://localhost:3000")
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![header::AUTHORIZATION, header::ACCEPT])
+            .allowed_header(header::CONTENT_TYPE)
+            .max_age(3600)
+            .supports_credentials() // Allow the cookie auth
+            ;
+        App::new().wrap(cors).service(create_order_post)
         // .route("/get_code", web::get().to(get_code))
     })
     .bind(("127.0.0.1", 8080))?
