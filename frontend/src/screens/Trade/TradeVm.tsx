@@ -5,6 +5,7 @@ import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
   EXPLORER_URL,
+  NODE_URL,
   TOKENS_BY_ASSET_ID,
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
@@ -12,7 +13,7 @@ import BN from "@src/utils/BN";
 import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 import { CreateOrderScriptAbi__factory } from "@src/scripts";
-import axios from "axios";
+import { Address, Wallet } from "fuels";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -239,49 +240,57 @@ class TradeVm {
     if (token0 == null || token1 == null || amount0 == null || amount1 == null)
       return;
 
-    //let mut req = HashMap::new();
-    //     req.insert("asset0", format!("0x{}", usdc.contract_id().hash));
-    //     req.insert("amount0", amount0.to_string());
-    //     req.insert("asset1", format!("0x{}", uni.contract_id().hash));
-    //     req.insert("amount1", amount1.to_string());
-    //     req.insert("owner", format!("0x{}", alice.address().hash));
-    //     println!("Backend Request Json = {:?}\n", req);
-
-    const orderObj = {
-      asset0: token0,
-      amount0: amount0,
-      asset1: token1,
-      amount1: amount1,
-      owner: this.rootStore.accountStore.address,
-    };
-
-    //{  id: string,
-    // predicate_address: AddressInput,
-    // amount0: BigNumberish,
-    // asset0: ContractIdInput,
-    // amount1: BigNumberish,
-    // asset1: ContractIdInput,
-    // owner: AddressInput
-    // }
-    const createPredicate = axios.post(
-      "http://localhost:8080/create",
-      orderObj
-    );
-    console.log(createPredicate);
-    // const orderObject = {
-    //   id: "1",
-    //   predicate_address: { value: "" },
+    //todo fix cors
+    // const orderObj = {
+    //   asset0: token0,
     //   amount0: amount0,
-    //   asset0: { value: token0 },
+    //   asset1: token1,
     //   amount1: amount1,
+    //   owner: this.rootStore.accountStore.address,
+    // };
+
+    // const predicateAddress = axios.post(
+    //   "http://127.0.0.1:8080/create",
+    //   orderObj
+    // );
+    const predicateAddress =
+      "0x0745c81e5f5e5e95510fc06d00d301df95ffbaa07458b0d4734691ea64d6cb63";
+    // "fuel1qazus8jlte0f25g0cpksp5cpm72llw4qw3vtp4rng6g75exked3srwepmc";
+    const id = "DFXtXDB8Rsjm81iJ31DnX90EvLapOa";
+    // const orderObject = {
+    //   id,
+    //   predicate_address: { value: predicateAddress },
+    //   // amount0: amount0,
+    //   // asset0: { value: token0 },
+    //   // amount1: amount1,
+    //   // asset1: { value: token1 },
+    //   // owner: { value: this.rootStore.accountStore.address },
+    //   asset0: { value: token0 },
+    //   amount0: "450000",
     //   asset1: { value: token1 },
-    //   owner: { value: this.rootStore.accountStore.address },
+    //   amount1: "100000",
+    //   owner: this.rootStore.accountStore.addressInput,
     // } as CreateOrderParamsInput;
     // const { value, logs } = await createOrderScript.functions
     //   .main(orderObject)
     //   .call();
     // console.log("value", value);
     // console.log("logs", logs);
+
+    //simulates script call -> kust make transfer with required amount to predicate
+    const predicateAdr = Address.fromString(predicateAddress);
+    const tx = await wallet.transfer(predicateAdr, amount0, token0);
+    console.log("transfer tx", tx);
+
+    const predicateBalance = await Wallet.fromAddress(
+      predicateAddress,
+      NODE_URL
+    ).getBalances();
+    console.log("predicateBalance", predicateBalance);
+    const realPredicateBalance = BN.ZERO;
+    if (realPredicateBalance.eq(amount0)) {
+      //todo add post request to be to create order
+    }
   };
 
   createOrder = async (action: OrderAction) => {
