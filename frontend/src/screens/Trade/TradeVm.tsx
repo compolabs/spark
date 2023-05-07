@@ -5,7 +5,6 @@ import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
   EXPLORER_URL,
-  NODE_URL,
   TOKENS_BY_ASSET_ID,
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
@@ -13,7 +12,8 @@ import BN from "@src/utils/BN";
 import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 import { CreateOrderScriptAbi__factory } from "@src/scripts";
-import { Address, Wallet } from "fuels";
+import { createOrder } from "@src/services/OrdersService";
+import { Address } from "fuels";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -277,18 +277,45 @@ class TradeVm {
     // console.log("value", value);
     // console.log("logs", logs);
 
-    //simulates script call -> kust make transfer with required amount to predicate
-    const predicateAdr = Address.fromString(predicateAddress);
-    const tx = await wallet.transfer(predicateAdr, amount0, token0);
-    console.log("transfer tx", tx);
+    //simulates script call -> just make transfer with required amount to predicate
+    //todo return
 
-    const predicateBalance = await Wallet.fromAddress(
-      predicateAddress,
-      NODE_URL
-    ).getBalances();
-    console.log("predicateBalance", predicateBalance);
-    const realPredicateBalance = BN.ZERO;
-    if (realPredicateBalance.eq(amount0)) {
+    // const predicateAdr = Address.fromString(predicateAddress);
+    // const tx = await wallet.transfer(predicateAdr, amount0, token0);
+    // console.log("transfer tx", tx);
+    //
+    // const predicateBalance = await Wallet.fromAddress(
+    //   predicateAddress,
+    //   NODE_URL
+    // ).getBalances();
+    // console.log("predicateBalance", predicateBalance);
+    // const realPredicateBalance = BN.ZERO;
+    // if (realPredicateBalance.eq(amount0)) {
+    if (true) {
+      const t0 = TOKENS_BY_ASSET_ID[token0];
+      const t1 = TOKENS_BY_ASSET_ID[token1];
+      const res = await createOrder({
+        id: Address.fromRandom().bech32Address,
+        owner: this.rootStore.accountStore.ethFormatWallet ?? "",
+        asset0: token0,
+        amount0,
+        asset1: token1,
+        amount1,
+        address: predicateAddress,
+        type: action === "sell" ? "SELL" : "BUY",
+        market: "BTC/USDC",
+        price:
+          action === "sell"
+            ? BN.formatUnits(amount1, t1.decimals)
+                .div(BN.formatUnits(amount0, t0.decimals))
+                .toNumber()
+            : BN.formatUnits(amount0, t0.decimals)
+                .div(BN.formatUnits(amount1, t1.decimals))
+                .toNumber(),
+        timestamp: Date.now(),
+        status: "Active",
+      });
+      console.log(res);
       //todo add post request to be to create order
     }
   };

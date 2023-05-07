@@ -26,8 +26,7 @@ export const EXPLORER_URL =
 export const FAUCET_URL = "https://faucet-beta-3.fuel.network";
 // export const BACKEND_URL = "https://allspark-backend.herokuapp.com/api/v1";
 export const BACKEND_URL = "http://localhost:5000/api/v1";
-export const TV_DATAFEED =
-  "https://spark-tv-datafeed.services.spark-defi.com/api/v1";
+export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 
 export const CONTRACT_ADDRESSES = {
