@@ -17,7 +17,7 @@ use crate::utils::{get_balance, local_tests_utils::*, print_title};
 async fn partial_fulfill_order_test() {
     print_title("Partial fulfill Order Test");
     //--------------- WALLETS ---------------
-    let wallets = init_wallets().await;
+    let wallets: Vec<fuels::prelude::WalletUnlocked> = init_wallets().await;
     let admin = wallets[0].clone();
     let alice = wallets[1].clone();
     let alice_address = Address::from(alice.address());

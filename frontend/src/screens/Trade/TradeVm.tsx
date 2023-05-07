@@ -14,6 +14,7 @@ import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 import { CreateOrderScriptAbi__factory } from "@src/scripts";
 import { Address, Wallet } from "fuels";
+import axios from "axios";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -47,22 +48,14 @@ class TradeVm {
 
   setMarketPrice = () => {
     const { orderbook } = this.rootStore.ordersStore;
-    const buyPrice = BN.parseUnits(
-      orderbook.buy[0].price,
-      this.token0.decimals
-    );
-    const sellPrice = BN.parseUnits(
-      orderbook.sell[0].price,
-      this.token1.decimals
-    );
+    const buyPrice = BN.parseUnits(orderbook.buy[0].price, this.token0.decimals);
+    const sellPrice = BN.parseUnits(orderbook.sell[0].price, this.token1.decimals);
     this.setBuyPrice(sellPrice);
     this.setSellPrice(buyPrice);
   };
 
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(
-      `${this.token0.symbol}/${this.token1.symbol}`
-    );
+    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -126,8 +119,7 @@ class TradeVm {
   };
 
   buyPercent: BN = new BN(0);
-  setBuyPercent = (value: number | number[]) =>
-    (this.buyPercent = new BN(value.toString()));
+  setBuyPercent = (value: number | number[]) => (this.buyPercent = new BN(value.toString()));
 
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
@@ -170,8 +162,7 @@ class TradeVm {
     }
   };
   sellPercent: BN = new BN(0);
-  setSellPercent = (value: number | number[]) =>
-    (this.sellPercent = new BN(value.toString()));
+  setSellPercent = (value: number | number[]) => (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -217,8 +208,7 @@ class TradeVm {
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const createOrderScript =
-      CreateOrderScriptAbi__factory.createInstance(wallet);
+    const createOrderScript = CreateOrderScriptAbi__factory.createInstance(wallet);
 
     if (createOrderScript == null) return;
     let token0 = null;
@@ -237,24 +227,36 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
-      return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
 
     //todo fix cors
-    // const orderObj = {
-    //   asset0: token0,
-    //   amount0: amount0,
-    //   asset1: token1,
-    //   amount1: amount1,
-    //   owner: this.rootStore.accountStore.address,
-    // };
+    const orderObj = {
+      asset0: token0,
+      amount0: amount0,
+      asset1: token1,
+      amount1: amount1,
+      owner: this.rootStore.accountStore.address,
+    };
 
-    // const predicateAddress = axios.post(
-    //   "http://127.0.0.1:8080/create",
-    //   orderObj
-    // );
-    const predicateAddress =
-      "0x0745c81e5f5e5e95510fc06d00d301df95ffbaa07458b0d4734691ea64d6cb63";
+    // const predicateAddress =
+    // axios
+    //   .post("http://127.0.0.1:8080/create", orderObj, {
+    //     headers: { "Access-Control-Allow-Origin": "*" },
+    //   })
+    //   .then(console.log)
+    //   .catch(console.error);
+    // const response = await fetch("http://127.0.0.1:8080/create", {
+    //   method: "POST",
+    //   mode: "cors",
+    //   cache: "no-cache",
+    //   credentials: "same-origin",
+    //   headers: { "Content-Type": "application/json" },
+    //   redirect: "follow",
+    //   referrerPolicy: "no-referrer",
+    //   body: JSON.stringify(orderObj),
+    // });
+    // console.log(response);
+    const predicateAddress = "0x0745c81e5f5e5e95510fc06d00d301df95ffbaa07458b0d4734691ea64d6cb63";
     // "fuel1qazus8jlte0f25g0cpksp5cpm72llw4qw3vtp4rng6g75exked3srwepmc";
     const id = "DFXtXDB8Rsjm81iJ31DnX90EvLapOa";
     // const orderObject = {
@@ -282,10 +284,7 @@ class TradeVm {
     const tx = await wallet.transfer(predicateAdr, amount0, token0);
     console.log("transfer tx", tx);
 
-    const predicateBalance = await Wallet.fromAddress(
-      predicateAddress,
-      NODE_URL
-    ).getBalances();
+    const predicateBalance = await Wallet.fromAddress(predicateAddress, NODE_URL).getBalances();
     console.log("predicateBalance", predicateBalance);
     const realPredicateBalance = BN.ZERO;
     if (realPredicateBalance.eq(amount0)) {
@@ -319,8 +318,7 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
-      return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
 
     this.setLoading(true);
     try {
