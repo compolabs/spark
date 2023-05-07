@@ -121,11 +121,10 @@ export class Order {
 }
 
 export const getActiveOrders = (): Promise<Order[]> =>
-  new Promise(() => [] as Order[]);
-// axios
-//   .get(`${BACKEND_URL}/orders/?status=Active`)
-//   .then((res) => res.data)
-//   .then((arr: Array<IOrderResponse>) => arr.map((o) => new Order(o)));
+  axios
+    .get(`${BACKEND_URL}/orders/?status=Active`)
+    .then((res) => res.data)
+    .then((arr: Array<IOrderResponse>) => arr.map((o) => new Order(o)));
 
 type TOrderbookResponse = {
   myOrders: Array<IOrderResponse>;
@@ -149,3 +148,6 @@ export const getOrderbook = (
         buy: res.orderbook.buy.map((o) => new Order(o)),
       },
     }));
+
+export const createOrder = (order: any): Promise<{}> =>
+  axios.post(`${BACKEND_URL}/`, order);
