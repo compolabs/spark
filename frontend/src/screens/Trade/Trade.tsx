@@ -29,8 +29,6 @@ const Root = styled.div`
     height: calc(100vh - 62px);
     display: grid;
     grid-template:
-      //"ticker ticker pairs" 48px
-
       "orderbook chart pairs" 484px
       "orderbook order trades" 308px
       "tables tables tables" 290px / minmax(250px, 340px) minmax(510px, 1fr) minmax(250px, 326px);

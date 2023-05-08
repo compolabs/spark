@@ -5,6 +5,7 @@ import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
   EXPLORER_URL,
+  PREDICATE_BUILDER,
   TOKENS_BY_ASSET_ID,
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
@@ -241,22 +242,34 @@ class TradeVm {
       return;
 
     //todo fix cors
-    // const orderObj = {
-    //   asset0: token0,
-    //   amount0: amount0,
-    //   asset1: token1,
-    //   amount1: amount1,
-    //   owner: this.rootStore.accountStore.address,
-    // };
+    const orderObj = {
+      asset0: token0,
+      amount0: amount0,
+      asset1: token1,
+      amount1: amount1,
+      owner: this.rootStore.accountStore.ethFormatWallet,
+    };
 
-    // const predicateAddress = axios.post(
-    //   "http://127.0.0.1:8080/create",
-    //   orderObj
-    // );
-    const predicateAddress =
-      "0x0745c81e5f5e5e95510fc06d00d301df95ffbaa07458b0d4734691ea64d6cb63";
+    // const predicateAddress = axios.post(PREDICATE_BUILDER, orderObj);
+
+    const response = await fetch(`${PREDICATE_BUILDER}/create`, {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: JSON.stringify(orderObj),
+    });
+    const data = await response.json();
+    const predicateId = data.id;
+
+    // const predicateAddress =
+    //   "0x0745c81e5f5e5e95510fc06d00d301df95ffbaa07458b0d4734691ea64d6cb63";
     // "fuel1qazus8jlte0f25g0cpksp5cpm72llw4qw3vtp4rng6g75exked3srwepmc";
-    const id = "DFXtXDB8Rsjm81iJ31DnX90EvLapOa";
+    // const id = "DFXtXDB8Rsjm81iJ31DnX90EvLapOa";
+
     // const orderObject = {
     //   id,
     //   predicate_address: { value: predicateAddress },
@@ -295,13 +308,13 @@ class TradeVm {
       const t0 = TOKENS_BY_ASSET_ID[token0];
       const t1 = TOKENS_BY_ASSET_ID[token1];
       const res = await createOrder({
-        id: Address.fromRandom().bech32Address,
+        id: predicateId,
         owner: this.rootStore.accountStore.ethFormatWallet ?? "",
         asset0: token0,
         amount0,
         asset1: token1,
         amount1,
-        address: predicateAddress,
+        address: "predicateAddress",
         type: action === "sell" ? "SELL" : "BUY",
         market: "BTC/USDC",
         price:

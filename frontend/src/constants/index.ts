@@ -28,6 +28,7 @@ export const FAUCET_URL = "https://faucet-beta-3.fuel.network";
 export const BACKEND_URL = "http://localhost:5000/api/v1";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
+export const PREDICATE_BUILDER = "https://eddc-109-49-183-241.ngrok-free.app";
 
 export const CONTRACT_ADDRESSES = {
   limitOrders:
