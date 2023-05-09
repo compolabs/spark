@@ -145,7 +145,7 @@ async fn main() -> std::io::Result<()> {
             .service(index)
         // .route("/get_code", web::get().to(get_code))
     })
-    .bind(("127.0.0.1", port))?
+    .bind(("localhost", port))?
     .run()
     .await
 }
