@@ -1,6 +1,6 @@
 mod utils;
 use actix_cors::Cors;
-use actix_web::{post, web, App, HttpServer};
+use actix_web::{get, post, web, App, HttpServer, Responder};
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use reqwest::header;
 use std::{fs, path::PathBuf, process::Command};
@@ -24,6 +24,11 @@ impl ResponseData {
             id: "".to_string(),
         }
     }
+}
+
+#[get("/")]
+async fn index() -> impl Responder {
+    "Server is alive 👌"
 }
 
 #[post("/create")]
@@ -128,7 +133,10 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600)
             .supports_credentials() // Allow the cookie auth
             ;
-        App::new().wrap(cors).service(create_order_post)
+        App::new()
+            .wrap(cors)
+            .service(create_order_post)
+            .service(index)
         // .route("/get_code", web::get().to(get_code))
     })
     .bind(("127.0.0.1", 8080))?

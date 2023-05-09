@@ -62,25 +62,26 @@ pub struct LimitOrder {
 
 const ORDER = LimitOrder {
     //------------------------------
-    asset0: 0x4e68158aa0dd81c438160a6ef38829363cf96eeef1ae5c6cb3cccb1c52a7e685,
-    amount0: 1000000000,
-    asset1: 0x35395f5b21b3e93e0dd4e476bc8d92a989185cf050a71aff861667d5a1ddefe3,
-    amount1: 200000000000,
-    owner: 0x5d99ee966b42cd8fc7bdd1364b389153a9e78b42b7d4a691470674e817888d4e,
-    id: "------------------------------",
+    // asset0: 0x4e68158aa0dd81c438160a6ef38829363cf96eeef1ae5c6cb3cccb1c52a7e685,
+    // amount0: 1000000000,
+    // asset1: 0x35395f5b21b3e93e0dd4e476bc8d92a989185cf050a71aff861667d5a1ddefe3,
+    // amount1: 200000000000,
+    // owner: 0x5d99ee966b42cd8fc7bdd1364b389153a9e78b42b7d4a691470674e817888d4e,
+    // id: "------------------------------",
     //------------------------------
-    // asset0: <ASSET0>,
-    // amount0: <AMOUNT0>,
-    // asset1: <ASSET1>,
-    // amount1:<AMOUNT1>,
-    // owner: <OWNER>,
-    // id: <ORDER_ID>,
+    asset0: <ASSET0>,
+    amount0: <AMOUNT0>,
+    asset1: <ASSET1>,
+    amount1:<AMOUNT1>,
+    owner: <OWNER>,
+    id: <ORDER_ID>,
     //------------------------------
 };
 const OUTPUT_COIN_INDEX = 0u8;
 fn main(/* new_predicate_id: Option<ContractId> */) -> bool {
     //take_coin: b256, min_take_amount: u64, maker: b256
     // CANCELLATION //
+    //TODO CHECK SIGNATURE
     let owner = Address::from(ORDER.owner);
     if input_count() == 2u8 {
         if input_owner(0).unwrap() == owner
@@ -125,3 +126,10 @@ fn main(/* new_predicate_id: Option<ContractId> */) -> bool {
     //     false
     // }
 }
+
+
+//1eth -> 2000usdc -> A
+
+// A -> 1eth to predicate root -> Script of the predicate has, sell: 2000usd, owner: A
+
+// B -> 2000 usdc transfer to the predicate root -> Transfer out to B
