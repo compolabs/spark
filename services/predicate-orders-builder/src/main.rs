@@ -1,6 +1,7 @@
 mod utils;
 use actix_cors::Cors;
 use actix_web::{get, post, web, App, HttpServer, Responder};
+use dotenv::dotenv;
 use rand::{distributions::Alphanumeric, thread_rng, Rng};
 use reqwest::header;
 use std::{fs, path::PathBuf, process::Command};
@@ -123,7 +124,12 @@ async fn create_order_post(req_body_str: String) -> web::Json<ResponseData> {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    print_title("✅ Backend is alive");
+    dotenv().ok();
+    let port = std::env::var("PORT")
+        .unwrap_or(String::from("8080"))
+        .parse::<u16>()
+        .unwrap();
+    print_title(format!("✅ Backend is alive on http://localhost:{port}").as_str());
     HttpServer::new(|| {
         let cors = Cors::default()
             .allowed_origin("http://localhost:3000")
@@ -139,7 +145,7 @@ async fn main() -> std::io::Result<()> {
             .service(index)
         // .route("/get_code", web::get().to(get_code))
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind(("127.0.0.1", port))?
     .run()
     .await
 }
