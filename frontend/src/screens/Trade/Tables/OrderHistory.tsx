@@ -23,9 +23,11 @@ const TableTitleRow = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   padding: 8px 0;
+
   p {
     color: #959dae;
   }
+
   @media (min-width: 880px) {
     height: 36px;
     grid-template-columns: repeat(7, 1fr);
@@ -34,6 +36,7 @@ const TableTitleRow = styled.div`
 
 const OrderRow = styled(TableTitleRow)`
   padding: 6px 0;
+
   p {
     color: #fff;
   }
@@ -43,9 +46,19 @@ const OrderHistory: React.FC<IProps> = () => {
   const { width } = useWindowSize();
   const { ordersStore } = useStores();
 
-  const userOrders = ordersStore.myOrders.filter((o) => o.status !== "Active");
+  // const userOrders = ordersStore.myOrders.filter((o) => o.status !== "Active");
+  const userOrders = ordersStore.myOrders;
+  console.log("userOrders", userOrders);
 
-  const columns = ["Date", "Pair", "Side", "Price", "Amount", "Status", "Total"];
+  const columns = [
+    "Date",
+    "Pair",
+    "Side",
+    "Price",
+    "Amount",
+    "Status",
+    "Total",
+  ];
 
   return (
     <Root>
@@ -61,7 +74,11 @@ const OrderHistory: React.FC<IProps> = () => {
       {userOrders.length === 0 ? (
         <Column justifyContent="center" alignItems="center" crossAxisSize="max">
           <SizedBox height={16} />
-          <Img style={{ width: 100, height: 100 }} src={notFound} alt="no-data" />
+          <Img
+            style={{ width: 100, height: 100 }}
+            src={notFound}
+            alt="no-data"
+          />
           <SizedBox height={12} />
           <Text fitContent style={{ marginBottom: 24 }}>
             You have no order history.
@@ -78,7 +95,9 @@ const OrderHistory: React.FC<IProps> = () => {
               <Text size="small">
                 {o.amount} {o.token0.symbol}
               </Text>
-              <Text size="small">{o.fullFillPercent !== 100 ? "Canceled" : "Completed"}</Text>
+              <Text size="small">
+                {o.fullFillPercent !== 100 ? "Canceled" : "Completed"}
+              </Text>
               <Text size="small">
                 {o.total} {o.token1.symbol}
               </Text>

@@ -29,7 +29,7 @@ const WalletActionsTooltip: React.FC<IProps> = () => {
   const { notificationStore, accountStore } = useStores();
 
   const handleCopyAddress = () => {
-    accountStore.address && copy(accountStore.address);
+    accountStore.address && copy(accountStore.ethFormatWallet ?? "");
     notificationStore.toast("Your address was copied", {
       type: "success",
       title: "Congratulations!",

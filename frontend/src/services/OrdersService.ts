@@ -14,8 +14,21 @@ interface IOrderResponse {
   fulfilled0: string;
   fulfilled1: string;
   timestamp: number;
-  matcher_fee: string;
-  matcher_fee_used: string;
+  type: "SELL" | "BUY";
+  price: number;
+  market: string;
+}
+
+export interface IPredicateOrder {
+  id: string;
+  owner: string;
+  asset0: string;
+  amount0: string;
+  asset1: string;
+  amount1: string;
+  status: string;
+  address: string;
+  timestamp: number;
   type: "SELL" | "BUY";
   price: number;
   market: string;
@@ -27,13 +40,9 @@ export class Order {
   asset1: string;
   amount1: BN;
   status: string;
-  fulfilled0: BN;
-  fulfilled1: BN;
   owner: string;
   id: string;
-  timestamp: string;
-  matcher_fee: BN;
-  matcher_fee_used: BN;
+  timestamp: number;
   type: "SELL" | "BUY";
   price: number;
   market: string;
@@ -41,16 +50,12 @@ export class Order {
   constructor(orderOutput: IOrderResponse) {
     this.id = orderOutput.id.toString();
     this.asset0 = orderOutput.asset0;
-    this.amount0 = new BN(orderOutput.amount0.toString());
+    this.amount0 = new BN(orderOutput.amount0);
     this.asset1 = orderOutput.asset1;
-    this.amount1 = new BN(orderOutput.amount1.toString());
+    this.amount1 = new BN(orderOutput.amount1);
     this.status = orderOutput.status;
-    this.fulfilled0 = new BN(orderOutput.fulfilled0.toString());
-    this.fulfilled1 = new BN(orderOutput.fulfilled1.toString());
     this.owner = orderOutput.owner;
-    this.timestamp = orderOutput.timestamp.toString();
-    this.matcher_fee = new BN(orderOutput.matcher_fee.toString());
-    this.matcher_fee_used = new BN(orderOutput.matcher_fee_used.toString());
+    this.timestamp = orderOutput.timestamp;
     this.type = orderOutput.type;
     this.price = orderOutput.price;
     this.market = orderOutput.market;
@@ -65,13 +70,15 @@ export class Order {
   }
 
   get time() {
-    return dayjs(+this.timestamp * 1000).format("DD-MMM HH:mm:ss");
+    // return dayjs(+this.timestamp * 1000).format("DD-MMM HH:mm:ss");
+    return dayjs(this.timestamp).format("DD-MMM HH:mm:ss");
   }
 
   get fullFillPercent() {
-    return this.fulfilled0.eq(0)
-      ? 0
-      : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
+    return 0;
+    // return this.fulfilled0.eq(0)
+    //   ? 0
+    //   : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
   }
 
   get priceFormatter() {
@@ -99,11 +106,12 @@ export class Order {
   }
 
   get amountLeft() {
-    const amount = BN.formatUnits(
-      this.amount0.minus(this.fulfilled0),
-      this.token0.decimals
-    );
-    return amount.toFormat(amount.lt(0.01) ? 6 : 2);
+    return this.amount0.toFormat();
+    // const amount = BN.formatUnits(
+    //   this.amount0.minus(this.fulfilled0),
+    //   this.token0.decimals
+    // );
+    // return amount.toFormat(amount.lt(0.01) ? 6 : 2);
   }
 
   get total() {
@@ -112,11 +120,12 @@ export class Order {
   }
 
   get totalLeft() {
-    const left = BN.formatUnits(
-      this.amount1.minus(this.fulfilled1),
-      this.token1.decimals
-    );
-    return left.toFormat(left.lt(0.01) ? 6 : 2);
+    return this.amount1.toFormat(this.amount1.lt(0.01) ? 6 : 2);
+    // const left = BN.formatUnits(
+    //   this.amount1.minus(this.fulfilled1),
+    //   this.token1.decimals
+    // );
+    // return left.toFormat(left.lt(0.01) ? 6 : 2);
   }
 }
 
@@ -149,5 +158,5 @@ export const getOrderbook = (
       },
     }));
 
-export const createOrder = (order: any): Promise<{}> =>
-  axios.post(`${BACKEND_URL}/`, order);
+export const createOrder = (order: IPredicateOrder): Promise<{}> =>
+  axios.post(`${BACKEND_URL}/order`, order);
