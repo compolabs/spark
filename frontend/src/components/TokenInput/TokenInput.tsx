@@ -2,12 +2,11 @@ import styled from "@emotion/styled";
 import React, { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import BN from "@src/utils/BN";
-import BigNumberInput from "@components/BigNumberInput";
-import AmountInput from "@components/AmountInput";
 import _ from "lodash";
 import Text from "@components/Text";
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import SizedBox from "@components/SizedBox";
+import { FormattedInput } from "./FormattedInput";
 
 interface IProps {
   assetId: string;
@@ -58,8 +57,6 @@ const InputContainer = styled.div<{
     ${({ error, focused }) =>
       error ? "#FF6A55" : focused ? "#3C69FF" : "#3a4050"};
   border-radius: 4px;
-
-  //todo add border
 `;
 const TokenInput: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
@@ -69,9 +66,10 @@ const TokenInput: React.FC<IProps> = (props) => {
     props.amount && setAmount(props.amount);
   }, [props.amount]);
 
-  const handleChangeAmount = (v: BN) => {
-    setAmount(v);
-    debounce(v);
+  const handleChangeAmount = (e: any) => {
+    const value = BN.parseUnits(e.target.value, props.decimals);
+    setAmount(value);
+    debounce(value);
   };
   //eslint-disable-next-line react-hooks/exhaustive-deps
   const debounce = useCallback(
@@ -98,29 +96,17 @@ const TokenInput: React.FC<IProps> = (props) => {
             {props.description}
           </Text>
         )}
-        <BigNumberInput
-          renderInput={(props, ref) => (
-            <AmountInput
-              {...props}
-              onFocus={(e) => {
-                props.onFocus && props.onFocus(e);
-                !props.readOnly && setFocused(true);
-              }}
-              onBlur={(e) => {
-                props.onBlur && props.onBlur(e);
-                setFocused(false);
-              }}
-              ref={ref}
-            />
-          )}
-          autofocus={focused}
-          decimals={props.decimals}
-          value={amount}
-          onChange={handleChangeAmount}
+        <FormattedInput
           placeholder="0.00"
+          decimals={props.decimals}
+          formatSeparator=","
+          value={BN.formatUnits(amount, props.decimals).toString()}
+          onChange={handleChangeAmount}
+          autoFocus={focused}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           readOnly={!props.setAmount}
         />
-
         <SizedBox width={4} />
         <Text
           style={{ whiteSpace: "nowrap" }}

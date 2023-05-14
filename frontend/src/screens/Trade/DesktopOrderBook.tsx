@@ -171,6 +171,11 @@ const DesktopOrderBook: React.FC<IProps> = () => {
             <Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
           ) : (
             <>
+              {orderFilter === 0 && (
+                <Plug
+                  length={sellOrders.length < 15 ? 14 - sellOrders.length : 0}
+                />
+              )}
               {orderFilter !== 2 &&
                 sellOrders.map((o, index) => (
                   //Todo add hover
@@ -200,27 +205,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                     </Text>
                     <span className="progress-bar" />
                   </OrderRow>
-                ))}
-              {orderFilter === 0 &&
-                Array.from({
-                  length: sellOrders.length < 15 ? 14 - sellOrders.length : 0,
-                }).map((o, index) => (
-                  <Row
-                    style={{ margin: "4px 0" }}
-                    key={index + "positive-plug"}
-                  >
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <Text
-                        key={index + "positive-plug" + i}
-                        textAlign={
-                          i === 0 ? undefined : i === 1 ? "center" : "right"
-                        }
-                        size="small"
-                      >
-                        -
-                      </Text>
-                    ))}
-                  </Row>
                 ))}
             </>
           )}
@@ -270,27 +254,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
             <Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
           ) : (
             <>
-              {orderFilter === 0 &&
-                Array.from({
-                  length: buyOrders.length < 15 ? 14 - buyOrders.length : 0,
-                }).map((o, index) => (
-                  <Row
-                    style={{ margin: "4px 0" }}
-                    key={index + "negative-plug"}
-                  >
-                    {Array.from({ length: 3 }).map((_, i) => (
-                      <Text
-                        key={index + "negative-plug" + i}
-                        size="small"
-                        textAlign={
-                          i === 0 ? undefined : i === 1 ? "center" : "right"
-                        }
-                      >
-                        -
-                      </Text>
-                    ))}
-                  </Row>
-                ))}
               {orderFilter !== 1 &&
                 buyOrders.map((o, index) => (
                   //Todo add hover
@@ -326,6 +289,11 @@ const DesktopOrderBook: React.FC<IProps> = () => {
                     <span className="progress-bar" />
                   </OrderRow>
                 ))}
+              {orderFilter === 0 && (
+                <Plug
+                  length={buyOrders.length < 15 ? 14 - buyOrders.length : 0}
+                />
+              )}
             </>
           )}
         </Container>
@@ -333,3 +301,21 @@ const DesktopOrderBook: React.FC<IProps> = () => {
     );
 };
 export default observer(DesktopOrderBook);
+
+const Plug: React.FC<{ length: number }> = ({ length }) => (
+  <>
+    {Array.from({ length }).map((_, index) => (
+      <Row style={{ margin: "4px 0" }} key={index + "positive-plug"}>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <Text
+            key={"plug" + i}
+            size="small"
+            textAlign={i === 0 ? undefined : i === 1 ? "center" : "right"}
+          >
+            -
+          </Text>
+        ))}
+      </Row>
+    ))}
+  </>
+);

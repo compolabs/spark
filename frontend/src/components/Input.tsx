@@ -22,23 +22,10 @@ interface IProps
 
 const Root = styled.div<{ focused?: boolean; error?: boolean }>`
   width: 100%;
-
-  align-items: center;
-  justify-content: space-between;
-  display: flex;
-  padding: 12px;
-  box-sizing: border-box;
-  height: 48px;
-
-  font-weight: 400;
-  font-size: 13px;
-  line-height: 15px;
-
-  border: 1px solid #3a4050;
-  border-radius: 4px;
   input {
     padding: 0;
     width: 100%;
+    text-align: right;
     color: ${({ focused, theme }) =>
       focused ? `${theme.colors.text}` : `${theme.colors.text}`};
     outline: none;
