@@ -88,7 +88,6 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
             />
           </>
         )}
-
         <SizedBox height={12} />
         <TokenInput
           description="Total"

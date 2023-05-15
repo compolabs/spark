@@ -46,7 +46,7 @@ class TradeVm {
     const { orderbook } = this.rootStore.ordersStore;
     const buyPrice = BN.parseUnits(
       orderbook.buy[0].price,
-      this.token0.decimals
+      this.token1.decimals
     );
     const sellPrice = BN.parseUnits(
       orderbook.sell[0].price,
@@ -226,8 +226,8 @@ class TradeVm {
     if (action === "buy") {
       token0 = this.assetId1;
       token1 = this.assetId0;
-      amount0 = this.buyTotal.toString();
-      amount1 = this.buyAmount.toString();
+      amount0 = this.buyTotal.toFixed(0).toString();
+      amount1 = this.buyAmount.toFixed(0).toString();
     }
     if (action === "sell") {
       token0 = this.assetId0;
