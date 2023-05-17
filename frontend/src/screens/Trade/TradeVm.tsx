@@ -5,7 +5,6 @@ import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
   EXPLORER_URL,
-  PREDICATE_BUILDER,
   TOKENS_BY_ASSET_ID,
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
@@ -14,8 +13,9 @@ import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 import { CreateOrderScriptAbi__factory } from "@src/scripts";
 import { createOrder } from "@src/services/OrdersService";
-import { Address } from "fuels";
-
+import PREDICATE_ABI from "@src/assets/predicateAbi.json";
+import PREDICATE_BYTECODE from "@src/assets/predicateBytecode.json";
+import { Predicate } from "fuels";
 const ctx = React.createContext<TradeVm | null>(null);
 
 interface IProps {
@@ -36,6 +36,34 @@ class TradeVm {
   public rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
+    let error;
+    let predicate;
+
+    const abiWithConfigurable = {
+      ...PREDICATE_ABI,
+      configurables: [
+        {
+          name: "BOOL",
+          configurableType: {
+            name: "",
+            type: 1,
+            typeArguments: null,
+          },
+          offset: 120,
+        },
+      ],
+    };
+    // Predicate root: 0x35dbccde512baf2be63ab706bb23791cf71dbf6d979ea0d584a12e290440b7f1
+    try {
+      predicate = new Predicate(
+        PREDICATE_BYTECODE,
+        abiWithConfigurable,
+        rootStore.accountStore.provider
+      );
+    } catch (e: unknown) {
+      error = e;
+    }
+    console.log(error ?? predicate);
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.getLatestTrades().then();
@@ -48,22 +76,14 @@ class TradeVm {
 
   setMarketPrice = () => {
     const { orderbook } = this.rootStore.ordersStore;
-    const buyPrice = BN.parseUnits(
-      orderbook.buy[0].price,
-      this.token0.decimals
-    );
-    const sellPrice = BN.parseUnits(
-      orderbook.sell[0].price,
-      this.token1.decimals
-    );
+    const buyPrice = BN.parseUnits(orderbook.buy[0].price, this.token0.decimals);
+    const sellPrice = BN.parseUnits(orderbook.sell[0].price, this.token1.decimals);
     this.setBuyPrice(sellPrice);
     this.setSellPrice(buyPrice);
   };
 
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(
-      `${this.token0.symbol}/${this.token1.symbol}`
-    );
+    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -127,8 +147,7 @@ class TradeVm {
   };
 
   buyPercent: BN = new BN(0);
-  setBuyPercent = (value: number | number[]) =>
-    (this.buyPercent = new BN(value.toString()));
+  setBuyPercent = (value: number | number[]) => (this.buyPercent = new BN(value.toString()));
 
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
@@ -171,8 +190,7 @@ class TradeVm {
     }
   };
   sellPercent: BN = new BN(0);
-  setSellPercent = (value: number | number[]) =>
-    (this.sellPercent = new BN(value.toString()));
+  setSellPercent = (value: number | number[]) => (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -218,8 +236,7 @@ class TradeVm {
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const createOrderScript =
-      CreateOrderScriptAbi__factory.createInstance(wallet);
+    const createOrderScript = CreateOrderScriptAbi__factory.createInstance(wallet);
 
     if (createOrderScript == null) return;
     let token0 = null;
@@ -238,8 +255,7 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
-      return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
 
     //todo fix cors
     const orderObj = {
@@ -249,50 +265,6 @@ class TradeVm {
       amount1: amount1,
       owner: this.rootStore.accountStore.ethFormatWallet,
     };
-
-    // const predicateAddress = axios.post(PREDICATE_BUILDER, orderObj);
-
-    const response = await fetch(`${PREDICATE_BUILDER}/create`, {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      body: JSON.stringify(orderObj),
-    });
-    const data = await response.json();
-    const predicateId = data.id;
-
-    // const predicateAddress =
-    //   "0x0745c81e5f5e5e95510fc06d00d301df95ffbaa07458b0d4734691ea64d6cb63";
-    // "fuel1qazus8jlte0f25g0cpksp5cpm72llw4qw3vtp4rng6g75exked3srwepmc";
-    // const id = "DFXtXDB8Rsjm81iJ31DnX90EvLapOa";
-
-    // const orderObject = {
-    //   id,
-    //   predicate_address: { value: predicateAddress },
-    //   // amount0: amount0,
-    //   // asset0: { value: token0 },
-    //   // amount1: amount1,
-    //   // asset1: { value: token1 },
-    //   // owner: { value: this.rootStore.accountStore.address },
-    //   asset0: { value: token0 },
-    //   amount0: "450000",
-    //   asset1: { value: token1 },
-    //   amount1: "100000",
-    //   owner: this.rootStore.accountStore.addressInput,
-    // } as CreateOrderParamsInput;
-    // const { value, logs } = await createOrderScript.functions
-    //   .main(orderObject)
-    //   .call();
-    // console.log("value", value);
-    // console.log("logs", logs);
-
-    //simulates script call -> just make transfer with required amount to predicate
-    //todo return
-
     // const predicateAdr = Address.fromString(predicateAddress);
     // const tx = await wallet.transfer(predicateAdr, amount0, token0);
     // console.log("transfer tx", tx);
@@ -304,33 +276,33 @@ class TradeVm {
     // console.log("predicateBalance", predicateBalance);
     // const realPredicateBalance = BN.ZERO;
     // if (realPredicateBalance.eq(amount0)) {
-    if (true) {
-      const t0 = TOKENS_BY_ASSET_ID[token0];
-      const t1 = TOKENS_BY_ASSET_ID[token1];
-      const res = await createOrder({
-        id: predicateId,
-        owner: this.rootStore.accountStore.ethFormatWallet ?? "",
-        asset0: token0,
-        amount0,
-        asset1: token1,
-        amount1,
-        address: "predicateAddress",
-        type: action === "sell" ? "SELL" : "BUY",
-        market: "BTC/USDC",
-        price:
-          action === "sell"
-            ? BN.formatUnits(amount1, t1.decimals)
-                .div(BN.formatUnits(amount0, t0.decimals))
-                .toNumber()
-            : BN.formatUnits(amount0, t0.decimals)
-                .div(BN.formatUnits(amount1, t1.decimals))
-                .toNumber(),
-        timestamp: Date.now(),
-        status: "Active",
-      });
-      console.log(res);
-      //todo add post request to be to create order
-    }
+    // if (true) {
+    //   const t0 = TOKENS_BY_ASSET_ID[token0];
+    //   const t1 = TOKENS_BY_ASSET_ID[token1];
+    //   const res = await createOrder({
+    //     id: predicateId,
+    //     owner: this.rootStore.accountStore.ethFormatWallet ?? "",
+    //     asset0: token0,
+    //     amount0,
+    //     asset1: token1,
+    //     amount1,
+    //     address: "predicateAddress",
+    //     type: action === "sell" ? "SELL" : "BUY",
+    //     market: "BTC/USDC",
+    //     price:
+    //       action === "sell"
+    //         ? BN.formatUnits(amount1, t1.decimals)
+    //             .div(BN.formatUnits(amount0, t0.decimals))
+    //             .toNumber()
+    //         : BN.formatUnits(amount0, t0.decimals)
+    //             .div(BN.formatUnits(amount1, t1.decimals))
+    //             .toNumber(),
+    //     timestamp: Date.now(),
+    //     status: "Active",
+    //   });
+    //   console.log(res);
+    //   //todo add post request to be to create order
+    // }
   };
 
   createOrder = async (action: OrderAction) => {
@@ -359,8 +331,7 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
-      return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
 
     this.setLoading(true);
     try {
