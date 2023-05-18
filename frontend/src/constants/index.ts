@@ -6,6 +6,13 @@ export const ROUTES = {
   FAUCET: "/faucet",
   WALLET: "/wallet",
 };
+export interface IToken {
+  logo: string;
+  assetId: string;
+  name: string;
+  symbol: string;
+  decimals: number;
+}
 
 export const TOKENS_LIST: Array<IToken> = Object.values(tokens).map((t) => ({
   ...t,
@@ -21,23 +28,14 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
 );
 
 export const NODE_URL = "https://beta-3.fuel.network/graphql";
-export const EXPLORER_URL = "https://fuellabs.github.io/block-explorer-v2/beta-3/#";
+export const EXPLORER_URL =
+  "https://fuellabs.github.io/block-explorer-v2/beta-3/#";
 export const FAUCET_URL = "https://faucet-beta-3.fuel.network";
-// export const BACKEND_URL = "https://allspark-backend.herokuapp.com/api/v1";
-export const BACKEND_URL = "http://localhost:5000/api/v1";
+export const BACKEND_URL = "https://allspark-backend.herokuapp.com/api/v1";
+// export const BACKEND_URL = "http://localhost:5000/api/v1";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
-export const PREDICATE_BUILDER = "https://b3fa-2a05-d012-ddf-e200-e0ed-b490-9fac-a40a.eu.ngrok.io";
+export const PREDICATE_BUILDER =
+  "https://b3fa-2a05-d012-ddf-e200-e0ed-b490-9fac-a40a.eu.ngrok.io";
 
-export const CONTRACT_ADDRESSES = {
-  limitOrders: "0x7662a02959e3e2d681589261e95a7a4bc8ac66c6d66999a0fe01bb6c36ada7c6",
-};
-
-export interface IToken {
-  logo: string;
-  assetId: string;
-  name: string;
-  symbol: string;
-  decimals: number;
-}
-// 5m 15m 30m 1h
+// export { LimitOrderPredicateAbi__factory } from "./LimitOrderPredicateAbi__factory";

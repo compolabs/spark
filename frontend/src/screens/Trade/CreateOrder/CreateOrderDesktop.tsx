@@ -170,7 +170,8 @@ const CreateOrderDesktop: React.FC<IProps> = () => {
         <Button
           kind="danger"
           fixed
-          onClick={() => vm.createPredicateOrder("sell")}
+          // onClick={() => vm.createPredicateOrder("sell")}
+          onClick={() => vm.cancelPredicateOrder("")}
           disabled={vm.loading || !vm.canSell}
         >
           {vm.loading ? <Loading /> : `Sell ${vm.token0.symbol}`}

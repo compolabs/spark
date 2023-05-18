@@ -131,9 +131,7 @@ const CreateOrderModal: React.FC<IProps> = ({ ...rest }) => {
               : !vm.canSell
           }
           onClick={() =>
-            vm.activeModalAction === 0
-              ? vm.createOrder("buy")
-              : vm.createOrder("sell")
+            vm.createPredicateOrder(vm.activeModalAction === 0 ? "buy" : "sell")
           }
         >
           {vm.loading ? (

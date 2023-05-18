@@ -3,7 +3,6 @@ import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
 import {
-  CONTRACT_ADDRESSES,
   EXPLORER_URL,
   TOKENS_BY_ASSET_ID,
   TOKENS_BY_SYMBOL,
@@ -11,11 +10,10 @@ import {
 import BN from "@src/utils/BN";
 import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
-import { CreateOrderScriptAbi__factory } from "@src/scripts";
-import { createOrder } from "@src/services/OrdersService";
 import PREDICATE_ABI from "@src/assets/predicateAbi.json";
 import PREDICATE_BYTECODE from "@src/assets/predicateBytecode.json";
 import { Predicate } from "fuels";
+
 const ctx = React.createContext<TradeVm | null>(null);
 
 interface IProps {
@@ -36,34 +34,6 @@ class TradeVm {
   public rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
-    let error;
-    let predicate;
-
-    const abiWithConfigurable = {
-      ...PREDICATE_ABI,
-      configurables: [
-        {
-          name: "BOOL",
-          configurableType: {
-            name: "",
-            type: 1,
-            typeArguments: null,
-          },
-          offset: 120,
-        },
-      ],
-    };
-    // Predicate root: 0x35dbccde512baf2be63ab706bb23791cf71dbf6d979ea0d584a12e290440b7f1
-    try {
-      predicate = new Predicate(
-        PREDICATE_BYTECODE,
-        abiWithConfigurable,
-        rootStore.accountStore.provider
-      );
-    } catch (e: unknown) {
-      error = e;
-    }
-    console.log(error ?? predicate);
     this.rootStore = rootStore;
     makeAutoObservable(this);
     this.getLatestTrades().then();
@@ -76,14 +46,22 @@ class TradeVm {
 
   setMarketPrice = () => {
     const { orderbook } = this.rootStore.ordersStore;
-    const buyPrice = BN.parseUnits(orderbook.buy[0].price, this.token0.decimals);
-    const sellPrice = BN.parseUnits(orderbook.sell[0].price, this.token1.decimals);
+    const buyPrice = BN.parseUnits(
+      orderbook.buy[0].price,
+      this.token0.decimals
+    );
+    const sellPrice = BN.parseUnits(
+      orderbook.sell[0].price,
+      this.token1.decimals
+    );
     this.setBuyPrice(sellPrice);
     this.setSellPrice(buyPrice);
   };
 
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
+    const data = await getLatestTradesInPair(
+      `${this.token0.symbol}/${this.token1.symbol}`
+    );
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -147,7 +125,8 @@ class TradeVm {
   };
 
   buyPercent: BN = new BN(0);
-  setBuyPercent = (value: number | number[]) => (this.buyPercent = new BN(value.toString()));
+  setBuyPercent = (value: number | number[]) =>
+    (this.buyPercent = new BN(value.toString()));
 
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
@@ -190,7 +169,8 @@ class TradeVm {
     }
   };
   sellPercent: BN = new BN(0);
-  setSellPercent = (value: number | number[]) => (this.sellPercent = new BN(value.toString()));
+  setSellPercent = (value: number | number[]) =>
+    (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -236,147 +216,123 @@ class TradeVm {
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const createOrderScript = CreateOrderScriptAbi__factory.createInstance(wallet);
 
-    if (createOrderScript == null) return;
     let token0 = null;
     let token1 = null;
-    let amount0 = null;
-    let amount1 = null;
+    let price = null;
+    let amount = null;
     if (action === "buy") {
       token0 = this.assetId1;
       token1 = this.assetId0;
-      amount0 = this.buyTotal.toString();
-      amount1 = this.buyAmount.toString();
+      price = this.buyTotal.times(1000000).div(this.buyAmount);
+      amount = this.buyTotal.toString();
     }
     if (action === "sell") {
       token0 = this.assetId0;
       token1 = this.assetId1;
-      amount0 = this.sellAmount.toFixed(0).toString();
-      amount1 = this.sellTotal.toFixed(0).toString();
+      price = new BN(this.sellTotal).times(1000000).div(this.sellAmount);
+      amount = this.sellAmount.toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
-
-    //todo fix cors
-    const orderObj = {
-      asset0: token0,
-      amount0: amount0,
-      asset1: token1,
-      amount1: amount1,
-      owner: this.rootStore.accountStore.ethFormatWallet,
-    };
-    // const predicateAdr = Address.fromString(predicateAddress);
-    // const tx = await wallet.transfer(predicateAdr, amount0, token0);
-    // console.log("transfer tx", tx);
-    //
-    // const predicateBalance = await Wallet.fromAddress(
-    //   predicateAddress,
-    //   NODE_URL
-    // ).getBalances();
-    // console.log("predicateBalance", predicateBalance);
-    // const realPredicateBalance = BN.ZERO;
-    // if (realPredicateBalance.eq(amount0)) {
-    // if (true) {
-    //   const t0 = TOKENS_BY_ASSET_ID[token0];
-    //   const t1 = TOKENS_BY_ASSET_ID[token1];
-    //   const res = await createOrder({
-    //     id: predicateId,
-    //     owner: this.rootStore.accountStore.ethFormatWallet ?? "",
-    //     asset0: token0,
-    //     amount0,
-    //     asset1: token1,
-    //     amount1,
-    //     address: "predicateAddress",
-    //     type: action === "sell" ? "SELL" : "BUY",
-    //     market: "BTC/USDC",
-    //     price:
-    //       action === "sell"
-    //         ? BN.formatUnits(amount1, t1.decimals)
-    //             .div(BN.formatUnits(amount0, t0.decimals))
-    //             .toNumber()
-    //         : BN.formatUnits(amount0, t0.decimals)
-    //             .div(BN.formatUnits(amount1, t1.decimals))
-    //             .toNumber(),
-    //     timestamp: Date.now(),
-    //     status: "Active",
-    //   });
-    //   console.log(res);
-    //   //todo add post request to be to create order
-    // }
-  };
-
-  createOrder = async (action: OrderAction) => {
-    const { accountStore } = this.rootStore;
-    if (accountStore.address == null) return;
-    const wallet = await accountStore.getWallet();
-    if (wallet == null) return;
-    const limitOrdersContract = LimitOrdersAbi__factory.connect(
-      CONTRACT_ADDRESSES.limitOrders,
-      wallet
-    );
-    if (limitOrdersContract == null) return;
-    let token0 = null;
-    let token1 = null;
-    let amount0 = null;
-    let amount1 = null;
-    if (action === "buy") {
-      token0 = this.assetId1;
-      token1 = this.assetId0;
-      amount0 = this.buyTotal.toString();
-      amount1 = this.buyAmount.toString();
-    }
-    if (action === "sell") {
-      token0 = this.assetId0;
-      token1 = this.assetId1;
-      amount0 = this.sellAmount.toFixed(0).toString();
-      amount1 = this.sellTotal.toFixed(0).toString();
-    }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
-
+    if (token0 == null || token1 == null || price == null || amount == null)
+      return;
     this.setLoading(true);
+
+    const configurableConstants = {
+      ASSET0: token0,
+      ASSET1: token1,
+      PRICE: price.toFixed(0),
+      MAKER: this.rootStore.accountStore.ethFormatWallet,
+    };
+
+    console.log("configurableConstants", configurableConstants);
     try {
-      await limitOrdersContract
-        .multiCall([
-          limitOrdersContract.functions.deposit().callParams({
-            forward: {
-              amount: "100000",
-              assetId: TOKENS_BY_SYMBOL.ETH.assetId,
-            },
-          }),
-          limitOrdersContract.functions
-            .create_order({ value: token1 }, amount1, this.matcherFee)
-            .callParams({ forward: { amount: amount0, assetId: token0 } }),
-        ])
-        .txParams({ gasPrice: 1 })
-        .call()
-        .then(({ transactionResult }) => {
-          transactionResult &&
-            this.notifyThatActionIsSuccessful(
-              "Order has been placed",
-              transactionResult.transactionId ?? ""
-            );
-        })
-        .then(() => this.rootStore.ordersStore.sync());
-    } catch (e) {
-      const error = JSON.parse(JSON.stringify(e)).toString();
-      this.rootStore.notificationStore.toast(error.error, {
-        type: "error",
-        title: "Oops..",
-      });
+      const predicate = new Predicate(
+        PREDICATE_BYTECODE,
+        PREDICATE_ABI,
+        this.rootStore.accountStore.provider,
+        configurableConstants
+      );
+      // console.log("predicate", predicate.address);
+      // console.log("amount", amount);
+      // console.log("token0", token0);
+
+      const initialPredicateBalance = await predicate.getBalance(token0);
+      console.log("initialPredicateBalance", initialPredicateBalance);
+
+      console.log("wallet.transfer", amount);
+      const tx1 = await wallet.transfer(predicate.address, amount, token0);
+      // console.log("tx1", tx1);
+      await tx1.waitForResult();
+
+      const feetx = await wallet.transfer(predicate.address, 50);
+      await feetx.waitForResult();
+      // console.log("feetx", feetx);
+
+      const prediBalance = await predicate.getBalances();
+      console.log("prediBalances", prediBalance);
+
+      console.log("predicate.transfer", amount);
+      const tx2 = await predicate.transfer(wallet.address, amount, token0);
+      // console.log("tx2", tx2);
+      await tx2.waitForResult();
+
+      const finalPredicateBalance = await predicate.getBalance(token0);
+      console.log("finalPredicateBalance", finalPredicateBalance);
+
+      // if (tx.id != null)
+      //   this.notifyThatActionIsSuccessful("Order has bee placed", tx.id);
+    } catch (e: unknown) {
       console.error(e);
     } finally {
-      await this.rootStore.ordersStore.sync();
       this.setLoading(false);
     }
   };
 
+  cancelPredicateOrder = async (id: string) => {
+    const predicateAddress =
+      "fuel14pa8j25dg6aarc93a6z422lg64tzydpsq3ve8r9ex6l96xp4guzswj0zlu";
+    // const price = "250000000";
+    const amount = "1000000";
+
+    // const predicate = Wallet.fromAddress(
+    //   predicateAddress,
+    //   this.rootStore.accountStore.provider
+    // );
+    // const initialPredicateBalance = await predicate.getBalance(
+    //   "0x56fb8789a590ea9c12af6fe6dc2b43f347700b049d4f823fd4476c6f366af201"
+    // );
+    // console.log("initialPredicateBalance", initialPredicateBalance.toString());
+    //
+    // const wallet = await this.rootStore.accountStore.getWallet();
+    // if (wallet == null) return;
+    //
+    // const tx = await predicate.transfer(
+    //   wallet.address,
+    //   amount,
+    //   "0x56fb8789a590ea9c12af6fe6dc2b43f347700b049d4f823fd4476c6f366af201"
+    // );
+    // console.log("tx", tx);
+
+    // const predicate = ;
+
+    // const wallet = this.rootStore.accountStore.getWallet();
+    // if (wallet == null) return;
+    // const outputs = wallet;
+
+    //cancel_order(&predicate, &alice, usdc.asset_id, amount0)
+    //let outputs = wallet.get_asset_outputs_for_amount(wallet.address(), asset0, 0);
+
+    const inputs = "";
+    const cancel = 0;
+  };
   cancelOrder = async (id: string) => {
     const { accountStore } = this.rootStore;
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
     const limitOrdersContract = LimitOrdersAbi__factory.connect(
-      CONTRACT_ADDRESSES.limitOrders,
+      // CONTRACT_ADDRESSES.limitOrders,
+      "",
       wallet
     );
     if (limitOrdersContract == null) return;
