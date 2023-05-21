@@ -4,8 +4,10 @@
   Spark Concept App
 * [x] **Eth Porto (Mar 18)**\
   Introduction of the Predicate-driven orders
-* [ ] **Eth Global (Lisbon, May 12)**\
-  Spark Swap Launch
+* [x] **Eth Global (Lisbon, May 12)**\
+  Spark Demo Launch
+* [ ] **Eth Global (Paris, July 23)**\
+  Predicate-based spark Launch
 *   [ ] **Jun-Oct**
 
     Product Testing and improvements

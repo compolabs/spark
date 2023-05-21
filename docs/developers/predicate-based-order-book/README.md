@@ -26,25 +26,10 @@ Fuel Labs has introduced a new architecture that uses predicates to enable a ful
 
 ### Modules
 
-* Predicate orders builder service
-* Create order script
-* Order template predicate
+* Predicate + Proxy
+* Trading View Datafeed
+* Data service
 * Matcher engine
 * Frontend
 
-### Algorithm for SPARK orderbook operation on predicates
-
-This scheme contains a description of the operation of 2 test cases:\
-\
-**Case #1: p2p fulfilling of order** \
-&#x20;  Alice wants to exchange 1000 USDC for 200 UNI \
-&#x20;  Bob wants to exchange 200 UNI for 1000 USDC\
-\
-**Case #2: partial p2p fulfilling of order** \
-&#x20;  Alice wants to exchange 1000 USDC for 200 UNI \
-&#x20;  Bob wants to exchange 100 UNI for 500 USDC \
-&#x20;  Chad wants to exchange 100 UNI for 500 USDC\
-\
-🚧 In the near future, there will be another scheme for the operation of the matching engine
-
-<figure><img src="../../.gitbook/assets/Spark architecture (2).png" alt=""><figcaption></figcaption></figure>
+{% embed url="https://www.figma.com/file/ev7IpIxym5HlBBWKUrlbCd/Spark-predicate-orderbook-microservice-design?node-id=0:1&t=wDmvnXn2ZTbcKMhP-1&type=whiteboard" %}

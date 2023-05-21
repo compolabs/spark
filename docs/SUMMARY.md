@@ -16,17 +16,17 @@
 
 ## 🌴 Developers
 
-* [Smart contract-based order book](developers/smart-contract-based-order-book/README.md)
-  * [Spark Limit Orders Smart Contract](developers/smart-contract-based-order-book/spark-limit-orders-smart-contract.md)
-  * [Orders Matching Engine](developers/smart-contract-based-order-book/orders-matching-engine.md)
-  * [Frontend](developers/smart-contract-based-order-book/frontend.md)
 * [Predicate-based order book](developers/predicate-based-order-book/README.md)
-  * [Predicate orders builder service](developers/predicate-based-order-book/predicate-orders-builder-service.md)
-  * [Create order script](developers/predicate-based-order-book/create-order-script.md)
-  * [Order template predicate](developers/predicate-based-order-book/order-template-predicate.md)
+  * [Predicate + Proxy](developers/predicate-based-order-book/predicate-+-proxy.md)
+  * [Trading View Datafeed](developers/predicate-based-order-book/trading-view-datafeed.md)
+  * [Data Service](developers/predicate-based-order-book/data-service.md)
   * [Matcher engine](developers/predicate-based-order-book/matcher-engine.md)
   * [Frontend](developers/predicate-based-order-book/frontend.md)
-* [How to run Spark on the local node](developers/how-to-run-spark-on-the-local-node.md)
+* [⚠️ \[deprecated\] How to run Spark on the local node](developers/deprecated-how-to-run-spark-on-the-local-node.md)
+* [⚠️ \[deprecated\] Smart contract-based order book](developers/deprecated-smart-contract-based-order-book/README.md)
+  * [Spark Limit Orders Smart Contract](developers/deprecated-smart-contract-based-order-book/spark-limit-orders-smart-contract.md)
+  * [Orders Matching Engine](developers/deprecated-smart-contract-based-order-book/orders-matching-engine.md)
+  * [Frontend](developers/deprecated-smart-contract-based-order-book/frontend.md)
 
 ## Links
 
