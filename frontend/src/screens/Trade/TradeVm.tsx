@@ -2,18 +2,13 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
-import {
-  EXPLORER_URL,
-  NODE_URL,
-  TOKENS_BY_ASSET_ID,
-  TOKENS_BY_SYMBOL,
-} from "@src/constants";
+import { EXPLORER_URL, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
-import { Predicate } from "fuels";
+import { CoinQuantityLike, hexlify, Predicate, ScriptTransactionRequest } from "fuels";
 import { LimitOrderPredicateAbi__factory } from "@src/predicates/factories/LimitOrderPredicateAbi__factory";
-import LogProvider from "@src/utils/logProvider";
+import { MAX_GAS_PER_TX } from "@fuel-ts/transactions/configs";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -42,27 +37,22 @@ class TradeVm {
       () => [this.assetId0, this.assetId1],
       () => this.getLatestTrades()
     );
-    when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
+    // when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
+
+    this.setBuyPrice(new BN(20000 * 1e6), true);
+    this.setBuyAmount(new BN(100000), true);
   }
 
   setMarketPrice = () => {
     const { orderbook } = this.rootStore.ordersStore;
-    const buyPrice = BN.parseUnits(
-      orderbook.buy[0].price,
-      this.token0.decimals
-    );
-    const sellPrice = BN.parseUnits(
-      orderbook.sell[0].price,
-      this.token1.decimals
-    );
+    const buyPrice = BN.parseUnits(orderbook.buy[0].price, this.token0.decimals);
+    const sellPrice = BN.parseUnits(orderbook.sell[0].price, this.token1.decimals);
     this.setBuyPrice(sellPrice);
     this.setSellPrice(buyPrice);
   };
 
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(
-      `${this.token0.symbol}/${this.token1.symbol}`
-    );
+    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -126,8 +116,7 @@ class TradeVm {
   };
 
   buyPercent: BN = new BN(0);
-  setBuyPercent = (value: number | number[]) =>
-    (this.buyPercent = new BN(value.toString()));
+  setBuyPercent = (value: number | number[]) => (this.buyPercent = new BN(value.toString()));
 
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
@@ -170,8 +159,7 @@ class TradeVm {
     }
   };
   sellPercent: BN = new BN(0);
-  setSellPercent = (value: number | number[]) =>
-    (this.sellPercent = new BN(value.toString()));
+  setSellPercent = (value: number | number[]) => (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -218,32 +206,25 @@ class TradeVm {
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
 
-    let token0 = null;
-    let token1 = null;
-    let price = null;
-    let amount = null;
-    if (action === "buy") {
-      token0 = this.assetId1;
-      token1 = this.assetId0;
-      price = this.buyTotal.times(1000000).div(this.buyAmount);
-      amount = this.buyTotal.toString();
-    }
-    if (action === "sell") {
-      token0 = this.assetId0;
-      token1 = this.assetId1;
-      price = new BN(this.sellTotal).times(1000000).div(this.sellAmount);
-      amount = this.sellAmount.toString();
-    }
-    if (token0 == null || token1 == null || price == null || amount == null)
-      return;
+    const token0 = action === "sell" ? this.token0 : this.token1;
+    const token1 = action === "sell" ? this.token1 : this.token0;
+    const exp = BN.parseUnits(1, 9 + token0.decimals - token1.decimals);
+    let price =
+      action === "sell"
+        ? this.sellTotal.times(exp).div(this.sellAmount)
+        : this.buyAmount.times(exp).div(this.buyTotal);
+    let amount = action === "sell" ? this.sellAmount.toString() : this.buyTotal.toString();
     this.setLoading(true);
-
+    console.log(price.toString());
     const configurableConstants = {
-      ASSET0: token0,
-      ASSET1: token1,
-      PRICE: price.toFixed(0),
+      ASSET0: token0.assetId,
+      ASSET1: token1.assetId,
       MAKER: this.rootStore.accountStore.ethFormatWallet,
+      PRICE: price.toFixed(0),
+      ASSET0_DECINALS: token0.decimals,
+      ASSET1_DECINALS: token1.decimals,
     };
+    console.log(configurableConstants);
     try {
       const predicate = new Predicate(
         LimitOrderPredicateAbi__factory.bin,
@@ -255,19 +236,20 @@ class TradeVm {
 
       console.log(predicate.address.toB256());
 
-      const initialPredicateBalance = await predicate.getBalance(token0);
-      console.log(
-        "initialPredicateBalance",
-        initialPredicateBalance.toString()
-      );
+      const initialPredicateBalance = await predicate.getBalance(token0.assetId);
+      console.log("initialPredicateBalance", initialPredicateBalance.toString());
       //
       // console.log("wallet.transfer", amount);
 
-      const tx1 = await wallet.transfer(predicate.address, amount, token0);
-      await tx1.waitForResult();
+      const tx1 = await wallet
+        .transfer(predicate.address, amount, token0.assetId)
+        .catch((e) => console.error(`tx1 ${e}`));
+      await tx1?.waitForResult();
       //
-      const feetx = await wallet.transfer(predicate.address, 10);
-      await feetx.waitForResult();
+      const feetx = await wallet
+        .transfer(predicate.address, 10)
+        .catch((e) => console.error(`feetx ${e}`));
+      await feetx?.waitForResult();
 
       // // console.log("feetx", feetx);
       //
@@ -281,9 +263,29 @@ class TradeVm {
       // console.log("predicate.transfer", amount);
       const half = new BN(amount).div(2).toString();
       console.log("half", half);
-      const tx2 = await predicate.transfer(wallet.address, half, token0);
+      // const tx2 = await predicate.transfer(wallet.address, half, token0);
       // console.log("tx2", tx2);
+      const params = { gasLimit: MAX_GAS_PER_TX };
 
+      const request = new ScriptTransactionRequest(params);
+      request.addCoinOutput(wallet.address, amount, token0.assetId);
+      const fee = request.calculateFee();
+      let quantities: CoinQuantityLike[] = [];
+
+      if (fee.assetId === hexlify(token0.assetId)) {
+        fee.amount = fee.amount.add(amount);
+        quantities = [fee];
+      } else {
+        quantities = [[amount, token0.assetId], fee];
+      }
+
+      const resources = await predicate.getResourcesToSpend(quantities);
+      request.addResources(resources);
+      console.log(request.inputs);
+      console.log(request.outputs);
+      const tx = await predicate.sendTransaction(request);
+      const res = await tx.waitForResult();
+      console.log(tx, res);
       const finalPredicateBalance = await predicate.getBalances();
       console.log(
         "finalPredicateBalance",
@@ -300,8 +302,7 @@ class TradeVm {
   };
 
   cancelPredicateOrder = async (id: string) => {
-    const predicateAddress =
-      "fuel14pa8j25dg6aarc93a6z422lg64tzydpsq3ve8r9ex6l96xp4guzswj0zlu";
+    const predicateAddress = "fuel14pa8j25dg6aarc93a6z422lg64tzydpsq3ve8r9ex6l96xp4guzswj0zlu";
     // const price = "250000000";
     const amount = "1000000";
 
@@ -403,3 +404,6 @@ class TradeVm {
     });
   };
 }
+
+// inputs = [ResourcePredicate { resource: Coin(Coin { amount: 1000000000, block_created: 741240, asset_id: 56fb8789a590ea9c12af6fe6dc2b43f347700b049d4f823fd4476c6f366af201, utxo_id: UtxoId { tx_id: f9101c7c1acaf4c8aaaf6674500e08f64ce2d59a14fdf3c3df5143f35b201903, output_index: 2 }, maturity: 0, owner: Bech32Address { hrp: "fuel", hash: 12408258e4ac3396e8af356fc828b7804c8175371523e1ee5f75c58c0ec27d8d }, status: Unspent }), code: [], data: UnresolvedBytes { data: [] } }]
+// outputs = [Coin { to: ccc4f9249536cf89ab0f31bb52fa06c00ea0387dcac5830924ecf56f2dded3a5, amount: 0, asset_id: 56fb8789a590ea9c12af6fe6dc2b43f347700b049d4f823fd4476c6f366af201 }, Change { to: ccc4f9249536cf89ab0f31bb52fa06c00ea0387dcac5830924ecf56f2dded3a5, amount: 0, asset_id: 56fb8789a590ea9c12af6fe6dc2b43f347700b049d4f823fd4476c6f366af201 }]

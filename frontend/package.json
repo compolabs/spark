@@ -45,7 +45,7 @@
     "eslint-webpack-plugin": "^3.1.1",
     "file-loader": "^6.2.0",
     "fs-extra": "^10.0.0",
-    "fuels": "^0.39.1",
+    "fuels": "^0.42.0",
     "html-webpack-plugin": "^5.5.0",
     "identity-img": "^2.0.0",
     "identity-obj-proxy": "^3.0.0",
@@ -99,7 +99,7 @@
     "workbox-webpack-plugin": "^6.4.1"
   },
   "scripts": {
-    "start": "node scripts/start.js",
+    "start": "DISABLE_ESLINT_PLUGIN=true node scripts/start.js",
     "build": "DISABLE_ESLINT_PLUGIN=true node scripts/build.js",
     "test": "node scripts/test.js",
     "deploy": "gh-pages -d build"
