@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.41.0
+  Fuels version: 0.42.0
   Forc version: 0.35.5
   Fuel-Core version: 0.17.3
 */
 
-export { CreateOrderScriptAbi__factory } from './factories/CreateOrderScriptAbi__factory';
+export { LimitOrderPredicateAbi__factory } from './factories/LimitOrderPredicateAbi__factory';

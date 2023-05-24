@@ -4,15 +4,16 @@ import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
 import {
   EXPLORER_URL,
+  NODE_URL,
   TOKENS_BY_ASSET_ID,
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
 import BN from "@src/utils/BN";
 import { LimitOrdersAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
-import PREDICATE_ABI from "@src/assets/predicateAbi.json";
-import PREDICATE_BYTECODE from "@src/assets/predicateBytecode.json";
 import { Predicate } from "fuels";
+import { LimitOrderPredicateAbi__factory } from "@src/predicates/factories/LimitOrderPredicateAbi__factory";
+import LogProvider from "@src/utils/logProvider";
 
 const ctx = React.createContext<TradeVm | null>(null);
 
@@ -243,41 +244,51 @@ class TradeVm {
       PRICE: price.toFixed(0),
       MAKER: this.rootStore.accountStore.ethFormatWallet,
     };
-
-    console.log("configurableConstants", configurableConstants);
     try {
       const predicate = new Predicate(
-        PREDICATE_BYTECODE,
-        PREDICATE_ABI,
+        LimitOrderPredicateAbi__factory.bin,
+        LimitOrderPredicateAbi__factory.abi,
+        // new LogProvider(NODE_URL),
         this.rootStore.accountStore.provider,
         configurableConstants
       );
-      // console.log("predicate", predicate.address);
-      // console.log("amount", amount);
-      // console.log("token0", token0);
+
+      console.log(predicate.address.toB256());
 
       const initialPredicateBalance = await predicate.getBalance(token0);
-      console.log("initialPredicateBalance", initialPredicateBalance);
+      console.log(
+        "initialPredicateBalance",
+        initialPredicateBalance.toString()
+      );
+      //
+      // console.log("wallet.transfer", amount);
 
-      console.log("wallet.transfer", amount);
       const tx1 = await wallet.transfer(predicate.address, amount, token0);
-      // console.log("tx1", tx1);
       await tx1.waitForResult();
-
-      const feetx = await wallet.transfer(predicate.address, 50);
+      //
+      const feetx = await wallet.transfer(predicate.address, 10);
       await feetx.waitForResult();
-      // console.log("feetx", feetx);
 
-      const prediBalance = await predicate.getBalances();
-      console.log("prediBalances", prediBalance);
-
-      console.log("predicate.transfer", amount);
-      const tx2 = await predicate.transfer(wallet.address, amount, token0);
+      // // console.log("feetx", feetx);
+      //
+      const predicateBalances = await predicate.getBalances();
+      console.log("predicateBalances");
+      console.log(
+        "predicateBalances",
+        predicateBalances.map((v) => v.amount.toString())
+      );
+      //
+      // console.log("predicate.transfer", amount);
+      const half = new BN(amount).div(2).toString();
+      console.log("half", half);
+      const tx2 = await predicate.transfer(wallet.address, half, token0);
       // console.log("tx2", tx2);
-      await tx2.waitForResult();
 
-      const finalPredicateBalance = await predicate.getBalance(token0);
-      console.log("finalPredicateBalance", finalPredicateBalance);
+      const finalPredicateBalance = await predicate.getBalances();
+      console.log(
+        "finalPredicateBalance",
+        finalPredicateBalance.map((v) => v.amount.toString())
+      );
 
       // if (tx.id != null)
       //   this.notifyThatActionIsSuccessful("Order has bee placed", tx.id);
