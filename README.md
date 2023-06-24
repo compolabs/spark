@@ -1,4 +1,4 @@
-# Spark 
+# Spark   
 
 Spark is an order book built on the fuel.network blockchain. It operates using an order book model, allowing users to trade various cryptocurrencies in a secure and transparent manner and enables peer-to-peer trading of cryptocurrencies with high transaction throughput and low fees.
 
