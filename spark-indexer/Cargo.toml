@@ -1,0 +1,13 @@
+[package]
+name = "spark_indexer"
+version = "0.0.0"
+edition = "2021"
+publish = false
+
+[lib]
+crate-type = ['cdylib']
+
+[dependencies]
+fuel-indexer-utils = { version = "0.19" }
+fuels = { version = "0.43", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
