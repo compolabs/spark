@@ -57,7 +57,7 @@ pub mod spark_indexer_index_mod {
             id: data.timestamp,
             timestamp: data.timestamp,
             address: data.address,
-            // order: order_entry.id,
+            order: order_entry.id,
         };
         entry.save();
     }

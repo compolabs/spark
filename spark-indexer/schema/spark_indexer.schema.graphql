@@ -31,7 +31,7 @@ type CreateOrderEntity @entity  {
     id: ID!
     timestamp: UInt8!
     address: Address!
-    # order: OrderEntity!
+    order: OrderEntity!
 }
 
 type CancelOrderEntity @entity {
