@@ -57,7 +57,7 @@ pub mod spark_indexer_index_mod {
             id: data.timestamp,
             timestamp: data.timestamp,
             address: data.address,
-            order: order_entry.id,
+            orderEntity: order_entry.id,
         };
         entry.save();
     }
@@ -89,7 +89,7 @@ pub mod spark_indexer_index_mod {
             id: data.timestamp,
             timestamp: data.timestamp,
             address: data.address,
-            // order: order_entry.id,
+            orderEntity: order_entry.id,
         };
         entry.save();
     }
@@ -141,8 +141,8 @@ pub mod spark_indexer_index_mod {
             id: data.timestamp,
             timestamp: data.timestamp,
             address: data.address,
-            // order0: order_entry_0.id,
-            // order1: order_entry_1.id,
+            orderEntity0: order_entry_0.id,
+            orderEntity1: order_entry_1.id,
 
             asset0: data.asset_0,
             amount0: data.amount_0,

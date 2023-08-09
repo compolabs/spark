@@ -31,22 +31,22 @@ type CreateOrderEntity @entity  {
     id: ID!
     timestamp: UInt8!
     address: Address!
-    order: OrderEntity!
+    orderEntity: OrderEntity!
 }
 
 type CancelOrderEntity @entity {
     id: ID!
     timestamp: UInt8!
     address: Address!
-    # order: OrderEntity!
+    orderEntity: OrderEntity!
 }
 
 type TradeEntity @entity {
     id: ID!
     timestamp: UInt8!
     address: Address!
-    # order0: OrderEntity!
-    # order1: OrderEntity!
+    orderEntity0: OrderEntity!
+    orderEntity1: OrderEntity!
     
     asset0: ContractId!
     amount0: UInt8!
