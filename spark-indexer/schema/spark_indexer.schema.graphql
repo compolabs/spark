@@ -10,3 +10,58 @@ type Transaction @entity {
     hash: Bytes32! @unique
 }
 
+# type OrderEntity @entity {
+#     id: ID!
+#     asset0: ContractId!
+#     amount0: UInt8!
+#     asset1: ContractId!
+#     amount1: UInt8!
+#     status: Bytes32!
+#     fulfilled0: UInt8!
+#     fulfilled1: UInt8!
+#     owner: Address!
+#     timestamp: UInt8!
+#     matcher_fee: UInt8!
+#     matcher_fee_used: UInt8!
+# }
+
+type Deposit {
+    id: ID!
+    timestamp: UInt8!
+    address: Address!
+    amount: UInt8!
+}
+
+type Withdraw {
+    id: ID!
+    timestamp: UInt8!
+    address: Address!
+    amount: UInt8!
+}
+
+# type CreateOrder {
+#     id: ID!
+#     timestamp: UInt8!
+#     address: Address!
+#     order: OrderEntity!
+# }
+
+# type CancelOrder {
+#     id: ID!
+#     timestamp: UInt8!
+#     address: Address!
+#     order: OrderEntity!
+# }
+
+# type Trade {
+#     id: ID!
+#     timestamp: UInt8!
+#     address: Address!
+#     order0: OrderEntity!
+#     order1: OrderEntity!
+    
+#     asset0: ContractId!
+#     amount0: UInt8!
+#     asset1: AContractId!
+#     amount1: UInt8!
+# }

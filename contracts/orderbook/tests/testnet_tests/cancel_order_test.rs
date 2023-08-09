@@ -13,7 +13,7 @@ use src20_sdk::{token_abi_calls, TokenContract};
 
 abigen!(Contract(
     name = "DApp",
-    abi = "out/debug/limit_orders-abi.json"
+    abi = "out/debug/orderbook-abi.json"
 ));
 
 /*
@@ -27,11 +27,11 @@ const CONTRACT_ADDRESS: &str = "0x376b233b1ac441b26dc030d9b16e24e1aa599eafac5cf3
 #[derive(Deserialize)]
 pub struct TokenConfig {
     symbol: String,
-    decimals: u8,
+    // decimals: u8,
     asset_id: String,
 }
 pub struct Token {
-    decimals: u8,
+    // decimals: u8,
     asset_id: AssetId,
     contract_id: ContractId,
     instance: TokenContract<WalletUnlocked>,
@@ -61,7 +61,7 @@ async fn cancel_order_test() {
             config.symbol.clone(),
             Token {
                 instance: TokenContract::new(contract_id, admin.clone()),
-                decimals: config.decimals,
+                // decimals: config.decimals,
                 asset_id: AssetId::from_str(&config.asset_id).unwrap(),
                 contract_id: ContractId::from_str(&config.asset_id).unwrap(),
             },
@@ -120,5 +120,13 @@ async fn cancel_order_test() {
         .await
         .unwrap()
         .value;
-    println!("Order id = {:?}", order_id);
+
+    instance
+        .methods()
+        .cancel_order(order_id)
+        .tx_params(TxParameters::default().set_gas_price(1))
+        .append_variable_outputs(1)
+        .call()
+        .await
+        .unwrap();
 }

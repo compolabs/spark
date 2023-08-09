@@ -10,7 +10,7 @@ use fuels::{
 };
 abigen!(Contract(
     name = "DApp",
-    abi = "out/debug/limit_orders-abi.json"
+    abi = "out/debug/orderbook-abi.json"
 ));
 
 const RPC: &str = "beta-3.fuel.network";

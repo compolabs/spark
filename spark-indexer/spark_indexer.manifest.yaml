@@ -1,43 +1,13 @@
-# A namespace is a logical grouping of declared names. Think of the namespace
-# as an organization identifier
+---
 namespace: swaygang
-
-# The identifier field is used to identify the given index.
 identifier: spark_indexer
-
-# The abi option is used to provide a link to the Sway JSON ABI that is generated when you
-# build your project.
-abi: ~
-
-# The particular start block after which you'd like your indexer to start indexing events.
-start_block: ~
-
-# The particular end block after which you'd like your indexer to stop indexing events.
-end_block: ~
-
-# The `fuel_client` denotes the address (host, port combination) of the running Fuel client
-# that you would like your indexer to index events from. In order to use this per-indexer
-# `fuel_client` option, the indexer service at which your indexer is deployed will have to run
-# with the `--indexer_net_config` option.
+abi: "./orderbook-abi.json"
 fuel_client: ~
-
-# The contract_id specifies which particular contract you would like your index to subscribe to.
-contract_id: ~
-
-# The graphql_schema field contains the file path that points to the GraphQL schema for the
-# given index.
 graphql_schema: schema/spark_indexer.schema.graphql
-
-# The module field contains a file path that points to code that will be run as an executor inside
-# of the indexer.
-# Important: At this time, wasm is the preferred method of execution.
-module: 
-    wasm: ~
-
-# The report_metrics field contains boolean whether or not to report Prometheus  metrics to the
-# Fuel backend
-report_metrics: true
-
-# The resumable field contains a boolean that specifies whether or not the indexer should, synchronise
-# with the latest block if it has fallen out of sync.
+module:
+  wasm: target/wasm32-unknown-unknown/release/spark_indexer.wasm
+metrics: ~
+contract_id: fuel1xa4jxwc6c3qmymwqxrvmzm3yux49n84043w08p0dchfwkkhzpessx6p74h
+start_block: 1785400
+end_block: ~
 resumable: true
