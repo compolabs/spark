@@ -1,67 +1,55 @@
-type Block @entity {
+type OrderEntity @entity {
     id: ID!
-    height: UInt8!
-    hash: Bytes32! @unique
+    asset0: ContractId!
+    amount0: UInt8!
+    asset1: ContractId!
+    amount1: UInt8!
+    status: Charfield!
+    fulfilled0: UInt8!
+    fulfilled1: UInt8!
+    owner: Address!
+    timestamp: UInt8!
+    matcher_fee: UInt8!
+    matcher_fee_used: UInt8!
 }
 
-type Transaction @entity {
-    id: ID!
-    block: Block! @join(on:hash)
-    hash: Bytes32! @unique
-}
-
-# type OrderEntity @entity {
-#     id: ID!
-#     asset0: ContractId!
-#     amount0: UInt8!
-#     asset1: ContractId!
-#     amount1: UInt8!
-#     status: Bytes32!
-#     fulfilled0: UInt8!
-#     fulfilled1: UInt8!
-#     owner: Address!
-#     timestamp: UInt8!
-#     matcher_fee: UInt8!
-#     matcher_fee_used: UInt8!
-# }
-
-type Deposit {
+type DepositEntity @entity {
     id: ID!
     timestamp: UInt8!
     address: Address!
     amount: UInt8!
 }
 
-type Withdraw {
+type WithdrawEntity @entity {
     id: ID!
     timestamp: UInt8!
     address: Address!
     amount: UInt8!
 }
 
-# type CreateOrder {
-#     id: ID!
-#     timestamp: UInt8!
-#     address: Address!
-#     order: OrderEntity!
-# }
+type CreateOrderEntity @entity  {
+    id: ID!
+    timestamp: UInt8!
+    address: Address!
+    # order: OrderEntity!
+}
 
-# type CancelOrder {
-#     id: ID!
-#     timestamp: UInt8!
-#     address: Address!
-#     order: OrderEntity!
-# }
+type CancelOrderEntity @entity {
+    id: ID!
+    timestamp: UInt8!
+    address: Address!
+    # order: OrderEntity!
+}
 
-# type Trade {
-#     id: ID!
-#     timestamp: UInt8!
-#     address: Address!
-#     order0: OrderEntity!
-#     order1: OrderEntity!
+type TradeEntity @entity {
+    id: ID!
+    timestamp: UInt8!
+    address: Address!
+    # order0: OrderEntity!
+    # order1: OrderEntity!
     
-#     asset0: ContractId!
-#     amount0: UInt8!
-#     asset1: AContractId!
-#     amount1: UInt8!
-# }
+    asset0: ContractId!
+    amount0: UInt8!
+    asset1: ContractId!
+    amount1: UInt8!
+}
