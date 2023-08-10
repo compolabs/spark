@@ -19,7 +19,7 @@ services:
     image: ghcr.io/fuellabs/fuel-indexer:latest
     command: bash -c "sleep 2 && ./fuel-indexer run --fuel-node-host beta-3.fuel.network --fuel-node-port 80 --postgres-host postgres --postgres-password postgres --web-api-host 0.0.0.0 --run-migrations"
     ports:
-      - "29987:80"
+      - "80:29987"
     volumes:
       - .:/usr/local/fuel-indexer
     depends_on:
