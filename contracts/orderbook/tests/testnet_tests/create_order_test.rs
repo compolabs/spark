@@ -27,17 +27,31 @@ const CONTRACT_ADDRESS: &str = "0x376b233b1ac441b26dc030d9b16e24e1aa599eafac5cf3
 #[derive(Deserialize)]
 pub struct TokenConfig {
     symbol: String,
-    // decimals: u8,
+    decimals: u8,
     asset_id: String,
 }
 pub struct Token {
-    // decimals: u8,
+    symbol: String,
+    decimals: u8,
     asset_id: AssetId,
     contract_id: ContractId,
     instance: TokenContract<WalletUnlocked>,
 }
+
+// const ASSET0: &str = "USDC";
+// const AMOUNT0: u64 = 1000;
+
+// const ASSET1: &str = "UNI";
+// const AMOUNT1: u64 = 300;
+
+const ASSET0: &str = "UNI";
+const AMOUNT0: u64 = 300;
+
+const ASSET1: &str = "USDC";
+const AMOUNT1: u64 = 1000;
+
 #[tokio::test]
-async fn cancel_order_test() {
+async fn create_order_test() {
     dotenv().ok();
 
     //--------------- WALLETS ---------------
@@ -57,38 +71,42 @@ async fn cancel_order_test() {
     let mut tokens: HashMap<String, Token> = HashMap::new();
     for config in token_configs {
         let contract_id: Bech32ContractId = ContractId::from_str(&config.asset_id).unwrap().into();
+        let symbol = config.symbol.clone();
         tokens.insert(
-            config.symbol.clone(),
+            symbol.clone(),
             Token {
+                symbol,
                 instance: TokenContract::new(contract_id, admin.clone()),
-                // decimals: config.decimals,
+                decimals: config.decimals,
                 asset_id: AssetId::from_str(&config.asset_id).unwrap(),
                 contract_id: ContractId::from_str(&config.asset_id).unwrap(),
             },
         );
     }
-    let usdc = tokens.get("USDC").unwrap();
-    let uni = tokens.get("UNI").unwrap();
+    let asset0 = tokens.get(ASSET0).unwrap();
+    let asset1 = tokens.get(ASSET1).unwrap();
+    let asset0_precision = 10u64.pow(asset0.decimals as u32);
+    let asset1_precision = 10u64.pow(asset1.decimals as u32);
 
-    let amount0 = 1000_000_000_u64; //1000 USDC
-    let amount1 = 300_000_000_000_u64; //200 UNI
-    println!("USDC AssetId (asset0) = 0x{:?}", usdc.asset_id);
-    println!("UNI AssetId (asset1) = 0x{:?}", uni.asset_id);
-    println!("amount0 = {:?} USDC", amount0 / 1000_000);
-    println!("amount1 = {:?} UNI", amount1 / 1000_000_000);
+    let amount0 = AMOUNT0 * asset0_precision; //1000 USDC
+    let amount1 = AMOUNT1 * asset1_precision; //200 UNI
+    println!("asset0: {} = 0x{:?}", asset0.symbol, asset0.asset_id);
+    println!("asset1: {} = 0x{:?}", asset1.symbol, asset1.asset_id);
+    println!("amount0 = {} {}", amount0 / asset0_precision, asset0.symbol);
+    println!("amount1 = {} {}", amount1 / asset1_precision, asset1.symbol);
 
-    let initial_alice_usdc_balance = alice.get_asset_balance(&usdc.asset_id).await.unwrap();
+    let initial_alice_usdc_balance = alice.get_asset_balance(&asset0.asset_id).await.unwrap();
     if initial_alice_usdc_balance < amount0 {
-        token_abi_calls::mint(&usdc.instance, amount0, alice_address)
+        token_abi_calls::mint(&asset0.instance, amount0, alice_address)
             .await
             .unwrap();
-        println!("Alice minting {:?} USDC\n", amount0 / 1000_000);
+        println!("Alice + {}{}\n", amount0 / asset0_precision, asset0.symbol);
     }
-    // let initial_alice_usdc_balance = alice.get_asset_balance(&usdc.asset_id).await.unwrap();
+    // let initial_alice_usdc_balance = alice.get_asset_balance(&asset0.asset_id).await.unwrap();
     let contract_id: Bech32ContractId = ContractId::from_str(CONTRACT_ADDRESS).unwrap().into();
     let instance = DApp::new(contract_id, alice.clone());
-    let deposit = instance
-        .methods()
+    let methods = instance.methods();
+    let deposit = methods
         .get_deposit(alice_address)
         .simulate()
         .await
@@ -96,8 +114,7 @@ async fn cancel_order_test() {
         .value;
 
     if deposit < 1000 {
-        instance
-            .methods()
+        methods
             .deposit()
             .tx_params(TxParameters::default().set_gas_price(1))
             .call_params(CallParameters::default().set_amount(1000))
@@ -106,27 +123,24 @@ async fn cancel_order_test() {
             .await
             .unwrap();
     }
-    let order_id = instance
-        .methods()
-        .create_order(uni.contract_id, amount1, 1000)
+    let order_id = methods
+        .create_order(asset1.contract_id, amount1, 1000)
         .tx_params(TxParameters::default().set_gas_price(1))
         .call_params(
             CallParameters::default()
                 .set_amount(amount0)
-                .set_asset_id(usdc.asset_id),
+                .set_asset_id(asset0.asset_id),
         )
         .unwrap()
         .call()
         .await
         .unwrap()
         .value;
-
-    instance
-        .methods()
-        .cancel_order(order_id)
-        .tx_params(TxParameters::default().set_gas_price(1))
-        .append_variable_outputs(1)
-        .call()
+    let order = methods
+        .order_by_id(order_id)
+        .simulate()
         .await
-        .unwrap();
+        .unwrap()
+        .value;
+    println!("✅ Order {order_id} created = {:#?}", order);
 }

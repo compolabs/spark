@@ -112,43 +112,8 @@ export class Order {
   }
 }
 
-export const getActiveOrders = (): Promise<Order[]> => new Promise(() => [] as Order[]);
-// axios
-//   .get(`${BACKEND_URL}/orders/?status=Active`)
-//   .then((res) => res.data)
-//   .then((arr: Array<IOrderResponse>) => arr.map((o) => new Order(o)));
+// export const getActiveOrders = (): Promise<Order[]> => new Promise(() => [] as Order[]);
 
-// type TOrderbookResponse = {
-//   myOrders: Array<IOrderResponse>;
-//   orderbook: { buy: Array<IOrderResponse>; sell: Array<IOrderResponse> };
-// };
-//
-
-// axios
-//   .get(`${BACKEND_URL}/orderbook?address=${owner}&symbol=${symbol}`)
-//   .then((res) => res.data)
-//   .then((res: TOrderbookResponse) => ({
-//     myOrders: res.myOrders.map((o) => new Order(o)),
-//     orderbook: {
-//       sell: res.orderbook.sell.map((o) => new Order(o)),
-//       buy: res.orderbook.buy.map((o) => new Order(o)),
-//     },
-//   }));
-
-/*
-UNI = eaa756f320f175f0023a8c9fc2c9b7a03ce8d715f04ac49aba69d2b7d74e70b8
-USDC = 17e68049bb3cf21a85f00778fde367465bbd8263e8d4f8e47e533fe0df865658
-
-// usdc -> uni
-curl -X POST https://spark-indexer.spark-defi.com/api/sql/swaygang/spark_indexer \
--d '{"query":"SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE status = \'Active\' AND asset0 = \'17e68049bb3cf21a85f00778fde367465bbd8263e8d4f8e47e533fe0df865658\' AND asset1 = \'eaa756f320f175f0023a8c9fc2c9b7a03ce8d715f04ac49aba69d2b7d74e70b8\') t;"}' \
--H "Content-type: application/json"
-
-// uni -> usdc
-curl -X POST https://spark-indexer.spark-defi.com/api/sql/swaygang/spark_indexer \
--d '{"query":"SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE status = \'Active\' AND asset0 = \'eaa756f320f175f0023a8c9fc2c9b7a03ce8d715f04ac49aba69d2b7d74e70b8\' AND asset1 = \'17e68049bb3cf21a85f00778fde367465bbd8263e8d4f8e47e533fe0df865658\') t;"}' \
--H "Content-type: application/json"
-*/
 export const getOrderbook = async (
   owner: string,
   market: string
@@ -197,5 +162,4 @@ export const getOrderbook = async (
   );
   console.log({ myOrders, orderbook: { sell, buy } });
   return { myOrders, orderbook: { sell, buy } };
-  // return { myOrders: [], orderbook: { sell: [], buy: [] } };
 };
