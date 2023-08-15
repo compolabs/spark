@@ -128,7 +128,7 @@ export const getOrderbook = async (
   const buyQuery = `SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId1}' AND asset1 = '${assetId0}') t;`;
   owner = owner.substring(2);
   const ownerQuery = `SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE owner = ${owner}) t;`;
-  const url = "http://localhost:29987/api/sql/swaygang/spark_indexer";
+  const url = "https://spark-indexer.spark-defi.com/api/sql/swaygang/spark_indexer";
   const headers = { "Content-Type": "application/json", Accept: "application/json" };
 
   const res = await Promise.all([
