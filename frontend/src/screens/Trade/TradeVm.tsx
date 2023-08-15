@@ -44,22 +44,14 @@ class TradeVm {
 
   setMarketPrice = () => {
     const { orderbook } = this.rootStore.ordersStore;
-    const buyPrice = BN.parseUnits(
-      orderbook.buy[0].price,
-      this.token1.decimals
-    );
-    const sellPrice = BN.parseUnits(
-      orderbook.sell[0].price,
-      this.token1.decimals
-    );
+    const buyPrice = BN.parseUnits(orderbook.buy[0].price, this.token1.decimals);
+    const sellPrice = BN.parseUnits(orderbook.sell[0].price, this.token1.decimals);
     this.setBuyPrice(sellPrice);
     this.setSellPrice(buyPrice);
   };
 
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(
-      `${this.token0.symbol}/${this.token1.symbol}`
-    );
+    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -76,7 +68,7 @@ class TradeVm {
   activeModalAction: 0 | 1 = 0;
   setActiveModalAction = (v: 0 | 1) => (this.activeModalAction = v);
 
-  assetId0: string = TOKENS_BY_SYMBOL.BTC.assetId;
+  assetId0: string = TOKENS_BY_SYMBOL.UNI.assetId;
   setAssetId0 = (assetId: string) => (this.assetId0 = assetId);
 
   assetId1: string = TOKENS_BY_SYMBOL.USDC.assetId;
@@ -123,8 +115,7 @@ class TradeVm {
   };
 
   buyPercent: BN = new BN(0);
-  setBuyPercent = (value: number | number[]) =>
-    (this.buyPercent = new BN(value.toString()));
+  setBuyPercent = (value: number | number[]) => (this.buyPercent = new BN(value.toString()));
 
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
@@ -167,8 +158,7 @@ class TradeVm {
     }
   };
   sellPercent: BN = new BN(0);
-  setSellPercent = (value: number | number[]) =>
-    (this.sellPercent = new BN(value.toString()));
+  setSellPercent = (value: number | number[]) => (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -235,8 +225,7 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
-      return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
 
     this.setLoading(true);
     try {

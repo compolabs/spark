@@ -1,5 +1,5 @@
 import axios from "axios";
-import { BACKEND_URL, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 
@@ -69,9 +69,7 @@ export class Order {
   }
 
   get fullFillPercent() {
-    return this.fulfilled0.eq(0)
-      ? 0
-      : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
+    return this.fulfilled0.eq(0) ? 0 : +this.fulfilled0.times(100).div(this.amount0).toFormat(2);
   }
 
   get priceFormatter() {
@@ -99,10 +97,7 @@ export class Order {
   }
 
   get amountLeft() {
-    const amount = BN.formatUnits(
-      this.amount0.minus(this.fulfilled0),
-      this.token0.decimals
-    );
+    const amount = BN.formatUnits(this.amount0.minus(this.fulfilled0), this.token0.decimals);
     return amount.toFormat(amount.lt(0.01) ? 6 : 2);
   }
 
@@ -112,40 +107,95 @@ export class Order {
   }
 
   get totalLeft() {
-    const left = BN.formatUnits(
-      this.amount1.minus(this.fulfilled1),
-      this.token1.decimals
-    );
+    const left = BN.formatUnits(this.amount1.minus(this.fulfilled1), this.token1.decimals);
     return left.toFormat(left.lt(0.01) ? 6 : 2);
   }
 }
 
-export const getActiveOrders = (): Promise<Order[]> =>
-  new Promise(() => [] as Order[]);
+export const getActiveOrders = (): Promise<Order[]> => new Promise(() => [] as Order[]);
 // axios
 //   .get(`${BACKEND_URL}/orders/?status=Active`)
 //   .then((res) => res.data)
 //   .then((arr: Array<IOrderResponse>) => arr.map((o) => new Order(o)));
 
-type TOrderbookResponse = {
-  myOrders: Array<IOrderResponse>;
-  orderbook: { buy: Array<IOrderResponse>; sell: Array<IOrderResponse> };
-};
+// type TOrderbookResponse = {
+//   myOrders: Array<IOrderResponse>;
+//   orderbook: { buy: Array<IOrderResponse>; sell: Array<IOrderResponse> };
+// };
+//
 
-export const getOrderbook = (
+// axios
+//   .get(`${BACKEND_URL}/orderbook?address=${owner}&symbol=${symbol}`)
+//   .then((res) => res.data)
+//   .then((res: TOrderbookResponse) => ({
+//     myOrders: res.myOrders.map((o) => new Order(o)),
+//     orderbook: {
+//       sell: res.orderbook.sell.map((o) => new Order(o)),
+//       buy: res.orderbook.buy.map((o) => new Order(o)),
+//     },
+//   }));
+
+/*
+UNI = eaa756f320f175f0023a8c9fc2c9b7a03ce8d715f04ac49aba69d2b7d74e70b8
+USDC = 17e68049bb3cf21a85f00778fde367465bbd8263e8d4f8e47e533fe0df865658
+
+// usdc -> uni
+curl -X POST https://spark-indexer.spark-defi.com/api/sql/swaygang/spark_indexer \
+-d '{"query":"SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE status = \'Active\' AND asset0 = \'17e68049bb3cf21a85f00778fde367465bbd8263e8d4f8e47e533fe0df865658\' AND asset1 = \'eaa756f320f175f0023a8c9fc2c9b7a03ce8d715f04ac49aba69d2b7d74e70b8\') t;"}' \
+-H "Content-type: application/json"
+
+// uni -> usdc
+curl -X POST https://spark-indexer.spark-defi.com/api/sql/swaygang/spark_indexer \
+-d '{"query":"SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE status = \'Active\' AND asset0 = \'eaa756f320f175f0023a8c9fc2c9b7a03ce8d715f04ac49aba69d2b7d74e70b8\' AND asset1 = \'17e68049bb3cf21a85f00778fde367465bbd8263e8d4f8e47e533fe0df865658\') t;"}' \
+-H "Content-type: application/json"
+*/
+export const getOrderbook = async (
   owner: string,
-  symbol: string
+  market: string
 ): Promise<{
   myOrders: Array<Order>;
   orderbook: { buy: Array<Order>; sell: Array<Order> };
-}> =>
-  axios
-    .get(`${BACKEND_URL}/orderbook?address=${owner}&symbol=${symbol}`)
-    .then((res) => res.data)
-    .then((res: TOrderbookResponse) => ({
-      myOrders: res.myOrders.map((o) => new Order(o)),
-      orderbook: {
-        sell: res.orderbook.sell.map((o) => new Order(o)),
-        buy: res.orderbook.buy.map((o) => new Order(o)),
-      },
-    }));
+}> => {
+  const [symbol0, symbol1] = market.split("/");
+  let assetId0 = TOKENS_BY_SYMBOL[symbol0].assetId.substring(2);
+  let assetId1 = TOKENS_BY_SYMBOL[symbol1].assetId.substring(2);
+  const sellQuery = `SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId0}' AND asset1 = '${assetId1}') t;`;
+  const buyQuery = `SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId1}' AND asset1 = '${assetId0}') t;`;
+  owner = owner.substring(2);
+  const ownerQuery = `SELECT json_agg(t) FROM (SELECT * FROM swaygang_spark_indexer.orderentity WHERE owner = ${owner}) t;`;
+  const url = "http://localhost:29987/api/sql/swaygang/spark_indexer";
+  const headers = { "Content-Type": "application/json", Accept: "application/json" };
+
+  const res = await Promise.all([
+    axios.request({ method: "POST", url, headers, data: { query: buyQuery } }),
+    axios.request({ method: "POST", url, headers, data: { query: sellQuery } }),
+    owner.length === 0
+      ? null
+      : axios.request({ method: "POST", url, headers, data: { query: ownerQuery } }),
+  ]);
+  const [buy, sell, myOrders] = res.map((res) =>
+    res != null
+      ? res.data.data[0].map((order: any) => {
+          console.log(order);
+          return new Order({
+            ...order,
+            market,
+            asset0: `0x${order.asset0}`,
+            asset1: `0x${order.asset1}`,
+            type: assetId0 === order.asset0 ? "SELL" : "BUY",
+            price:
+              assetId0 === order.asset0
+                ? BN.formatUnits(order.amount1, TOKENS_BY_SYMBOL.USDC.decimals)
+                    .div(BN.formatUnits(order.amount0, TOKENS_BY_SYMBOL.UNI.decimals))
+                    .toNumber()
+                : BN.formatUnits(order.amount0, TOKENS_BY_SYMBOL.USDC.decimals)
+                    .div(BN.formatUnits(order.amount1, TOKENS_BY_SYMBOL.UNI.decimals))
+                    .toNumber(),
+          });
+        })
+      : []
+  );
+  console.log({ myOrders, orderbook: { sell, buy } });
+  return { myOrders, orderbook: { sell, buy } };
+  // return { myOrders: [], orderbook: { sell: [], buy: [] } };
+};

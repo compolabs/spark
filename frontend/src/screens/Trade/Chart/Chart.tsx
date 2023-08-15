@@ -5,6 +5,7 @@ import TVChartContainer from "@screens/Trade/Chart/TVChartContainer";
 interface IProps {}
 
 const Chart: React.FC<IProps> = () => {
+  return null;
   return (
     <ChartVMProvider>
       <TVChartContainer />

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "homepage": "https://app.allspark.gg",
   "private": true,
+  "proxy": "https://spark-indexer.spark-defi.com",
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@emotion/core": "^11.0.0",
