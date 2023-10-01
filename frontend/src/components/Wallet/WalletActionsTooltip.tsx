@@ -50,14 +50,6 @@ const WalletActionsTooltip: React.FC<IProps> = () => {
       <Text onClick={handleCopyAddress} className="menu-item">
         Copy address
       </Text>
-      {accountStore.loginType === LOGIN_TYPE.PRIVATE_KEY && (
-        <>
-          <SizedBox height={10} />
-          <Text onClick={handleCopySeed} className="menu-item">
-            Copy private key
-          </Text>
-        </>
-      )}
       <SizedBox height={10} />
       <Text
         className="menu-item"

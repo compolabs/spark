@@ -22,10 +22,12 @@ class OrdersStore {
   }
 
   sync = () =>
-    getOrderbook(this.rootStore.accountStore.ethFormatWallet ?? "", "UNI/USDC").then((res) => {
-      this.setOrderbook(res.orderbook);
-      this.setMyOrders(res.myOrders);
-    });
+    getOrderbook(this.rootStore.accountStore.address ?? "", "UNI/USDC").then(
+      (res) => {
+        this.setOrderbook(res.orderbook);
+        this.setMyOrders(res.myOrders);
+      }
+    );
 }
 
 export default OrdersStore;

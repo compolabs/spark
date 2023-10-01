@@ -49,7 +49,10 @@ const TokensFaucetTable: React.FC<IProps> = () => {
           btn: (() => {
             if (!accountStore.isLoggedIn)
               return (
-                <Button fixed onClick={() => settingsStore.setLoginModalOpened(true)}>
+                <Button
+                  fixed
+                  onClick={() => settingsStore.setLoginModalOpened(true)}
+                >
                   Connect wallet
                 </Button>
               );
@@ -65,25 +68,32 @@ const TokensFaucetTable: React.FC<IProps> = () => {
                   Mint
                 </Button>
               );
-            if (vm.alreadyMintedTokens.includes(t.assetId))
-              return (
-                <Button fixed disabled>
-                  Minted
-                </Button>
-              );
+            // if (vm.alreadyMintedTokens.includes(t.assetId))
+            //   return (
+            //     <Button fixed disabled>
+            //       Minted
+            //     </Button>
+            //   );
             return (
               <Button
                 fixed
                 disabled={vm.loading || !vm.initialized}
                 onClick={() => {
                   if (t.symbol === "ETH") {
-                    window.open(`${FAUCET_URL}/?address=${accountStore.address}`, "blank");
+                    window.open(
+                      `${FAUCET_URL}/?address=${accountStore.address}`,
+                      "blank"
+                    );
                   } else {
                     vm.mint(t.assetId);
                   }
                 }}
               >
-                {vm.loading && vm.actionTokenAssetId === t.assetId ? <Loading /> : "Mint"}
+                {vm.loading && vm.actionTokenAssetId === t.assetId ? (
+                  <Loading />
+                ) : (
+                  "Mint"
+                )}
               </Button>
             );
           })(),
@@ -97,7 +107,7 @@ const TokensFaucetTable: React.FC<IProps> = () => {
       accountStore.isLoggedIn,
       settingsStore,
       vm.loading,
-      vm.alreadyMintedTokens,
+      // vm.alreadyMintedTokens,
     ]
   );
   const columns = React.useMemo(

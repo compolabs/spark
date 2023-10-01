@@ -1,12 +1,19 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { RootStore, useStores } from "@stores";
-import { EXPLORER_URL, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
+import {
+  CONTRACT_ADDRESSES,
+  EXPLORER_URL,
+  TOKENS_BY_ASSET_ID,
+  TOKENS_BY_SYMBOL,
+  TOKENS_LIST,
+} from "@src/constants";
 import BN from "@src/utils/BN";
-import { TokenContractAbi__factory } from "@src/contracts";
 import { LOGIN_TYPE } from "@stores/AccountStore";
-import { Asset } from "@fuel-wallet/types";
+import { TokenFactoryAbi__factory } from "@src/contracts";
+import { hashMessage } from "fuels";
+import centerEllipsis from "@src/utils/centerEllipsis";
 
 const ctx = React.createContext<FaucetVM | null>(null);
 
@@ -28,7 +35,6 @@ const faucetAmounts: Record<string, number> = {
   UNI: 50,
   BTC: 0.01,
   USDC: 300,
-  SWAY: 5,
   COMP: 5,
 };
 
@@ -38,92 +44,52 @@ class FaucetVM {
   loading: boolean = false;
   private _setLoading = (l: boolean) => (this.loading = l);
 
-  alreadyMintedTokens: string[] = [];
-  private setAlreadyMintedTokens = (l: string[]) => (this.alreadyMintedTokens = l);
-
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;
-    this.checkTokensThatAlreadyBeenMinted();
-    reaction(
-      () => [this.rootStore.accountStore.address],
-      () => this.updateFaucetStateWhenVersionChanged()
-    );
     makeAutoObservable(this);
   }
-
-  updateFaucetStateWhenVersionChanged = async () => {
-    this.setInitialized(false);
-    await this.checkTokensThatAlreadyBeenMinted();
-    this.setInitialized(true);
-  };
 
   rejectUpdateStatePromise?: () => void;
   setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 
-  checkTokensThatAlreadyBeenMinted = async () => {
-    const { walletToRead, addressInput } = this.rootStore.accountStore;
-    if (walletToRead == null || addressInput == null) return;
-    const tokens = TOKENS_LIST.filter((v) => v.symbol !== "ETH");
-    if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
-
-    const tokensContracts = tokens.map((b) =>
-      TokenContractAbi__factory.connect(b.assetId, walletToRead)
-    );
-    const promise = new Promise((resolve, reject) => {
-      this.rejectUpdateStatePromise = reject;
-      resolve(
-        Promise.all(tokensContracts.map((v) => v.functions.already_minted(addressInput).simulate()))
-      );
-    });
-    promise
-      .catch((v) => {
-        console.log("update faucet data error", v);
-      })
-      .then((value: any) => {
-        if (value.length > 0) {
-          const v = value.reduce(
-            (acc: any, v: any, index: number) =>
-              v.value ? [...acc, tokens[index].assetId] : [...acc],
-            [] as string[]
-          );
-          this.setAlreadyMintedTokens(v);
-        }
-      })
-      .finally(() => {
-        this.setInitialized(true);
-        this.setRejectUpdateStatePromise(undefined);
-      });
-  };
-
   actionTokenAssetId: string | null = null;
   setActionTokenAssetId = (l: string | null) => (this.actionTokenAssetId = l);
 
-  initialized: boolean = false;
-  private setInitialized = (l: boolean) => (this.initialized = l);
+  initialized: boolean = true;
 
   get faucetTokens() {
     const { accountStore } = this.rootStore;
     if (accountStore.assetBalances == null) return [];
-    return TOKENS_LIST.map((b) => {
+    return TOKENS_LIST.filter((t) => t.symbol !== "SWAY").map((b) => {
       const balance = accountStore.findBalanceByAssetId(b.assetId);
+      const price = BN.ZERO;
       const mintAmount = new BN(faucetAmounts[b.symbol] ?? 0);
-      const formatBalance = BN.formatUnits(balance?.balance ?? BN.ZERO, b.decimals);
+      const mintAmountDollar = mintAmount.times(price);
+      const formatBalance = BN.formatUnits(
+        balance?.balance ?? BN.ZERO,
+        b.decimals
+      );
+      const balanceDollar = formatBalance.times(price);
       return {
         ...TOKENS_BY_ASSET_ID[b.assetId],
         ...balance,
         formatBalance,
+        price,
+        balanceDollar,
         mintAmount,
+        mintAmountDollar,
       };
     });
   }
 
   mint = async (assetId?: string) => {
-    if (assetId == null || this.alreadyMintedTokens.includes(assetId)) {
-      return;
-    }
+    if (assetId == null) return;
     if (this.rootStore.accountStore.loginType === LOGIN_TYPE.FUEL_WALLET) {
-      const addedAssets: Array<Asset> = await window?.fuel.assets();
-      if (addedAssets != null && !addedAssets.some((v) => v.assetId === assetId)) {
+      const addedAssets: Array<any> = await window?.fuel.assets();
+      if (
+        addedAssets != null &&
+        !addedAssets.some((v) => v.assetId === assetId)
+      ) {
         await this.addAsset(assetId);
       }
     }
@@ -132,22 +98,38 @@ class FaucetVM {
     const { accountStore, notificationStore } = this.rootStore;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const tokenContract = TokenContractAbi__factory.connect(assetId, wallet);
+    const tokenFactoryContract = TokenFactoryAbi__factory.connect(
+      CONTRACT_ADDRESSES.tokenFactory,
+      wallet
+    );
 
     try {
-      const { transactionResult } = await tokenContract.functions
-        .mint()
-        .txParams({ gasPrice: 1 })
+      const token = TOKENS_BY_ASSET_ID[assetId];
+      const amount = BN.parseUnits(faucetAmounts[token.symbol], token.decimals);
+      const hash = hashMessage(token.symbol);
+      const userAddress = wallet.address.toB256();
+
+      const { transactionResult } = await tokenFactoryContract.functions
+        .mint({ value: userAddress }, hash, amount.toString())
+        .txParams({ gasPrice: 2 })
         .call();
       if (transactionResult != null) {
-        this.setAlreadyMintedTokens([...this.alreadyMintedTokens, assetId]);
         const token = TOKENS_BY_ASSET_ID[assetId];
-        this.rootStore.notificationStore.toast(`You have successfully minted ${token.symbol}`, {
-          link: `${EXPLORER_URL}/transaction/${transactionResult.id}`,
-          linkTitle: "View on Explorer",
-          type: "success",
-          title: "Transaction is completed!",
-        });
+        // if (token !== TOKENS_BY_SYMBOL.ETH) {
+        //   this.rootStore.settingsStore.addMintedToken(assetId);
+        // }
+        const txId = transactionResult.id ?? "";
+        this.rootStore.notificationStore.toast(
+          `You have successfully minted ${token.symbol}`,
+          {
+            link: `${EXPLORER_URL}/transaction/${txId}`,
+            linkTitle: "View on Explorer",
+            type: "success",
+            // copyTitle: `Copy tx id: ${centerEllipsis(txId, 8)}`,
+            // copyText: transactionResult.id,
+            title: "Transaction is completed!",
+          }
+        );
       }
       await this.rootStore.accountStore.updateAccountBalances();
     } catch (e) {

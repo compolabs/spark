@@ -38,25 +38,25 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
     setSeed(value);
     setErr(false);
   };
-  const handleLoginWithSeed = () => {
-    // const valid = isValidMnemonic(seed);
-    // if (!valid) {
-    //   setErr(true);
-    //   return;
-    // }
-    onLogin(LOGIN_TYPE.PRIVATE_KEY, seed);
-    setImportInputOpened(false);
-    setSeed("");
-    setErr(false);
-    rest.onClose();
-  };
+  // const handleLoginWithSeed = () => {
+  //   // const valid = isValidMnemonic(seed);
+  //   // if (!valid) {
+  //   //   setErr(true);
+  //   //   return;
+  //   // }
+  //   onLogin(LOGIN_TYPE.PRIVATE_KEY, seed);
+  //   setImportInputOpened(false);
+  //   setSeed("");
+  //   setErr(false);
+  //   rest.onClose();
+  // };
 
   const loginTypes = [
-    {
-      title: "Fuelet",
-      isActive: window.fuelet != null,
-      onClick: handleLogin(LOGIN_TYPE.FUELET),
-    },
+    // {
+    //   title: "Fuelet",
+    //   isActive: window.fuelet != null,
+    //   onClick: handleLogin(LOGIN_TYPE.FUELET),
+    // },
     {
       title: "Fuel wallet",
       type: LOGIN_TYPE.FUEL_WALLET,
@@ -125,9 +125,9 @@ const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
                 Paste from buffer
               </Button>
               <SizedBox width={10} />
-              <Button onClick={handleLoginWithSeed} fixed>
-                Connect wallet
-              </Button>
+              {/*<Button onClick={handleLoginWithSeed} fixed>*/}
+              {/*  Connect wallet*/}
+              {/*</Button>*/}
             </Row>
           </Column>
         )}

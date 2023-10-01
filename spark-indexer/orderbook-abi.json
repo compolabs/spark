@@ -36,48 +36,12 @@
     },
     {
       "typeId": 3,
-      "type": "str[13]",
+      "type": "str",
       "components": null,
       "typeParameters": null
     },
     {
       "typeId": 4,
-      "type": "str[15]",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 5,
-      "type": "str[18]",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 6,
-      "type": "str[20]",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 7,
-      "type": "str[22]",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 8,
-      "type": "str[23]",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 9,
-      "type": "str[28]",
-      "components": null,
-      "typeParameters": null
-    },
-    {
-      "typeId": 10,
       "type": "struct Address",
       "components": [
         {
@@ -89,30 +53,8 @@
       "typeParameters": null
     },
     {
-      "typeId": 11,
-      "type": "struct CancelOrderEvent",
-      "components": [
-        {
-          "name": "timestamp",
-          "type": 18,
-          "typeArguments": null
-        },
-        {
-          "name": "address",
-          "type": 10,
-          "typeArguments": null
-        },
-        {
-          "name": "order",
-          "type": 15,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": null
-    },
-    {
-      "typeId": 12,
-      "type": "struct ContractId",
+      "typeId": 5,
+      "type": "struct AssetId",
       "components": [
         {
           "name": "value",
@@ -123,71 +65,93 @@
       "typeParameters": null
     },
     {
-      "typeId": 13,
-      "type": "struct CreateOrderEvent",
+      "typeId": 6,
+      "type": "struct CancelOrderEvent",
       "components": [
         {
           "name": "timestamp",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "address",
-          "type": 10,
+          "type": 4,
           "typeArguments": null
         },
         {
           "name": "order",
-          "type": 15,
+          "type": 9,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 14,
-      "type": "struct DepositEvent",
+      "typeId": 7,
+      "type": "struct CreateOrderEvent",
       "components": [
         {
           "name": "timestamp",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "address",
-          "type": 10,
+          "type": 4,
           "typeArguments": null
         },
         {
-          "name": "amount",
-          "type": 18,
+          "name": "order",
+          "type": 9,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 15,
+      "typeId": 8,
+      "type": "struct DepositEvent",
+      "components": [
+        {
+          "name": "timestamp",
+          "type": 12,
+          "typeArguments": null
+        },
+        {
+          "name": "address",
+          "type": 4,
+          "typeArguments": null
+        },
+        {
+          "name": "amount",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 9,
       "type": "struct Order",
       "components": [
         {
           "name": "asset0",
-          "type": 12,
+          "type": 5,
           "typeArguments": null
         },
         {
           "name": "amount0",
-          "type": 18,
-          "typeArguments": null
-        },
-        {
-          "name": "asset1",
           "type": 12,
           "typeArguments": null
         },
         {
+          "name": "asset1",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
           "name": "amount1",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
@@ -197,113 +161,113 @@
         },
         {
           "name": "fulfilled0",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "fulfilled1",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "owner",
-          "type": 10,
+          "type": 4,
           "typeArguments": null
         },
         {
           "name": "id",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "timestamp",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "matcher_fee_used",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 16,
+      "typeId": 10,
       "type": "struct TradeEvent",
       "components": [
         {
           "name": "timestamp",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "address",
-          "type": 10,
+          "type": 4,
           "typeArguments": null
         },
         {
           "name": "order0",
-          "type": 15,
+          "type": 9,
           "typeArguments": null
         },
         {
           "name": "order1",
-          "type": 15,
+          "type": 9,
           "typeArguments": null
         },
         {
           "name": "asset0",
-          "type": 12,
+          "type": 5,
           "typeArguments": null
         },
         {
           "name": "amount0",
-          "type": 18,
-          "typeArguments": null
-        },
-        {
-          "name": "asset1",
           "type": 12,
           "typeArguments": null
         },
         {
+          "name": "asset1",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
           "name": "amount1",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 17,
+      "typeId": 11,
       "type": "struct WithdrawEvent",
       "components": [
         {
           "name": "timestamp",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "address",
-          "type": 10,
+          "type": 4,
           "typeArguments": null
         },
         {
           "name": "amount",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 18,
+      "typeId": 12,
       "type": "u64",
       "components": null,
       "typeParameters": null
@@ -314,7 +278,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
@@ -338,37 +302,37 @@
       "inputs": [
         {
           "name": "asset1",
-          "type": 12,
+          "type": 5,
           "typeArguments": null
         },
         {
           "name": "amount1",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
       "name": "create_order",
       "output": {
         "name": "",
-        "type": 18,
+        "type": 12,
         "typeArguments": null
       },
       "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
         {
           "name": "storage",
           "arguments": [
             "read",
             "write"
           ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
         }
       ]
     },
@@ -398,14 +362,14 @@
       "inputs": [
         {
           "name": "address",
-          "type": 10,
+          "type": 4,
           "typeArguments": null
         }
       ],
       "name": "get_deposit",
       "output": {
         "name": "",
-        "type": 18,
+        "type": 12,
         "typeArguments": null
       },
       "attributes": [
@@ -421,12 +385,12 @@
       "inputs": [
         {
           "name": "order0_id",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "order1_id",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
@@ -450,14 +414,14 @@
       "inputs": [
         {
           "name": "id",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
       "name": "order_by_id",
       "output": {
         "name": "",
-        "type": 15,
+        "type": 9,
         "typeArguments": null
       },
       "attributes": [
@@ -474,7 +438,7 @@
       "name": "orders_amount",
       "output": {
         "name": "",
-        "type": 18,
+        "type": 12,
         "typeArguments": null
       },
       "attributes": [
@@ -490,7 +454,7 @@
       "inputs": [
         {
           "name": "amount",
-          "type": 18,
+          "type": 12,
           "typeArguments": null
         }
       ],
@@ -516,7 +480,7 @@
       "logId": 0,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -532,7 +496,7 @@
       "logId": 2,
       "loggedType": {
         "name": "",
-        "type": 7,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -540,7 +504,7 @@
       "logId": 3,
       "loggedType": {
         "name": "",
-        "type": 11,
+        "type": 6,
         "typeArguments": []
       }
     },
@@ -548,7 +512,7 @@
       "logId": 4,
       "loggedType": {
         "name": "",
-        "type": 9,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -556,7 +520,7 @@
       "logId": 5,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -564,7 +528,7 @@
       "logId": 6,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 7,
         "typeArguments": []
       }
     },
@@ -572,7 +536,7 @@
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 4,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -580,7 +544,7 @@
       "logId": 8,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 8,
         "typeArguments": []
       }
     },
@@ -588,7 +552,7 @@
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 6,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -596,7 +560,7 @@
       "logId": 10,
       "loggedType": {
         "name": "",
-        "type": 6,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -604,7 +568,7 @@
       "logId": 11,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -612,7 +576,7 @@
       "logId": 12,
       "loggedType": {
         "name": "",
-        "type": 9,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -620,7 +584,7 @@
       "logId": 13,
       "loggedType": {
         "name": "",
-        "type": 9,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -628,7 +592,7 @@
       "logId": 14,
       "loggedType": {
         "name": "",
-        "type": 16,
+        "type": 10,
         "typeArguments": []
       }
     },
@@ -636,7 +600,7 @@
       "logId": 15,
       "loggedType": {
         "name": "",
-        "type": 16,
+        "type": 10,
         "typeArguments": []
       }
     },
@@ -644,7 +608,7 @@
       "logId": 16,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -652,7 +616,7 @@
       "logId": 17,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 3,
         "typeArguments": null
       }
     },
@@ -660,7 +624,7 @@
       "logId": 18,
       "loggedType": {
         "name": "",
-        "type": 17,
+        "type": 11,
         "typeArguments": []
       }
     }

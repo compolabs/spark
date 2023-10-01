@@ -61,9 +61,8 @@ const AddressContainer = styled.div<{ expanded: boolean }>`
 
 const LoggedInAccountInfo: React.FC<IProps> = () => {
   const { accountStore } = useStores();
-  const { ethFormatWallet } = accountStore;
-  const avatar =
-    ethFormatWallet && identityImg.create(ethFormatWallet, { size: 24 * 3 });
+  const { address } = accountStore;
+  const avatar = address && identityImg.create(address, { size: 24 * 3 });
   const theme = useTheme();
   const [accountOpened, setAccountOpened] = useState<boolean>(false);
   return (
@@ -80,7 +79,7 @@ const LoggedInAccountInfo: React.FC<IProps> = () => {
         >
           <AddressContainer expanded={accountOpened}>
             <img className="avatar" src={avatar!} alt="avatar" />
-            {centerEllipsis(ethFormatWallet ?? "", 8)}
+            {centerEllipsis(address ?? "", 8)}
             <SizedBox width={4} />
             <img
               src={theme.images.icons.arrowDown}

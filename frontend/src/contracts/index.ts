@@ -4,13 +4,13 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.51.0
+  Fuels version: 0.57.0
   Forc version: 0.44.0
-  Fuel-Core version: 0.20.3
+  Fuel-Core version: 0.20.4
 */
-export type { TokenAbi } from "./TokenAbi";
 
-export type { OrderbookAbi } from "./OrderbookAbi";
+export type { SpotMarketAbi } from "./SpotMarketAbi";
+export type { TokenFactoryAbi } from "./TokenFactoryAbi";
 
-export { TokenContractAbi__factory } from "./factories/TokenContractAbi__factory";
-export { OrderbookAbi__factory } from "./factories/OrderbookAbi__factory";
+export { SpotMarketAbi__factory } from "./factories/SpotMarketAbi__factory";
+export { TokenFactoryAbi__factory } from "./factories/TokenFactoryAbi__factory";

@@ -1,5 +1,4 @@
-import axios from "axios";
-import { BACKEND_URL, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 
@@ -30,13 +29,20 @@ export class Trade {
     const [symbol0] = pairSymbol.split("/");
     const token0 = TOKENS_BY_SYMBOL[symbol0];
 
-    this.type = token0.assetId === tradeOutput.asset0 ? TRADE_TYPE.SELL : TRADE_TYPE.BUY;
-    this.asset0 = this.type === TRADE_TYPE.SELL ? tradeOutput.asset0 : tradeOutput.asset1;
+    this.type =
+      token0.assetId === tradeOutput.asset0 ? TRADE_TYPE.SELL : TRADE_TYPE.BUY;
+    this.asset0 =
+      this.type === TRADE_TYPE.SELL ? tradeOutput.asset0 : tradeOutput.asset1;
     this.amount0 =
-      this.type === TRADE_TYPE.SELL ? new BN(tradeOutput.amount0) : new BN(tradeOutput.amount1);
-    this.asset1 = this.type === TRADE_TYPE.SELL ? tradeOutput.asset1 : tradeOutput.asset0;
+      this.type === TRADE_TYPE.SELL
+        ? new BN(tradeOutput.amount0)
+        : new BN(tradeOutput.amount1);
+    this.asset1 =
+      this.type === TRADE_TYPE.SELL ? tradeOutput.asset1 : tradeOutput.asset0;
     this.amount1 =
-      this.type === TRADE_TYPE.SELL ? new BN(tradeOutput.amount1) : new BN(tradeOutput.amount0);
+      this.type === TRADE_TYPE.SELL
+        ? new BN(tradeOutput.amount1)
+        : new BN(tradeOutput.amount0);
     this.timestamp = tradeOutput.timestamp;
   }
 

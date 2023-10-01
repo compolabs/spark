@@ -4,18 +4,15 @@ import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
 import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
 import Balance from "@src/entities/Balance";
 import BN from "@src/utils/BN";
-import { FuelProviderConfig } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
   FUEL_WALLET = "FUEL_WALLET",
-  PRIVATE_KEY = "PRIVATE_KEY",
   FUELET = "FUELET",
 }
 
 export interface ISerializedAccountStore {
   address: string | null;
   loginType: LOGIN_TYPE | null;
-  privateKey: string | null;
 }
 
 class AccountStore {
@@ -28,8 +25,7 @@ class AccountStore {
     if (initState) {
       this.setLoginType(initState.loginType);
       this.setAddress(initState.address);
-      this.setPrivateKey(initState.privateKey);
-      if (initState.loginType === LOGIN_TYPE.FUEL_WALLET) {
+      if (initState.loginType != null) {
         document.addEventListener("FuelLoaded", this.onFuelLoaded);
       }
     }
@@ -43,18 +39,28 @@ class AccountStore {
 
   onFuelLoaded = () => {
     if (this.walletInstance == null) return;
-    this.walletInstance.on(window?.fuel.events.currentAccount, this.handleAccEvent);
-    this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
+    this.walletInstance.on(
+      window?.fuel.events.currentAccount,
+      this.handleAccEvent
+    );
+    this.walletInstance.on(
+      window?.fuel.events?.network,
+      this.handleNetworkEvent
+    );
   };
   handleAccEvent = (account: string) => this.setAddress(account);
-  handleNetworkEvent = (network: FuelProviderConfig) => {
+
+  handleNetworkEvent = (network: any) => {
     if (network.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(`Please change network url to Testnet Beta 3`, {
-        link: NODE_URL,
-        linkTitle: "Go to Testnet Beta 3",
-        type: "error",
-        title: "Attention",
-      });
+      this.rootStore.notificationStore.toast(
+        `Please change network url to Testnet Beta 4`,
+        {
+          // copyTitle: "Copy beta-4 RPC",
+          // copyText: NODE_URL,
+          type: "error",
+          title: "Attention",
+        }
+      );
     }
   };
 
@@ -80,14 +86,16 @@ class AccountStore {
     const assetBalances = TOKENS_LIST.map((asset) => {
       const t = balances.find(({ assetId }) => asset.assetId === assetId);
       const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-      if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+      if (t == null)
+        return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
       return new Balance({ balance, ...asset });
     });
     this.setAssetBalances(assetBalances);
   };
   findBalanceByAssetId = (assetId: string) =>
-    this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
+    this.assetBalances &&
+    this.assetBalances.find((balance) => balance.assetId === assetId);
 
   get balances() {
     const { accountStore } = this.rootStore;
@@ -107,24 +115,25 @@ class AccountStore {
   serialize = (): ISerializedAccountStore => ({
     address: this.address,
     loginType: this.loginType,
-    privateKey: this.privateKey,
   });
 
-  login = async (loginType: LOGIN_TYPE, phrase?: string) => {
+  login = async (loginType: LOGIN_TYPE) => {
     this.setLoginType(loginType);
-    switch (loginType) {
-      case LOGIN_TYPE.FUEL_WALLET:
-      case LOGIN_TYPE.FUELET:
-        await this.loginWithFuelWallet();
-        await this.onFuelLoaded();
-        break;
-      case LOGIN_TYPE.PRIVATE_KEY:
-        await this.loginWithPrivateKey(phrase);
-        break;
-      default:
-        return;
-    }
+    await this.loginWithWallet();
+    await this.onFuelLoaded();
   };
+
+  get walletInstance() {
+    switch (this.loginType) {
+      case LOGIN_TYPE.FUEL_WALLET:
+        return window.fuel;
+      case LOGIN_TYPE.FUELET:
+        return window.fuel;
+      default:
+        return null;
+    }
+  }
+
   disconnect = async () => {
     try {
       this.walletInstance.disconnect();
@@ -136,39 +145,29 @@ class AccountStore {
     this.setLoginType(null);
   };
 
-  get walletInstance() {
-    switch (this.loginType) {
-      case LOGIN_TYPE.FUEL_WALLET:
-        return window.fuel;
-      case LOGIN_TYPE.FUELET:
-        return window.fuelet;
-      default:
-        return null;
-    }
-  }
-
-  loginWithFuelWallet = async () => {
-    if (this.walletInstance == null) throw new Error("There is no wallet instance");
-    const res = await this.walletInstance.connect({ url: NODE_URL });
+  loginWithWallet = async () => {
+    if (this.walletInstance == null)
+      throw new Error("There is no wallet instance");
+    // const res = await this.walletInstance.connect({ url: NODE_URL });
+    const res = await this.walletInstance.connect();
     if (!res) {
       this.rootStore.notificationStore.toast("User denied", {
         type: "error",
       });
       return;
     }
-    const account = await this.walletInstance
-      .currentAccount()
-      .catch((e: any) => console.error("account", e));
-    const provider = await this.walletInstance
-      .getProvider()
-      .catch((e: any) => console.error("provider", e));
+    const account = await this.walletInstance.currentAccount();
+    const provider = await this.walletInstance.getProvider();
     if (provider.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(`Please change network url to beta 3`, {
-        link: NODE_URL,
-        linkTitle: "Go to Beta 3",
-        type: "error",
-        title: "Attention",
-      });
+      this.rootStore.notificationStore.toast(
+        `Please change network url to beta 4`,
+        {
+          // copyTitle: "Copy beta-4 RPC",
+          // copyText: NODE_URL,
+          type: "error",
+          title: "Attention",
+        }
+      );
     }
     this.setAddress(account);
   };
@@ -176,52 +175,41 @@ class AccountStore {
   getFormattedBalance = (token: IToken): string | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
     if (balance == null) return null;
-    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(4);
+    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals).toFormat(
+      2
+    );
   };
   getBalance = (token: IToken): BN | null => {
     const balance = this.findBalanceByAssetId(token.assetId);
     if (balance == null) return null;
-    return balance.balance ?? BN.ZERO;
+    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals);
   };
 
   get isLoggedIn() {
     return this.address != null;
   }
 
-  loginWithPrivateKey = (key?: string) => {
-    if (key == null) return;
-    const wallet = Wallet.fromPrivateKey(key, NODE_URL);
-    this.setAddress(wallet.address.toAddress());
-    this.setPrivateKey(key);
-    this.rootStore.settingsStore.setLoginModalOpened(false);
-  };
-
   getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
-    if (this.address == null) return null;
-    switch (this.loginType) {
-      case LOGIN_TYPE.FUEL_WALLET:
-      case LOGIN_TYPE.FUELET:
-        return this.walletInstance.getWallet(this.address);
-      case LOGIN_TYPE.PRIVATE_KEY:
-        if (this.privateKey == null) return null;
-        return Wallet.fromPrivateKey(this.privateKey, new Provider(NODE_URL));
-    }
-    return null;
+    if (this.address == null || window.fuel == null) return null;
+    return window.fuel.getWallet(this.address);
   };
 
-  get walletToRead(): WalletLocked | null {
-    if (this.address == null) return null;
-    return Wallet.fromAddress(this.address, new Provider(NODE_URL));
-  }
-
-  get ethFormatWallet(): string | null {
-    if (this.address == null) return null;
-    return Address.fromString(this.address).toB256();
+  get walletToRead(): WalletLocked {
+    //just acc with eth on balance
+    return Wallet.fromAddress(
+      "fuel1m56y48mej3366h6460y4rvqqt62y9vn8ad3meyfa5wkk5dc6mxmss7rwnr",
+      this.provider
+    );
   }
 
   get addressInput(): null | { value: string } {
     if (this.address == null) return null;
     return { value: Address.fromString(this.address).toB256() };
+  }
+
+  get addressB256(): null | string {
+    if (this.address == null) return null;
+    return Address.fromString(this.address).toB256();
   }
 }
 

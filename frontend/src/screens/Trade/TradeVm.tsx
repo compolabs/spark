@@ -9,7 +9,7 @@ import {
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
 import BN from "@src/utils/BN";
-import { OrderbookAbi__factory } from "@src/contracts";
+import { SpotMarketAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 
 const ctx = React.createContext<TradeVm | null>(null);
@@ -44,14 +44,22 @@ class TradeVm {
 
   setMarketPrice = () => {
     const { orderbook } = this.rootStore.ordersStore;
-    const buyPrice = BN.parseUnits(orderbook.buy[0].price, this.token1.decimals);
-    const sellPrice = BN.parseUnits(orderbook.sell[0].price, this.token1.decimals);
+    const buyPrice = BN.parseUnits(
+      orderbook.buy[0].price,
+      this.token1.decimals
+    );
+    const sellPrice = BN.parseUnits(
+      orderbook.sell[0].price,
+      this.token1.decimals
+    );
     this.setBuyPrice(sellPrice);
     this.setSellPrice(buyPrice);
   };
 
   getLatestTrades = async () => {
-    const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
+    const data = await getLatestTradesInPair(
+      `${this.token0.symbol}/${this.token1.symbol}`
+    );
     this.setTrades(data);
   };
   loading: boolean = false;
@@ -115,7 +123,8 @@ class TradeVm {
   };
 
   buyPercent: BN = new BN(0);
-  setBuyPercent = (value: number | number[]) => (this.buyPercent = new BN(value.toString()));
+  setBuyPercent = (value: number | number[]) =>
+    (this.buyPercent = new BN(value.toString()));
 
   buyTotal: BN = BN.ZERO;
   setBuyTotal = (total: BN, sync?: boolean) => {
@@ -158,7 +167,8 @@ class TradeVm {
     }
   };
   sellPercent: BN = new BN(0);
-  setSellPercent = (value: number | number[]) => (this.sellPercent = new BN(value.toString()));
+  setSellPercent = (value: number | number[]) =>
+    (this.sellPercent = new BN(value.toString()));
 
   sellTotal: BN = BN.ZERO;
   setSellTotal = (total: BN, sync?: boolean) => {
@@ -204,7 +214,7 @@ class TradeVm {
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const limitOrdersContract = OrderbookAbi__factory.connect(
+    const limitOrdersContract = SpotMarketAbi__factory.connect(
       CONTRACT_ADDRESSES.limitOrders,
       wallet
     );
@@ -225,7 +235,8 @@ class TradeVm {
       amount0 = this.sellAmount.toFixed(0).toString();
       amount1 = this.sellTotal.toFixed(0).toString();
     }
-    if (token0 == null || token1 == null || amount0 == null || amount1 == null) return;
+    if (token0 == null || token1 == null || amount0 == null || amount1 == null)
+      return;
 
     this.setLoading(true);
     try {
@@ -245,7 +256,10 @@ class TradeVm {
         .call()
         .then(({ transactionResult }) => {
           transactionResult &&
-            this.notifyThatActionIsSuccessful("Order has been placed", transactionResult.id ?? "");
+            this.notifyThatActionIsSuccessful(
+              "Order has been placed",
+              transactionResult.id ?? ""
+            );
         })
         .then(() => this.rootStore.ordersStore.sync());
     } catch (e) {
@@ -266,7 +280,7 @@ class TradeVm {
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const limitOrdersContract = OrderbookAbi__factory.connect(
+    const limitOrdersContract = SpotMarketAbi__factory.connect(
       CONTRACT_ADDRESSES.limitOrders,
       wallet
     );
@@ -279,9 +293,12 @@ class TradeVm {
         .txParams({ gasPrice: 1 })
         .call()
         .then(
-          ({ transactionResult }) =>
+          ({ transactionResult }: any) =>
             transactionResult &&
-            this.notifyThatActionIsSuccessful("Order has been canceled", transactionResult.id ?? "")
+            this.notifyThatActionIsSuccessful(
+              "Order has been canceled",
+              transactionResult.id ?? ""
+            )
         )
         .then(() => {
           const { myOrders } = this.rootStore.ordersStore;

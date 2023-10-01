@@ -8,8 +8,3 @@ Spark is an order book built on the fuel.network blockchain. It operates using a
 - To foster a global community of crypto traders and enthusiasts, and to encourage collaboration and knowledge sharing among members.
 - To continuously improve and develop the platform based on user feedback and market trends, ensuring its competitiveness and relevance in the fast-evolving crypto space.
 
-
-## Modules
- - [Limit Orders Smart Contract](https://github.com/sway-gang/sway-exchange/tree/master/contract)
- - [Orders Matching Engine](https://github.com/sway-gang/sway-exchange/tree/master/services/matcher)
- - [Frontend](https://github.com/sway-gang/sway-exchange/blob/master/frontend/README.md)
