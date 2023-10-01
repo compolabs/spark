@@ -156,8 +156,12 @@ class AccountStore {
       });
       return;
     }
-    const account = await this.walletInstance.currentAccount();
-    const provider = await this.walletInstance.getProvider();
+    const account = await this.walletInstance
+      .currentAccount()
+      .catch((e: any) => console.error("account", e));
+    const provider = await this.walletInstance
+      .getProvider()
+      .catch((e: any) => console.error("provider", e));
     if (provider.url !== NODE_URL) {
       this.rootStore.notificationStore.toast(`Please change network url to beta 3`, {
         link: NODE_URL,

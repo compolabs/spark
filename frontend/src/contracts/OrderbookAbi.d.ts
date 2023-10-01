@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.35.0
-  Forc version: 0.35.3
-  Fuel-Core version: 0.17.3
+  Fuels version: 0.51.0
+  Forc version: 0.44.0
+  Fuel-Core version: 0.20.3
 */
 
 import type {
@@ -20,77 +20,69 @@ import type {
   InvokeFunction,
 } from 'fuels';
 
-import type { Option, Enum } from "./common";
+import type { Enum } from "./common";
 
-export type StatusInput = Enum<{ Active: [], Canceled: [], Completed: [] }>;
-export type StatusOutput = StatusInput;
+export enum StatusInput { Active = 'Active', Canceled = 'Canceled', Completed = 'Completed' };
+export enum StatusOutput { Active = 'Active', Canceled = 'Canceled', Completed = 'Completed' };
 
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;
+export type CancelOrderEventInput = { timestamp: BigNumberish, address: AddressInput, order: OrderInput };
+export type CancelOrderEventOutput = { timestamp: BN, address: AddressOutput, order: OrderOutput };
 export type ContractIdInput = { value: string };
 export type ContractIdOutput = ContractIdInput;
+export type CreateOrderEventInput = { timestamp: BigNumberish, address: AddressInput, order: OrderInput };
+export type CreateOrderEventOutput = { timestamp: BN, address: AddressOutput, order: OrderOutput };
+export type DepositEventInput = { timestamp: BigNumberish, address: AddressInput, amount: BigNumberish };
+export type DepositEventOutput = { timestamp: BN, address: AddressOutput, amount: BN };
 export type OrderInput = { asset0: ContractIdInput, amount0: BigNumberish, asset1: ContractIdInput, amount1: BigNumberish, status: StatusInput, fulfilled0: BigNumberish, fulfilled1: BigNumberish, owner: AddressInput, id: BigNumberish, timestamp: BigNumberish, matcher_fee: BigNumberish, matcher_fee_used: BigNumberish };
 export type OrderOutput = { asset0: ContractIdOutput, amount0: BN, asset1: ContractIdOutput, amount1: BN, status: StatusOutput, fulfilled0: BN, fulfilled1: BN, owner: AddressOutput, id: BN, timestamp: BN, matcher_fee: BN, matcher_fee_used: BN };
-export type TradeInput = { order_id: BigNumberish, asset0: ContractIdInput, amount0: BigNumberish, asset1: ContractIdInput, amount1: BigNumberish, timestamp: BigNumberish };
-export type TradeOutput = { order_id: BN, asset0: ContractIdOutput, amount0: BN, asset1: ContractIdOutput, amount1: BN, timestamp: BN };
+export type TradeEventInput = { timestamp: BigNumberish, address: AddressInput, order0: OrderInput, order1: OrderInput, asset0: ContractIdInput, amount0: BigNumberish, asset1: ContractIdInput, amount1: BigNumberish };
+export type TradeEventOutput = { timestamp: BN, address: AddressOutput, order0: OrderOutput, order1: OrderOutput, asset0: ContractIdOutput, amount0: BN, asset1: ContractIdOutput, amount1: BN };
+export type WithdrawEventInput = { timestamp: BigNumberish, address: AddressInput, amount: BigNumberish };
+export type WithdrawEventOutput = { timestamp: BN, address: AddressOutput, amount: BN };
 
-interface LimitOrdersAbiInterface extends Interface {
+interface OrderbookAbiInterface extends Interface {
   functions: {
     cancel_order: FunctionFragment;
     create_order: FunctionFragment;
     deposit: FunctionFragment;
-    fulfill_order: FunctionFragment;
-    get_deposit_by_address: FunctionFragment;
+    get_deposit: FunctionFragment;
     match_orders: FunctionFragment;
     order_by_id: FunctionFragment;
-    orders: FunctionFragment;
     orders_amount: FunctionFragment;
-    orders_by_id: FunctionFragment;
-    trades: FunctionFragment;
     withdraw: FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: 'cancel_order', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'create_order', values: [ContractIdInput, BigNumberish, BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'deposit', values: []): Uint8Array;
-  encodeFunctionData(functionFragment: 'fulfill_order', values: [BigNumberish]): Uint8Array;
-  encodeFunctionData(functionFragment: 'get_deposit_by_address', values: [AddressInput]): Uint8Array;
+  encodeFunctionData(functionFragment: 'get_deposit', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'match_orders', values: [BigNumberish, BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'order_by_id', values: [BigNumberish]): Uint8Array;
-  encodeFunctionData(functionFragment: 'orders', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'orders_amount', values: []): Uint8Array;
-  encodeFunctionData(functionFragment: 'orders_by_id', values: [[BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish]]): Uint8Array;
-  encodeFunctionData(functionFragment: 'trades', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'withdraw', values: [BigNumberish]): Uint8Array;
 
   decodeFunctionData(functionFragment: 'cancel_order', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'create_order', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'deposit', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'fulfill_order', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'get_deposit_by_address', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'get_deposit', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'match_orders', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'order_by_id', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'orders', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'orders_amount', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'orders_by_id', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'trades', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'withdraw', data: BytesLike): DecodedValue;
 }
 
-export class LimitOrdersAbi extends Contract {
-  interface: LimitOrdersAbiInterface;
+export class OrderbookAbi extends Contract {
+  interface: OrderbookAbiInterface;
   functions: {
     cancel_order: InvokeFunction<[id: BigNumberish], void>;
     create_order: InvokeFunction<[asset1: ContractIdInput, amount1: BigNumberish, matcher_fee: BigNumberish], BN>;
     deposit: InvokeFunction<[], void>;
-    fulfill_order: InvokeFunction<[id: BigNumberish], void>;
-    get_deposit_by_address: InvokeFunction<[address: AddressInput], BN>;
+    get_deposit: InvokeFunction<[address: AddressInput], BN>;
     match_orders: InvokeFunction<[order0_id: BigNumberish, order1_id: BigNumberish], void>;
     order_by_id: InvokeFunction<[id: BigNumberish], OrderOutput>;
-    orders: InvokeFunction<[offset: BigNumberish], [Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>]>;
     orders_amount: InvokeFunction<[], BN>;
-    orders_by_id: InvokeFunction<[ids: [BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish, BigNumberish]], [Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>, Option<OrderOutput>]>;
-    trades: InvokeFunction<[offset: BigNumberish], [Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>, Option<TradeOutput>]>;
     withdraw: InvokeFunction<[amount: BigNumberish], void>;
   };
 }

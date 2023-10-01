@@ -28,7 +28,7 @@ export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 
 export const CONTRACT_ADDRESSES = {
-  limitOrders: "0x7662a02959e3e2d681589261e95a7a4bc8ac66c6d66999a0fe01bb6c36ada7c6",
+  limitOrders: "0x6671422fbaa2a3e8d4c20f362c6dbacc3be2412c7ac38d02e36173045110257a",
 };
 
 export interface IToken {

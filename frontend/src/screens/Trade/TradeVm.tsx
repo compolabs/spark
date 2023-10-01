@@ -9,7 +9,7 @@ import {
   TOKENS_BY_SYMBOL,
 } from "@src/constants";
 import BN from "@src/utils/BN";
-import { LimitOrdersAbi__factory } from "@src/contracts";
+import { OrderbookAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 
 const ctx = React.createContext<TradeVm | null>(null);
@@ -204,7 +204,7 @@ class TradeVm {
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const limitOrdersContract = LimitOrdersAbi__factory.connect(
+    const limitOrdersContract = OrderbookAbi__factory.connect(
       CONTRACT_ADDRESSES.limitOrders,
       wallet
     );
@@ -245,10 +245,7 @@ class TradeVm {
         .call()
         .then(({ transactionResult }) => {
           transactionResult &&
-            this.notifyThatActionIsSuccessful(
-              "Order has been placed",
-              transactionResult.transactionId ?? ""
-            );
+            this.notifyThatActionIsSuccessful("Order has been placed", transactionResult.id ?? "");
         })
         .then(() => this.rootStore.ordersStore.sync());
     } catch (e) {
@@ -269,7 +266,7 @@ class TradeVm {
     if (accountStore.address == null) return;
     const wallet = await accountStore.getWallet();
     if (wallet == null) return;
-    const limitOrdersContract = LimitOrdersAbi__factory.connect(
+    const limitOrdersContract = OrderbookAbi__factory.connect(
       CONTRACT_ADDRESSES.limitOrders,
       wallet
     );
@@ -284,10 +281,7 @@ class TradeVm {
         .then(
           ({ transactionResult }) =>
             transactionResult &&
-            this.notifyThatActionIsSuccessful(
-              "Order has been canceled",
-              transactionResult.transactionId ?? ""
-            )
+            this.notifyThatActionIsSuccessful("Order has been canceled", transactionResult.id ?? "")
         )
         .then(() => {
           const { myOrders } = this.rootStore.ordersStore;

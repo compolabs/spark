@@ -28,9 +28,9 @@ impl Status {
 }
 
 pub struct Order {
-    asset0: ContractId,
+    asset0: AssetId,
     amount0: u64,
-    asset1: ContractId,
+    asset1: AssetId,
     amount1: u64,
     status: Status,
     fulfilled0: u64,
@@ -43,9 +43,9 @@ pub struct Order {
 }
 
 pub struct Trade {
-    asset0: ContractId,
+    asset0: AssetId,
     amount0: u64,
-    asset1: ContractId,
+    asset1: AssetId,
     amount1: u64,
 }
 

@@ -72,7 +72,7 @@ class FaucetVM {
     const promise = new Promise((resolve, reject) => {
       this.rejectUpdateStatePromise = reject;
       resolve(
-        Promise.all(tokensContracts.map((v) => v.functions.already_minted(addressInput).get()))
+        Promise.all(tokensContracts.map((v) => v.functions.already_minted(addressInput).simulate()))
       );
     });
     promise
@@ -143,7 +143,7 @@ class FaucetVM {
         this.setAlreadyMintedTokens([...this.alreadyMintedTokens, assetId]);
         const token = TOKENS_BY_ASSET_ID[assetId];
         this.rootStore.notificationStore.toast(`You have successfully minted ${token.symbol}`, {
-          link: `${EXPLORER_URL}/transaction/${transactionResult.transactionId}`,
+          link: `${EXPLORER_URL}/transaction/${transactionResult.id}`,
           linkTitle: "View on Explorer",
           type: "success",
           title: "Transaction is completed!",
