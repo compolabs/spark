@@ -85,6 +85,7 @@ const roundOptions = [2, 4, 5, 6].map((v) => ({
   key: v.toString(),
 }));
 const filters = [sellAndBuy, sell, buy];
+
 const DesktopOrderBook: React.FC<IProps> = () => {
   const vm = useTradeVM();
   const [round, setRound] = useState("2");

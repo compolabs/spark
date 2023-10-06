@@ -25,8 +25,8 @@ export const EXPLORER_URL =
   "https://fuellabs.github.io/block-explorer-v2/beta-4/#";
 export const FAUCET_URL = "https://faucet-beta-4.fuel.network";
 // export const BACKEND_URL = "https://allspark-backend.herokuapp.com/api/v1";
-// export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
-// export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
+export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
+export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 
 export const CONTRACT_ADDRESSES = {
   limitOrders:
