@@ -22,12 +22,12 @@ class OrdersStore {
   }
 
   sync = () =>
-    getOrderbook(this.rootStore.accountStore.address ?? "", "BTC/USDC").then(
-      (res) => {
-        this.setOrderbook(res.orderbook);
-        this.setMyOrders(res.myOrders);
-      }
-    );
+     getOrderbook(this.rootStore.accountStore.addressB256 ?? "", "UNI/USDC").then(
+        (res) => {
+          this.setOrderbook(res.orderbook);
+          this.setMyOrders(res.myOrders);
+        }
+    ).catch(console.error);
 }
 
 export default OrdersStore;

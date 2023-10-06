@@ -1,7 +1,9 @@
 import RootStore from "@stores/RootStore";
-import { makeAutoObservable } from "mobx";
+import {makeAutoObservable, reaction, when} from "mobx";
 import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import { NODE_URL } from "@src/constants";
+import {IToken, NODE_URL, TOKENS_LIST} from "@src/constants";
+import BN from "@src/utils/BN";
+import Balance from "@src/entities/Balance";
 
 export enum LOGIN_TYPE {
   FUEL_WALLET = "FUEL_WALLET",
@@ -23,7 +25,7 @@ class AccountStore {
     makeAutoObservable(this);
 
     this.rootStore = rootStore;
-    Provider.create(NODE_URL).then(provider => this._provider = provider)
+    Provider.create(NODE_URL).then(provider => this._provider = provider).catch(console.error)
     if (initState) {
       this.setLoginType(initState.loginType);
       this.setAddress(initState.address);
@@ -31,7 +33,45 @@ class AccountStore {
         document.addEventListener("FuelLoaded", this.onFuelLoaded);
       }
     }
+    when(() => this._provider != null ,this.updateAccountBalances)
+    setInterval(this.updateAccountBalances, 10 * 1000);
+    reaction(
+        () => this.address,
+        () => Promise.all([this.updateAccountBalances()])
+    );
   }
+
+  public assetBalances: Balance[] | null = null;
+  setAssetBalances = (v: Balance[] | null) => (this.assetBalances = v);
+
+  updateAccountBalances = async () => {
+    if (this.address == null) {
+      this.setAssetBalances([]);
+      return;
+    }
+    const address = Address.fromString(this.address);
+    const balances = await this.provider?.getBalances(address) ?? [];
+    const assetBalances = TOKENS_LIST.map((asset) => {
+      const t = balances.find(({ assetId }) => asset.assetId === assetId);
+      const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
+      if (t == null)
+        return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+
+      return new Balance({ balance, ...asset });
+    });
+    this.setAssetBalances(assetBalances);
+  };
+
+  getBalance = (token: IToken): BN | null => {
+    const balance = this.findBalanceByAssetId(token.assetId);
+    if (balance == null) return null;
+    return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals);
+  };
+
+  findBalanceByAssetId = (assetId: string) =>
+      this.assetBalances &&
+      this.assetBalances.find((balance) => balance.assetId === assetId);
+
 
   onFuelLoaded = () => {
     if (this.walletInstance == null) return;

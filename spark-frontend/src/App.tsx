@@ -18,12 +18,12 @@ const Root = styled(Column)`
 
 const App: React.FC = observer(() => {
     const {accountStore} = useStores()
-    if (!accountStore.rootStore.initialized) return null
+    // if (!accountStore.rootStore.initialized) return null
     return (
         <Root>
-            <Header />
+            <Header/>
             <Routes>
-                <Route path="*" element={<TradeScreen />} />
+                <Route path="*" element={<TradeScreen/>}/>
                 {/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
             </Routes>
         </Root>
