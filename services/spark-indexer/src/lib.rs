@@ -14,8 +14,8 @@ pub mod spark_indexer_index_mod {
         info!("🛒 Market change event \n{:#?}", event);
         let entry = MarketEntity {
             id: uid(&event.market.id.0),
-            asset0:  Address::from(event.market.asset_0.0).to_string(),
-            asset1:  Address::from(event.market.asset_1.0).to_string(),
+            asset0: Address::from(event.market.asset_0.0).to_string(),
+            asset1: Address::from(event.market.asset_1.0).to_string(),
             admin: event.market.admin,
             paused: event.market.paused,
         };
@@ -27,7 +27,7 @@ pub mod spark_indexer_index_mod {
         info!("✨ Ørder change event \n{:#?}", event);
         let order_entry = OrderEntity {
             id: uid(event.order.id.to_be_bytes()),
-            market_id: Address::from(event.order.market_id.0).to_string(),
+            market: uid(&event.order.market_id.0),
             order_type: match event.order.order_type {
                 OrderType::Sell => String::from("Sell"),
                 OrderType::Buy => String::from("Buy"),
@@ -65,5 +65,4 @@ pub mod spark_indexer_index_mod {
         );
         entry.save();
     }
-
 }
