@@ -7,7 +7,7 @@ graphql_schema: schema/spark_indexer.schema.graphql
 module:
   wasm: target/wasm32-unknown-unknown/release/spark_indexer.wasm
 metrics: ~
-contract_id: fuel1y2jrl8hht3hqgx7jh0qkqmu7k4xu854ctmusgllfqspvnaal3qdq06q67u
-start_block: 3872166
+contract_id: fuel1qmvxyw3qj05axpavzzc488rxvdjs0mk60ul340g36tv8tdsmu05s4kp54w
+start_block: 4225042
 end_block: ~
 resumable: true

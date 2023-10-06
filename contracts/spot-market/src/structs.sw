@@ -27,7 +27,15 @@ impl Status {
     }
 }
 
+pub enum OrderType {
+    Buy: (),
+    Sell: (),
+}
+
 pub struct Order {
+    id: u64,
+    market_id: b256,
+    order_type: OrderType,
     asset0: b256,
     amount0: u64,
     asset1: b256,
@@ -36,10 +44,17 @@ pub struct Order {
     fulfilled0: u64,
     fulfilled1: u64,
     owner: Address,
-    id: u64,
     timestamp: u64,
     matcher_fee: u64,
     matcher_fee_used: u64,
+}
+
+pub struct Market {
+    id: b256,
+    asset0: b256,
+    asset1: b256,
+    admin: Address,
+    paused: bool
 }
 
 pub enum Error {

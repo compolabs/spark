@@ -16,13 +16,13 @@ abigen!(Contract(
 ));
 
 const RPC: &str = "beta-4.fuel.network";
-const CONTRACT_ADDRESS: &str = "0x22a43f9ef75c6e041bd2bbc1606f9eb54dc3d2b85ef9047fe90402c9f7bf881a";
+const CONTRACT_ADDRESS: &str = "0x06d8623a2093e9d307ac10b1539c66636507eeda7f3f1abd11d2d875b61be3e9";
 
-const ASSET0: &str = "USDC";
-const AMOUNT0: u64 = 1000;
+const ASSET0: &str = "UNI";
+const AMOUNT0: u64 = 300;
 
-const ASSET1: &str = "UNI";
-const AMOUNT1: u64 = 300;
+const ASSET1: &str = "USDC";
+const AMOUNT1: u64 = 1000;
 
 #[tokio::test]
 async fn match_orders_test() {
@@ -82,8 +82,20 @@ async fn match_orders_test() {
             .await
             .unwrap();
     }
+
+    let market_id = methods.calc_market_id(asset0.bits256, asset1.bits256).simulate().await.unwrap().value;
+    if methods.get_market(market_id).simulate().await.is_err(){
+        methods
+            .create_market(asset0.bits256, asset1.bits256)
+            .tx_params(TxParameters::default().with_gas_price(1))
+            .call()
+            .await
+            .unwrap();
+        println!("✅ Market has been created");
+    }
+
     let order_id_0 = methods
-        .create_order(asset1.bits256, amount1, 1000)
+        .create_order(market_id, amount1, 1000)
         .tx_params(TxParameters::default().with_gas_price(1))
         .call_params(
             CallParameters::default()
@@ -114,7 +126,7 @@ async fn match_orders_test() {
             .unwrap();
     }
     let order_id_1 = methods
-        .create_order(asset0.bits256, amount0, 1000)
+        .create_order(market_id, amount0, 1000)
         .tx_params(TxParameters::default().with_gas_price(1))
         .call_params(
             CallParameters::default()

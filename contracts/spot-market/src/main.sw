@@ -16,17 +16,37 @@ use std::logging::log;
 use std::revert::require;
 use std::storage::storage_vec::*;
 use std::token::transfer_to_address;
-use std::hash::Hash;
+use std::hash::*;
 
 configurable {}
 
 storage {
+    markets: StorageMap<b256, Market> = StorageMap {},
     orders: StorageMap<u64, Order> = StorageMap {},
     orders_amount: u64 = 0,
     deposits: StorageMap<Address, u64> = StorageMap {},
 }
 
 abi OrderBookContract {
+
+// ## Market management
+// Allow users create markets with own tokens
+// todo discuss cost of market creation and access to management of teh market
+
+    fn calc_market_id(asset0: b256, asset1: b256) -> b256;
+
+    #[storage(read)]
+    fn get_market(id: b256) -> Market;
+
+    #[storage(read, write)]
+    fn create_market(asset0: b256, asset1: b256) -> b256;
+
+    #[storage(read, write)]
+    fn pause_market(id: b256);
+
+    #[storage(read, write)]
+    fn resume_market(id: b256);
+    
 
 // ## Deposit and Withdraw of fee
 // Users can deposit money to paing fees into their accounts. This fees is necessary to motivate matching engine, and also to pay protocol fees
@@ -48,14 +68,6 @@ abi OrderBookContract {
     fn create_order(asset1: b256, amount1: u64, matcher_fee: u64) -> u64;
 
 
-// ## Modify order
-// todo not sure hwo that should work
-
-    //todo implemement
-    #[storage(read, write)]
-    fn modify_order(id: u64);
-
-
 // ## Close order
 // Users can close one or multiple orders, unused fee will be returned to the user's balacne
    
@@ -63,8 +75,8 @@ abi OrderBookContract {
     fn cancel_order(id: u64);
     
     //todo implemement
-    #[storage(read, write)]
-    fn cancel_all_orders();
+    // #[storage(read, write)]
+    // fn cancel_all_orders();
 
 
 // ## Order getters
@@ -76,19 +88,6 @@ abi OrderBookContract {
 
     #[storage(read)]
     fn order_by_id(id: u64) -> Order;
-
-    //todo implemement
-    #[storage(read)]
-    fn get_mark_price() -> u64;
-
-    //todo implemement
-    #[storage(read)]
-    fn get_all_pending_funding_payment() -> u64;
-    
-    //todo implemement
-    #[storage(read)]
-    fn get_market_price() -> u64;
-
 
 
 // ## Match orders
@@ -102,12 +101,56 @@ abi OrderBookContract {
 // Allows you to close a specific order without having to create a new one
     // todo implemement as an feature
    
-    #[payable, storage(read, write)]
-    fn fulfill_order(id: u64);
+    // #[payable, storage(read, write)]
+    // fn fulfill_order(id: u64);
 
 }
 
 impl OrderBookContract for Contract {
+
+// ## Market management
+// Allow users create markets with own tokens
+
+    fn calc_market_id(asset0: b256, asset1: b256) -> b256 {
+        sha256((asset0, asset1))
+    }
+
+    #[storage(read)]
+    fn get_market(id: b256) -> Market{
+        storage.markets.get(id).read()
+    }
+
+    #[storage(read, write)]
+    fn create_market(asset0: b256, asset1: b256) -> b256{
+        let id = sha256((asset0, asset1));
+        let market = storage.markets.get(id).try_read();
+        assert(market.is_none()); //fixme
+        let admin = msg_sender_address();
+        let market = Market { id, asset0, asset1, admin, paused: false };
+        storage.markets.insert(id, market);
+        log(MarketChangeEvent{ market });
+        id
+    }
+
+    #[storage(read, write)]
+    fn pause_market(id: b256){
+        let mut market = storage.markets.get(id).read();
+        let admin = msg_sender_address();
+        assert(admin == market.admin);
+        market.paused = true;
+        storage.markets.insert(id, market);
+        log(MarketChangeEvent{ market });
+    }
+
+    #[storage(read, write)]
+    fn resume_market(id: b256){
+        let mut market = storage.markets.get(id).read();
+        let admin = msg_sender_address();
+        assert(admin == market.admin);
+        market.paused = false;
+        storage.markets.insert(id, market);
+        log(MarketChangeEvent{ market });
+    }
 
 // ## Deposit and Withdraw of fee
 // Users can deposit money to paing fees into their accounts. This fees is necessary to motivate matching engine, and also to pay protocol fees
@@ -119,8 +162,6 @@ impl OrderBookContract for Contract {
         require(amount > 0 && msg_asset_id() == BASE_ASSET_ID, Error::InvalidPayment);
         let deposit = storage.deposits.get(caller).try_read().unwrap_or(0);
         storage.deposits.insert(caller, deposit + amount);
-        
-        log(DepositChangeEvent{ address: caller, amount: deposit + amount });
     }
 
     #[storage(read, write)]
@@ -130,8 +171,6 @@ impl OrderBookContract for Contract {
         require(amount <= deposit, Error::InsufficientFunds);
         storage.deposits.insert(caller, deposit - amount);
         transfer_to_address(caller, BASE_ASSET_ID, deposit - amount);
-
-        log(DepositChangeEvent{ address: caller, amount: deposit - amount });
     }
 
     #[storage(read)]
@@ -143,8 +182,17 @@ impl OrderBookContract for Contract {
 // This function allows users to create order. It requires a deposit to be matched
 
     #[payable, storage(read, write)]
-    fn create_order(asset1: b256, amount1: u64, matcher_fee: u64) -> u64 {
+    fn create_order(market_id: b256, amount1: u64, matcher_fee: u64) -> u64 {
+
         let asset0 = msg_asset_id().value;
+
+        let market = storage.markets.get(market_id).read();
+        let (order_type, asset1)  = if market.asset0 == asset0 {
+            (OrderType::Sell, market.asset1)
+        } else {
+            (OrderType::Buy, market.asset0)
+        };
+
         let amount0 = msg_amount();
         let caller = msg_sender_address();
         let deposit = storage.deposits.get(caller).try_read().unwrap_or(0);
@@ -154,6 +202,9 @@ impl OrderBookContract for Contract {
         let id = storage.orders_amount.try_read().unwrap_or(0) + 1;
 
         let order = Order {
+            id,
+            market_id: market.id,
+            order_type,
             asset0,
             amount0,
             asset1,
@@ -161,7 +212,6 @@ impl OrderBookContract for Contract {
             fulfilled0: 0,
             fulfilled1: 0,
             status: Status::Active,
-            id,
             timestamp: timestamp(),
             owner: caller,
             matcher_fee,
@@ -176,14 +226,6 @@ impl OrderBookContract for Contract {
 
         id
     }
-
-
-// ## Modify order
-// todo not sure hwo that should work
-
-    //todo implemement
-    #[storage(read, write)]
-    fn modify_order(id: u64){}
 
 
 // ## Close order
@@ -208,8 +250,8 @@ impl OrderBookContract for Contract {
     }
     
     //todo implemement
-    #[storage(read, write)]
-    fn cancel_all_orders(){}
+    // #[storage(read, write)]
+    // fn cancel_all_orders(){}
 
 
 // ## Order getters
@@ -226,25 +268,6 @@ impl OrderBookContract for Contract {
         require(order.is_some(), Error::OrderIsNotFound);
         order.unwrap()
     }
-
-    //todo implemement
-    #[storage(read)]
-    fn get_mark_price() -> u64{
-        0
-    }
-
-    //todo implemement
-    #[storage(read)]
-    fn get_all_pending_funding_payment() -> u64{
-        0
-    }
-    
-    //todo implemement
-    #[storage(read)]
-    fn get_market_price() -> u64 {
-        0
-    }
-
 
 
 // ## Match orders
@@ -380,7 +403,7 @@ impl OrderBookContract for Contract {
 // Allows you to close a specific order without having to create a new one
     // todo implemement as an feature
    
-    #[payable, storage(read, write)]
-    fn fulfill_order(id: u64) {}
+    // #[payable, storage(read, write)]
+    // fn fulfill_order(id: u64) {}
 
 }

@@ -17,7 +17,7 @@ abigen!(Contract(
 ));
 
 const RPC: &str = "beta-4.fuel.network";
-const CONTRACT_ADDRESS: &str = "0x22a43f9ef75c6e041bd2bbc1606f9eb54dc3d2b85ef9047fe90402c9f7bf881a";
+const CONTRACT_ADDRESS: &str = "0x06d8623a2093e9d307ac10b1539c66636507eeda7f3f1abd11d2d875b61be3e9";
 
 #[tokio::test]
 async fn cancel_order_test() {
@@ -58,8 +58,8 @@ async fn cancel_order_test() {
     // let initial_alice_usdc_balance = alice.get_asset_balance(&usdc.asset_id).await.unwrap();
     let contract_id: Bech32ContractId = ContractId::from_str(CONTRACT_ADDRESS).unwrap().into();
     let instance = DApp::new(contract_id, alice.clone());
-    let deposit = instance
-        .methods()
+    let methods = instance.methods();
+    let deposit = methods
         .get_deposit(alice_address)
         .simulate()
         .await
@@ -67,8 +67,7 @@ async fn cancel_order_test() {
         .value;
 
     if deposit < 1000 {
-        instance
-            .methods()
+        methods
             .deposit()
             .tx_params(TxParameters::default().with_gas_price(1))
             .call_params(CallParameters::default().with_amount(1000))
@@ -77,9 +76,26 @@ async fn cancel_order_test() {
             .await
             .unwrap();
     }
+
+    let market_id = methods
+        .calc_market_id(uni.bits256, usdc.bits256)
+        .simulate()
+        .await
+        .unwrap()
+        .value;
+    if methods.get_market(market_id).simulate().await.is_err() {
+        methods
+            .create_market(uni.bits256, usdc.bits256)
+            .tx_params(TxParameters::default().with_gas_price(1))
+            .call()
+            .await
+            .unwrap();
+        println!("✅ Market has been created");
+    }
+
     let order_id = instance
         .methods()
-        .create_order(uni.bits256, amount1, 1000)
+        .create_order(market_id, amount1, 1000)
         .tx_params(TxParameters::default().with_gas_price(1))
         .call_params(
             CallParameters::default()

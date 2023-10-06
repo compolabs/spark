@@ -1,11 +1,6 @@
 library;
 use ::structs::*;
 
-pub struct DepositChangeEvent{
-    address: Address,
-    amount: u64,
-}
-
 pub struct OrderChangeEvent{
     timestamp: u64,
     address: Address,
@@ -22,4 +17,8 @@ pub struct TradeEvent{
     amount0: u64,
     asset1: b256,
     amount1: u64,
+}
+
+pub struct MarketChangeEvent {
+    market: Market
 }

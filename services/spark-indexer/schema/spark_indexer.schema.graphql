@@ -1,15 +1,19 @@
 
-type DepositEntity @entity {
+type MarketEntity @entity {
     id: ID!
-    address: Address!
-    amount: U64!
+    asset0: String!
+    asset1: String!
+    admin: Address!
+    paused: Boolean!
 }
 
 type OrderEntity @entity {
     id: ID!
-    asset0: AssetId!
+    market: MarketEntity!
+    order_type: String!
+    asset0: String!
     amount0: U64!
-    asset1: AssetId!
+    asset1: String!
     amount1: U64!
     status: String!
     fulfilled0: U64!
@@ -27,22 +31,8 @@ type TradeEntity @entity {
     orderEntity0: OrderEntity!
     orderEntity1: OrderEntity!
     
-    asset0: AssetId!
+    asset0: String!
     amount0: U64!
-    asset1: AssetId!
+    asset1: String!
     amount1: U64!
 }
-
-# type CreateOrderEntity @entity  {
-#     id: ID!
-#     timestamp: U64!
-#     address: Address!
-#     orderEntity: OrderEntity!
-# }
-
-# type CancelOrderEntity @entity {
-#     id: ID!
-#     timestamp: U64!
-#     address: Address!
-#     orderEntity: OrderEntity!
-# }
