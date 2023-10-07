@@ -1,8 +1,18 @@
+enum OrderTypeLabel {
+    BUY
+    SELL
+}
+
+enum OrderStatusLabel {
+    ACTIVE
+    CANCELLED
+    COMPLETED
+}
 
 type MarketEntity @entity {
     id: ID!
-    asset0: String!
-    asset1: String!
+    asset0: Address!
+    asset1: Address!
     admin: Address!
     paused: Boolean!
 }
@@ -10,12 +20,12 @@ type MarketEntity @entity {
 type OrderEntity @entity {
     id: ID!
     market: MarketEntity!
-    order_type: String!
-    asset0: String!
+    order_type: OrderTypeLabel!
+    asset0: Address!
     amount0: U64!
-    asset1: String!
+    asset1: Address!
     amount1: U64!
-    status: String!
+    status: OrderStatusLabel!
     fulfilled0: U64!
     fulfilled1: U64!
     owner: Address!
@@ -30,9 +40,8 @@ type TradeEntity @entity {
     address: Address!
     orderEntity0: OrderEntity!
     orderEntity1: OrderEntity!
-    
-    asset0: String!
+    asset0: Address!
     amount0: U64!
-    asset1: String!
+    asset1: Address!
     amount1: U64!
 }

@@ -1,6 +1,24 @@
 extern crate alloc;
 use fuel_indexer_utils::prelude::*;
-use fuel_indexer_utils::uid;
+
+impl From<Status> for OrderStatusLabel {
+    fn from(status: Status) -> Self {
+        match status {
+            Status::Active => OrderStatusLabel::ACTIVE,
+            Status::Canceled => OrderStatusLabel::CANCELLED,
+            Status::Completed => OrderStatusLabel::COMPLETED,
+        }
+    }
+}
+
+impl From<OrderType> for OrderTypeLabel {
+    fn from(order_type: OrderType) -> Self {
+        match order_type {
+            OrderType::Buy => OrderTypeLabel::BUY,
+            OrderType::Sell => OrderTypeLabel::SELL,
+        }
+    }
+}
 
 #[indexer(manifest = "spark_indexer.manifest.yaml")]
 pub mod spark_indexer_index_mod {
@@ -14,33 +32,36 @@ pub mod spark_indexer_index_mod {
         info!("🛒 Market change event \n{:#?}", event);
         let entry = MarketEntity {
             id: uid(&event.market.id.0),
-            asset0: Address::from(event.market.asset_0.0).to_string(),
-            asset1: Address::from(event.market.asset_1.0).to_string(),
+            asset0: Address::from(event.market.asset_0.0),
+            asset1: Address::from(event.market.asset_1.0),
             admin: event.market.admin,
             paused: event.market.paused,
         };
-
         entry.save();
     }
 
     fn handle_order_change_event(event: OrderChangeEvent) {
         info!("✨ Ørder change event \n{:#?}", event);
+        let market_id = uid(&event.order.market_id.0);
+
+        // Ensure these actually exist
+        let market = match MarketEntity::load(market_id.clone()) {
+            Some(market) => market,
+            None => {
+                error!("Market not found: {}", market_id);
+                panic!("");
+            }
+        };
+
         let order_entry = OrderEntity {
             id: uid(event.order.id.to_be_bytes()),
-            market: uid(&event.order.market_id.0),
-            order_type: match event.order.order_type {
-                OrderType::Sell => String::from("Sell"),
-                OrderType::Buy => String::from("Buy"),
-            },
-            asset0: Address::from(event.order.asset_0.0).to_string(),
+            market: market.id,
+            order_type: OrderTypeLabel::from(event.order.order_type).into(),
+            asset0: Address::from(event.order.asset_0.0),
             amount0: event.order.amount_0,
-            asset1: Address::from(event.order.asset_1.0).to_string(),
+            asset1: Address::from(event.order.asset_1.0),
             amount1: event.order.amount_1,
-            status: match event.order.status {
-                Status::Active => String::from("Active"),
-                Status::Canceled => String::from("Canceled"),
-                Status::Completed => String::from("Completed"),
-            },
+            status: OrderStatusLabel::from(event.order.status).into(),
             fulfilled0: event.order.fulfilled_0,
             fulfilled1: event.order.fulfilled_1,
             owner: event.order.owner,
@@ -53,14 +74,31 @@ pub mod spark_indexer_index_mod {
 
     fn handle_trade_event(event: TradeEvent) {
         info!("💟 Trade event \n{:#?}", event);
+
+        // Ensure these actually exist
+        let order0 = match OrderEntity::load(uid(event.order_0_id.to_be_bytes())) {
+            Some(order) => order,
+            None => {
+                error!("Order not found: {}", uid(event.order_0_id.to_be_bytes()));
+                panic!("");
+            }
+        };
+        let order1 = match OrderEntity::load(uid(event.order_1_id.to_be_bytes())) {
+            Some(order) => order,
+            None => {
+                error!("Order not found: {}", uid(event.order_1_id.to_be_bytes()));
+                panic!("");
+            }
+        };
+
         let entry = TradeEntity::new(
             event.timestamp,
             event.address,
-            uid(event.order_0_id.to_be_bytes()),
-            uid(event.order_1_id.to_be_bytes()),
-            Address::from(event.asset_0.0).to_string(),
+            order0.id,
+            order1.id,
+            Address::from(event.asset_0.0),
             event.amount_0,
-            Address::from(event.asset_1.0).to_string(),
+            Address::from(event.asset_1.0),
             event.amount_1,
         );
         entry.save();
