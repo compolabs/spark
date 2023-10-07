@@ -10,16 +10,6 @@ pub mod spark_indexer_index_mod {
         info!("🧱 Block height: {} | transacrions: {txs}", block.height);
     }
 
-    fn handle_deposit_change_event(event: DepositChangeEvent) {
-        info!("💰 Deposit change event \n{:#?}", event);
-        let entry = DepositEntity {
-            id: uid(&event.address),
-            address: event.address,
-            amount: event.amount,
-        };
-        entry.save();
-    }
-
     fn handle_order_change_event(event: OrderChangeEvent) {
         info!("✨ Ørder change event \n{:#?}", event);
         let order_entry = OrderEntity {
@@ -45,7 +35,7 @@ pub mod spark_indexer_index_mod {
     }
 
     fn handle_trade_event(event: TradeEvent) {
-        info!("💟 Trade event \n{:#?}", event);
+        info!("🔀 Trade event \n{:#?}", event);
         let entry = TradeEntity::new(
             event.timestamp,
             event.address,
@@ -57,6 +47,16 @@ pub mod spark_indexer_index_mod {
             event.amount_1,
         );
         entry.save();
+    }
+
+    fn havdle_match_event(event: MatchEvent){
+        info!("💟 Match event \n{:#?}", event);
+        for order in event.orders {
+            self::handle_order_change_event(order);
+        }
+        for trade in event.trades {
+            self::handle_trade_event(trade);
+        }
     }
 
     // fn handle_trade_event(data: TradeEvent) {

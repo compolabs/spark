@@ -119,8 +119,6 @@ impl OrderBookContract for Contract {
         require(amount > 0 && msg_asset_id() == BASE_ASSET_ID, Error::InvalidPayment);
         let deposit = storage.deposits.get(caller).try_read().unwrap_or(0);
         storage.deposits.insert(caller, deposit + amount);
-        
-        log(DepositChangeEvent{ address: caller, amount: deposit + amount });
     }
 
     #[storage(read, write)]
@@ -130,8 +128,6 @@ impl OrderBookContract for Contract {
         require(amount <= deposit, Error::InsufficientFunds);
         storage.deposits.insert(caller, deposit - amount);
         transfer_to_address(caller, BASE_ASSET_ID, deposit - amount);
-
-        log(DepositChangeEvent{ address: caller, amount: deposit - amount });
     }
 
     #[storage(read)]
@@ -359,17 +355,26 @@ impl OrderBookContract for Contract {
             order1.matcher_fee_used += order1_matcher_fee;
             transfer_to_address(matcher, BASE_ASSET_ID, order0_matcher_fee + order1_matcher_fee);
         }
-        if order0.status.is_completed() {
-            log(trade0);
-        }
-        if order1.status.is_completed() {
-            log(trade1);   
-        }
+        //fixme
+        // if order0.status.is_completed() {
+        //     log(trade0);
+        // }
+        // if order1.status.is_completed() {
+        //     log(trade1);   
+        // }
+
         // storage.trades.push(trade0);
         // storage.trades.push(trade1);
         let time = timestamp();
-        log(OrderChangeEvent{ timestamp: time, address: matcher, order: order0 });
-        log(OrderChangeEvent{ timestamp: time, address: matcher, order: order1 });
+        // log(OrderChangeEvent{ timestamp: time, address: matcher, order: order0 }); //fixme
+        // log(OrderChangeEvent{ timestamp: time, address: matcher, order: order1 }); //fixme
+        let mut orders: Vec<OrderChangeEvent> = Vec::new();
+        let mut trades: Vec<TradeEvent> = Vec::new();
+        orders.push(OrderChangeEvent{ timestamp: time, address: matcher, order: order0 });
+        orders.push(OrderChangeEvent{ timestamp: time, address: matcher, order: order1 });
+        if order0.status.is_completed() {trades.push(trade0);}
+        if order1.status.is_completed() {trades.push(trade1);}
+        log(MatchEvent{ orders, trades });
         storage.orders.insert(order0.id, order0);
         storage.orders.insert(order1.id, order1);
         // (trade0, trade1)

@@ -88,6 +88,18 @@
     },
     {
       "typeId": 4,
+      "type": "generic T",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 5,
+      "type": "raw untyped ptr",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 6,
       "type": "struct Address",
       "components": [
         {
@@ -99,24 +111,36 @@
       "typeParameters": null
     },
     {
-      "typeId": 5,
-      "type": "struct DepositChangeEvent",
+      "typeId": 7,
+      "type": "struct MatchEvent",
       "components": [
         {
-          "name": "address",
-          "type": 4,
-          "typeArguments": null
+          "name": "orders",
+          "type": 12,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 9,
+              "typeArguments": null
+            }
+          ]
         },
         {
-          "name": "amount",
-          "type": 9,
-          "typeArguments": null
+          "name": "trades",
+          "type": 12,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 11,
+              "typeArguments": null
+            }
+          ]
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 6,
+      "typeId": 8,
       "type": "struct Order",
       "components": [
         {
@@ -126,7 +150,7 @@
         },
         {
           "name": "amount0",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
@@ -136,7 +160,7 @@
         },
         {
           "name": "amount1",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
@@ -146,86 +170,105 @@
         },
         {
           "name": "fulfilled0",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "fulfilled1",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "owner",
-          "type": 4,
+          "type": 6,
           "typeArguments": null
         },
         {
           "name": "id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "timestamp",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "matcher_fee_used",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 7,
+      "typeId": 9,
       "type": "struct OrderChangeEvent",
       "components": [
         {
           "name": "timestamp",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "address",
-          "type": 4,
+          "type": 6,
           "typeArguments": null
         },
         {
           "name": "order",
-          "type": 6,
+          "type": 8,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 8,
+      "typeId": 10,
+      "type": "struct RawVec",
+      "components": [
+        {
+          "name": "ptr",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "cap",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        4
+      ]
+    },
+    {
+      "typeId": 11,
       "type": "struct TradeEvent",
       "components": [
         {
           "name": "timestamp",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "address",
-          "type": 4,
+          "type": 6,
           "typeArguments": null
         },
         {
           "name": "order0_id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "order1_id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
@@ -235,7 +278,7 @@
         },
         {
           "name": "amount0",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
@@ -245,14 +288,39 @@
         },
         {
           "name": "amount1",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 9,
+      "typeId": 12,
+      "type": "struct Vec",
+      "components": [
+        {
+          "name": "buf",
+          "type": 10,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 4,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "type": 13,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        4
+      ]
+    },
+    {
+      "typeId": 13,
       "type": "u64",
       "components": null,
       "typeParameters": null
@@ -281,7 +349,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
@@ -310,32 +378,32 @@
         },
         {
           "name": "amount1",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
       "name": "create_order",
       "output": {
         "name": "",
-        "type": 9,
+        "type": 13,
         "typeArguments": null
       },
       "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
         {
           "name": "storage",
           "arguments": [
             "read",
             "write"
           ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
         }
       ]
     },
@@ -365,7 +433,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
@@ -394,7 +462,7 @@
       "name": "get_all_pending_funding_payment",
       "output": {
         "name": "",
-        "type": 9,
+        "type": 13,
         "typeArguments": null
       },
       "attributes": [
@@ -410,14 +478,14 @@
       "inputs": [
         {
           "name": "address",
-          "type": 4,
+          "type": 6,
           "typeArguments": null
         }
       ],
       "name": "get_deposit",
       "output": {
         "name": "",
-        "type": 9,
+        "type": 13,
         "typeArguments": null
       },
       "attributes": [
@@ -434,7 +502,7 @@
       "name": "get_mark_price",
       "output": {
         "name": "",
-        "type": 9,
+        "type": 13,
         "typeArguments": null
       },
       "attributes": [
@@ -451,7 +519,7 @@
       "name": "get_market_price",
       "output": {
         "name": "",
-        "type": 9,
+        "type": 13,
         "typeArguments": null
       },
       "attributes": [
@@ -467,12 +535,12 @@
       "inputs": [
         {
           "name": "order0_id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         },
         {
           "name": "order1_id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
@@ -496,7 +564,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
@@ -520,14 +588,14 @@
       "inputs": [
         {
           "name": "id",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
       "name": "order_by_id",
       "output": {
         "name": "",
-        "type": 6,
+        "type": 8,
         "typeArguments": null
       },
       "attributes": [
@@ -544,7 +612,7 @@
       "name": "orders_amount",
       "output": {
         "name": "",
-        "type": 9,
+        "type": 13,
         "typeArguments": null
       },
       "attributes": [
@@ -560,7 +628,7 @@
       "inputs": [
         {
           "name": "amount",
-          "type": 9,
+          "type": 13,
           "typeArguments": null
         }
       ],
@@ -610,7 +678,7 @@
       "logId": 3,
       "loggedType": {
         "name": "",
-        "type": 7,
+        "type": 9,
         "typeArguments": []
       }
     },
@@ -642,7 +710,7 @@
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 7,
+        "type": 9,
         "typeArguments": []
       }
     },
@@ -658,7 +726,7 @@
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 2,
         "typeArguments": []
       }
     },
@@ -690,7 +758,7 @@
       "logId": 13,
       "loggedType": {
         "name": "",
-        "type": 2,
+        "type": 7,
         "typeArguments": []
       }
     },
@@ -698,7 +766,7 @@
       "logId": 14,
       "loggedType": {
         "name": "",
-        "type": 8,
+        "type": 2,
         "typeArguments": []
       }
     },
@@ -706,47 +774,7 @@
       "logId": 15,
       "loggedType": {
         "name": "",
-        "type": 8,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 16,
-      "loggedType": {
-        "name": "",
-        "type": 7,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 17,
-      "loggedType": {
-        "name": "",
-        "type": 7,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 18,
-      "loggedType": {
-        "name": "",
         "type": 2,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 19,
-      "loggedType": {
-        "name": "",
-        "type": 2,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 20,
-      "loggedType": {
-        "name": "",
-        "type": 5,
         "typeArguments": []
       }
     }

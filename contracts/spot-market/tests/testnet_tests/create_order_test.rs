@@ -16,7 +16,7 @@ abigen!(Contract(
 ));
 
 const RPC: &str = "beta-4.fuel.network";
-const CONTRACT_ADDRESS: &str = "0x76deb3f6b418d3037150ba8ea6734a6cb7906bf8a518739b7f6b735ce5831946";
+const CONTRACT_ADDRESS: &str = "0x6082a82891e2f9c9154189b84b0e1ac63b828ae3a63e896e086ad5ebb34df5da";
 
 #[tokio::test]
 async fn create_order_test() {

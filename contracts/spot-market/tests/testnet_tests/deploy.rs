@@ -19,9 +19,9 @@ const RPC: &str = "beta-4.fuel.network";
 
 /*
 ✅ Contract deployed on beta-4
-start_block: 4288223
-0x..   = 0x76deb3f6b418d3037150ba8ea6734a6cb7906bf8a518739b7f6b735ce5831946
-fuel.. = "fuel1wm0t8a45rrfsxu2sh282vu62djmeq6lc55v88xmldde4eevrr9rqgxj4qe"
+start_block: 4296378
+0x..   = 0x6082a82891e2f9c9154189b84b0e1ac63b828ae3a63e896e086ad5ebb34df5da
+fuel.. = "fuel1vzp2s2y3utuuj92p3xuykrs6ccac9zhr5clgjmsgdt27hv6d7hdqr5nhl0"
 */
 
 #[tokio::test]
