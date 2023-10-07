@@ -24,6 +24,7 @@ pub mod spark_indexer_index_mod {
         info!("✨ Ørder change event \n{:#?}", event);
         let order_entry = OrderEntity {
             id: uid(event.order.id.to_be_bytes()),
+            order_id: event.order.id,
             asset0: event.order.asset_0.0.into(),
             amount0: event.order.amount_0,
             asset1: event.order.asset_1.0.into(),

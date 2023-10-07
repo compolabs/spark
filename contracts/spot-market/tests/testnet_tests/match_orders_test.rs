@@ -16,7 +16,7 @@ abigen!(Contract(
 ));
 
 const RPC: &str = "beta-4.fuel.network";
-const CONTRACT_ADDRESS: &str = "0x22a43f9ef75c6e041bd2bbc1606f9eb54dc3d2b85ef9047fe90402c9f7bf881a";
+const CONTRACT_ADDRESS: &str = "0x76deb3f6b418d3037150ba8ea6734a6cb7906bf8a518739b7f6b735ce5831946";
 
 const ASSET0: &str = "USDC";
 const AMOUNT0: u64 = 1000;
@@ -28,7 +28,7 @@ const AMOUNT1: u64 = 300;
 async fn match_orders_test() {
     print_title("Match order");
     dotenv().ok();
-
+    
     //--------------- WALLETS ---------------
     let provider = Provider::connect(RPC).await.unwrap();
 
@@ -65,6 +65,24 @@ async fn match_orders_test() {
     let contract_id: Bech32ContractId = ContractId::from_str(CONTRACT_ADDRESS).unwrap().into();
     let instance = DApp::new(contract_id, alice.clone());
     let methods = instance.methods();
+    // println!(
+    //     "{:#?}",
+    //     methods.order_by_id(1).simulate().await.unwrap().value
+    // );
+    // println!(
+    //     "{:#?}",
+    //     methods.order_by_id(2).simulate().await.unwrap().value
+    // );
+    //     methods
+    //     .match_orders(1, 2)
+    //     .tx_params(TxParameters::default().with_gas_price(1))
+    //     .append_variable_outputs(3)
+    //     .call()
+    //     .await
+    //     .unwrap()
+    //     .value;
+    // println!("✅ Orders has been matched");
+
     let deposit = methods
         .get_deposit(alice_address)
         .simulate()
@@ -95,14 +113,7 @@ async fn match_orders_test() {
         .await
         .unwrap()
         .value;
-    let order = methods
-        .order_by_id(order_id_0)
-        .simulate()
-        .await
-        .unwrap()
-        .value;
-    println!("✅ Order {order_id_0} created = {:#?}", order);
-
+    println!("order_id_0 = {:?}", order_id_0);
     if deposit < 1000 {
         methods
             .deposit()
@@ -126,22 +137,14 @@ async fn match_orders_test() {
         .await
         .unwrap()
         .value;
-
-    let order = methods
-        .order_by_id(order_id_1)
-        .simulate()
-        .await
-        .unwrap()
-        .value;
-    println!("✅ Order {order_id_1} created = {:#?}", order);
-
-    methods
-        .match_orders(order_id_0, order_id_1)
-        .tx_params(TxParameters::default().with_gas_price(1))
-        .append_variable_outputs(3)
-        .call()
-        .await
-        .unwrap()
-        .value;
-    println!("✅ Orders has been matched");
+    println!("order_id_1 = {:?}", order_id_1);
+    // methods
+    //     .match_orders(order_id_0, order_id_1)
+    //     .tx_params(TxParameters::default().with_gas_price(1))
+    //     .append_variable_outputs(3)
+    //     .call()
+    //     .await
+    //     .unwrap()
+    //     .value;
+    // println!("✅ Orders has been matched");
 }

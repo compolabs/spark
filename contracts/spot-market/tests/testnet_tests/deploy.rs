@@ -19,8 +19,9 @@ const RPC: &str = "beta-4.fuel.network";
 
 /*
 ✅ Contract deployed on beta-4
-0x..   = 0x22a43f9ef75c6e041bd2bbc1606f9eb54dc3d2b85ef9047fe90402c9f7bf881a
-fuel.. = "fuel1y2jrl8hht3hqgx7jh0qkqmu7k4xu854ctmusgllfqspvnaal3qdq06q67u"
+start_block: 4288223
+0x..   = 0x76deb3f6b418d3037150ba8ea6734a6cb7906bf8a518739b7f6b735ce5831946
+fuel.. = "fuel1wm0t8a45rrfsxu2sh282vu62djmeq6lc55v88xmldde4eevrr9rqgxj4qe"
 */
 
 #[tokio::test]
@@ -42,7 +43,9 @@ async fn deploy() {
         .await
         .unwrap();
 
+    let block = provider.latest_block_height().await.unwrap();
     println!("✅ Contract deployed on beta-4");
+    println!("start_block: {block}",);
     println!("0x..   = 0x{:?}", id.hash());
     println!("fuel.. = {:?}", id.to_string());
 }

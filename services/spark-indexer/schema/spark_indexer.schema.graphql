@@ -7,6 +7,7 @@ type DepositEntity @entity {
 
 type OrderEntity @entity {
     id: ID!
+    order_id: U64!
     asset0: AssetId!
     amount0: U64!
     asset1: AssetId!

@@ -309,22 +309,6 @@ export const getOrderbook = async (
     myOrders: Array<Order>;
     orderbook: { buy: Array<Order>; sell: Array<Order> };
 }> => {
-
-    const result: any = await axios.request({
-        method: "POST",
-        url: "http://localhost:29987/api/sql/composabilitylabs/spark_indexer",
-        headers: {"Content-Type": "application/json", Accept: "application/json"},
-        data: {query: `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spark_indexer.orderentity WHERE status = 'Active') t;`},
-    });
-    // .then((v) => v.data[0]);
-    // // .catch((e) => console.log("🔴", e.toString()));
-    console.log({result});
-
-    /*
-    *
-    *
-    * */
-
     const [symbol0, symbol1] = market.split("/");
     let assetId0 = TOKENS_BY_SYMBOL[symbol0].assetId.substring(2);
     let assetId1 = TOKENS_BY_SYMBOL[symbol1].assetId.substring(2);
@@ -343,8 +327,9 @@ export const getOrderbook = async (
             ? null
             : axios.request({method: "POST", url, headers, data: {query: ownerQuery}}),
     ]);
+    res.map((res) => console.log(res?.data.data[0]));
     const [buy, sell, myOrders] = res.map((res) =>
-        res != null
+        res?.data.data[0] != null
             ? res.data.data[0].map((order: any) => {
                 console.log(order);
                 return new Order({
