@@ -17,7 +17,7 @@ abigen!(Contract(
 ));
 
 const RPC: &str = "beta-4.fuel.network";
-const CONTRACT_ADDRESS: &str = "0x6082a82891e2f9c9154189b84b0e1ac63b828ae3a63e896e086ad5ebb34df5da";
+const CONTRACT_ADDRESS: &str = "0xba0bcc033403c3fd1d7c26b6d3b571bd0a2b872a4df019d78269cb9bce591b7f";
 
 #[tokio::test]
 async fn cancel_order_test() {

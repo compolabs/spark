@@ -1,42 +1,29 @@
-type OrderEntity @entity {
-    id: ID!
-    order_id: U64!
-    asset0: AssetId!
-    amount0: U64!
-    asset1: AssetId!
-    amount1: U64!
-    status: String!
-    fulfilled0: U64!
-    fulfilled1: U64!
-    owner: Address!
-    timestamp: U64!
-    matcher_fee: U64!
-    matcher_fee_used: U64!
-}
+# type OrderEntity @entity {
+#     id: ID!
+#     order_id: U64!
+#     asset0: AssetId!
+#     amount0: U64!
+#     asset1: AssetId!
+#     amount1: U64!
+#     status: String!
+#     fulfilled0: U64!
+#     fulfilled1: U64!
+#     owner: Address!
+#     timestamp: U64!
+#     matcher_fee: U64!
+#     matcher_fee_used: U64!
+# }
 
-type TradeEntity @entity {
-    id: ID!
-    timestamp: U64!
-    address: Address!
-    orderEntity0: OrderEntity!
-    orderEntity1: OrderEntity!
+# type TradeEntity @entity {
+#     id: ID!
+#     timestamp: U64!
+#     address: Address!
+#     orderEntity0: OrderEntity!
+#     orderEntity1: OrderEntity!
     
-    asset0: AssetId!
-    amount0: U64!
-    asset1: AssetId!
-    amount1: U64!
-}
-
-# type CreateOrderEntity @entity  {
-#     id: ID!
-#     timestamp: U64!
-#     address: Address!
-#     orderEntity: OrderEntity!
+#     asset0: AssetId!
+#     amount0: U64!
+#     asset1: AssetId!
+#     amount1: U64!
 # }
 
-# type CancelOrderEntity @entity {
-#     id: ID!
-#     timestamp: U64!
-#     address: Address!
-#     orderEntity: OrderEntity!
-# }
