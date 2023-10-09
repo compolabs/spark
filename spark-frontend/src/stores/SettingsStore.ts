@@ -1,11 +1,14 @@
 import RootStore from "@stores/RootStore";
-import { makeAutoObservable } from "mobx";
-import { getCurrentBrowser } from "@src/utils/getCurrentBrowser";
+import {makeAutoObservable} from "mobx";
+import {getCurrentBrowser} from "@src/utils/getCurrentBrowser";
+import {THEME_TYPE} from "@src/themes/ThemeProvider";
 
-export interface ISerializedSettingsStore {}
+export interface ISerializedSettingsStore {
+}
 
 class SettingsStore {
   public readonly rootStore: RootStore;
+  selectedTheme: THEME_TYPE = THEME_TYPE.DARK_THEME;
 
   constructor(rootStore: RootStore) {
     this.rootStore = rootStore;

@@ -5,7 +5,7 @@ import SizedBox from "@components/SizedBox";
 import {observer} from "mobx-react";
 import {useTradeScreenVM} from "@screens/TradeScreen/TradeScreenVm";
 import TokenInput from "@components/TokenInput";
-import Text from "@components/Text";
+import Text, {TEXT_TYPES} from "@components/Text";
 
 interface IProps {
 }
@@ -44,7 +44,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
                 style={{background: '#fff', color: '#000', width: '100%', height: 32}}
             >
                 <SizedBox width={16}/>
-                <Text style={{color: '#000'}}>Spot market</Text>
+                <Text color="#000">Spot market</Text>
             </Row>
             <SizedBox height={16}/>
             <h5 style={{margin: "0 0 4px 0"}}>Market price</h5>

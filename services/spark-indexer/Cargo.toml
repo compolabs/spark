@@ -13,3 +13,4 @@ fuel-indexer-utils = { version = "0.21" }
 fuels = { version = "0.46", default-features = false }
 getrandom = { version = "0.2", features = ["js"] }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
+tai64 = "4.0.0"
