@@ -3,6 +3,7 @@ import {Column, Row} from "@src/components/Flex";
 import React from "react";
 import SizedBox from "@components/SizedBox";
 import {TOKENS_BY_SYMBOL} from "@src/constants";
+import Button from "@components/Button";
 
 interface IProps {
 }
@@ -11,9 +12,10 @@ const Root = styled.div`
   display: flex;
   box-sizing: border-box;
   border: 1px solid #fff;
-  border-top: 0;
   height: 50px;
   width: 100%;
+  background: ${({theme}) => theme.colors.gray4};
+  border-radius: 10px;
 `;
 
 const MarketSelect = styled.div`
@@ -22,7 +24,7 @@ const MarketSelect = styled.div`
   justify-content: space-between;
   padding: 0 16px;
   box-sizing: border-box;
-  flex: 1;
+  flex: 2;
   height: 100%;
 `
 
@@ -33,7 +35,7 @@ const MarketStatistics = styled.div`
   justify-content: space-between;
   padding: 0 16px;
   border-left: 1px solid #fff;
-  flex: 4;
+  flex: 7;
   box-sizing: border-box;
   width: 100%;
 `
@@ -70,7 +72,7 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
                     <h4 style={{margin: 0}}>250,000k</h4>
                 </Column>
             </Row>
-            <button style={{minWidth: 'fit-content'}}>see all market details</button>
+            {/*<Button>See all market details</Button>*/}
         </MarketStatistics>
     </Root>;
 }

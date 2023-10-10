@@ -27,16 +27,3 @@ type TradeEntity @entity {
     amount1: U64!
 }
 
-# type CreateOrderEntity @entity  {
-#     id: ID!
-#     timestamp: U64!
-#     address: Address!
-#     orderEntity: OrderEntity!
-# }
-
-# type CancelOrderEntity @entity {
-#     id: ID!
-#     timestamp: U64!
-#     address: Address!
-#     orderEntity: OrderEntity!
-# }

@@ -1,17 +1,17 @@
 extern crate alloc;
 use fuel_indexer_utils::prelude::*;
-use fuel_indexer_utils::uid;
 
 #[indexer(manifest = "spark_indexer.manifest.yaml")]
 pub mod spark_indexer_index_mod {
 
     fn handle_block(block: BlockData) {
         let txs = block.transactions.len();
-        info!("🧱 Block height: {} | transacrions: {txs}", block.height);
+        info!("Spark: 🧱 Block height: {} | transacrions: {txs}", block.height);
     }
 
     fn handle_order_change_event(event: OrderChangeEvent) {
-        info!("✨ Ørder change event \n{:#?}", event);
+        info!("Spark: ✨ Ørder change event \n{:#?}", event);
+
         let order_entry = OrderEntity {
             id: uid(event.order.id.to_be_bytes()),
             order_id: event.order.id,
@@ -27,17 +27,18 @@ pub mod spark_indexer_index_mod {
             fulfilled0: event.order.fulfilled_0,
             fulfilled1: event.order.fulfilled_1,
             owner: event.order.owner,
-            timestamp: event.order.timestamp,
+            timestamp: event.order.timestamp - (10 + (1 << 62)),
             matcher_fee: event.order.matcher_fee,
             matcher_fee_used: event.order.matcher_fee_used,
         };
+
         order_entry.save();
     }
 
     fn handle_trade_event(event: TradeEvent) {
-        info!("🔀 Trade event \n{:#?}", event);
+        info!("Spark: 🔀 Trade event \n{:#?}", event);
         let entry = TradeEntity::new(
-            event.timestamp,
+            event.timestamp - (10 + (1 << 62)),
             event.address,
             uid(event.order_0_id.to_be_bytes()),
             uid(event.order_1_id.to_be_bytes()),
@@ -49,71 +50,16 @@ pub mod spark_indexer_index_mod {
         entry.save();
     }
 
-    fn havdle_match_event(event: MatchEvent){
-        info!("💟 Match event \n{:#?}", event);
-        for order in event.orders {
-            self::handle_order_change_event(order);
+    fn havdle_match_event(event: MatchEvent) {
+        info!("Spark: 💟 Match event \n{:#?}", event);
+        self::handle_order_change_event(event.order_0);
+        self::handle_order_change_event(event.order_1);
+
+        if event.trade_0.is_some() {
+            self::handle_trade_event(event.trade_0.unwrap());
         }
-        for trade in event.trades {
-            self::handle_trade_event(trade);
+        if event.trade_1.is_some() {
+            self::handle_trade_event(event.trade_1.unwrap());
         }
     }
-
-    // fn handle_trade_event(data: TradeEvent) {
-    //     info!("💟 Trade event \n{:#?}", data);
-
-    //     let order_entry_0 = OrderEntity {
-    //         id: uid(data.timestamp.into()),
-    //         asset0: data.order_0.asset_0.0.into(),
-    //         amount0: data.order_0.amount_0,
-    //         asset1: data.order_0.asset_1.0.into(),
-    //         amount1: data.order_0.amount_1,
-    //         status: match data.order_0.status {
-    //             Status::Active => String::from("Active"),
-    //             Status::Canceled => String::from("Canceled"),
-    //             Status::Completed => String::from("Completed"),
-    //         },
-    //         fulfilled0: data.order_0.fulfilled_0,
-    //         fulfilled1: data.order_0.fulfilled_1,
-    //         owner: data.order_0.owner,
-    //         timestamp: data.order_0.timestamp,
-    //         matcher_fee: data.order_0.matcher_fee,
-    //         matcher_fee_used: data.order_0.matcher_fee_used,
-    //     };
-
-    //     let order_entry_1 = OrderEntity {
-    //         id: uid(data.timestamp.into()),
-    //         asset0: data.order_1.asset_0.0.into(),
-    //         amount0: data.order_1.amount_0,
-    //         asset1: data.order_1.asset_1.0.into(),
-    //         amount1: data.order_1.amount_1,
-    //         status: match data.order_1.status {
-    //             Status::Active => String::from("Active"),
-    //             Status::Canceled => String::from("Canceled"),
-    //             Status::Completed => String::from("Completed"),
-    //         },
-    //         fulfilled0: data.order_1.fulfilled_0,
-    //         fulfilled1: data.order_1.fulfilled_1,
-    //         owner: data.order_1.owner,
-    //         timestamp: data.order_1.timestamp,
-    //         matcher_fee: data.order_1.matcher_fee,
-    //         matcher_fee_used: data.order_1.matcher_fee_used,
-    //     };
-    //     order_entry_0.save();
-    //     order_entry_1.save();
-
-    //     let entry = TradeEntity {
-    //         id: uid(data.timestamp.into()),
-    //         timestamp: data.timestamp,
-    //         address: data.address,
-    //         orderEntity0: order_entry_0.id,
-    //         orderEntity1: order_entry_1.id,
-
-    //         asset0: data.asset_0.0.into(),
-    //         amount0: data.amount_0,
-    //         asset1: data.asset_1.0.into(),
-    //         amount1: data.amount_1,
-    //     };
-    //     entry.save();
-    // }
 }

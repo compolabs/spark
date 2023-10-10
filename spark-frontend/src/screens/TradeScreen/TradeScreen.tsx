@@ -8,6 +8,7 @@ import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
 import OrderbookAndTradesInterface from "@screens/TradeScreen/OrderbookAndTradesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
 import {TradeScreenVMProvider} from "@screens/TradeScreen/TradeScreenVm";
+import SizedBox from "@components/SizedBox";
 
 interface IProps {
 }
@@ -18,14 +19,17 @@ const Root = styled.div`
   width: 100%;
   height: 100%;
   flex: 1;
+  box-sizing: border-box;
+  padding: 0 4px;
 `;
 
 const TradeScreenImpl: React.FC<IProps> = () => {
     return <Root>
         <MarketStatisticsBar/>
+        <SizedBox height={4}/>
         <Row mainAxisSize="stretch" crossAxisSize="max">
             <CreateOrderInterface/>
-            <Column mainAxisSize="stretch" crossAxisSize="max" style={{flex: 3,}}>
+            <Column mainAxisSize="stretch" crossAxisSize="max" style={{flex: 5}}>
                 <Chart/>
                 <BottomTablesInterface/>
             </Column>

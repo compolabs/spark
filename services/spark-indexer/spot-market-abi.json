@@ -66,6 +66,25 @@
     },
     {
       "typeId": 3,
+      "type": "enum Option",
+      "components": [
+        {
+          "name": "None",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "Some",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        5
+      ]
+    },
+    {
+      "typeId": 4,
       "type": "enum Status",
       "components": [
         {
@@ -87,14 +106,8 @@
       "typeParameters": null
     },
     {
-      "typeId": 4,
-      "type": "generic T",
-      "components": null,
-      "typeParameters": null
-    },
-    {
       "typeId": 5,
-      "type": "raw untyped ptr",
+      "type": "generic T",
       "components": null,
       "typeParameters": null
     },
@@ -115,23 +128,33 @@
       "type": "struct MatchEvent",
       "components": [
         {
-          "name": "orders",
-          "type": 12,
+          "name": "order0",
+          "type": 9,
+          "typeArguments": null
+        },
+        {
+          "name": "order1",
+          "type": 9,
+          "typeArguments": null
+        },
+        {
+          "name": "trade0",
+          "type": 3,
           "typeArguments": [
             {
               "name": "",
-              "type": 9,
+              "type": 10,
               "typeArguments": null
             }
           ]
         },
         {
-          "name": "trades",
-          "type": 12,
+          "name": "trade1",
+          "type": 3,
           "typeArguments": [
             {
               "name": "",
-              "type": 11,
+              "type": 10,
               "typeArguments": null
             }
           ]
@@ -150,7 +173,7 @@
         },
         {
           "name": "amount0",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -160,22 +183,22 @@
         },
         {
           "name": "amount1",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "status",
-          "type": 3,
+          "type": 4,
           "typeArguments": null
         },
         {
           "name": "fulfilled0",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "fulfilled1",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -185,22 +208,22 @@
         },
         {
           "name": "id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "timestamp",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "matcher_fee_used",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -212,7 +235,7 @@
       "components": [
         {
           "name": "timestamp",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -230,30 +253,11 @@
     },
     {
       "typeId": 10,
-      "type": "struct RawVec",
-      "components": [
-        {
-          "name": "ptr",
-          "type": 5,
-          "typeArguments": null
-        },
-        {
-          "name": "cap",
-          "type": 13,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": [
-        4
-      ]
-    },
-    {
-      "typeId": 11,
       "type": "struct TradeEvent",
       "components": [
         {
           "name": "timestamp",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -263,12 +267,12 @@
         },
         {
           "name": "order0_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "order1_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -278,7 +282,7 @@
         },
         {
           "name": "amount0",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
@@ -288,39 +292,14 @@
         },
         {
           "name": "amount1",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
       "typeParameters": null
     },
     {
-      "typeId": 12,
-      "type": "struct Vec",
-      "components": [
-        {
-          "name": "buf",
-          "type": 10,
-          "typeArguments": [
-            {
-              "name": "",
-              "type": 4,
-              "typeArguments": null
-            }
-          ]
-        },
-        {
-          "name": "len",
-          "type": 13,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": [
-        4
-      ]
-    },
-    {
-      "typeId": 13,
+      "typeId": 11,
       "type": "u64",
       "components": null,
       "typeParameters": null
@@ -349,7 +328,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -378,19 +357,19 @@
         },
         {
           "name": "amount1",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "matcher_fee",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
       "name": "create_order",
       "output": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       },
       "attributes": [
@@ -417,15 +396,15 @@
       },
       "attributes": [
         {
+          "name": "payable",
+          "arguments": []
+        },
+        {
           "name": "storage",
           "arguments": [
             "read",
             "write"
           ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
         }
       ]
     },
@@ -433,7 +412,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -445,15 +424,15 @@
       },
       "attributes": [
         {
+          "name": "payable",
+          "arguments": []
+        },
+        {
           "name": "storage",
           "arguments": [
             "read",
             "write"
           ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
         }
       ]
     },
@@ -462,7 +441,7 @@
       "name": "get_all_pending_funding_payment",
       "output": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       },
       "attributes": [
@@ -485,7 +464,7 @@
       "name": "get_deposit",
       "output": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       },
       "attributes": [
@@ -502,7 +481,7 @@
       "name": "get_mark_price",
       "output": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       },
       "attributes": [
@@ -519,7 +498,7 @@
       "name": "get_market_price",
       "output": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       },
       "attributes": [
@@ -535,12 +514,12 @@
       "inputs": [
         {
           "name": "order0_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         },
         {
           "name": "order1_id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -564,7 +543,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -588,7 +567,7 @@
       "inputs": [
         {
           "name": "id",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],
@@ -612,7 +591,7 @@
       "name": "orders_amount",
       "output": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       },
       "attributes": [
@@ -628,7 +607,7 @@
       "inputs": [
         {
           "name": "amount",
-          "type": 13,
+          "type": 11,
           "typeArguments": null
         }
       ],

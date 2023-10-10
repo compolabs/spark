@@ -6,12 +6,14 @@ import {observer} from "mobx-react"
 import {useStores} from "@stores";
 import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
+import UiKit from "@screens/UiKit";
+import {ROUTES} from "@src/constants";
 
 const Root = styled(Column)`
   width: 100%;
   min-width: 1080px;
   align-items: center;
-  background: #050505;
+  background: ${({theme}) => theme.colors.gray5};
   height: 100vh;
   overflow-y: scroll;
 `;
@@ -23,6 +25,7 @@ const App: React.FC = observer(() => {
         <Root>
             <Header/>
             <Routes>
+                <Route path={ROUTES.UI} element={<UiKit/>}/>
                 <Route path="*" element={<TradeScreen/>}/>
                 {/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
             </Routes>

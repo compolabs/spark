@@ -269,9 +269,9 @@ impl OrderBookContract for Contract {
         let order1_amount0_left = order1.amount0 - order1.fulfilled0;
         let order1_amount1_left = order1.amount1 - order1.fulfilled1;
         let order1_matcher_fee_left = order1.matcher_fee - order1.matcher_fee_used;
-
+        let trade_time = timestamp();
         let mut trade0 = TradeEvent {
-            timestamp: timestamp(),
+            timestamp: trade_time,
             address: matcher,
             order0_id: order0.id,
             order1_id: order1.id,
@@ -282,7 +282,7 @@ impl OrderBookContract for Contract {
         };
 
         let mut trade1 = TradeEvent {
-            timestamp: timestamp(),
+            timestamp: trade_time,
             address: matcher,
             order0_id: order0.id,
             order1_id: order1.id,
@@ -368,13 +368,14 @@ impl OrderBookContract for Contract {
         let time = timestamp();
         // log(OrderChangeEvent{ timestamp: time, address: matcher, order: order0 }); //fixme
         // log(OrderChangeEvent{ timestamp: time, address: matcher, order: order1 }); //fixme
-        let mut orders: Vec<OrderChangeEvent> = Vec::new();
-        let mut trades: Vec<TradeEvent> = Vec::new();
-        orders.push(OrderChangeEvent{ timestamp: time, address: matcher, order: order0 });
-        orders.push(OrderChangeEvent{ timestamp: time, address: matcher, order: order1 });
-        if order0.status.is_completed() {trades.push(trade0);}
-        if order1.status.is_completed() {trades.push(trade1);}
-        log(MatchEvent{ orders, trades });
+        //---------
+        log(MatchEvent{ 
+            order0: OrderChangeEvent{ timestamp: time, address: matcher, order: order0 },
+            order1: OrderChangeEvent{ timestamp: time, address: matcher, order: order1 },
+            trade0: if order0.status.is_completed() {Option::Some(trade0)}else{Option::None},
+            trade1: if order1.status.is_completed() {Option::Some(trade1)}else{Option::None}
+        });
+        //---------
         storage.orders.insert(order0.id, order0);
         storage.orders.insert(order1.id, order1);
         // (trade0, trade1)

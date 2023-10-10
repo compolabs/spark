@@ -21,6 +21,8 @@ pub struct TradeEvent{
 }
 
 pub struct MatchEvent{
-    orders: Vec<OrderChangeEvent>,
-    trades: Vec<TradeEvent>,
+    order0: OrderChangeEvent,
+    order1: OrderChangeEvent,
+    trade0: Option<TradeEvent>,
+    trade1: Option<TradeEvent>,
 }
