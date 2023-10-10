@@ -3,6 +3,7 @@ import tokenLogos from "./tokenLogos";
 
 export const ROUTES = {
     ROOT: "/",
+    UI: "/ui",
 };
 
 export const TOKENS_LIST: Array<IToken> = Object.values(tokens).map((t) => ({

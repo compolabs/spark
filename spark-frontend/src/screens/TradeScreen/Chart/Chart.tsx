@@ -11,7 +11,6 @@ const Root = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid white;
   width: 100%;
   flex: 3;
   box-sizing: border-box;

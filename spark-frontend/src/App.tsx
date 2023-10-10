@@ -7,6 +7,7 @@ import {useStores} from "@stores";
 import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
 import UiKit from "@screens/UiKit";
+import {ROUTES} from "@src/constants";
 
 const Root = styled(Column)`
   width: 100%;
@@ -24,7 +25,7 @@ const App: React.FC = observer(() => {
         <Root>
             <Header/>
             <Routes>
-                <Route path="ui" element={<UiKit/>}/>
+                <Route path={ROUTES.UI} element={<UiKit/>}/>
                 <Route path="*" element={<TradeScreen/>}/>
                 {/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
             </Routes>

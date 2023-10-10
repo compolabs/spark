@@ -23,7 +23,7 @@ const Button = styled.button<{
   width: ${({fitContent}) => (fitContent ? "fit-content" : "100%")};
   padding: 0 12px;
   outline: none;
-  
+
   border: 1px solid ${({theme, primary, secondary, outline}) => {
     if (primary) return theme.colors.green
     else if (secondary) return theme.colors.red
@@ -37,6 +37,19 @@ const Button = styled.button<{
     else if (outline) return theme.colors.gray5
     else return 'rgba(255, 255, 253, 0.10)'
   }};
+
+  path {
+    transition: 0.4s;
+    fill: ${({outline, theme}) => outline ? theme.colors.gray1 : theme.colors.white};
+  }
+
+  :active {
+    path {
+      fill: ${({theme}) => theme.colors.white};
+    }
+
+    color: ${({theme}) => theme.colors.white};
+  }
 
   :hover {
     background-color: ${({primary, secondary, outline, theme}) => {

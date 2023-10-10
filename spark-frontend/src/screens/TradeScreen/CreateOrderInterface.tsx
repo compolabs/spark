@@ -1,11 +1,11 @@
 import styled from "@emotion/styled";
 import {Column, Row} from "@src/components/Flex";
-import React, {useState} from "react";
+import React from "react";
 import SizedBox from "@components/SizedBox";
 import {observer} from "mobx-react";
 import {useTradeScreenVM} from "@screens/TradeScreen/TradeScreenVm";
 import TokenInput from "@components/TokenInput";
-import Text, {TEXT_TYPES} from "@components/Text";
+import Text from "@components/Text";
 import Button, {ButtonGroup} from "@components/Button";
 
 interface IProps {
@@ -16,12 +16,12 @@ const Root = styled.div`
   flex-direction: column;
   justify-content: space-between;
   border: 1px solid white;
-  border-top: 0;
-  border-bottom: 0;
   box-sizing: border-box;
   padding: 16px;
-  flex: 1;
+  flex: 2;
   height: 100%;
+  border-radius: 10px;
+  background: ${({theme}) => theme.colors.gray4};
 `;
 
 const CreateOrderInterface: React.FC<IProps> = observer(() => {

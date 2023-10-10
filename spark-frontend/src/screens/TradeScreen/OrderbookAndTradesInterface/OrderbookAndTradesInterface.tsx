@@ -1,7 +1,6 @@
 import styled from "@emotion/styled";
 import React, {useState} from "react";
 import DesktopOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/DesktopOrderBook";
-import {Row} from "@components/Flex";
 import SizedBox from "@components/SizedBox";
 import Button, {ButtonGroup} from "@components/Button";
 
@@ -12,12 +11,12 @@ const Root = styled.div`
   display: flex;
   flex-direction: column;
   border: 1px solid white;
-  border-top: 0;
-  border-bottom: 0;
   box-sizing: border-box;
   padding: 16px;
-  flex: 1;
+  flex: 2;
   height: 100%;
+  border-radius: 10px;
+  background: ${({theme}) => theme.colors.gray4};
 `;
 
 const OrderbookAndTradesInterface: React.FC<IProps> = () => {

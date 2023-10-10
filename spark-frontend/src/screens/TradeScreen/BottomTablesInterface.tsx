@@ -16,6 +16,8 @@ const Root = styled.div`
   flex-direction: column;
   box-sizing: border-box;
   flex: 1;
+  border-radius: 10px;
+  border: 1px solid #fff;
 `;
 
 const BottomTablesInterface: React.FC<IProps> = observer(() => {

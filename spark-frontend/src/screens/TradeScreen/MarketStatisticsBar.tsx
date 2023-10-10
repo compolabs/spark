@@ -12,9 +12,10 @@ const Root = styled.div`
   display: flex;
   box-sizing: border-box;
   border: 1px solid #fff;
-  border-top: 0;
   height: 50px;
   width: 100%;
+  background: ${({theme}) => theme.colors.gray4};
+  border-radius: 10px;
 `;
 
 const MarketSelect = styled.div`
@@ -23,7 +24,7 @@ const MarketSelect = styled.div`
   justify-content: space-between;
   padding: 0 16px;
   box-sizing: border-box;
-  flex: 1;
+  flex: 2;
   height: 100%;
 `
 
@@ -34,7 +35,7 @@ const MarketStatistics = styled.div`
   justify-content: space-between;
   padding: 0 16px;
   border-left: 1px solid #fff;
-  flex: 4;
+  flex: 7;
   box-sizing: border-box;
   width: 100%;
 `
