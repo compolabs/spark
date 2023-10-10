@@ -13,5 +13,5 @@ export {
   NotificationStore,
   OrdersStore,
   storesContext,
-  useStores,
+  useStores
 };

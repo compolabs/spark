@@ -5,7 +5,7 @@ import { RootStore, useStores } from "@stores";
 import {
   CONTRACT_ADDRESSES,
   TOKENS_BY_ASSET_ID,
-  TOKENS_BY_SYMBOL,
+  TOKENS_BY_SYMBOL
 } from "@src/constants";
 import BN from "@src/utils/BN";
 import { SpotMarketAbi__factory } from "@src/contracts";
@@ -248,12 +248,12 @@ class TradeScreenVm {
           limitOrdersContract.functions.deposit().callParams({
             forward: {
               amount: "100000",
-              assetId: TOKENS_BY_SYMBOL.ETH.assetId,
-            },
+              assetId: TOKENS_BY_SYMBOL.ETH.assetId
+            }
           }),
           limitOrdersContract.functions
             .create_order(token1, amount1, this.matcherFee)
-            .callParams({ forward: { amount: amount0, assetId: token0 } }),
+            .callParams({ forward: { amount: amount0, assetId: token0 } })
         ])
         .txParams({ gasPrice: 1 })
         .call()
@@ -327,13 +327,13 @@ class TradeScreenVm {
 
   notifyThatActionIsSuccessful = (title: string, txId: string) => {
     this.rootStore.notificationStore.toast(title, {
-      type: "success",
+      type: "success"
     });
   };
   notifyError = (title: string, error: any) => {
     console.error(error);
     this.rootStore.notificationStore.toast(title, {
-      type: "error",
+      type: "error"
     });
   };
 }

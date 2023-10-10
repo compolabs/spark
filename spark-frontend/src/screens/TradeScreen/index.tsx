@@ -1,2 +1,2 @@
-import TradeScreen from './TradeScreen'
+import TradeScreen from "./TradeScreen";
 export default TradeScreen;

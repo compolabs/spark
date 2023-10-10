@@ -79,7 +79,7 @@ const menuItems: Array<TMenuItem> = [
   { title: "FAUCET", link: "https://app.swaylend.com/#/faucet" },
   { title: "UIKIT", route: ROUTES.UI },
   // {title: "DOCS",},
-  { title: "GITHUB", link: "https://github.com/compolabs/spark" },
+  { title: "GITHUB", link: "https://github.com/compolabs/spark" }
   // {title: "MORE", route: ROUTES.ROOT},
 ];
 

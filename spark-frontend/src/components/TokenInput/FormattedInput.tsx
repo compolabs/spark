@@ -44,7 +44,7 @@ export class FormattedInput extends Component<
         value ? value.toString() : "",
         formatSeparator,
         prefix
-      ),
+      )
     };
   }
 
@@ -74,7 +74,7 @@ export class FormattedInput extends Component<
           value ? handleDots(value.toString(), decimals) : "",
           formatSeparator,
           prefix
-        ),
+        )
       });
 
       return;
@@ -117,7 +117,7 @@ export class FormattedInput extends Component<
       formatSeparator,
       prefix,
       lengthLimit,
-      maxValue,
+      maxValue
     } = this.props;
 
     const isBackspace = this.isBackspace;
@@ -173,7 +173,7 @@ export class FormattedInput extends Component<
     }
 
     this.setState({
-      formattedValue: getFormattedValue(newValue, formatSeparator, prefix),
+      formattedValue: getFormattedValue(newValue, formatSeparator, prefix)
     });
 
     if (onChange) {
@@ -186,7 +186,7 @@ export class FormattedInput extends Component<
 
     this.setState({
       oldIdx: Number(inputNode?.selectionStart),
-      oldLength: Number(inputNode?.value.length),
+      oldLength: Number(inputNode?.value.length)
     });
   }
 
@@ -197,17 +197,17 @@ export class FormattedInput extends Component<
   ): void {
     const newTarget = {
       ...event.target,
-      value: newValue,
+      value: newValue
     };
     const newNativeTarget = {
       ...event.nativeEvent,
-      value: newValue,
+      value: newValue
     };
 
     onChange({
       ...event,
       target: newTarget,
-      nativeEvent: newNativeTarget,
+      nativeEvent: newNativeTarget
     });
   }
 }

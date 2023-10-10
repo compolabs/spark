@@ -1,13 +1,12 @@
 import styled from "@emotion/styled";
-import {Row} from "@src/components/Flex";
+import { Row } from "@src/components/Flex";
 import React from "react";
-import {observer} from "mobx-react";
-import {useStores} from "@stores";
+import { observer } from "mobx-react";
+import { useStores } from "@stores";
 import SizedBox from "@components/SizedBox";
-import {useTradeScreenVM} from "@screens/TradeScreen/TradeScreenVm";
+import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 
-interface IProps {
-}
+interface IProps {}
 
 const Root = styled.div`
   display: flex;
@@ -21,35 +20,55 @@ const Root = styled.div`
 `;
 
 const BottomTablesInterface: React.FC<IProps> = observer(() => {
-    const {ordersStore} = useStores()
-    const vm = useTradeScreenVM()
-    return <Root>
-        <Row>
-            <div style={{flex: 1}}><b>Date</b></div>
-            <div style={{flex: 1}}><b>Pair</b></div>
-            <div style={{flex: 1}}><b>Type</b></div>
-            <div style={{flex: 1}}><b>Price</b></div>
-            <div style={{flex: 1}}><b>Amount</b></div>
-            <div style={{flex: 1}}><b>Total</b></div>
-            <div style={{flex: 1}}><b>Status</b></div>
-            <div style={{flex: 1}}><b>Action</b></div>
+  const { ordersStore } = useStores();
+  const vm = useTradeScreenVM();
+  return (
+    <Root>
+      <Row>
+        <div style={{ flex: 1 }}>
+          <b>Date</b>
+        </div>
+        <div style={{ flex: 1 }}>
+          <b>Pair</b>
+        </div>
+        <div style={{ flex: 1 }}>
+          <b>Type</b>
+        </div>
+        <div style={{ flex: 1 }}>
+          <b>Price</b>
+        </div>
+        <div style={{ flex: 1 }}>
+          <b>Amount</b>
+        </div>
+        <div style={{ flex: 1 }}>
+          <b>Total</b>
+        </div>
+        <div style={{ flex: 1 }}>
+          <b>Status</b>
+        </div>
+        <div style={{ flex: 1 }}>
+          <b>Action</b>
+        </div>
+      </Row>
+      <SizedBox height={16} />
+      {ordersStore.myOrders.map((order) => (
+        <Row key={order.id} style={{ marginBottom: 4, height: 18 }}>
+          {/*<div style={{flex: 1}}>{order.timestamp}</div>*/}
+          <div style={{ flex: 1, fontSize: 10 }}>-</div>
+          <div style={{ flex: 1, fontSize: 10 }}>{order.market}</div>
+          <div style={{ flex: 1, fontSize: 10 }}>{order.type}</div>
+          <div style={{ flex: 1, fontSize: 10 }}>{order.price.toFixed(2)}</div>
+          <div style={{ flex: 1, fontSize: 10 }}>{order.amount}</div>
+          <div style={{ flex: 1, fontSize: 10 }}>{order.total}</div>
+          <div style={{ flex: 1, fontSize: 10 }}>{order.status}</div>
+          <div style={{ flex: 1, fontSize: 10 }}>
+            {order.status === "Active" && (
+              <button onClick={() => vm.cancelOrder(order.id)}>Cancel</button>
+            )}
+          </div>
         </Row>
-        <SizedBox height={16}/>
-        {ordersStore.myOrders.map(order =>
-            <Row key={order.id} style={{marginBottom: 4, height: 18}}>
-                {/*<div style={{flex: 1}}>{order.timestamp}</div>*/}
-                <div style={{flex: 1, fontSize: 10}}>-</div>
-                <div style={{flex: 1, fontSize: 10}}>{order.market}</div>
-                <div style={{flex: 1, fontSize: 10}}>{order.type}</div>
-                <div style={{flex: 1, fontSize: 10}}>{order.price.toFixed(2)}</div>
-                <div style={{flex: 1, fontSize: 10}}>{order.amount}</div>
-                <div style={{flex: 1, fontSize: 10}}>{order.total}</div>
-                <div style={{flex: 1, fontSize: 10}}>{order.status}</div>
-                <div style={{flex: 1, fontSize: 10}}>
-                    {order.status === "Active" && <button onClick={() => vm.cancelOrder(order.id)}>Cancel</button>}
-                </div>
-            </Row>
-        )}
-    </Root>;
-})
+      ))}
+    </Root>
+  );
+});
 export default BottomTablesInterface;

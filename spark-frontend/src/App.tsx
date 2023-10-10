@@ -1,36 +1,36 @@
 import React from "react";
 import styled from "@emotion/styled";
-import {Column} from "@components/Flex";
-import {Route, Routes} from "react-router-dom";
-import {observer} from "mobx-react"
-import {useStores} from "@stores";
+import { Column } from "@components/Flex";
+import { Route, Routes } from "react-router-dom";
+import { observer } from "mobx-react";
+import { useStores } from "@stores";
 import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
 import UiKit from "@screens/UiKit";
-import {ROUTES} from "@src/constants";
+import { ROUTES } from "@src/constants";
 
 const Root = styled(Column)`
   width: 100%;
   min-width: 1080px;
   align-items: center;
-  background: ${({theme}) => theme.colors.gray5};
+  background: ${({ theme }) => theme.colors.gray5};
   height: 100vh;
   overflow-y: scroll;
 `;
 
 const App: React.FC = observer(() => {
-    const {accountStore} = useStores()
-    // if (!accountStore.rootStore.initialized) return null
-    return (
-        <Root>
-            <Header/>
-            <Routes>
-                <Route path={ROUTES.UI} element={<UiKit/>}/>
-                <Route path="*" element={<TradeScreen/>}/>
-                {/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
-            </Routes>
-        </Root>
-    );
+  const { accountStore } = useStores();
+  // if (!accountStore.rootStore.initialized) return null
+  return (
+    <Root>
+      <Header />
+      <Routes>
+        <Route path={ROUTES.UI} element={<UiKit />} />
+        <Route path="*" element={<TradeScreen />} />
+        {/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
+      </Routes>
+    </Root>
+  );
 });
 
 export default App;

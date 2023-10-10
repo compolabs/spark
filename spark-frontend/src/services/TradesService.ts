@@ -14,7 +14,7 @@ interface ITradeResponse {
 
 export enum TRADE_TYPE {
   BUY,
-  SELL,
+  SELL
 }
 
 // BTC/USDC

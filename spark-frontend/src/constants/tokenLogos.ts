@@ -7,7 +7,7 @@ const tokenLogos: Record<string, string> = {
   ETH: eth,
   BTC: btc,
   USDC: usdc,
-  UNI: uni,
+  UNI: uni
 };
 
 export default tokenLogos;

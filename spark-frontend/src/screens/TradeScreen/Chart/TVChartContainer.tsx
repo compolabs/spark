@@ -4,7 +4,7 @@ import {
   ChartingLibraryWidgetOptions,
   LanguageCode,
   ResolutionString,
-  widget,
+  widget
 } from "@src/charting_library";
 import { observer } from "mobx-react-lite";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
@@ -60,9 +60,9 @@ const TVChartContainer = () => {
       "paneProperties.background": "#050505",
       "paneProperties.backgroundType": "solid",
       "scalesProperties.lineColor": "#fff",
-      "scalesProperties.textColor": "#fff",
+      "scalesProperties.textColor": "#fff"
     },
-    custom_css_url: "src/screens/Trade/Chart/tw-styles.css",
+    custom_css_url: "src/screens/Trade/Chart/tw-styles.css"
   };
   const { location } = window;
   useEffect(() => {
@@ -91,7 +91,7 @@ const TVChartContainer = () => {
       studies_overrides: defaultProps.studiesOverrides,
       overrides: defaultProps.overrides,
       theme: "Dark",
-      custom_css_url: `${location.origin}/tw-chart-styles.css`,
+      custom_css_url: `${location.origin}/tw-chart-styles.css`
     };
 
     const tvWidget = new widget(widgetOptions);

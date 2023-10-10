@@ -1,7 +1,7 @@
 import AccountStore, { ISerializedAccountStore } from "@stores/AccountStore";
 import SettingsStore, { ISerializedSettingsStore } from "@stores/SettingsStore";
 import NotificationStore from "@stores/NotificationStore";
-import {makeAutoObservable} from "mobx";
+import { makeAutoObservable } from "mobx";
 import OrdersStore from "@stores/OrdersStore";
 
 export interface ISerializedRootStore {
@@ -23,11 +23,11 @@ export default class RootStore {
     makeAutoObservable(this);
   }
 
-  get initialized(){
-    return this.accountStore.provider != null
+  get initialized() {
+    return this.accountStore.provider != null;
   }
 
   serialize = (): ISerializedRootStore => ({
-    accountStore: this.accountStore.serialize(),
+    accountStore: this.accountStore.serialize()
   });
 }
