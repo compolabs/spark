@@ -7,6 +7,7 @@ import centerEllipsis from "@src/utils/centerEllipsis";
 import {Row} from "./Flex";
 import {ReactComponent as Logo} from "@src/assets/icons/logo.svg";
 import {TEXT_TYPES, TEXT_TYPES_MAP} from "@components/Text";
+import Button from "@components/Button";
 
 interface IProps {
 }
@@ -44,13 +45,15 @@ const Header: React.FC<IProps> = observer(() => {
     const {accountStore} = useStores()
     return <Root>
         <Row alignItems="center">
-            <Logo/>
+            <a rel="noreferrer noopener" href="/"><Logo/></a>
             <Divider/>
             {menuItems.map((item, key) => <MenuItem key={key}>{item}</MenuItem>)}
         </Row>
         {accountStore.address != null
-            ? <button onClick={accountStore.disconnect}>Disconnect {centerEllipsis(accountStore.address, 8)}</button>
-            : <button onClick={() => accountStore.login(LOGIN_TYPE.FUEL_WALLET)}>Connect fuel wallet</button>
+            ? <Button fitContent
+                      onClick={accountStore.disconnect}>Disconnect {centerEllipsis(accountStore.address, 8)}</Button>
+            : <Button fitContent primary onClick={() => accountStore.login(LOGIN_TYPE.FUEL_WALLET)}>Connect fuel
+                wallet</Button>
         }
     </Root>;
 })

@@ -6,6 +6,7 @@ import {observer} from "mobx-react";
 import {useTradeScreenVM} from "@screens/TradeScreen/TradeScreenVm";
 import TokenInput from "@components/TokenInput";
 import Text, {TEXT_TYPES} from "@components/Text";
+import Button, {ButtonGroup} from "@components/Button";
 
 interface IProps {
 }
@@ -28,15 +29,10 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 
     return <Root>
         <Column crossAxisSize="max">
-            <Row>
-                <button style={{flex: 1, fontWeight: !vm.isSell ? 'bold' : "normal"}}
-                        onClick={() => vm.setIsSell(false)}>Buy
-                </button>
-                <SizedBox width={8}/>
-                <button style={{flex: 1, fontWeight: vm.isSell ? 'bold' : "normal"}}
-                        onClick={() => vm.setIsSell(true)}>Sell
-                </button>
-            </Row>
+            <ButtonGroup>
+                <Button primary={!vm.isSell} outline={vm.isSell} onClick={() => vm.setIsSell(false)}>Buy</Button>
+                <Button secondary={vm.isSell} outline={!vm.isSell} onClick={() => vm.setIsSell(true)}>Sell</Button>
+            </ButtonGroup>
             <SizedBox height={32}/>
             <h5 style={{margin: "0 0 4px 0"}}>Order type</h5>
             <Row
@@ -74,7 +70,8 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
             />
         </Column>
 
-        <button onClick={() => vm.createOrder(vm.isSell ? "sell" : 'buy')}>{vm.isSell ? "Sell" : "Buy"}</button>
+        <Button primary={!vm.isSell} secondary={vm.isSell}
+                onClick={() => vm.createOrder(vm.isSell ? "sell" : 'buy')}>{vm.isSell ? "Sell" : "Buy"}</Button>
     </Root>;
 })
 export default CreateOrderInterface;
