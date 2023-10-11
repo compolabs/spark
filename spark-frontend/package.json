@@ -52,7 +52,6 @@
     "postcss-loader": "^6.2.1",
     "postcss-normalize": "^10.0.1",
     "postcss-preset-env": "^7.0.1",
-    "prettier": "^2.8.1",
     "prompts": "^2.4.2",
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
@@ -158,6 +157,9 @@
     ]
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.199"
+    "@types/lodash": "^4.14.199",
+    "prettier": "^3.0.3",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0"
   }
 }
