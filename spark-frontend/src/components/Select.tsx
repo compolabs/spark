@@ -54,14 +54,14 @@ const StyledSelect = styled.div<{ disabled?: boolean; active?: boolean }>`
 
 const StyledOptions = styled.div`
   position: absolute;
-  max-height: 180px;
+  max-height: 108px;
   height: auto;
   overflow-y: auto;
   top: 40px;
   width: 100%;
-  padding: 4px 0;
+  padding: 8px 0;
   border-radius: 4px;
-  border: 1px solid var(--Gray-01, #969696);
+  border: 1px solid #969696;
   background: #050505;
 `;
 
@@ -92,8 +92,9 @@ const StyledOption = styled.div<{ isSelected: boolean }>(
   `
 );
 const Input = styled.input`
-  background: salmon;
+  //background: salmon;
   color: #fffffd;
+  background: #050505;
   font-family: Space Grotesk;
   font-size: 12px;
   font-style: normal;
@@ -117,7 +118,7 @@ export const StyledSelected = styled.div<{ selected: boolean }>(
     //todo придумать как сделать чтобы не прыгал компонент после выбора инпута
     div {
       padding-left: 10px;
-      background: cyan;
+      //background: cyan;
       //min-width: 160px;
       height: 31px;
       display: flex;
