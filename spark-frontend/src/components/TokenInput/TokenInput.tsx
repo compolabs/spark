@@ -6,6 +6,7 @@ import _ from "lodash";
 import {TOKENS_BY_ASSET_ID} from "@src/constants";
 import SizedBox from "@components/SizedBox";
 import {FormattedInput} from "./FormattedInput";
+import Text, {TEXT_TYPES} from "@components/Text";
 
 interface IProps {
     assetId: string;
@@ -60,22 +61,15 @@ const InputContainer = styled.div<{
           })()}
 `;
 
-const Label = styled.div`
-  color: #676767;
-  font-family: Space Grotesk;
-  font-size: 8px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: 1.12px;
-`;
-const Symbol = styled.div`
+const Symbol = styled.div<{ disabled?: boolean }>`
   display: flex;
   padding: 4px 8px;
   justify-content: center;
   align-items: center;
 
   color: #676767;
+  background: ${({disabled, theme}) =>
+          disabled ? theme.colors.gray2 : theme.colors.gray4};
   text-align: center;
 
   font-family: Space Grotesk;
@@ -85,15 +79,9 @@ const Symbol = styled.div`
   line-height: normal;
   letter-spacing: 1.12px;
   border-radius: 4px;
-  background: var(--Gray-04, #0c0c0c);
 `;
-const ErrorMessage = styled.div`
+const ErrorMessage = styled(Text)`
   color: var(--Error, #ff6f06);
-  font-family: Space Grotesk;
-  font-size: 8px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
 `;
 const TokenInput: React.FC<IProps> = (props) => {
     const [focused, setFocused] = useState(false);
@@ -118,8 +106,12 @@ const TokenInput: React.FC<IProps> = (props) => {
 
     return (
         <Root>
-            {props.label != null && <Label>{props.label}</Label>}
-            <SizedBox height={4}/>
+            {props.label != null &&
+            <>
+                <Text type={TEXT_TYPES.LABEL} color="#676767">{props.label}</Text>
+                <SizedBox height={4}/>
+            </>
+            }
             <InputContainer
                 focused={focused}
                 readOnly={!props.setAmount}
@@ -138,12 +130,12 @@ const TokenInput: React.FC<IProps> = (props) => {
                     readOnly={!props.setAmount}
                     disabled={props.disabled}
                 />
-                <Symbol>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Symbol>
+                <Symbol disabled={props.disabled}>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Symbol>
             </InputContainer>
             {props.error && (
                 <>
                     <SizedBox width={4}/>
-                    <ErrorMessage>{props.errorMessage}</ErrorMessage>
+                    <ErrorMessage type={TEXT_TYPES.BODY_SMALL}>{props.errorMessage}</ErrorMessage>
                 </>
             )}
         </Root>

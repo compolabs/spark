@@ -127,9 +127,9 @@ const UiKit: React.FC<IProps> = () => {
                 amount={amount}
                 setAmount={setAmount}
                 label="LABEL"
-                // errorMessage="This is an error message"
-                // error={true}
-                disabled
+                errorMessage="This is an error message"
+                error={true}
+                // disabled
             />
         </Root>
     );
