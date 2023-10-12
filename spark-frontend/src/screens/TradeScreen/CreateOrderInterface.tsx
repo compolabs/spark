@@ -42,7 +42,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
         <Row
           alignItems="center"
           style={{
-            background: "#fff",
+            background: "#fff", //fixme
             color: "#000",
             width: "100%",
             height: 32

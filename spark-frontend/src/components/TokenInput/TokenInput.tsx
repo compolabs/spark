@@ -6,7 +6,8 @@ import _ from "lodash";
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import SizedBox from "@components/SizedBox";
 import { FormattedInput } from "./FormattedInput";
-import Text, { TEXT_TYPES } from "@components/Text";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { useTheme } from "@emotion/react";
 
 interface IProps {
   assetId: string;
@@ -67,25 +68,16 @@ const Symbol = styled.div<{ disabled?: boolean }>`
   justify-content: center;
   align-items: center;
 
-  color: #676767;
+  color: ${({ theme }) => theme.colors.gray2};
   background: ${({ disabled, theme }) => (disabled ? theme.colors.gray2 : theme.colors.gray4)};
   text-align: center;
-
-  font-family: Space Grotesk;
-  font-size: 8px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  letter-spacing: 1.12px;
+  ${TEXT_TYPES_MAP[TEXT_TYPES.LABEL]}
   border-radius: 4px;
-`;
-const ErrorMessage = styled(Text)`
-  color: var(--Error, #ff6f06);
 `;
 const TokenInput: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
-
+  const theme = useTheme();
   useEffect(() => {
     props.amount && setAmount(props.amount);
   }, [props.amount]);
@@ -107,7 +99,7 @@ const TokenInput: React.FC<IProps> = (props) => {
     <Root>
       {props.label != null && (
         <>
-          <Text type={TEXT_TYPES.LABEL} color="#676767">
+          <Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
             {props.label}
           </Text>
           <SizedBox height={4} />
@@ -131,7 +123,9 @@ const TokenInput: React.FC<IProps> = (props) => {
       {props.error && (
         <>
           <SizedBox width={4} />
-          <ErrorMessage type={TEXT_TYPES.BODY_SMALL}>{props.errorMessage}</ErrorMessage>
+          <Text color={theme.colors.error} type={TEXT_TYPES.BODY_SMALL}>
+            {props.errorMessage}
+          </Text>
         </>
       )}
     </Root>

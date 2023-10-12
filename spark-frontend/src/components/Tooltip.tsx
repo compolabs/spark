@@ -20,9 +20,6 @@ const Root = styled.div<{ fixed?: boolean }>`
   padding: 8px 16px 12px;
   border: 1px solid ${({ theme }) => `${theme.colors.gray1}`};
   border-radius: 4px;
-  box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.06),
-    0 16px 28px rgba(0, 0, 0, 0.07);
   height: auto;
   overflow-y: auto;
 `;

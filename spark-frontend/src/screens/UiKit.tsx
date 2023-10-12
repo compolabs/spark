@@ -24,9 +24,7 @@ const Root = styled.div`
 const UiKit: React.FC<IProps> = () => {
   const categoriesOptions = [
     { title: "All categories", key: "all" },
-    { title: "Stablecoins", key: "stable" },
-    { title: "Waves DeFi", key: "defi" },
-    { title: "Waves Ducks", key: "duck" }
+    { title: "Stablecoins", key: "stable" }
   ];
   const [value, setValue] = useState<any>();
 
