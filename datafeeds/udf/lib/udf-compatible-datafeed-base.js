@@ -182,7 +182,7 @@ export class UDFCompatibleDatafeedBase {
             }
             this._send('symbols', params)
                 .then((response) => {
-                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4;
+                var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2;
                 if (response.s !== undefined) {
                     onError('unknown_symbol');
                 }
@@ -204,20 +204,18 @@ export class UDFCompatibleDatafeedBase {
                         original_unit_id: (_g = response.original_unit_id) !== null && _g !== void 0 ? _g : response['original-unit-id'],
                         unit_conversion_types: (_h = response.unit_conversion_types) !== null && _h !== void 0 ? _h : response['unit-conversion-types'],
                         has_intraday: (_k = (_j = response.has_intraday) !== null && _j !== void 0 ? _j : response['has-intraday']) !== null && _k !== void 0 ? _k : false,
-                        // eslint-disable-next-line deprecation/deprecation
-                        has_no_volume: (_l = response.has_no_volume) !== null && _l !== void 0 ? _l : response['has-no-volume'],
-                        visible_plots_set: (_m = response.visible_plots_set) !== null && _m !== void 0 ? _m : response['visible-plots-set'],
-                        minmov: (_p = (_o = response.minmovement) !== null && _o !== void 0 ? _o : response.minmov) !== null && _p !== void 0 ? _p : 0,
-                        minmove2: (_r = (_q = response.minmovement2) !== null && _q !== void 0 ? _q : response.minmove2) !== null && _r !== void 0 ? _r : response.minmov2,
-                        session: (_s = response.session) !== null && _s !== void 0 ? _s : response['session-regular'],
-                        session_holidays: (_t = response.session_holidays) !== null && _t !== void 0 ? _t : response['session-holidays'],
-                        supported_resolutions: (_w = (_v = (_u = response.supported_resolutions) !== null && _u !== void 0 ? _u : response['supported-resolutions']) !== null && _v !== void 0 ? _v : this._configuration.supported_resolutions) !== null && _w !== void 0 ? _w : [],
-                        has_daily: (_y = (_x = response.has_daily) !== null && _x !== void 0 ? _x : response['has-daily']) !== null && _y !== void 0 ? _y : true,
-                        intraday_multipliers: (_0 = (_z = response.intraday_multipliers) !== null && _z !== void 0 ? _z : response['intraday-multipliers']) !== null && _0 !== void 0 ? _0 : ['1', '5', '15', '30', '60'],
-                        has_weekly_and_monthly: (_1 = response.has_weekly_and_monthly) !== null && _1 !== void 0 ? _1 : response['has-weekly-and-monthly'],
-                        has_empty_bars: (_2 = response.has_empty_bars) !== null && _2 !== void 0 ? _2 : response['has-empty-bars'],
-                        volume_precision: (_3 = response.volume_precision) !== null && _3 !== void 0 ? _3 : response['volume-precision'],
-                        format: (_4 = response.format) !== null && _4 !== void 0 ? _4 : 'price',
+                        visible_plots_set: (_l = response.visible_plots_set) !== null && _l !== void 0 ? _l : response['visible-plots-set'],
+                        minmov: (_o = (_m = response.minmovement) !== null && _m !== void 0 ? _m : response.minmov) !== null && _o !== void 0 ? _o : 0,
+                        minmove2: (_p = response.minmovement2) !== null && _p !== void 0 ? _p : response.minmove2,
+                        session: (_q = response.session) !== null && _q !== void 0 ? _q : response['session-regular'],
+                        session_holidays: (_r = response.session_holidays) !== null && _r !== void 0 ? _r : response['session-holidays'],
+                        supported_resolutions: (_u = (_t = (_s = response.supported_resolutions) !== null && _s !== void 0 ? _s : response['supported-resolutions']) !== null && _t !== void 0 ? _t : this._configuration.supported_resolutions) !== null && _u !== void 0 ? _u : [],
+                        has_daily: (_w = (_v = response.has_daily) !== null && _v !== void 0 ? _v : response['has-daily']) !== null && _w !== void 0 ? _w : true,
+                        intraday_multipliers: (_y = (_x = response.intraday_multipliers) !== null && _x !== void 0 ? _x : response['intraday-multipliers']) !== null && _y !== void 0 ? _y : ['1', '5', '15', '30', '60'],
+                        has_weekly_and_monthly: (_z = response.has_weekly_and_monthly) !== null && _z !== void 0 ? _z : response['has-weekly-and-monthly'],
+                        has_empty_bars: (_0 = response.has_empty_bars) !== null && _0 !== void 0 ? _0 : response['has-empty-bars'],
+                        volume_precision: (_1 = response.volume_precision) !== null && _1 !== void 0 ? _1 : response['volume-precision'],
+                        format: (_2 = response.format) !== null && _2 !== void 0 ? _2 : 'price',
                     };
                     onResultReady(result);
                 }

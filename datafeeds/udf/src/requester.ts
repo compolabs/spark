@@ -1,6 +1,7 @@
 import { RequestParams, UdfResponse, UdfErrorResponse, logMessage } from './helpers';
+import { IRequester } from './irequester';
 
-export class Requester {
+export class Requester implements IRequester {
 	private _headers: HeadersInit | undefined;
 
 	public constructor(headers?: HeadersInit) {

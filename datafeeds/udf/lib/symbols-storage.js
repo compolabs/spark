@@ -141,7 +141,6 @@ export class SymbolsStorage {
                     unit_conversion_types: extractField(data, 'unit-conversion-types', symbolIndex, true),
                     description: extractField(data, 'description', symbolIndex),
                     has_intraday: definedValueOrDefault(extractField(data, 'has-intraday', symbolIndex), false),
-                    has_no_volume: definedValueOrDefault(extractField(data, 'has-no-volume', symbolIndex), undefined),
                     visible_plots_set: definedValueOrDefault(extractField(data, 'visible-plots-set', symbolIndex), undefined),
                     minmov: extractField(data, 'minmovement', symbolIndex) || extractField(data, 'minmov', symbolIndex) || 0,
                     minmove2: extractField(data, 'minmove2', symbolIndex) || extractField(data, 'minmov2', symbolIndex),

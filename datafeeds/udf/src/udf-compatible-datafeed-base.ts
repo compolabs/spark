@@ -31,7 +31,7 @@ import {
 import {
 	GetBarsResult,
 	HistoryProvider,
-	type LimitedResponseConfiguration,
+	LimitedResponseConfiguration,
 	PeriodParamsWithOptionalCountback,
 } from './history-provider';
 
@@ -39,7 +39,7 @@ import { IQuotesProvider } from './iquotes-provider';
 import { DataPulseProvider } from './data-pulse-provider';
 import { QuotesPulseProvider } from './quotes-pulse-provider';
 import { SymbolsStorage } from './symbols-storage';
-import { Requester } from './requester';
+import { IRequester } from './irequester';
 
 export interface UdfCompatibleConfiguration extends DatafeedConfiguration {
 	// tslint:disable:tv-variable-name
@@ -63,11 +63,9 @@ export interface ResolveSymbolResponse extends LibrarySymbolInfo {
 
 	'unit-conversion-types': string[];
 	'has-intraday': boolean;
-	'has-no-volume': boolean;
 	'visible-plots-set'?: VisiblePlotsSet;
 	minmovement: number;
 	minmovement2?: number;
-	minmov2?: number;
 	'session-regular': string;
 	'session-holidays': string;
 	'supported-resolutions': ResolutionString[];
@@ -120,12 +118,12 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 	private readonly _quotesProvider: IQuotesProvider;
 	private readonly _quotesPulseProvider: QuotesPulseProvider;
 
-	private readonly _requester: Requester;
+	private readonly _requester: IRequester;
 
 	protected constructor(
 		datafeedURL: string,
 		quotesProvider: IQuotesProvider,
-		requester: Requester,
+		requester: IRequester,
 		updateFrequency: number = 10 * 1000,
 		limitedServerResponse?: LimitedResponseConfiguration
 	) {
@@ -348,11 +346,9 @@ export class UDFCompatibleDatafeedBase implements IExternalDatafeed, IDatafeedQu
 							original_unit_id: response.original_unit_id ?? response['original-unit-id'],
 							unit_conversion_types: response.unit_conversion_types ?? response['unit-conversion-types'],
 							has_intraday: response.has_intraday ?? response['has-intraday'] ?? false,
-							// eslint-disable-next-line deprecation/deprecation
-							has_no_volume: response.has_no_volume ?? response['has-no-volume'],
 							visible_plots_set: response.visible_plots_set ?? response['visible-plots-set'],
 							minmov: response.minmovement ?? response.minmov ?? 0,
-							minmove2: response.minmovement2 ?? response.minmove2 ?? response.minmov2,
+							minmove2: response.minmovement2 ?? response.minmove2,
 							session: response.session ?? response['session-regular'],
 							session_holidays: response.session_holidays ?? response['session-holidays'],
 							supported_resolutions: response.supported_resolutions ?? response['supported-resolutions'] ?? this._configuration.supported_resolutions ?? [],

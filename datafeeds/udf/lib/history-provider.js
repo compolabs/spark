@@ -62,9 +62,19 @@ export class HistoryProvider {
                 lastResultLength = followupResult.bars.length;
                 // merge result with results collected so far
                 if (this._limitedServerResponse.expectedOrder === 'earliestFirst') {
+                    if (followupResult.bars[0].time === result.bars[result.bars.length - 1].time) {
+                        // Datafeed shouldn't include a value exactly matching the `to` timestamp but in case it does
+                        // we will remove the duplicate.
+                        followupResult.bars.shift();
+                    }
                     result.bars.push(...followupResult.bars);
                 }
                 else {
+                    if (followupResult.bars[followupResult.bars.length - 1].time === result.bars[0].time) {
+                        // Datafeed shouldn't include a value exactly matching the `to` timestamp but in case it does
+                        // we will remove the duplicate.
+                        followupResult.bars.pop();
+                    }
                     result.bars.unshift(...followupResult.bars);
                 }
             }

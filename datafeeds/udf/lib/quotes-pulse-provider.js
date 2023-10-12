@@ -24,8 +24,8 @@ export class QuotesPulseProvider {
     }
     _createTimersIfRequired() {
         if (this._timers === null) {
-            const fastTimer = setInterval(this._updateQuotes.bind(this, 1 /* SymbolsType.Fast */), 10000 /* UpdateTimeouts.Fast */);
-            const generalTimer = setInterval(this._updateQuotes.bind(this, 0 /* SymbolsType.General */), 60000 /* UpdateTimeouts.General */);
+            const fastTimer = window.setInterval(this._updateQuotes.bind(this, 1 /* SymbolsType.Fast */), 10000 /* UpdateTimeouts.Fast */);
+            const generalTimer = window.setInterval(this._updateQuotes.bind(this, 0 /* SymbolsType.General */), 60000 /* UpdateTimeouts.General */);
             this._timers = { fastTimer, generalTimer };
         }
     }

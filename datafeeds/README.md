@@ -1,3 +1,3 @@
-# Charting Library Datafeeds
+# Advanced Charts Datafeeds
 
-This folder contains implementation of Charting Library Datafeeds.
+This folder contains implementation of Advanced Charts Datafeeds.

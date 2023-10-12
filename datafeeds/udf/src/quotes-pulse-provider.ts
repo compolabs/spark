@@ -66,8 +66,8 @@ export class QuotesPulseProvider {
 
 	private _createTimersIfRequired(): void {
 		if (this._timers === null) {
-			const fastTimer = setInterval(this._updateQuotes.bind(this, SymbolsType.Fast), UpdateTimeouts.Fast);
-			const generalTimer = setInterval(this._updateQuotes.bind(this, SymbolsType.General), UpdateTimeouts.General);
+			const fastTimer = window.setInterval(this._updateQuotes.bind(this, SymbolsType.Fast), UpdateTimeouts.Fast);
+			const generalTimer = window.setInterval(this._updateQuotes.bind(this, SymbolsType.General), UpdateTimeouts.General);
 			this._timers = { fastTimer, generalTimer };
 		}
 	}

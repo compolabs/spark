@@ -10,7 +10,7 @@ import {
 	logMessage,
 } from './helpers';
 
-import { Requester } from './requester';
+import { IRequester } from './irequester';
 
 interface SymbolInfoMap {
 	[symbol: string]: LibrarySymbolInfo | undefined;
@@ -47,7 +47,6 @@ interface ExchangeDataResponseSymbolData {
 	'has-daily'?: boolean;
 	'has-weekly-and-monthly'?: boolean;
 	'has-empty-bars'?: boolean;
-	'has-no-volume'?: boolean;
 	'visible-plots-set'?: VisiblePlotsSet;
 	'currency-code'?: string;
 	'original-currency-code'?: string;
@@ -99,9 +98,9 @@ export class SymbolsStorage {
 	private readonly _datafeedUrl: string;
 	private readonly _readyPromise: Promise<void>;
 	private readonly _datafeedSupportedResolutions: ResolutionString[];
-	private readonly _requester: Requester;
+	private readonly _requester: IRequester;
 
-	public constructor(datafeedUrl: string, datafeedSupportedResolutions: ResolutionString[], requester: Requester) {
+	public constructor(datafeedUrl: string, datafeedSupportedResolutions: ResolutionString[], requester: IRequester) {
 		this._datafeedUrl = datafeedUrl;
 		this._datafeedSupportedResolutions = datafeedSupportedResolutions;
 		this._requester = requester;
@@ -259,7 +258,6 @@ export class SymbolsStorage {
 					unit_conversion_types: extractField(data, 'unit-conversion-types', symbolIndex, true),
 					description: extractField(data, 'description', symbolIndex),
 					has_intraday: definedValueOrDefault(extractField(data, 'has-intraday', symbolIndex), false),
-					has_no_volume: definedValueOrDefault(extractField(data, 'has-no-volume', symbolIndex), undefined),
 					visible_plots_set: definedValueOrDefault(extractField(data, 'visible-plots-set', symbolIndex), undefined),
 					minmov: extractField(data, 'minmovement', symbolIndex) || extractField(data, 'minmov', symbolIndex) || 0,
 					minmove2: extractField(data, 'minmove2', symbolIndex) || extractField(data, 'minmov2', symbolIndex),
