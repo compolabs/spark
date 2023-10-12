@@ -32,20 +32,11 @@ const Container = styled.div`
   flex-direction: column;
   width: fit-content;
 `;
-const Tooltip: React.FC<IProps> = ({
-  containerStyles,
-  children,
-  content,
-  config
-}) => {
-  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } =
-    usePopperTooltip({ ...config });
+const Tooltip: React.FC<IProps> = ({ containerStyles, children, content, config }) => {
+  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } = usePopperTooltip({ ...config });
   return (
     <Container>
-      <div
-        ref={setTriggerRef}
-        style={{ cursor: "pointer", position: "relative", ...containerStyles }}
-      >
+      <div ref={setTriggerRef} style={{ cursor: "pointer", position: "relative", ...containerStyles }}>
         {children}
         {visible && (
           <Root ref={setTooltipRef} {...getTooltipProps()}>

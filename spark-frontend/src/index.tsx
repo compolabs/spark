@@ -23,9 +23,7 @@ autorun(
   { delay: 1000 }
 );
 
-const root = ReactDOM.createRoot(
-  document.getElementById("root") as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
     <storesContext.Provider value={mobxStore}>

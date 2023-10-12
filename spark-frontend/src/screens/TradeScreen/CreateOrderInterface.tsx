@@ -30,18 +30,10 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
     <Root>
       <Column crossAxisSize="max">
         <ButtonGroup>
-          <Button
-            primary={!vm.isSell}
-            outline={vm.isSell}
-            onClick={() => vm.setIsSell(false)}
-          >
+          <Button primary={!vm.isSell} outline={vm.isSell} onClick={() => vm.setIsSell(false)}>
             Buy
           </Button>
-          <Button
-            secondary={vm.isSell}
-            outline={!vm.isSell}
-            onClick={() => vm.setIsSell(true)}
-          >
+          <Button secondary={vm.isSell} outline={!vm.isSell} onClick={() => vm.setIsSell(true)}>
             Sell
           </Button>
         </ButtonGroup>
@@ -64,9 +56,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
         <TokenInput
           decimals={vm.token1.decimals}
           amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
-          setAmount={(v) =>
-            vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true)
-          }
+          setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
           assetId={vm.assetId1}
         />
         <SizedBox height={16} />
@@ -74,9 +64,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
         <TokenInput
           decimals={vm.token0.decimals}
           amount={vm.isSell ? vm.sellAmount : vm.buyAmount}
-          setAmount={(v) =>
-            vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true)
-          }
+          setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
           assetId={vm.assetId0}
           error={vm.isSell ? vm.sellAmountError : undefined}
         />
@@ -85,19 +73,13 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
         <TokenInput
           decimals={vm.token1.decimals}
           amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
-          setAmount={(v) =>
-            vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true)
-          }
+          setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
           assetId={vm.assetId1}
           error={vm.isSell ? undefined : vm.buyTotalError}
         />
       </Column>
 
-      <Button
-        primary={!vm.isSell}
-        secondary={vm.isSell}
-        onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}
-      >
+      <Button primary={!vm.isSell} secondary={vm.isSell} onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}>
         {vm.isSell ? "Sell" : "Buy"}
       </Button>
     </Root>

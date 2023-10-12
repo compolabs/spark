@@ -69,10 +69,7 @@ class BN extends BigNumber {
 
   squareRoot = this.sqrt;
 
-  toDecimalPlaces(
-    decimalPlaces: number,
-    roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN
-  ): BN {
+  toDecimalPlaces(decimalPlaces: number, roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN): BN {
     return new BN(super.dp(decimalPlaces, roundingMode));
   }
 
@@ -87,10 +84,7 @@ class BN extends BigNumber {
     return super.toFormat(decimalPlaces);
   }
 
-  toSignificant(
-    significantDigits: number,
-    roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN
-  ): BN {
+  toSignificant(significantDigits: number, roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN): BN {
     return this.gte(1)
       ? this.toDecimalPlaces(significantDigits)
       : new BN(super.precision(significantDigits, roundingMode));
@@ -133,8 +127,7 @@ class BN extends BigNumber {
   }
 
   static ZERO = new BN(0);
-  static MaxUint256 =
-    "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+  static MaxUint256 = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
 }
 
 export type TEtherBigNumber = EthersBigNumber;

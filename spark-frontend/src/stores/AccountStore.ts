@@ -19,8 +19,7 @@ export interface ISerializedAccountStore {
 class AccountStore {
   public readonly rootStore: RootStore;
   public provider: Provider | null = null;
-  private setProvider = (provider: Provider | null) =>
-    (this.provider = provider);
+  private setProvider = (provider: Provider | null) => (this.provider = provider);
 
   constructor(rootStore: RootStore, initState?: ISerializedAccountStore) {
     makeAutoObservable(this);
@@ -61,8 +60,7 @@ class AccountStore {
     const assetBalances = TOKENS_LIST.map((asset) => {
       const t = balances.find(({ assetId }) => asset.assetId === assetId);
       const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-      if (t == null)
-        return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+      if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
       return new Balance({ balance, ...asset });
     });
@@ -76,27 +74,18 @@ class AccountStore {
   };
 
   findBalanceByAssetId = (assetId: string) =>
-    this.assetBalances &&
-    this.assetBalances.find((balance) => balance.assetId === assetId);
+    this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
 
   onFuelLoaded = () => {
     if (this.walletInstance == null) return;
-    this.walletInstance.on(
-      window?.fuel.events.currentAccount,
-      this.handleAccEvent
-    );
-    this.walletInstance.on(
-      window?.fuel.events?.network,
-      this.handleNetworkEvent
-    );
+    this.walletInstance.on(window?.fuel.events.currentAccount, this.handleAccEvent);
+    this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
   };
   handleAccEvent = (account: string) => this.setAddress(account);
 
   handleNetworkEvent = (network: FuelWalletProvider) => {
     if (network.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(
-        `Please change network url to Testnet Beta 4`
-      );
+      this.rootStore.notificationStore.toast(`Please change network url to Testnet Beta 4`);
     }
   };
 
@@ -141,8 +130,7 @@ class AccountStore {
 
   loginWithWallet = async () => {
     //fixme change to notification
-    if (this.walletInstance == null)
-      throw new Error("There is no wallet instance");
+    if (this.walletInstance == null) throw new Error("There is no wallet instance");
     // const res = await this.walletInstance.connect({ url: NODE_URL });
     const res = await this.walletInstance.connect();
     if (!res) {
@@ -154,9 +142,7 @@ class AccountStore {
     const account = await this.walletInstance.currentAccount();
     const provider = await this.walletInstance.getProvider();
     if (provider.url !== NODE_URL) {
-      this.rootStore.notificationStore.toast(
-        `Please change network url to beta 4`
-      );
+      this.rootStore.notificationStore.toast(`Please change network url to beta 4`);
     }
     this.setAddress(account);
   };
@@ -173,10 +159,7 @@ class AccountStore {
   get walletToRead(): WalletLocked | null {
     return this.provider == null
       ? null
-      : Wallet.fromAddress(
-          "fuel1m56y48mej3366h6460y4rvqqt62y9vn8ad3meyfa5wkk5dc6mxmss7rwnr",
-          this.provider ?? ""
-        );
+      : Wallet.fromAddress("fuel1m56y48mej3366h6460y4rvqqt62y9vn8ad3meyfa5wkk5dc6mxmss7rwnr", this.provider ?? "");
   }
 
   get addressInput(): null | { value: string } {

@@ -113,12 +113,7 @@ const UiKit: React.FC<IProps> = () => {
         <Button>Option 2</Button>
       </ButtonGroup>
       <SizedBox height={16} />
-      <Select
-        label="label"
-        options={categoriesOptions}
-        selected={value}
-        onSelect={(v) => setValue(v)}
-      />
+      <Select label="label" options={categoriesOptions} selected={value} onSelect={(v) => setValue(v)} />
       <SizedBox height={16} />
       <TokenInput
         assetId={TOKENS_BY_SYMBOL.ETH.assetId}

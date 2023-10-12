@@ -1,16 +1,9 @@
-export const getFormattedValue = (
-  value: string,
-  separator: string,
-  prefix?: string
-): string => {
+export const getFormattedValue = (value: string, separator: string, prefix?: string): string => {
   if (isNaN(Number(value))) {
     return "";
   }
   const valueArr = value.toString().split(".");
-  const first = valueArr[0].replace(
-    /(\d)(?=(\d\d\d)+(?!\d))/g,
-    `$1${separator}`
-  );
+  const first = valueArr[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, `$1${separator}`);
 
   if (valueArr.length === 1) {
     const value = first.trim();
@@ -23,17 +16,11 @@ export const getFormattedValue = (
   }
 };
 
-export const parseFormattedValue = (
-  value: string | undefined,
-  separator: string,
-  prefix?: string
-): string => {
+export const parseFormattedValue = (value: string | undefined, separator: string, prefix?: string): string => {
   const findSeparators = new RegExp(separator, "g");
   const findPrefix = new RegExp(prefix || "", "g");
 
-  return value
-    ? value.replace(findSeparators, "").replace(findPrefix, "").replace(" ", "")
-    : "";
+  return value ? value.replace(findSeparators, "").replace(findPrefix, "").replace(" ", "") : "";
 };
 
 export const handleDots = (value: string, decimals: number): string => {

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { LOGIN_TYPE } from "@stores/AccountStore";
@@ -42,15 +42,13 @@ const MenuItem = styled.div<{ active?: boolean; disabled?: boolean }>`
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   width: 100px;
   text-align: center;
-  color: ${({ theme, active, disabled }) =>
-    active && !disabled ? theme.colors.white : theme.colors.gray1};
+  color: ${({ theme, active, disabled }) => (active && !disabled ? theme.colors.white : theme.colors.gray1)};
   position: relative;
   ${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
   transition: .4s;
 
   :hover {
-    color: ${({ theme, disabled }) =>
-      disabled ? theme.colors.gray1 : theme.colors.white};
+    color: ${({ theme, disabled }) => (disabled ? theme.colors.gray1 : theme.colors.white)};
   }
 
   ::after {
@@ -60,8 +58,7 @@ const MenuItem = styled.div<{ active?: boolean; disabled?: boolean }>`
     width: 100%;
     height: 2px;
     border-radius: 4px;
-    background: ${({ theme, active }) =>
-      active ? theme.colors.white : "transparent"};
+    background: ${({ theme, active }) => (active ? theme.colors.white : "transparent")};
     left: 0;
     right: 0;
     bottom: -16px;
@@ -110,10 +107,7 @@ const Header: React.FC<IProps> = observer(() => {
           else if (route != null)
             return (
               <Link to={route}>
-                <MenuItem
-                  active={isRoutesEquals(route, location.pathname)}
-                  key={key}
-                >
+                <MenuItem active={isRoutesEquals(route, location.pathname)} key={key}>
                   {title}
                 </MenuItem>
               </Link>

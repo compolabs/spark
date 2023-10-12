@@ -48,8 +48,7 @@ const InputContainer = styled.div<{
     cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
   }
 
-  background: ${({ disabled, theme }) =>
-    disabled ? theme.colors.gray2 : theme.colors.gray5};
+  background: ${({ disabled, theme }) => (disabled ? theme.colors.gray2 : theme.colors.gray5)};
 
   border-radius: 4px;
   border: 1px solid
@@ -69,8 +68,7 @@ const Symbol = styled.div<{ disabled?: boolean }>`
   align-items: center;
 
   color: #676767;
-  background: ${({ disabled, theme }) =>
-    disabled ? theme.colors.gray2 : theme.colors.gray4};
+  background: ${({ disabled, theme }) => (disabled ? theme.colors.gray2 : theme.colors.gray4)};
   text-align: center;
 
   font-family: Space Grotesk;
@@ -115,12 +113,7 @@ const TokenInput: React.FC<IProps> = (props) => {
           <SizedBox height={4} />
         </>
       )}
-      <InputContainer
-        focused={focused}
-        readOnly={!props.setAmount}
-        error={props.error}
-        disabled={props.disabled}
-      >
+      <InputContainer focused={focused} readOnly={!props.setAmount} error={props.error} disabled={props.disabled}>
         <FormattedInput
           placeholder="0.00"
           decimals={props.decimals}
@@ -133,16 +126,12 @@ const TokenInput: React.FC<IProps> = (props) => {
           readOnly={!props.setAmount}
           disabled={props.disabled}
         />
-        <Symbol disabled={props.disabled}>
-          {TOKENS_BY_ASSET_ID[props.assetId].symbol}
-        </Symbol>
+        <Symbol disabled={props.disabled}>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Symbol>
       </InputContainer>
       {props.error && (
         <>
           <SizedBox width={4} />
-          <ErrorMessage type={TEXT_TYPES.BODY_SMALL}>
-            {props.errorMessage}
-          </ErrorMessage>
+          <ErrorMessage type={TEXT_TYPES.BODY_SMALL}>{props.errorMessage}</ErrorMessage>
         </>
       )}
     </Root>

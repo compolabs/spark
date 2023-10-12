@@ -5,8 +5,7 @@ import { getOrderbook, Order } from "@src/services/OrdersService";
 class OrdersStore {
   public readonly rootStore: RootStore;
   orderbook: { buy: Order[]; sell: Order[] } = { buy: [], sell: [] };
-  private setOrderbook = (orderbook: { buy: Order[]; sell: Order[] }) =>
-    (this.orderbook = orderbook);
+  private setOrderbook = (orderbook: { buy: Order[]; sell: Order[] }) => (this.orderbook = orderbook);
   myOrders: Order[] = [];
   setMyOrders = (myOrders: Order[]) => (this.myOrders = myOrders);
 

@@ -43,11 +43,7 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
     <Root>
       <MarketSelect>
         <Row alignItems="center">
-          <img
-            style={{ borderRadius: "50%", width: 24, height: 24 }}
-            src={TOKENS_BY_SYMBOL.UNI.logo}
-            alt="btc"
-          />
+          <img style={{ borderRadius: "50%", width: 24, height: 24 }} src={TOKENS_BY_SYMBOL.UNI.logo} alt="btc" />
           <SizedBox width={8} />
           <h4>UNI / USDC</h4>
         </Row>

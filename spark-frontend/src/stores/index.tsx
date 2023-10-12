@@ -6,12 +6,4 @@ import SettingsStore from "./SettingsStore";
 import NotificationStore from "./NotificationStore";
 import OrdersStore from "./OrdersStore";
 
-export {
-  RootStore,
-  SettingsStore,
-  AccountStore,
-  NotificationStore,
-  OrdersStore,
-  storesContext,
-  useStores
-};
+export { RootStore, SettingsStore, AccountStore, NotificationStore, OrdersStore, storesContext, useStores };

@@ -1,11 +1,6 @@
 import { useEffect, useRef } from "react";
 import * as React from "react";
-import {
-  ChartingLibraryWidgetOptions,
-  LanguageCode,
-  ResolutionString,
-  widget
-} from "@src/charting_library";
+import { ChartingLibraryWidgetOptions, LanguageCode, ResolutionString, widget } from "@src/charting_library";
 import { observer } from "mobx-react-lite";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
@@ -33,15 +28,12 @@ export interface ChartContainerProps {
 const getLanguageFromURL = (): LanguageCode | null => {
   const regex = new RegExp("[\\?&]lang=([^&#]*)");
   const results = regex.exec(window.location.search);
-  return results === null
-    ? null
-    : (decodeURIComponent(results[1].replace(/\+/g, " ")) as LanguageCode);
+  return results === null ? null : (decodeURIComponent(results[1].replace(/\+/g, " ")) as LanguageCode);
 };
 
 const TVChartContainer = () => {
   const vm = useTradeScreenVM();
-  const chartContainerRef =
-    useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
+  const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
 
   const defaultProps: Omit<ChartContainerProps, "container"> = {
     symbol: `${vm.token0.symbol}/${vm.token1.symbol}`,
@@ -70,11 +62,8 @@ const TVChartContainer = () => {
       symbol: defaultProps.symbol as string,
       // BEWARE: no trailing slash is expected in feed URL
       // tslint:disable-next-line:no-any
-      datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(
-        defaultProps.datafeedUrl
-      ),
-      interval:
-        defaultProps.interval as ChartingLibraryWidgetOptions["interval"],
+      datafeed: new (window as any).Datafeeds.UDFCompatibleDatafeed(defaultProps.datafeedUrl),
+      interval: defaultProps.interval as ChartingLibraryWidgetOptions["interval"],
       timeframe: defaultProps.timeframe,
       container: chartContainerRef.current,
       library_path: defaultProps.libraryPath as string,

@@ -2,9 +2,7 @@ import { ISerializedRootStore } from "@stores/RootStore";
 
 export const loadState = (): ISerializedRootStore | undefined => {
   try {
-    let raw =
-      localStorage.getItem("spark-store") ??
-      localStorage.getItem("spark-store");
+    let raw = localStorage.getItem("spark-store") ?? localStorage.getItem("spark-store");
     const state = JSON.parse(raw as string);
     return state || undefined;
   } catch (error) {

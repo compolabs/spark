@@ -18,10 +18,8 @@ const Button = styled.button<{
   height: ${({ outline }) => (outline ? 26 : 32)}px;
   border-radius: 100px;
   box-shadow: none;
-  color: ${({ outline, theme }) =>
-    outline ? theme.colors.gray1 : theme.colors.white};
-  ${({ outline }) =>
-    outline ? TEXT_TYPES_MAP[TEXT_TYPES.BUTTON] : TEXT_TYPES_MAP[TEXT_TYPES.H1]}
+  color: ${({ outline, theme }) => (outline ? theme.colors.gray1 : theme.colors.white)};
+  ${({ outline }) => (outline ? TEXT_TYPES_MAP[TEXT_TYPES.BUTTON] : TEXT_TYPES_MAP[TEXT_TYPES.H1])}
   width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
   padding: 0 12px;
   outline: none;
@@ -43,8 +41,7 @@ const Button = styled.button<{
 
   path {
     transition: 0.4s;
-    fill: ${({ outline, theme }) =>
-      outline ? theme.colors.gray1 : theme.colors.white};
+    fill: ${({ outline, theme }) => (outline ? theme.colors.gray1 : theme.colors.white)};
   }
 
   :active {
@@ -73,8 +70,7 @@ const Button = styled.button<{
   }
 
   :disabled {
-    border: ${({ outline, theme }) =>
-      outline ? `1px solid ${theme.colors.gray3}` : 0};
+    border: ${({ outline, theme }) => (outline ? `1px solid ${theme.colors.gray3}` : 0)};
     background-color: ${({ primary, secondary, outline, theme }) => {
       if (primary) return "rgba(0, 255, 152, 0.10)";
       else if (secondary) return "rgba(253, 10, 83, 0.10)";

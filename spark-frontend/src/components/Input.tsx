@@ -2,13 +2,7 @@ import styled from "@emotion/styled";
 import React, { ChangeEvent } from "react";
 
 interface IProps
-  extends Omit<
-    React.DetailedHTMLProps<
-      React.InputHTMLAttributes<HTMLInputElement>,
-      HTMLInputElement
-    >,
-    "onChange"
-  > {
+  extends Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "onChange"> {
   value?: string;
   onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
@@ -23,7 +17,7 @@ const Root = styled.div`
     border: none;
     background-color: transparent;
 
-    color: ${({theme}) => theme.colors.gray1};
+    color: ${({ theme }) => theme.colors.gray1};
 
     font-family: JetBrains Mono;
     font-size: 12px;
@@ -33,7 +27,7 @@ const Root = styled.div`
     letter-spacing: 0.6px;
 
     ::placeholder {
-      color: ${({theme}) => theme.colors.gray1};
+      color: ${({ theme }) => theme.colors.gray1};
     }
   }
 `;

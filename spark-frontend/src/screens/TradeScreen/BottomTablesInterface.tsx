@@ -62,9 +62,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
           <div style={{ flex: 1, fontSize: 10 }}>{order.total}</div>
           <div style={{ flex: 1, fontSize: 10 }}>{order.status}</div>
           <div style={{ flex: 1, fontSize: 10 }}>
-            {order.status === "Active" && (
-              <button onClick={() => vm.cancelOrder(order.id)}>Cancel</button>
-            )}
+            {order.status === "Active" && <button onClick={() => vm.cancelOrder(order.id)}>Cancel</button>}
           </div>
         </Row>
       ))}

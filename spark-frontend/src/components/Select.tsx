@@ -23,9 +23,7 @@ const Root = styled.div<{ focused?: boolean }>`
   padding: 8px 10px;
   border-radius: 4px;
   background: ${({ theme }) => theme.colors.gray5};
-  border: 1px solid
-    ${({ focused, theme }) =>
-      focused ? theme.colors.gray1 : theme.colors.gray5};
+  border: 1px solid ${({ focused, theme }) => (focused ? theme.colors.gray1 : theme.colors.gray5)};
 
   font-family: Space Grotesk;
   font-size: 12px;
@@ -33,15 +31,13 @@ const Root = styled.div<{ focused?: boolean }>`
   font-weight: 400;
   line-height: normal;
 
-  color: ${({ theme, focused }) =>
-    focused ? theme.colors.white : theme.colors.gray1};
+  color: ${({ theme, focused }) => (focused ? theme.colors.white : theme.colors.gray1)};
   align-items: center;
   white-space: nowrap;
 
   .menu-arrow {
     transition: 0.4s;
-    transform: ${({ focused }) =>
-      focused ? "rotate(0deg)" : "rotate(-180deg)"};
+    transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(-180deg)")};
   }
 `;
 const Option = styled.div<{ active?: boolean }>`
@@ -66,13 +62,7 @@ const Option = styled.div<{ active?: boolean }>`
   }
 `;
 
-const Select: React.FC<IProps> = ({
-  options,
-  selected,
-  onSelect,
-  label,
-  ...rest
-}) => {
+const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
   const [focused, setFocused] = useState(false);
   return (
     <Tooltip
@@ -86,11 +76,7 @@ const Select: React.FC<IProps> = ({
           {options.map((v) => {
             const active = selected?.key === v.key;
             return (
-              <Option
-                active={active}
-                key={v.key + "_option"}
-                onClick={() => onSelect(v)}
-              >
+              <Option active={active} key={v.key + "_option"} onClick={() => onSelect(v)}>
                 {v.title}
               </Option>
             );
@@ -103,12 +89,7 @@ const Select: React.FC<IProps> = ({
           {label?.toUpperCase()}
         </Text>
         <SizedBox height={4} />
-        <Root
-          focused={focused}
-          onClick={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          {...rest}
-        >
+        <Root focused={focused} onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>
           {selected?.title ?? options[0].title}
           <SizedBox width={10} />
           <img src={arrowIcon} className="menu-arrow" alt="arrow" />
