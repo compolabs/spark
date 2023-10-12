@@ -4,6 +4,10 @@ import SizedBox from "@components/SizedBox";
 import TokenInput from "@components/TokenInput/TokenInput";
 import {TOKENS_BY_SYMBOL} from "@src/constants";
 import BN from "@src/utils/BN";
+// import {Column, Row} from "@src/components/Flex";
+// import Text, {TEXT_TYPES} from "@src/components/Text";
+// import Button, {ButtonGroup} from "@src/components/Button";
+import Select from "@src/components/Select";
 
 interface IProps {
 }
@@ -19,17 +23,17 @@ const Root = styled.div`
 `;
 
 const UiKit: React.FC<IProps> = () => {
-    // const [options] = React.useState([
-    //   { id: 1, value: "Option1" },
-    //   { id: 2, value: "Option2" },
-    //   { id: 3, value: "Option3" },
-    //   { id: 4, value: "Option4" },
-    //   { id: 5, value: "Option5" },
-    //   { id: 7, value: "Option6" },
-    //   { id: 8, value: "Option6" },
-    //   { id: 9, value: "Option6" }
-    // ]);
-    // const selectedOption = (option: any) => console.log(option);
+    const [options] = React.useState([
+        {id: 1, value: "Option1"},
+        {id: 2, value: "Option2"},
+        {id: 3, value: "Option3"},
+        {id: 4, value: "Option4"},
+        {id: 5, value: "Option5"},
+        {id: 7, value: "Option6"},
+        {id: 8, value: "Option6"},
+        {id: 9, value: "Option6"}
+    ]);
+    const selectedOption = (option: any) => console.log(option);
 
     const [amount, setAmount] = useState(BN.ZERO);
     return (
@@ -113,13 +117,13 @@ const UiKit: React.FC<IProps> = () => {
             {/*    <Button outline>Option 1</Button>*/}
             {/*    <Button>Option 2</Button>*/}
             {/*</ButtonGroup>*/}
-            {/*<SizedBox height={16} />*/}
-            {/*<Select*/}
-            {/*  options={options}*/}
-            {/*  setSelectedOption={selectedOption}*/}
-            {/*  placeholder="Dropdown"*/}
-            {/*  label="Label"*/}
-            {/*/>*/}
+            <SizedBox height={16}/>
+            <Select
+                options={options}
+                setSelectedOption={selectedOption}
+                placeholder="Dropdown"
+                label="Label"
+            />
             <SizedBox height={16}/>
             <TokenInput
                 assetId={TOKENS_BY_SYMBOL.ETH.assetId}
