@@ -23,9 +23,8 @@ const Root = styled.div`
     border: none;
     background-color: transparent;
 
-    color: var(--White, #fffffd);
+    color: ${({theme}) => theme.colors.gray1};
 
-    /* Number - Medium */
     font-family: JetBrains Mono;
     font-size: 12px;
     font-style: normal;
@@ -34,7 +33,7 @@ const Root = styled.div`
     letter-spacing: 0.6px;
 
     ::placeholder {
-      color: var(--White, #fffffd);
+      color: ${({theme}) => theme.colors.gray1};
     }
   }
 `;
