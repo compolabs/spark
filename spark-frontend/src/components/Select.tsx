@@ -1,222 +1,120 @@
-import React from "react";
 import styled from "@emotion/styled";
-import {css} from "@emotion/react";
-import {ReactComponent as ArrowDown} from "@src/assets/icons/arrowDown.svg";
-import {ReactComponent as ArrowUp} from "@src/assets/icons/arrowUp.svg";
-import {ReactComponent as CloseIcon} from "@src/assets/icons/close.svg";
-import useOnClickOutside from "@src/hooks/useOnClickOutside";
+import React, { HTMLAttributes, useState } from "react";
+import Tooltip from "./Tooltip";
+import arrowIcon from "@src/assets/icons/arrowUp.svg";
 import SizedBox from "@components/SizedBox";
-import Text, {TEXT_TYPES} from "@components/Text";
+import { Column } from "./Flex";
+import Text, { TEXT_TYPES } from "./Text";
 
-type IOption = {
-    id: number;
-    value: string;
-};
-
-interface IProps {
-    options: IOption[];
-    placeholder?: string;
-    setSelectedOption: (option: IOption) => void;
-    disabled?: boolean;
-    label?: string;
+interface IOption {
+  key: string;
+  title: string;
 }
 
-const Root = styled.div`
+interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
+  options: IOption[];
+  selected?: IOption;
+  onSelect: (key: IOption) => void;
+  label?: string;
+}
+
+const Root = styled.div<{ focused?: boolean }>`
   display: flex;
-  flex-direction: column;
-`;
-
-
-const StyledSelect = styled.div<{ disabled?: boolean; active?: boolean }>`
-  //width: 100%;
-  width: 126px;
-  display: flex;
-  align-items: center;
-  position: relative;
-  cursor: pointer;
-
+  padding: 8px 10px;
   border-radius: 4px;
-  background: ${({theme}) => theme.colors.gray5};
-  border: 1px solid ${({active, theme}) => (active ? theme.colors.gray1 : theme.colors.gray5)};
+  background: ${({ theme }) => theme.colors.gray5};
+  border: 1px solid
+    ${({ focused, theme }) =>
+      focused ? theme.colors.gray1 : theme.colors.gray5};
 
-  :hover {
-    border: 1px solid ${({theme}) => theme.colors.gray2};
-  }
-`;
-
-const StyledOptions = styled.div`
-  //todo bring styles that would move above when there is no place below for component
-  position: absolute;
-  max-height: 108px;
-  height: auto;
-  overflow-y: auto;
-  top: 40px;
-  width: 100%;
-  padding: 8px 0;
-  border-radius: 4px;
-  border: 1px solid ${({theme}) => theme.colors.gray1};
-  background: ${({theme}) => theme.colors.gray5};
-  transition: 2s;
-`;
-const StyledOption = styled.div<{ isSelected: boolean }>(
-    ({isSelected}) => css`
-      padding: 8px 10px;
-      display: flex;
-      align-items: flex-start;
-      flex-direction: column;
-      cursor: pointer;
-
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-      //gray1
-      color: #969696;
-
-      ${isSelected && `color: #FFF`}
-      &:hover {
-        color: #fff;
-      }
-
-      p {
-        margin-top: 2px;
-        font-size: 13px;
-        opacity: 0.7;
-      }
-    `
-);
-
-const Input = styled.input`
-  color: ${({theme}) => theme.colors.white};
-  background: ${({theme}) => theme.colors.gray5};
   font-family: Space Grotesk;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  border: none;
-  //height: 39px;
-  width: 100%;
 
-  &:focus {
-    outline: none;
+  color: ${({ theme, focused }) =>
+    focused ? theme.colors.white : theme.colors.gray1};
+  align-items: center;
+  white-space: nowrap;
+
+  .menu-arrow {
+    transition: 0.4s;
+    transform: ${({ focused }) =>
+      focused ? "rotate(0deg)" : "rotate(-180deg)"};
   }
 `;
-export const StyledSelected = styled.div<{ selected: boolean }>(
-    ({selected}) => css`
-      //width: 100%;
-      display: grid;
-      grid-template-columns: 1fr 40px;
+const Option = styled.div<{ active?: boolean }>`
+  font-family: Space Grotesk;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
 
-      //todo придумать как сделать чтобы не прыгал компонент после выбора инпута
-      div {
-        padding-left: 10px;
-        height: 30px;
-        display: flex;
-        align-items: center;
-        color: #fffffd;
-        box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  cursor: pointer;
+  position: relative;
+  align-items: center;
+  color: ${({ active, theme }) => (active ? theme.colors.white : "#FFF")};
+  padding: 8px 10px;
+  margin: 0 -16px;
+  white-space: nowrap;
 
-        font-family: Space Grotesk;
-        font-size: 12px;
-        font-style: normal;
-        font-weight: 400;
-        line-height: normal;
-      }
-
-      //arrows block
-      > span {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-
-        &:after {
-          content: "";
-          position: absolute;
-          height: 24px;
-          width: 24px;
-          top: 50%;
-          left: 50%;
-          border-radius: 50%;
-          transform: translate(-50%, -50%);
-          background: rgba(0, 0, 0, 0.1);
-          display: none;
-        }
-
-        &:hover:after {
-          display: block;
-        }
-      }
-    `
-);
-
+  :hover {
+    color: #fff;
+  }
+`;
 
 const Select: React.FC<IProps> = ({
-                                      options,
-                                      placeholder,
-                                      setSelectedOption,
-                                      disabled,
-                                      label
-                                  }) => {
-    const ref = React.useRef(null);
-    const [keyword, setKeyword] = React.useState("");
-    const [selected, setSelected] = React.useState<null | number>(null);
-    const [isOptionsVisible, setIsOptionsVisible] = React.useState(false);
-
-    useOnClickOutside(ref, () => setIsOptionsVisible(false));
-
-    return (
-        <Root>
-            <Text type={TEXT_TYPES.LABEL} color="#676767">{label?.toUpperCase()}</Text>
-            <SizedBox height={4}/>
-            <StyledSelect ref={ref} disabled={disabled} active={isOptionsVisible}>
-                <StyledSelected selected={selected != null}>
-                    <div onClick={() => setIsOptionsVisible(!isOptionsVisible)}>
-                        {selected !== null ? (
-                            <>
-                                <span data-type="text">{options[selected].value}</span>
-                                <CloseIcon onClick={() => setSelected(null)}/>
-                            </>
-                        ) : (
-                            <Input
-                                type="text"
-                                placeholder={placeholder}
-                                value={keyword}
-                                onChange={(e) => setKeyword(e.target.value.toLowerCase())}
-                                onClick={() => setIsOptionsVisible(!isOptionsVisible)}
-                            />
-                        )}
-                    </div>
-                    <span onClick={() => setIsOptionsVisible(!isOptionsVisible)}>
-            {isOptionsVisible ? <ArrowUp/> : <ArrowDown/>}
-          </span>
-                </StyledSelected>
-                {/*todo add no items found*/}
-                {isOptionsVisible && (
-                    <StyledOptions>
-                        {options
-                            .filter((option) => option.value.toLowerCase().includes(keyword))
-                            .map((option, index) => (
-                                <StyledOption
-                                    key={option.id}
-                                    title={option.value}
-                                    isSelected={selected === index}
-                                    onClick={() => {
-                                        setKeyword("");
-                                        setSelected(index);
-                                        setSelectedOption(option);
-                                        setIsOptionsVisible(!isOptionsVisible);
-                                    }}
-                                >
-                                    <span>{option.value}</span>
-                                </StyledOption>
-                            ))}
-                    </StyledOptions>
-                )}
-            </StyledSelect>
+  options,
+  selected,
+  onSelect,
+  label,
+  ...rest
+}) => {
+  const [focused, setFocused] = useState(false);
+  return (
+    <Tooltip
+      config={{
+        placement: "bottom-start",
+        trigger: "click",
+        onVisibleChange: setFocused
+      }}
+      content={
+        <Column crossAxisSize="max">
+          {options.map((v) => {
+            const active = selected?.key === v.key;
+            return (
+              <Option
+                active={active}
+                key={v.key + "_option"}
+                onClick={() => onSelect(v)}
+              >
+                {v.title}
+              </Option>
+            );
+          })}
+        </Column>
+      }
+    >
+      <Column>
+        <Text type={TEXT_TYPES.LABEL} color="#676767">
+          {label?.toUpperCase()}
+        </Text>
+        <SizedBox height={4} />
+        <Root
+          focused={focused}
+          onClick={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          {...rest}
+        >
+          {selected?.title ?? options[0].title}
+          <SizedBox width={10} />
+          <img src={arrowIcon} className="menu-arrow" alt="arrow" />
         </Root>
-    );
+      </Column>
+    </Tooltip>
+  );
 };
-
 export default Select;
