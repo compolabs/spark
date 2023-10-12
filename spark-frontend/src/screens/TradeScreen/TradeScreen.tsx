@@ -29,10 +29,12 @@ const TradeScreenImpl: React.FC<IProps> = () => {
         <SizedBox height={4}/>
         <Row mainAxisSize="stretch" crossAxisSize="max">
             <CreateOrderInterface/>
+            <SizedBox width={4}/>
             <Column mainAxisSize="stretch" crossAxisSize="max" style={{flex: 5}}>
                 <Chart/>
                 <BottomTablesInterface/>
             </Column>
+            <SizedBox width={4}/>
             <OrderbookAndTradesInterface/>
         </Row>
         <StatusBar/>
