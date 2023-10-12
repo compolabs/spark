@@ -121,8 +121,8 @@ const UiKit: React.FC<IProps> = () => {
             <Select
                 options={options}
                 setSelectedOption={selectedOption}
-                placeholder="Dropdown"
-                label="Label"
+                placeholder="Label"
+                // label="Label"
             />
             <SizedBox height={16}/>
             <TokenInput

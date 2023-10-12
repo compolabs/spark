@@ -15,7 +15,7 @@ type IOption = {
 
 interface IProps {
     options: IOption[];
-    placeholder: string;
+    placeholder?: string;
     setSelectedOption: (option: IOption) => void;
     disabled?: boolean;
     label?: string;
@@ -28,7 +28,8 @@ const Root = styled.div`
 
 
 const StyledSelect = styled.div<{ disabled?: boolean; active?: boolean }>`
-  width: 100%;
+  //width: 100%;
+  width: 126px;
   display: flex;
   align-items: center;
   position: relative;
@@ -44,6 +45,7 @@ const StyledSelect = styled.div<{ disabled?: boolean; active?: boolean }>`
 `;
 
 const StyledOptions = styled.div`
+  //todo bring styles that would move above when there is no place below for component
   position: absolute;
   max-height: 108px;
   height: auto;
@@ -54,6 +56,7 @@ const StyledOptions = styled.div`
   border-radius: 4px;
   border: 1px solid ${({theme}) => theme.colors.gray1};
   background: ${({theme}) => theme.colors.gray5};
+  transition: 2s;
 `;
 const StyledOption = styled.div<{ isSelected: boolean }>(
     ({isSelected}) => css`
@@ -108,9 +111,7 @@ export const StyledSelected = styled.div<{ selected: boolean }>(
       //todo придумать как сделать чтобы не прыгал компонент после выбора инпута
       div {
         padding-left: 10px;
-        //background: cyan;
-        //min-width: 160px;
-        height: 31px;
+        height: 30px;
         display: flex;
         align-items: center;
         color: #fffffd;
@@ -151,7 +152,6 @@ export const StyledSelected = styled.div<{ selected: boolean }>(
 );
 
 
-
 const Select: React.FC<IProps> = ({
                                       options,
                                       placeholder,
@@ -176,9 +176,7 @@ const Select: React.FC<IProps> = ({
                         {selected !== null ? (
                             <>
                                 <span data-type="text">{options[selected].value}</span>
-                                <span data-type="icon" onClick={() => setSelected(null)}>
-                  <CloseIcon/>
-                </span>
+                                <CloseIcon onClick={() => setSelected(null)}/>
                             </>
                         ) : (
                             <Input
