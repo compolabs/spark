@@ -1,12 +1,13 @@
 import styled from "@emotion/styled";
-import { Column, Row } from "@src/components/Flex";
-import React from "react";
+import { Column } from "@src/components/Flex";
+import React, { useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import TokenInput from "@components/TokenInput";
-import Text from "@components/Text";
 import Button, { ButtonGroup } from "@components/Button";
+import { TOKENS_BY_SYMBOL } from "@src/constants";
+import Select from "@components/Select";
 
 interface IProps {}
 
@@ -25,6 +26,11 @@ const Root = styled.div`
 
 const CreateOrderInterface: React.FC<IProps> = observer(() => {
   const vm = useTradeScreenVM();
+  const orderTypes = [
+    { title: "Spot market", key: "market" },
+    { title: "Perps", key: "perps" }
+  ];
+  const [orderType, setOrderType] = useState<any>(orderTypes[0]);
 
   return (
     <Root>
@@ -38,39 +44,28 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
           </Button>
         </ButtonGroup>
         <SizedBox height={32} />
-        <h5 style={{ margin: "0 0 4px 0" }}>Order type</h5>
-        <Row
-          alignItems="center"
-          style={{
-            background: "#fff", //fixme
-            color: "#000",
-            width: "100%",
-            height: 32
-          }}
-        >
-          <SizedBox width={16} />
-          <Text color="#000">Spot market</Text>
-        </Row>
+        <Select label="Order type" options={orderTypes} selected={orderType} onSelect={(v) => setOrderType(v)} />
+
         <SizedBox height={16} />
-        <h5 style={{ margin: "0 0 4px 0" }}>Market price</h5>
         <TokenInput
-          decimals={vm.token1.decimals}
+          assetId={TOKENS_BY_SYMBOL.ETH.assetId}
+          decimals={TOKENS_BY_SYMBOL.ETH.decimals}
           amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
           setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
-          assetId={vm.assetId1}
+          label="Market price"
         />
         <SizedBox height={16} />
-        <h5 style={{ margin: "0 0 4px 0" }}>Order size (UNI)</h5>
         <TokenInput
           decimals={vm.token0.decimals}
           amount={vm.isSell ? vm.sellAmount : vm.buyAmount}
           setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
           assetId={vm.assetId0}
           error={vm.isSell ? vm.sellAmountError : undefined}
+          label="Order size (UNI)"
         />
         <SizedBox height={16} />
-        <h5 style={{ margin: "0 0 4px 0" }}>Order size (USDC)</h5>
         <TokenInput
+          label="Order size (USDC)"
           decimals={vm.token1.decimals}
           amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
           setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
@@ -78,7 +73,6 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
           error={vm.isSell ? undefined : vm.buyTotalError}
         />
       </Column>
-
       <Button primary={!vm.isSell} secondary={vm.isSell} onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}>
         {vm.isSell ? "Sell" : "Buy"}
       </Button>

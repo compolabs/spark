@@ -21,6 +21,7 @@ interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 
 const Root = styled.div<{ focused?: boolean }>`
   display: flex;
+  width: 100%;
   padding: 8px 10px;
   border-radius: 4px;
   background: ${({ theme }) => theme.colors.gray5};
@@ -77,7 +78,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
         </Column>
       }
     >
-      <Column>
+      <Column style={{ width: "100%" }}>
         <Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
           {label?.toUpperCase()}
         </Text>
