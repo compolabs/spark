@@ -10,7 +10,7 @@ class NotificationStore {
     makeAutoObservable(this);
   }
 
-  toast = toast
+  toast = toast;
 }
 
 export default NotificationStore;

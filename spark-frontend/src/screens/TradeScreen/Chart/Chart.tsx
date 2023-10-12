@@ -1,10 +1,9 @@
 import React from "react";
-import {ChartVMProvider} from "@screens/TradeScreen/Chart/ChartVm";
+import { ChartVMProvider } from "@screens/TradeScreen/Chart/ChartVm";
 import TVChartContainer from "@screens/TradeScreen/Chart/TVChartContainer";
 import styled from "@emotion/styled";
 
-interface IProps {
-}
+interface IProps {}
 
 const Root = styled.div`
   display: flex;
@@ -19,16 +18,16 @@ const Root = styled.div`
     width: 100%;
     height: 100%;
   }
-`
+`;
 
 const Chart: React.FC<IProps> = () => {
-    return (
-        <Root>
-            <ChartVMProvider>
-                <TVChartContainer/>
-            </ChartVMProvider>
-        </Root>
-    );
+  return (
+    <Root>
+      <ChartVMProvider>
+        <TVChartContainer />
+      </ChartVMProvider>
+    </Root>
+  );
 };
 
 export default Chart;

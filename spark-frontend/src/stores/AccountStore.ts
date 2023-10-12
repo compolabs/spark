@@ -1,13 +1,14 @@
 import RootStore from "@stores/RootStore";
-import {makeAutoObservable, reaction, when} from "mobx";
+import { makeAutoObservable, reaction, when } from "mobx";
 import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import {IToken, NODE_URL, TOKENS_LIST} from "@src/constants";
+import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import Balance from "@src/entities/Balance";
+import { FuelWalletProvider } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
   FUEL_WALLET = "FUEL_WALLET",
-  FUELET = "FUELET",
+  FUELET = "FUELET"
 }
 
 export interface ISerializedAccountStore {
@@ -17,15 +18,13 @@ export interface ISerializedAccountStore {
 
 class AccountStore {
   public readonly rootStore: RootStore;
-  private _provider?: Provider;
-  public get provider(){
-    return this._provider!
-  }
+  public provider: Provider | null = null;
+  private setProvider = (provider: Provider | null) => (this.provider = provider);
+
   constructor(rootStore: RootStore, initState?: ISerializedAccountStore) {
     makeAutoObservable(this);
 
     this.rootStore = rootStore;
-    Provider.create(NODE_URL).then(provider => this._provider = provider).catch(console.error)
     if (initState) {
       this.setLoginType(initState.loginType);
       this.setAddress(initState.address);
@@ -33,13 +32,20 @@ class AccountStore {
         document.addEventListener("FuelLoaded", this.onFuelLoaded);
       }
     }
-    when(() => this._provider != null ,this.updateAccountBalances)
+    this.initProvider();
+    when(() => this.provider != null, this.updateAccountBalances);
     setInterval(this.updateAccountBalances, 10 * 1000);
     reaction(
-        () => this.address,
-        () => Promise.all([this.updateAccountBalances()])
+      () => this.address,
+      () => Promise.all([this.updateAccountBalances()])
     );
   }
+
+  initProvider = async () => {
+    Provider.create(NODE_URL)
+      .then((provider) => this.setProvider(provider))
+      .catch(console.error);
+  };
 
   public assetBalances: Balance[] | null = null;
   setAssetBalances = (v: Balance[] | null) => (this.assetBalances = v);
@@ -50,12 +56,11 @@ class AccountStore {
       return;
     }
     const address = Address.fromString(this.address);
-    const balances = await this.provider?.getBalances(address) ?? [];
+    const balances = (await this.provider?.getBalances(address)) ?? [];
     const assetBalances = TOKENS_LIST.map((asset) => {
       const t = balances.find(({ assetId }) => asset.assetId === assetId);
       const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-      if (t == null)
-        return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+      if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
       return new Balance({ balance, ...asset });
     });
@@ -69,24 +74,16 @@ class AccountStore {
   };
 
   findBalanceByAssetId = (assetId: string) =>
-      this.assetBalances &&
-      this.assetBalances.find((balance) => balance.assetId === assetId);
-
+    this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
 
   onFuelLoaded = () => {
     if (this.walletInstance == null) return;
-    this.walletInstance.on(
-        window?.fuel.events.currentAccount,
-        this.handleAccEvent
-    );
-    this.walletInstance.on(
-        window?.fuel.events?.network,
-        this.handleNetworkEvent
-    );
+    this.walletInstance.on(window?.fuel.events.currentAccount, this.handleAccEvent);
+    this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
   };
   handleAccEvent = (account: string) => this.setAddress(account);
 
-  handleNetworkEvent = (network: any) => {
+  handleNetworkEvent = (network: FuelWalletProvider) => {
     if (network.url !== NODE_URL) {
       this.rootStore.notificationStore.toast(`Please change network url to Testnet Beta 4`);
     }
@@ -98,10 +95,9 @@ class AccountStore {
   public loginType: LOGIN_TYPE | null = null;
   setLoginType = (loginType: LOGIN_TYPE | null) => (this.loginType = loginType);
 
-
   serialize = (): ISerializedAccountStore => ({
     address: this.address,
-    loginType: this.loginType,
+    loginType: this.loginType
   });
 
   login = async (loginType: LOGIN_TYPE) => {
@@ -133,13 +129,13 @@ class AccountStore {
   };
 
   loginWithWallet = async () => {
-    if (this.walletInstance == null)
-      throw new Error("There is no wallet instance");
+    //fixme change to notification
+    if (this.walletInstance == null) throw new Error("There is no wallet instance");
     // const res = await this.walletInstance.connect({ url: NODE_URL });
     const res = await this.walletInstance.connect();
     if (!res) {
       this.rootStore.notificationStore.toast("User denied", {
-        type: "error",
+        type: "error"
       });
       return;
     }
@@ -160,12 +156,10 @@ class AccountStore {
     return window.fuel.getWallet(this.address);
   };
 
-  get walletToRead(): WalletLocked {
-    //just acc with eth on balance
-    return Wallet.fromAddress(
-        "fuel1m56y48mej3366h6460y4rvqqt62y9vn8ad3meyfa5wkk5dc6mxmss7rwnr",
-        this.provider
-    );
+  get walletToRead(): WalletLocked | null {
+    return this.provider == null
+      ? null
+      : Wallet.fromAddress("fuel1m56y48mej3366h6460y4rvqqt62y9vn8ad3meyfa5wkk5dc6mxmss7rwnr", this.provider ?? "");
   }
 
   get addressInput(): null | { value: string } {

@@ -1,10 +1,7 @@
 export function getCurrentBrowser() {
   //fixme add brave browser
   // Opera 8.0+
-  const isOpera =
-    (!!window.opr && !!window.opr.addons) ||
-    !!window.opera ||
-    navigator.userAgent.indexOf(" OPR/") >= 0;
+  const isOpera = (!!window.opr && !!window.opr.addons) || !!window.opera || navigator.userAgent.indexOf(" OPR/") >= 0;
   if (isOpera) {
     return "opera";
   }
@@ -20,10 +17,7 @@ export function getCurrentBrowser() {
     /constructor/i.test(window.HTMLElement) ||
     (function (p) {
       return p.toString() === "[object SafariRemoteNotification]";
-    })(
-      !window["safari"] ||
-        (typeof window.safari !== "undefined" && window.safari.pushNotification)
-    );
+    })(!window["safari"] || (typeof window.safari !== "undefined" && window.safari.pushNotification));
   if (isSafari) {
     return "safari";
   }
