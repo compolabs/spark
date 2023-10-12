@@ -40,7 +40,6 @@ export const getLastTrade = async (market: string) => {
 };
 
 export const getTrades = async (market: string, from: number, to: number) => {
-  console.log({ from, to });
   const [symbol0, symbol1] = market.split("/");
   const asset0 = { ...TOKENS_BY_SYMBOL[symbol0] };
   asset0.assetId = asset0.assetId.substring(2);

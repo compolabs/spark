@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { MONGO_URL } from "../config";
 
-console.log(MONGO_URL);
 export const initMongo = (): Promise<void> =>
   mongoose
     .connect(MONGO_URL, {
