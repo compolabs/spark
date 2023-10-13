@@ -52,7 +52,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
           decimals={TOKENS_BY_SYMBOL.ETH.decimals}
           amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
           setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
-          label="Market price"
+          label="MARKET PRICE"
         />
         <SizedBox height={16} />
         <TokenInput
@@ -61,11 +61,11 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
           setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
           assetId={vm.assetId0}
           error={vm.isSell ? vm.sellAmountError : undefined}
-          label="Order size (UNI)"
+          label="ORDER SIZE (UNI)"
         />
         <SizedBox height={16} />
         <TokenInput
-          label="Order size (USDC)"
+          label="ORDER SIZE (USDC)"
           decimals={vm.token1.decimals}
           amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
           setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
