@@ -1,6 +1,5 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable } from "mobx";
-import { getCurrentBrowser } from "@src/utils/getCurrentBrowser";
 import { THEME_TYPE } from "@src/themes/ThemeProvider";
 
 export interface ISerializedSettingsStore {}
@@ -14,11 +13,8 @@ class SettingsStore {
 		makeAutoObservable(this);
 	}
 
-	get doesBrowserSupportsFuelWallet(): boolean {
-		//https://fuels-wallet.vercel.app/docs/browser-support/
-		const browser = getCurrentBrowser();
-		return ["chrome", "firefox", "brave", "edge"].includes(browser);
-	}
+	walletModalOpened: boolean = false;
+	setWalletModalOpened = (s: boolean) => (this.walletModalOpened = s);
 }
 
 export default SettingsStore;

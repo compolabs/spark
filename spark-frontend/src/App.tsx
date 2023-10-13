@@ -7,6 +7,7 @@ import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
 import UiKit from "@screens/UiKit";
 import { ROUTES } from "@src/constants";
+// @ts-ignore
 import design from "./design.png";
 import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";

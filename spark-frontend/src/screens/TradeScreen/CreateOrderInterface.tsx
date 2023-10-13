@@ -8,20 +8,19 @@ import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
 
-interface IProps {
-}
+interface IProps {}
 
 const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border: 1px solid white;
-  box-sizing: border-box;
-  padding: 16px;
-  flex: 2;
-  height: 100%;
-  border-radius: 10px;
-  background: ${({ theme }) => theme.colors.gray4};
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	border: 1px solid white;
+	box-sizing: border-box;
+	padding: 16px;
+	flex: 2;
+	height: 100%;
+	border-radius: 10px;
+	background: ${({ theme }) => theme.colors.gray4};
 `;
 
 const CreateOrderInterface: React.FC<IProps> = observer(() => {

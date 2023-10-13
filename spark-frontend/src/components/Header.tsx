@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import { LOGIN_TYPE } from "@stores/AccountStore";
 import centerEllipsis from "@src/utils/centerEllipsis";
 import { Row } from "./Flex";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
@@ -13,6 +12,7 @@ import { Link, useLocation } from "react-router-dom";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import SizedBox from "@components/SizedBox";
 import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
+import Wallet from "@components/Wallet/Wallet";
 
 interface IProps {}
 
@@ -139,16 +139,17 @@ const Header: React.FC<IProps> = observer(() => {
 						Disconnect {centerEllipsis(accountStore.address, 8)}
 					</Button>
 				) : (
-					<Button
-						fitContent
-						onClick={() =>
-							accountStore.walletInstance == null
-								? window.open("https://wallet.fuel.network/docs/install/")
-								: accountStore.login(LOGIN_TYPE.FUEL_WALLET)
-						}
-					>
-						Connect wallet
-					</Button>
+					// <Button
+					// 	fitContent
+					// 	onClick={() =>
+					// 		accountStore.walletInstance == null
+					// 			? window.open("https://wallet.fuel.network/docs/install/")
+					// 			: accountStore.login(LOGIN_TYPE.FUEL_WALLET)
+					// 	}
+					// >
+					// 	Connect wallet
+					// </Button>
+					<Wallet />
 				)}
 			</Row>
 		</Root>

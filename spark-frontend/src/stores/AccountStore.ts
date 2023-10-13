@@ -171,6 +171,11 @@ class AccountStore {
 		if (this.address == null) return null;
 		return Address.fromString(this.address).toB256();
 	}
+
+	selectConnector = () => {
+		//Fuelet Wallet
+		//Fuel Wallet
+	};
 }
 
 export default AccountStore;
