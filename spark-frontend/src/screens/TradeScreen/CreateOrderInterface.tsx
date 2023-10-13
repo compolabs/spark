@@ -1,27 +1,27 @@
 import styled from "@emotion/styled";
 import { Column } from "@src/components/Flex";
-import React, { useState } from "react";
+import React from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
 import Select from "@components/Select";
 
-interface IProps {}
+interface IProps {
+}
 
 const Root = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-	border: 1px solid white;
-	box-sizing: border-box;
-	padding: 16px;
-	flex: 2;
-	height: 100%;
-	border-radius: 10px;
-	background: ${({ theme }) => theme.colors.gray4};
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid white;
+  box-sizing: border-box;
+  padding: 16px;
+  flex: 2;
+  height: 100%;
+  border-radius: 10px;
+  background: ${({ theme }) => theme.colors.gray4};
 `;
 
 const CreateOrderInterface: React.FC<IProps> = observer(() => {
@@ -30,7 +30,6 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 		{ title: "Spot market", key: "market" },
 		{ title: "Perps", key: "perps" }
 	];
-	const [orderType, setOrderType] = useState<any>(orderTypes[0]);
 
 	return (
 		<Root>
@@ -44,35 +43,35 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 					</Button>
 				</ButtonGroup>
 				<SizedBox height={32} />
-				<Select label="Order type" options={orderTypes} selected={orderType} onSelect={(v) => setOrderType(v)} />
+				<Select label="Order type" options={orderTypes} selected={orderTypes[0]} onSelect={() => null} />
 
 				<SizedBox height={16} />
 				<TokenInput
-					assetId={TOKENS_BY_SYMBOL.ETH.assetId}
-					decimals={TOKENS_BY_SYMBOL.ETH.decimals}
+					assetId={vm.isSell ? vm.token1.assetId : vm.token0.assetId}
+					decimals={vm.isSell ? vm.token1.decimals : vm.token0.decimals}
 					amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
 					setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
-					label="MARKET PRICE"
+					label="PRICE"
 				/>
 				<SizedBox height={16} />
 				<TokenInput
-					decimals={vm.token0.decimals}
+					assetId={!vm.isSell ? vm.token1.assetId : vm.token0.assetId}
+					decimals={!vm.isSell ? vm.token1.decimals : vm.token0.decimals}
 					amount={vm.isSell ? vm.sellAmount : vm.buyAmount}
 					setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
-					assetId={vm.assetId0}
 					error={vm.isSell ? vm.sellAmountError : undefined}
 					errorMessage="Insufficient amount"
-					label="ORDER SIZE (UNI)"
+					label="AMOUNT"
 				/>
 				<SizedBox height={16} />
 				<TokenInput
-					label="ORDER SIZE (USDC)"
-					decimals={vm.token1.decimals}
+					assetId={vm.isSell ? vm.token1.assetId : vm.token0.assetId}
+					decimals={vm.isSell ? vm.token1.decimals : vm.token0.decimals}
 					amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
 					setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
-					assetId={vm.assetId1}
 					errorMessage="Insufficient amount"
 					error={vm.isSell ? undefined : vm.buyTotalError}
+					label="TOTAL"
 				/>
 			</Column>
 			<Button primary={!vm.isSell} secondary={vm.isSell} onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}>
