@@ -51,7 +51,7 @@
     "dotenv": "^8.6.0",
     "errorhandler": "^1.5.1",
     "express": "^4.18.2",
-    "fuels": "^0.60.0",
+    "fuels": "^0.62.0",
     "node-cron": "^3.0.2",
     "request": "^2.88.2",
     "tsdef": "^0.0.14"
