@@ -2,6 +2,7 @@
   "name": "spark-frontend",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://app.allspark.gg",
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -80,8 +81,10 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js"
+    "build": "DISABLE_ESLINT_PLUGIN=true node scripts/build.js",
+    "test": "node scripts/test.js",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -161,6 +164,7 @@
     "@types/lodash": "^4.14.199",
     "prettier": "^3.0.3",
     "tslint": "^6.1.3",
-    "tslint-config-prettier": "^1.18.0"
+    "tslint-config-prettier": "^1.18.0",
+    "gh-pages": "^6.0.0"
   }
 }

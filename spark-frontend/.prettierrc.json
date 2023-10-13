@@ -3,9 +3,9 @@
   "printWidth": 120,
   "semi": true,
   "singleQuote": false,
-  "tabWidth": 2,
+  "tabWidth": 1,
   "arrowParens": "always",
   "trailingComma": "none",
-  "useTabs": false,
+  "useTabs": true,
   "proseWrap": "always"
 }

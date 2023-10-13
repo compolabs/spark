@@ -6,6 +6,7 @@ import { CONTRACT_ADDRESS, NODE_URL, PORT, PRIVATE_KEY } from "./config";
 import { SpotMarketAbi, SpotMarketAbi__factory as SpotMarketAbiFactory } from "./contracts";
 import fetchIndexer from "./utils/fetchIndexer";
 import BN from "./utils/BN";
+import { log } from "console";
 
 enum STATUS {
   RUNNING,
@@ -23,6 +24,7 @@ class SparkMatcher {
   private processing: number[] = [];
 
   constructor() {
+    console.log({ NODE_URL })
     Provider.create(NODE_URL)
       .then((provider) => (this.provider = provider))
       .then(() => (this.account = Wallet.fromPrivateKey(PRIVATE_KEY, this.provider!)))
@@ -63,8 +65,7 @@ class SparkMatcher {
 
     console.log(
       `Buy orders: ${activeOrders.filter((o) => o.type === "BUY").length}`,
-      `| Sell orders: ${
-        activeOrders.filter((o) => o.type === "SELL").length
+      `| Sell orders: ${activeOrders.filter((o) => o.type === "SELL").length
       } | Total orders: ${totalOrders}`
     );
     for (const i in activeOrders) {
@@ -83,30 +84,30 @@ class SparkMatcher {
           if (isOrdersActive) {
             let asset0 = order0.asset0;
             let asset1 = order0.asset1;
-            console.log(
-              `\n${order0.type} Order #${order0.orderId}: ${BN.formatUnits(
-                new BN(order0.amount0).minus(order0.fulfilled0),
-                asset0.decimals
-              )} ${asset0.symbol} -> ${BN.formatUnits(
-                new BN(order0.amount1).minus(order0.fulfilled1),
-                asset1.decimals
-              )} ${asset1.symbol}`
-            );
+            // console.log(
+            //   `\n${order0.type} Order #${order0.orderId}: ${BN.formatUnits(
+            //     new BN(order0.amount0).minus(order0.fulfilled0),
+            //     asset0.decimals
+            //   )} ${asset0.symbol} -> ${BN.formatUnits(
+            //     new BN(order0.amount1).minus(order0.fulfilled1),
+            //     asset1.decimals
+            //   )} ${asset1.symbol}`
+            // );
 
-            asset0 = order1.asset0;
-            asset1 = order1.asset1;
-            console.log(
-              `${order1.type} Order #${order1.orderId}: ${BN.formatUnits(
-                new BN(order1.amount0).minus(order1.fulfilled0),
-                asset0.decimals
-              )} ${asset0.symbol} -> ${BN.formatUnits(
-                new BN(order1.amount1).minus(order1.fulfilled1),
-                asset1.decimals
-              )} ${asset1.symbol}`
-            );
+            // asset0 = order1.asset0;
+            // asset1 = order1.asset1;
+            // console.log(
+            //   `${order1.type} Order #${order1.orderId}: ${BN.formatUnits(
+            //     new BN(order1.amount0).minus(order1.fulfilled0),
+            //     asset0.decimals
+            //   )} ${asset0.symbol} -> ${BN.formatUnits(
+            //     new BN(order1.amount1).minus(order1.fulfilled1),
+            //     asset1.decimals
+            //   )} ${asset1.symbol}`
+            // );
             this.processing.push(order0.orderId);
             this.processing.push(order1.orderId);
-            const promise = this.contract.functions
+            const promise = await this.contract.functions
               .match_orders(order0.orderId, order1.orderId)
               .txParams({ gasPrice: 2 })
               .call()
@@ -169,7 +170,6 @@ const print = `
 ███████╗██║  ██║██████╔╝███████║                                                                     
 ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝                                                                     
                                                                                                      
-${"🚀 Server ready at: http://localhost:" + PORT ?? 5000}       
-`;
+${"🚀 Server ready at: http://localhost:" + (PORT ?? 5000)}       `;
 
 app.listen(PORT ?? 5000, () => console.log(print));

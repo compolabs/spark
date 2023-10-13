@@ -3,14 +3,14 @@ import RootStore from "@stores/RootStore";
 import { toast } from "react-toastify";
 
 class NotificationStore {
-  public rootStore: RootStore;
+	public rootStore: RootStore;
 
-  constructor(rootStore: RootStore) {
-    this.rootStore = rootStore;
-    makeAutoObservable(this);
-  }
+	constructor(rootStore: RootStore) {
+		this.rootStore = rootStore;
+		makeAutoObservable(this);
+	}
 
-  toast = toast;
+	toast = toast;
 }
 
 export default NotificationStore;
