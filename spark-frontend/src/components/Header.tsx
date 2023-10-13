@@ -120,7 +120,7 @@ const Header: React.FC<IProps> = observer(() => {
 						);
 				})}
 			</Row>
-			<Row alignItems="center" justifyContent="flex-end">
+			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<SizedBox width={10} />
 				<SettingsButton outline>
 					<GearIcon />

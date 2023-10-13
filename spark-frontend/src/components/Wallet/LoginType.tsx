@@ -12,7 +12,7 @@ interface IProps extends HTMLAttributes<HTMLDivElement> {
 const Root = styled.div<{ disable?: boolean }>`
 	display: flex;
 	flex-direction: row;
-	width: 100%;
+	//width: 100%;
 	justify-content: space-between;
 	padding: 10px 0;
 	border-bottom: 1px solid ${({ theme }) => theme.colors.gray1};

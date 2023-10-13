@@ -1,71 +1,82 @@
-import React, { useState } from "react";
+import React from "react";
 import Dialog from "@components/Dialog";
-import { LOGIN_TYPE } from "@stores/AccountStore";
-import { observer } from "mobx-react-lite";
+import {LOGIN_TYPE} from "@stores/AccountStore";
+import {observer} from "mobx-react-lite";
 import styled from "@emotion/styled";
+import SizedBox from "../SizedBox";
+import Text from "../Text";
+import LoginType from "./LoginType";
 
 interface IProps {
-	onClose: () => void;
-	onLogin: (loginType: LOGIN_TYPE, mn?: string) => void;
-	visible: boolean;
+    onClose: () => void;
+    onLogin: (loginType: LOGIN_TYPE, mn?: string) => void;
+    visible: boolean;
 }
 
 const Root = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 `;
-const LoginModal: React.FC<IProps> = ({ onLogin, ...rest }) => {
-	const [isImportInputOpened, setImportInputOpened] = useState(false);
-	const [err, setErr] = useState(false);
-	const [seed, setSeed] = useState("");
-	const handleLogin = (type: LOGIN_TYPE) => () => {
-		onLogin(type);
-		rest.onClose();
-	};
+const LoginModal: React.FC<IProps> = ({onLogin, ...rest}) => {
+    const handleLogin = (type: LOGIN_TYPE) => () => {
+        onLogin(type);
+        rest.onClose();
+    };
 
-	const handlePastInput = async () => {
-		const value = await navigator.clipboard.readText();
-		setSeed(value);
-		setErr(false);
-	};
-	// const handleLoginWithSeed = () => {
-	//   // const valid = isValidMnemonic(seed);
-	//   // if (!valid) {
-	//   //   setErr(true);
-	//   //   return;
-	//   // }
-	//   onLogin(LOGIN_TYPE.PRIVATE_KEY, seed);
-	//   setImportInputOpened(false);
-	//   setSeed("");
-	//   setErr(false);
-	//   rest.onClose();
-	// };
 
-	const loginTypes = [
-		// {
-		//   title: "Fuelet",
-		//   isActive: window.fuelet != null,
-		//   onClick: handleLogin(LOGIN_TYPE.FUELET),
-		// },
-		{
-			title: "Fuel wallet",
-			type: LOGIN_TYPE.FUEL_WALLET,
-			isActive: window.fuel != null,
-			onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET)
-		}
-		// {
-		//   title: "Paste private key",
-		//   type: LOGIN_TYPE.PRIVATE_KEY,
-		//   isActive: true,
-		//   onClick: () => setImportInputOpened(true),
-		// },
-	];
-	return (
-		<Dialog style={{ maxWidth: 360 }} {...rest}>
-			<Root>login bitch</Root>
-		</Dialog>
-	);
+    const loginTypes = [
+        {
+            title: "Fuelet",
+            isActive: window.fuelet != null,
+            onClick: handleLogin(LOGIN_TYPE.FUELET),
+        },
+        {
+            title: "Fuel wallet",
+            type: LOGIN_TYPE.FUEL_WALLET,
+            isActive: window.fuel != null,
+            onClick: handleLogin(LOGIN_TYPE.FUEL_WALLET)
+        }
+    ];
+    return (
+        <Dialog style={{maxWidth: 360}} {...rest}>
+            <Root>
+                {/*<Img height="60" width="60" src={logo} />*/}
+                <SizedBox height={4}/>
+                {window.fuel == null && window.fuelet == null ? (
+                    <>
+                        <Text>
+                            No wallet was detected
+                        </Text>
+                        <SizedBox height={12}/>
+                        <Text
+                            style={{cursor: "pointer"}}
+                            onClick={() =>
+                                window.open("https://wallet.fuel.network/docs/install/")}
+                        >
+                            Go to wallet
+                        </Text>
+                    </>
+                ) : (
+                    <>
+                        <Text>
+                            Connect wallet
+                        </Text>
+                        <SizedBox height={4}/>
+                        <Text>
+                            To start using Spark
+                        </Text>
+                    </>
+                )}
+                <SizedBox height={34}/>
+                {loginTypes.map(
+                    (t, i) =>
+                        t.isActive && <LoginType {...t} key={i} onClick={t.onClick}/>
+                )}
+                <SizedBox height={36}/>
+            </Root>
+        </Dialog>
+    );
 };
 export default observer(LoginModal);
