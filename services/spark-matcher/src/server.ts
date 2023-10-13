@@ -6,6 +6,7 @@ import { CONTRACT_ADDRESS, NODE_URL, PORT, PRIVATE_KEY } from "./config";
 import { SpotMarketAbi, SpotMarketAbi__factory as SpotMarketAbiFactory } from "./contracts";
 import fetchIndexer from "./utils/fetchIndexer";
 import BN from "./utils/BN";
+import { log } from "console";
 
 enum STATUS {
   RUNNING,
@@ -23,6 +24,7 @@ class SparkMatcher {
   private processing: number[] = [];
 
   constructor() {
+    console.log({NODE_URL})
     Provider.create(NODE_URL)
       .then((provider) => (this.provider = provider))
       .then(() => (this.account = Wallet.fromPrivateKey(PRIVATE_KEY, this.provider!)))
@@ -63,8 +65,7 @@ class SparkMatcher {
 
     console.log(
       `Buy orders: ${activeOrders.filter((o) => o.type === "BUY").length}`,
-      `| Sell orders: ${
-        activeOrders.filter((o) => o.type === "SELL").length
+      `| Sell orders: ${activeOrders.filter((o) => o.type === "SELL").length
       } | Total orders: ${totalOrders}`
     );
     for (const i in activeOrders) {
@@ -169,7 +170,6 @@ const print = `
 ███████╗██║  ██║██████╔╝███████║                                                                     
 ╚══════╝╚═╝  ╚═╝╚═════╝ ╚══════╝                                                                     
                                                                                                      
-${"🚀 Server ready at: http://localhost:" + PORT ?? 5000}       
-`;
+${"🚀 Server ready at: http://localhost:" + (PORT ?? 5000)}       `;
 
 app.listen(PORT ?? 5000, () => console.log(print));
