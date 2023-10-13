@@ -61,6 +61,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 					setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
 					assetId={vm.assetId0}
 					error={vm.isSell ? vm.sellAmountError : undefined}
+					errorMessage="Insufficient amount"
 					label="ORDER SIZE (UNI)"
 				/>
 				<SizedBox height={16} />
@@ -70,6 +71,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 					amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
 					setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
 					assetId={vm.assetId1}
+					errorMessage="Insufficient amount"
 					error={vm.isSell ? undefined : vm.buyTotalError}
 				/>
 			</Column>
