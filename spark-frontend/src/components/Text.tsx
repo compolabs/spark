@@ -11,25 +11,25 @@ import styled from "@emotion/styled";
 */
 
 export enum TEXT_TYPES {
-  H1,
-  H2,
-  H3,
+	H1,
+	H2,
+	H3,
 
-  BODY_LARGE,
-  BODY_MEDIUM,
-  BODY_SMALL,
+	BODY_LARGE,
+	BODY_MEDIUM,
+	BODY_SMALL,
 
-  LABEL,
-  BUTTON,
+	LABEL,
+	BUTTON,
 
-  NUMBER_LARGE,
-  NUMBER_MEDIUM,
-  NUMBER_SMALL
+	NUMBER_LARGE,
+	NUMBER_MEDIUM,
+	NUMBER_SMALL
 }
 
 interface IProps {
-  type?: TEXT_TYPES;
-  color?: string;
+	type?: TEXT_TYPES;
+	color?: string;
 }
 
 export const h1Style = `
@@ -116,24 +116,24 @@ line-height: normal;
 letter-spacing: 1px;
 `;
 export const TEXT_TYPES_MAP = {
-  [TEXT_TYPES.H1]: h1Style,
-  [TEXT_TYPES.H2]: h2Style,
-  [TEXT_TYPES.H3]: h3Style,
+	[TEXT_TYPES.H1]: h1Style,
+	[TEXT_TYPES.H2]: h2Style,
+	[TEXT_TYPES.H3]: h3Style,
 
-  [TEXT_TYPES.BODY_LARGE]: bodyLargeStyle,
-  [TEXT_TYPES.BODY_MEDIUM]: bodyMediumStyle,
-  [TEXT_TYPES.BODY_SMALL]: bodySmallStyle,
+	[TEXT_TYPES.BODY_LARGE]: bodyLargeStyle,
+	[TEXT_TYPES.BODY_MEDIUM]: bodyMediumStyle,
+	[TEXT_TYPES.BODY_SMALL]: bodySmallStyle,
 
-  [TEXT_TYPES.LABEL]: labelStyle,
-  [TEXT_TYPES.BUTTON]: buttonStyle,
+	[TEXT_TYPES.LABEL]: labelStyle,
+	[TEXT_TYPES.BUTTON]: buttonStyle,
 
-  [TEXT_TYPES.NUMBER_LARGE]: numberLargeStyle,
-  [TEXT_TYPES.NUMBER_MEDIUM]: numberMediumStyle,
-  [TEXT_TYPES.NUMBER_SMALL]: numberSmallStyle
+	[TEXT_TYPES.NUMBER_LARGE]: numberLargeStyle,
+	[TEXT_TYPES.NUMBER_MEDIUM]: numberMediumStyle,
+	[TEXT_TYPES.NUMBER_SMALL]: numberSmallStyle
 };
 
 const Text = styled.div<IProps>`
-  color: ${({ color }) => color ?? "#fff"}; //fixme
-  ${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM])}
+	color: ${({ color }) => color ?? "#fff"}; //fixme
+	${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM])}
 `;
 export default Text;

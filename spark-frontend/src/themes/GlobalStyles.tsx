@@ -6,8 +6,8 @@ const globalStyles = (theme: any) => `
 `;
 
 const GlobalStyles: React.FC = () => {
-  const theme = useTheme();
-  return <Global styles={css(globalStyles(theme))} />;
+	const theme = useTheme();
+	return <Global styles={css(globalStyles(theme))} />;
 };
 
 export default GlobalStyles;

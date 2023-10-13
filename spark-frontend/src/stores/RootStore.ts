@@ -5,29 +5,29 @@ import { makeAutoObservable } from "mobx";
 import OrdersStore from "@stores/OrdersStore";
 
 export interface ISerializedRootStore {
-  accountStore?: ISerializedAccountStore;
-  settingsStore?: ISerializedSettingsStore;
+	accountStore?: ISerializedAccountStore;
+	settingsStore?: ISerializedSettingsStore;
 }
 
 export default class RootStore {
-  public accountStore: AccountStore;
-  public settingsStore: SettingsStore;
-  public notificationStore: NotificationStore;
-  public ordersStore: OrdersStore;
+	public accountStore: AccountStore;
+	public settingsStore: SettingsStore;
+	public notificationStore: NotificationStore;
+	public ordersStore: OrdersStore;
 
-  constructor(initState?: ISerializedRootStore) {
-    this.accountStore = new AccountStore(this, initState?.accountStore);
-    this.settingsStore = new SettingsStore(this);
-    this.notificationStore = new NotificationStore(this);
-    this.ordersStore = new OrdersStore(this);
-    makeAutoObservable(this);
-  }
+	constructor(initState?: ISerializedRootStore) {
+		this.accountStore = new AccountStore(this, initState?.accountStore);
+		this.settingsStore = new SettingsStore(this);
+		this.notificationStore = new NotificationStore(this);
+		this.ordersStore = new OrdersStore(this);
+		makeAutoObservable(this);
+	}
 
-  get initialized() {
-    return this.accountStore.provider != null;
-  }
+	get initialized() {
+		return this.accountStore.provider != null;
+	}
 
-  serialize = (): ISerializedRootStore => ({
-    accountStore: this.accountStore.serialize()
-  });
+	serialize = (): ISerializedRootStore => ({
+		accountStore: this.accountStore.serialize()
+	});
 }
