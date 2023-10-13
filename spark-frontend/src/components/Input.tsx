@@ -1,69 +1,44 @@
 import styled from "@emotion/styled";
-import React, {ChangeEvent, useState} from "react";
-import Text from "@components/Text";
+import React, { ChangeEvent } from "react";
 
 interface IProps
-    extends Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>,
-        HTMLInputElement>,
-        "onChange" | "prefix"> {
-    value?: string;
-    onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
-    suffix?: JSX.Element;
-    prefix?: JSX.Element;
-    suffixCondition?: boolean;
-    error?: boolean;
-    errorText?: string;
-    description?: string;
+  extends Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "onChange"> {
+  value?: string;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
-const Root = styled.div<{ focused?: boolean; error?: boolean }>`
+const Root = styled.div`
   width: 100%;
 
   input {
     padding: 0;
     width: 100%;
-    text-align: right;
     outline: none;
     border: none;
     background-color: transparent;
 
+    color: ${({ theme }) => theme.colors.gray1};
+
+    font-family: JetBrains Mono;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: normal;
+    letter-spacing: 0.6px;
+
     ::placeholder {
+      color: ${({ theme }) => theme.colors.gray1};
     }
   }
 `;
 
-const Input: React.FC<IProps> = ({
-                                     value,
-                                     onChange,
-                                     prefix,
-                                     suffix,
-                                     suffixCondition,
-                                     placeholder,
-                                     error,
-                                     errorText,
-                                     description,
-                                     ...rest
-                                 }) => {
-    const [focused, setFocused] = useState(false);
-    return (
-        <>
-            <Root focused={focused} error={error} {...rest}>
-                {prefix && prefix}
-                <input
-                    onChange={onChange}
-                    value={value}
-                    placeholder={placeholder}
-                    onFocus={() => setFocused(true)}
-                    onBlur={() => setFocused(false)}
-                />
-                {suffixCondition || (suffix != null && suffix)}
-            </Root>
-            {description && (
-                <Text style={{paddingTop: 4}}>
-                    {description}
-                </Text>
-            )}
-        </>
-    );
+const Input: React.FC<IProps> = ({ value, onChange, placeholder, ...rest }) => {
+  return (
+    <>
+      <Root {...rest}>
+        <input onChange={onChange} value={value} placeholder={placeholder} />
+      </Root>
+    </>
+  );
 };
 export default Input;

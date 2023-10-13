@@ -22,10 +22,7 @@ interface FormattedInputState {
   autoFocus?: boolean;
 }
 
-export class FormattedInput extends Component<
-  FormattedInputProps,
-  FormattedInputState
-> {
+export class FormattedInput extends Component<FormattedInputProps, FormattedInputState> {
   private readonly inputRef = React.createRef<HTMLInputElement>();
   private dotInput = false;
   private isBackspace = false;
@@ -40,11 +37,7 @@ export class FormattedInput extends Component<
       oldIdx: 0,
       oldLength: 0,
       value: "",
-      formattedValue: getFormattedValue(
-        value ? value.toString() : "",
-        formatSeparator,
-        prefix
-      ),
+      formattedValue: getFormattedValue(value ? value.toString() : "", formatSeparator, prefix)
     };
   }
 
@@ -70,11 +63,7 @@ export class FormattedInput extends Component<
 
     if (value !== prevProps.value || prefix !== prevProps.prefix) {
       this.setState({
-        formattedValue: getFormattedValue(
-          value ? handleDots(value.toString(), decimals) : "",
-          formatSeparator,
-          prefix
-        ),
+        formattedValue: getFormattedValue(value ? handleDots(value.toString(), decimals) : "", formatSeparator, prefix)
       });
 
       return;
@@ -106,19 +95,10 @@ export class FormattedInput extends Component<
     }
   };
 
-  private readonly handleChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
+  private readonly handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     event.preventDefault();
 
-    const {
-      onChange,
-      decimals,
-      formatSeparator,
-      prefix,
-      lengthLimit,
-      maxValue,
-    } = this.props;
+    const { onChange, decimals, formatSeparator, prefix, lengthLimit, maxValue } = this.props;
 
     const isBackspace = this.isBackspace;
 
@@ -126,24 +106,15 @@ export class FormattedInput extends Component<
 
     const trimmedValue = event.target.value.trim();
 
-    if (
-      trimmedValue ===
-      parseFormattedValue(this.state.formattedValue, formatSeparator, prefix)
-    ) {
+    if (trimmedValue === parseFormattedValue(this.state.formattedValue, formatSeparator, prefix)) {
       return;
     }
 
-    if (
-      maxValue &&
-      Number(parseFormattedValue(trimmedValue, formatSeparator, prefix)) >
-        maxValue
-    ) {
+    if (maxValue && Number(parseFormattedValue(trimmedValue, formatSeparator, prefix)) > maxValue) {
       return;
     }
 
-    const valueLength = event.target.value
-      .split(formatSeparator)
-      .join("").length;
+    const valueLength = event.target.value.split(formatSeparator).join("").length;
 
     if (lengthLimit && +valueLength > lengthLimit && !isBackspace) {
       return;
@@ -159,11 +130,7 @@ export class FormattedInput extends Component<
 
     const eventValue = event.target.value;
 
-    const parsedValue = parseFormattedValue(
-      eventValue,
-      formatSeparator,
-      prefix
-    );
+    const parsedValue = parseFormattedValue(eventValue, formatSeparator, prefix);
     let newValue = "";
 
     if (!isNaN(Number(parsedValue))) {
@@ -173,7 +140,7 @@ export class FormattedInput extends Component<
     }
 
     this.setState({
-      formattedValue: getFormattedValue(newValue, formatSeparator, prefix),
+      formattedValue: getFormattedValue(newValue, formatSeparator, prefix)
     });
 
     if (onChange) {
@@ -186,28 +153,24 @@ export class FormattedInput extends Component<
 
     this.setState({
       oldIdx: Number(inputNode?.selectionStart),
-      oldLength: Number(inputNode?.value.length),
+      oldLength: Number(inputNode?.value.length)
     });
   }
 
-  private dispatchChange(
-    onChange: ChangeFunction,
-    event: React.ChangeEvent<HTMLInputElement>,
-    newValue: string
-  ): void {
+  private dispatchChange(onChange: ChangeFunction, event: React.ChangeEvent<HTMLInputElement>, newValue: string): void {
     const newTarget = {
       ...event.target,
-      value: newValue,
+      value: newValue
     };
     const newNativeTarget = {
       ...event.nativeEvent,
-      value: newValue,
+      value: newValue
     };
 
     onChange({
       ...event,
       target: newTarget,
-      nativeEvent: newNativeTarget,
+      nativeEvent: newNativeTarget
     });
   }
 }
