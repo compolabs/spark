@@ -1,5 +1,4 @@
 use dotenv::dotenv;
-use fuels::programs::call_utils::TxDependencyExtension;
 use fuels::{
     accounts::wallet::WalletUnlocked,
     prelude::{abigen, Bech32ContractId, CallParameters, Provider, TxParameters, ViewOnlyAccount},
