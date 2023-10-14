@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Column } from "@src/components/Flex";
-import React, { useState } from "react";
+import React from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
@@ -29,8 +29,6 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 		{ title: "Spot market", key: "market" },
 		{ title: "Perps", key: "perps" }
 	];
-	const [orderType, setOrderType] = useState<any>(orderTypes[0]);
-	console.log(`${vm.isSell ? "canSell" : "canBuy"}`, vm.isSell ? vm.canSell : vm.canBuy);
 
 	return (
 		<Root>
@@ -44,7 +42,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 					</Button>
 				</ButtonGroup>
 				<SizedBox height={32} />
-				<Select label="Order type" options={orderTypes} selected={orderType} onSelect={(v) => setOrderType(v)} />
+				<Select label="Order type" options={orderTypes} selected={orderTypes[0]} onSelect={() => null} />
 
 				<SizedBox height={16} />
 				<TokenInput
@@ -75,12 +73,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 					label="TOTAL"
 				/>
 			</Column>
-			<Button
-				primary={!vm.isSell}
-				secondary={vm.isSell}
-				disabled={vm.isSell ? !vm.canSell : !vm.canBuy}
-				onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}
-			>
+			<Button primary={!vm.isSell} secondary={vm.isSell} onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}>
 				{vm.isSell ? "Sell" : "Buy"}
 			</Button>
 		</Root>
