@@ -107,7 +107,7 @@ class SparkMatcher {
             // );
             this.processing.push(order0.orderId);
             this.processing.push(order1.orderId);
-            const promise = await this.contract.functions
+            const promise = this.contract.functions
               .match_orders(order0.orderId, order1.orderId)
               .txParams({ gasPrice: 2 })
               .call()

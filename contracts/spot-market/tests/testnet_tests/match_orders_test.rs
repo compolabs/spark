@@ -1,5 +1,4 @@
 use dotenv::dotenv;
-use fuels::programs::call_utils::TxDependencyExtension;
 use fuels::{
     accounts::wallet::WalletUnlocked,
     prelude::{abigen, Bech32ContractId, CallParameters, Provider, TxParameters, ViewOnlyAccount},
@@ -82,6 +81,9 @@ async fn match_orders_test() {
     //     .unwrap()
     //     .value;
     // println!("✅ Orders has been matched");
+
+    println!("{:#?}", methods.order_by_id(69).simulate().await.unwrap().value);
+    return;
 
     let deposit = methods
         .get_deposit(alice_address)
