@@ -16,6 +16,8 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
 	{}
 );
 
+export const SEED =
+	"0x5a9df5f00aa49789540fda8adc16d8569f78280e3884b66548a6a28afc53435bbe4c9ee4aa6c6a8f2298b0db36448be8d336b02708e38eb3c24481c3ce9ca968";
 export const NODE_URL = "https://beta-4.fuel.network/graphql";
 // export const EXPLORER_URL = "https://fuellabs.github.io/block-explorer-v2/beta-4/#";
 export const FAUCET_URL = "https://faucet-beta-4.fuel.network";

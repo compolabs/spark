@@ -142,9 +142,10 @@ const Header: React.FC<IProps> = observer(() => {
 					<Button
 						fitContent
 						onClick={() =>
-							accountStore.walletInstance == null
-								? window.open("https://wallet.fuel.network/docs/install/")
-								: accountStore.login(LOGIN_TYPE.FUEL_WALLET)
+							// accountStore.walletInstance == null
+							// 	? window.open("https://wallet.fuel.network/docs/install/")
+							// 	: accountStore.login(LOGIN_TYPE.FUEL_WALLET)
+							accountStore.login(LOGIN_TYPE.FUEL_WALLET)
 						}
 					>
 						Connect wallet

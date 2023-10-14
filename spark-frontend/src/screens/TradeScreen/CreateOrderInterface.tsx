@@ -6,7 +6,6 @@ import { observer } from "mobx-react";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
 import Select from "@components/Select";
 
 interface IProps {}
@@ -31,6 +30,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 		{ title: "Perps", key: "perps" }
 	];
 	const [orderType, setOrderType] = useState<any>(orderTypes[0]);
+	console.log(`${vm.isSell ? "canSell" : "canBuy"}`, vm.isSell ? vm.canSell : vm.canBuy);
 
 	return (
 		<Root>
@@ -48,34 +48,39 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 
 				<SizedBox height={16} />
 				<TokenInput
-					assetId={TOKENS_BY_SYMBOL.ETH.assetId}
-					decimals={TOKENS_BY_SYMBOL.ETH.decimals}
+					assetId={vm.isSell ? vm.token1.assetId : vm.token0.assetId}
+					decimals={vm.isSell ? vm.token1.decimals : vm.token0.decimals}
 					amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
 					setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
-					label="MARKET PRICE"
+					label="PRICE"
 				/>
 				<SizedBox height={16} />
 				<TokenInput
-					decimals={vm.token0.decimals}
+					assetId={!vm.isSell ? vm.token1.assetId : vm.token0.assetId}
+					decimals={!vm.isSell ? vm.token1.decimals : vm.token0.decimals}
 					amount={vm.isSell ? vm.sellAmount : vm.buyAmount}
 					setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
-					assetId={vm.assetId0}
 					error={vm.isSell ? vm.sellAmountError : undefined}
 					errorMessage="Insufficient amount"
-					label="ORDER SIZE (UNI)"
+					label="AMOUNT"
 				/>
 				<SizedBox height={16} />
 				<TokenInput
-					label="ORDER SIZE (USDC)"
-					decimals={vm.token1.decimals}
+					assetId={vm.isSell ? vm.token1.assetId : vm.token0.assetId}
+					decimals={vm.isSell ? vm.token1.decimals : vm.token0.decimals}
 					amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
 					setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
-					assetId={vm.assetId1}
 					errorMessage="Insufficient amount"
 					error={vm.isSell ? undefined : vm.buyTotalError}
+					label="TOTAL"
 				/>
 			</Column>
-			<Button primary={!vm.isSell} secondary={vm.isSell} onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}>
+			<Button
+				primary={!vm.isSell}
+				secondary={vm.isSell}
+				disabled={vm.isSell ? !vm.canSell : !vm.canBuy}
+				onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}
+			>
 				{vm.isSell ? "Sell" : "Buy"}
 			</Button>
 		</Root>
