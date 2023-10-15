@@ -51,8 +51,8 @@ const TVChartContainer = () => {
 		overrides: {
 			"paneProperties.background": "#050505",
 			"paneProperties.backgroundType": "solid",
-			"scalesProperties.lineColor": "#fff",
-			"scalesProperties.textColor": "#fff"
+			"scalesProperties.lineColor": "#FFFFFD",
+			"scalesProperties.textColor": "#FFFFFD"
 		},
 		custom_css_url: "src/screens/Trade/Chart/tw-styles.css"
 	};
@@ -69,7 +69,21 @@ const TVChartContainer = () => {
 			library_path: defaultProps.libraryPath as string,
 
 			locale: getLanguageFromURL() || "en",
-			disabled_features: ["use_localstorage_for_settings"],
+			disabled_features: [
+				"use_localstorage_for_settings",
+				"header_widget",
+				"header_symbol_search",
+				"symbol_search_hot_key",
+				"header_resolutions",
+				"header_settings",
+				"header_indicators",
+				"header_compare",
+				"header_screenshot",
+				"header_fullscreen_button",
+				"left_toolbar",
+				"control_bar",
+				"timeframes_toolbar"
+			],
 			enabled_features: ["study_templates"],
 			// charts_storage_url: defaultProps.chartsStorageUrl,
 			charts_storage_api_version: defaultProps.chartsStorageApiVersion,

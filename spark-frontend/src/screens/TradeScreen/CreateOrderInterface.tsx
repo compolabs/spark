@@ -14,7 +14,7 @@ const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	border: 1px solid white;
+	//border: 1px solid white;
 	box-sizing: border-box;
 	padding: 16px;
 	flex: 2;

@@ -14,7 +14,8 @@ import Skeleton from "react-loading-skeleton";
 import { Row } from "@src/components/Flex";
 // import Select from "@src/components/Select";
 // import NoData from "@components/NoData";
-import { TRADE_TYPE } from "@src/services/TradesService";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { useTheme } from "@emotion/react";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -57,9 +58,11 @@ const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 	position: relative;
 	cursor: pointer;
-	margin: 4px 0;
+	margin-bottom: 1px;
+	height: 18px;
 	width: 100%;
 	justify-content: space-between;
+	align-items: center;
 
 	&:hover {
 		background: #2d2d2d;
@@ -70,13 +73,13 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 		right: 0;
 		top: 0;
 		bottom: 0;
-		background: ${({ type }) => (type === "buy" ? "rgba(37, 176, 91, 0.1)" : "rgba(229, 73, 77, 0.1)")};
+		background: ${({ type }) => (type === "buy" ? "rgba(0,255,152,0.1)" : "rgba(253,10,83,0.1)")};
 		transition: all 0.3s;
 		width: ${({ percent }) => (percent != null ? `${percent}%` : `0%`)};
 	}
 
-	color: ${({ type }) => (type === "buy" ? "green" : "red")};
-	font-size: 12px;
+	color: ${({ type, theme }) => (type === "buy" ? theme.colors.green : theme.colors.red)};
+	${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_SMALL]}
 `;
 const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	display: flex;
@@ -97,6 +100,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	const [round, setRound] = useState("2");
 	const { ordersStore } = useStores();
 	const [orderFilter, setOrderFilter] = useState(0);
+	const theme = useTheme();
 
 	const buyOrders = ordersStore.orderbook.buy
 		.slice()
@@ -155,15 +159,15 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 				{/*<SizedBox height={8} />*/}
 				{/*<Divider />*/}
 				<Columns noHover>
-					<div style={{ fontSize: 14, textAlign: "left" }}>
-						<b> {columns[0]}</b>
-					</div>
-					<div style={{ fontSize: 14, textAlign: "center" }}>
-						<b> {columns[1]}</b>
-					</div>
-					<div style={{ fontSize: 14, textAlign: "right" }}>
-						<b> {columns[2]}</b>
-					</div>
+					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "left" }}>
+						{columns[0]}
+					</Text>
+					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "center" }}>
+						{columns[1]}
+					</Text>
+					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "right" }}>
+						{columns[2]}
+					</Text>
 				</Columns>
 				{/*<Divider />*/}
 				<SizedBox height={8} />
@@ -275,13 +279,8 @@ export default observer(DesktopOrderBook);
 const Plug: React.FC<{ length: number }> = ({ length }) => (
 	<>
 		{Array.from({ length }).map((_, index) => (
-			<Row style={{ margin: "4px 0" }} key={index + "positive-plug"}>
-				<div style={{ fontSize: 12 }}>---</div>
-				{/*{Array.from({ length: 3 }).map((_, i) => (*/}
-				{/*  <div key={} style={{fontSize: 12}}>*/}
-				{/*    -*/}
-				{/*  </div>*/}
-				{/*))}*/}
+			<Row style={{ marginBottom: 1, height: 18 }} key={index + "positive-plug"}>
+				<Text type={TEXT_TYPES.NUMBER_SMALL}>---</Text>
 			</Row>
 		))}
 	</>
