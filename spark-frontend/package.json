@@ -6,6 +6,7 @@
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@fuel-wallet/sdk": "^0.13.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
@@ -54,6 +55,7 @@
     "postcss-normalize": "^10.0.1",
     "postcss-preset-env": "^7.0.1",
     "prompts": "^2.4.2",
+    "rc-dialog": "^9.3.3",
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
     "react-dev-utils": "^12.0.1",
@@ -162,9 +164,9 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.199",
+    "gh-pages": "^6.0.0",
     "prettier": "^3.0.3",
     "tslint": "^6.1.3",
-    "tslint-config-prettier": "^1.18.0",
-    "gh-pages": "^6.0.0"
+    "tslint-config-prettier": "^1.18.0"
   }
 }

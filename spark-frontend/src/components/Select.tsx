@@ -30,6 +30,7 @@ const Root = styled.div<{ focused?: boolean }>`
 
 	color: ${({ theme, focused }) => (focused ? theme.colors.white : theme.colors.gray1)};
 	align-items: center;
+	justify-content: space-between;
 	white-space: nowrap;
 
 	.menu-arrow {
@@ -52,6 +53,12 @@ const Option = styled.div<{ active?: boolean }>`
 	:hover {
 		color: #fff; //fixme
 	}
+`;
+
+const Wrap = styled.div`
+	display: flex;
+	flex-direction: column;
+	width: 100%;
 `;
 
 const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
@@ -77,17 +84,17 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 				</Column>
 			}
 		>
-			<Column>
+			<Wrap>
 				<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
 					{label?.toUpperCase()}
 				</Text>
 				<SizedBox height={4} />
 				<Root focused={focused} onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>
 					{selected?.title ?? options[0].title}
-					<SizedBox width={10} />
+					{/*<SizedBox width={10}/>*/}
 					<img src={arrowIcon} className="menu-arrow" alt="arrow" />
 				</Root>
-			</Column>
+			</Wrap>
 		</Tooltip>
 	);
 };

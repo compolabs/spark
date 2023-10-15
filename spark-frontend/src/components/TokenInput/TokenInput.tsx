@@ -25,6 +25,7 @@ const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
+	width: 100%;
 `;
 
 const InputContainer = styled.div<{

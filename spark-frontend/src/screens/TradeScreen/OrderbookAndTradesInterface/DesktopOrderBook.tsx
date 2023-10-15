@@ -14,7 +14,7 @@ import Skeleton from "react-loading-skeleton";
 import { Row } from "@src/components/Flex";
 // import Select from "@src/components/Select";
 // import NoData from "@components/NoData";
-import { TRADE_TYPE } from "@src/services/TradesService";
+// import { TRADE_TYPE } from "@src/services/TradesService";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -24,17 +24,17 @@ const Root = styled.div`
 	grid-area: orderbook;
 `;
 
-const Settings = styled.div`
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	width: 100%;
-`;
-const Icon = styled.img<{ selected?: boolean }>`
-	cursor: pointer;
-	margin-right: 8px;
-	${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
-`;
+// const Settings = styled.div`
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   width: 100%;
+// `;
+// const Icon = styled.img<{ selected?: boolean }>`
+//   cursor: pointer;
+//   margin-right: 8px;
+//   ${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
+// `;
 const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -86,10 +86,10 @@ const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	${({ fitContent }) => !fitContent && "height: 100%;"};
 	${({ reverse }) => reverse && "flex-direction: column-reverse;"};
 `;
-const roundOptions = [2, 4, 5, 6].map((v) => ({
-	title: `${v} decimals`,
-	key: v.toString()
-}));
+// const roundOptions = [2, 4, 5, 6].map((v) => ({
+//   title: `${v} decimals`,
+//   key: v.toString()
+// }));
 // const filters = [sellAndBuy, sell, buy];
 
 const DesktopOrderBook: React.FC<IProps> = () => {
@@ -107,7 +107,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			return a.price < b.price ? 1 : -1;
 		})
 		.reverse()
-		.slice(orderFilter === 0 ? -15 : -35)
+		.slice(orderFilter === 0 ? -12 : -35)
 		.reverse();
 	const sellOrders = ordersStore.orderbook.sell
 		.slice()
@@ -117,7 +117,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			if (a.price == null && b.price == null) return -1;
 			return a.price < b.price ? 1 : -1;
 		})
-		.slice(orderFilter === 0 ? -15 : -35);
+		.slice(orderFilter === 0 ? -12 : -35);
 	const columns = [`Price ${vm.token1.symbol}`, `Amount ${vm.token0.symbol}`, `Total ${vm.token1.symbol}`];
 
 	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
@@ -134,26 +134,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	else
 		return (
 			<Root>
-				{/*<Row justifyContent="space-between" alignItems="center">*/}
-				{/*  <Settings>*/}
-				{/*    {filters.map((image, index) => (*/}
-				{/*      <Icon*/}
-				{/*        key={index}*/}
-				{/*        src={image}*/}
-				{/*        alt="filter"*/}
-				{/*        selected={orderFilter === index}*/}
-				{/*        onClick={() => ordersStore.initialized && setOrderFilter(index)}*/}
-				{/*      />*/}
-				{/*    ))}*/}
-				{/*  </Settings>*/}
-				{/*  <Select*/}
-				{/*    options={roundOptions}*/}
-				{/*    selected={roundOptions.find(({ key }) => key === round)}*/}
-				{/*    onSelect={({ key }) => setRound(key)}*/}
-				{/*  />*/}
-				{/*</Row>*/}
-				{/*<SizedBox height={8} />*/}
-				{/*<Divider />*/}
 				<Columns noHover>
 					<div style={{ fontSize: 14, textAlign: "left" }}>
 						<b> {columns[0]}</b>
@@ -165,14 +145,13 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 						<b> {columns[2]}</b>
 					</div>
 				</Columns>
-				{/*<Divider />*/}
 				<SizedBox height={8} />
 				<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
 					{!ordersStore.initialized ? (
-						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
+						<Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
 					) : (
 						<>
-							{orderFilter === 0 && <Plug length={sellOrders.length < 15 ? 14 - sellOrders.length : 0} />}
+							{orderFilter === 0 && <Plug length={sellOrders.length < 12 ? 11 - sellOrders.length : 0} />}
 							{orderFilter !== 2 &&
 								sellOrders.map((o, index) => (
 									//Todo add hover
@@ -235,7 +214,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 						</>
 					)}
 					{!ordersStore.initialized ? (
-						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
+						<Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
 					) : (
 						<>
 							{orderFilter !== 1 &&
@@ -256,14 +235,14 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 											{new BN(o.price).toFormat(+round)}
 										</div>
 										<div>
-											{/*Todo добавить плоосу закрытия*/}
+											{/*Todo добавить полосу закрытия*/}
 											{o.totalLeft}
 										</div>
 										<div>{o.amountLeft}</div>
 										<span className="progress-bar" />
 									</OrderRow>
 								))}
-							{orderFilter === 0 && <Plug length={buyOrders.length < 15 ? 14 - buyOrders.length : 0} />}
+							{orderFilter === 0 && <Plug length={buyOrders.length < 12 ? 11 - buyOrders.length : 0} />}
 						</>
 					)}
 				</Container>

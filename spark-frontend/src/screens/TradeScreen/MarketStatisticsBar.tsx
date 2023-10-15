@@ -3,7 +3,6 @@ import { Column, Row } from "@src/components/Flex";
 import React from "react";
 import SizedBox from "@components/SizedBox";
 import { TOKENS_BY_SYMBOL } from "@src/constants";
-import Button from "@components/Button";
 
 interface IProps {}
 

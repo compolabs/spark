@@ -2,12 +2,11 @@
 /// <reference types="react" />
 /// <reference types="react-dom" />
 /// <reference types="@fuel-wallet/sdk" />
-// import { Fuel } from "@fuel-wallet/sdk";
 
 declare global {
   interface Window {
-    fuel?: Fuel;
-    fuelet?: Fuel;
+    fuel?: fuelSDK;
+    fuelet?: fuelSDK;
   }
 }
 interface Window {
@@ -60,7 +59,7 @@ declare module "*.svg" {
   import * as React from "react";
 
   export const ReactComponent: React.FunctionComponent<
-    React.SVGProps<SVGSVGElement> & { title?: string }
+      React.SVGProps<SVGSVGElement> & { title?: string }
   >;
 
   const src: string;

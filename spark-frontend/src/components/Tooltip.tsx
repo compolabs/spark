@@ -14,7 +14,6 @@ interface IProps {
 const Root = styled.div<{ fixed?: boolean }>`
 	display: flex;
 	background: ${({ theme }) => `${theme.colors.gray5}`};
-	width: 100%;
 	z-index: 2;
 	box-sizing: border-box;
 	padding: 8px 16px 12px;
@@ -22,25 +21,30 @@ const Root = styled.div<{ fixed?: boolean }>`
 	border-radius: 4px;
 	height: auto;
 	overflow-y: auto;
+	width: 100%;
 `;
 
 const Container = styled.div`
 	display: flex;
 	flex-direction: column;
-	width: fit-content;
+	width: 100%;
+`;
+const Children = styled.div`
+	cursor: pointer;
+	position: relative;
 `;
 const Tooltip: React.FC<IProps> = ({ containerStyles, children, content, config }) => {
 	const { getTooltipProps, setTooltipRef, setTriggerRef, visible } = usePopperTooltip({ ...config });
 	return (
 		<Container>
-			<div ref={setTriggerRef} style={{ cursor: "pointer", position: "relative", ...containerStyles }}>
+			<Children ref={setTriggerRef} style={{ ...containerStyles }}>
 				{children}
 				{visible && (
 					<Root ref={setTooltipRef} {...getTooltipProps()}>
 						{content}
 					</Root>
 				)}
-			</div>
+			</Children>
 		</Container>
 	);
 };
