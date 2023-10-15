@@ -133,7 +133,7 @@ export const TEXT_TYPES_MAP = {
 };
 
 const Text = styled.div<IProps>`
-	color: ${({ color }) => color ?? "#fff"}; //fixme
+	color: ${({ color, theme }) => color ?? theme.colors.white};
 	${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM])}
 `;
 export default Text;

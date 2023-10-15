@@ -9,7 +9,7 @@ interface IProps {}
 const Root = styled.div`
 	display: flex;
 	flex-direction: column;
-	border: 1px solid white;
+	//border: 1px solid white;
 	box-sizing: border-box;
 	padding: 16px;
 	flex: 2;

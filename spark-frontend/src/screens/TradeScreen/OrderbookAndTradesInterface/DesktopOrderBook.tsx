@@ -14,7 +14,8 @@ import Skeleton from "react-loading-skeleton";
 import { Row } from "@src/components/Flex";
 // import Select from "@src/components/Select";
 // import NoData from "@components/NoData";
-// import { TRADE_TYPE } from "@src/services/TradesService";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { useTheme } from "@emotion/react";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -24,17 +25,17 @@ const Root = styled.div`
 	grid-area: orderbook;
 `;
 
-// const Settings = styled.div`
-//   display: flex;
-//   flex-direction: row;
-//   align-items: center;
-//   width: 100%;
-// `;
-// const Icon = styled.img<{ selected?: boolean }>`
-//   cursor: pointer;
-//   margin-right: 8px;
-//   ${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
-// `;
+const Settings = styled.div`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+`;
+const Icon = styled.img<{ selected?: boolean }>`
+	cursor: pointer;
+	margin-right: 8px;
+	${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
+`;
 const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -57,9 +58,11 @@ const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 	position: relative;
 	cursor: pointer;
-	margin: 4px 0;
+	margin-bottom: 1px;
+	height: 18px;
 	width: 100%;
 	justify-content: space-between;
+	align-items: center;
 
 	&:hover {
 		background: #2d2d2d;
@@ -70,13 +73,13 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 		right: 0;
 		top: 0;
 		bottom: 0;
-		background: ${({ type }) => (type === "buy" ? "rgba(37, 176, 91, 0.1)" : "rgba(229, 73, 77, 0.1)")};
+		background: ${({ type }) => (type === "buy" ? "rgba(0,255,152,0.1)" : "rgba(253,10,83,0.1)")};
 		transition: all 0.3s;
 		width: ${({ percent }) => (percent != null ? `${percent}%` : `0%`)};
 	}
 
-	color: ${({ type }) => (type === "buy" ? "green" : "red")};
-	font-size: 12px;
+	color: ${({ type, theme }) => (type === "buy" ? theme.colors.green : theme.colors.red)};
+	${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_SMALL]}
 `;
 const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	display: flex;
@@ -86,10 +89,10 @@ const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	${({ fitContent }) => !fitContent && "height: 100%;"};
 	${({ reverse }) => reverse && "flex-direction: column-reverse;"};
 `;
-// const roundOptions = [2, 4, 5, 6].map((v) => ({
-//   title: `${v} decimals`,
-//   key: v.toString()
-// }));
+const roundOptions = [2, 4, 5, 6].map((v) => ({
+	title: `${v} decimals`,
+	key: v.toString()
+}));
 // const filters = [sellAndBuy, sell, buy];
 
 const DesktopOrderBook: React.FC<IProps> = () => {
@@ -97,6 +100,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	const [round, setRound] = useState("2");
 	const { ordersStore } = useStores();
 	const [orderFilter, setOrderFilter] = useState(0);
+	const theme = useTheme();
 
 	const buyOrders = ordersStore.orderbook.buy
 		.slice()
@@ -107,7 +111,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			return a.price < b.price ? 1 : -1;
 		})
 		.reverse()
-		.slice(orderFilter === 0 ? -12 : -35)
+		.slice(orderFilter === 0 ? -15 : -35)
 		.reverse();
 	const sellOrders = ordersStore.orderbook.sell
 		.slice()
@@ -117,7 +121,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			if (a.price == null && b.price == null) return -1;
 			return a.price < b.price ? 1 : -1;
 		})
-		.slice(orderFilter === 0 ? -12 : -35);
+		.slice(orderFilter === 0 ? -15 : -35);
 	const columns = [`Price ${vm.token1.symbol}`, `Amount ${vm.token0.symbol}`, `Total ${vm.token1.symbol}`];
 
 	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
@@ -134,24 +138,45 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	else
 		return (
 			<Root>
+				{/*<Row justifyContent="space-between" alignItems="center">*/}
+				{/*  <Settings>*/}
+				{/*    {filters.map((image, index) => (*/}
+				{/*      <Icon*/}
+				{/*        key={index}*/}
+				{/*        src={image}*/}
+				{/*        alt="filter"*/}
+				{/*        selected={orderFilter === index}*/}
+				{/*        onClick={() => ordersStore.initialized && setOrderFilter(index)}*/}
+				{/*      />*/}
+				{/*    ))}*/}
+				{/*  </Settings>*/}
+				{/*  <Select*/}
+				{/*    options={roundOptions}*/}
+				{/*    selected={roundOptions.find(({ key }) => key === round)}*/}
+				{/*    onSelect={({ key }) => setRound(key)}*/}
+				{/*  />*/}
+				{/*</Row>*/}
+				{/*<SizedBox height={8} />*/}
+				{/*<Divider />*/}
 				<Columns noHover>
-					<div style={{ fontSize: 14, textAlign: "left" }}>
-						<b> {columns[0]}</b>
-					</div>
-					<div style={{ fontSize: 14, textAlign: "center" }}>
-						<b> {columns[1]}</b>
-					</div>
-					<div style={{ fontSize: 14, textAlign: "right" }}>
-						<b> {columns[2]}</b>
-					</div>
+					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "left" }}>
+						{columns[0]}
+					</Text>
+					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "center" }}>
+						{columns[1]}
+					</Text>
+					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "right" }}>
+						{columns[2]}
+					</Text>
 				</Columns>
+				{/*<Divider />*/}
 				<SizedBox height={8} />
 				<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
 					{!ordersStore.initialized ? (
-						<Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
+						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
 					) : (
 						<>
-							{orderFilter === 0 && <Plug length={sellOrders.length < 12 ? 11 - sellOrders.length : 0} />}
+							{orderFilter === 0 && <Plug length={sellOrders.length < 15 ? 14 - sellOrders.length : 0} />}
 							{orderFilter !== 2 &&
 								sellOrders.map((o, index) => (
 									//Todo add hover
@@ -214,7 +239,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 						</>
 					)}
 					{!ordersStore.initialized ? (
-						<Skeleton height={20} style={{ marginBottom: 4 }} count={13} />
+						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
 					) : (
 						<>
 							{orderFilter !== 1 &&
@@ -235,14 +260,14 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 											{new BN(o.price).toFormat(+round)}
 										</div>
 										<div>
-											{/*Todo добавить полосу закрытия*/}
+											{/*Todo добавить плоосу закрытия*/}
 											{o.totalLeft}
 										</div>
 										<div>{o.amountLeft}</div>
 										<span className="progress-bar" />
 									</OrderRow>
 								))}
-							{orderFilter === 0 && <Plug length={buyOrders.length < 12 ? 11 - buyOrders.length : 0} />}
+							{orderFilter === 0 && <Plug length={buyOrders.length < 15 ? 14 - buyOrders.length : 0} />}
 						</>
 					)}
 				</Container>
@@ -254,13 +279,8 @@ export default observer(DesktopOrderBook);
 const Plug: React.FC<{ length: number }> = ({ length }) => (
 	<>
 		{Array.from({ length }).map((_, index) => (
-			<Row style={{ margin: "4px 0" }} key={index + "positive-plug"}>
-				<div style={{ fontSize: 12 }}>---</div>
-				{/*{Array.from({ length: 3 }).map((_, i) => (*/}
-				{/*  <div key={} style={{fontSize: 12}}>*/}
-				{/*    -*/}
-				{/*  </div>*/}
-				{/*))}*/}
+			<Row style={{ marginBottom: 1, height: 18 }} key={index + "positive-plug"}>
+				<Text type={TEXT_TYPES.NUMBER_SMALL}>---</Text>
 			</Row>
 		))}
 	</>

@@ -23,7 +23,7 @@ const Root = styled.div`
 	height: 46px;
 	padding: 0 16px;
 	box-sizing: border-box;
-	border: 1px solid white;
+	//border: 1px solid white;
 
 	* {
 		text-decoration: none;
