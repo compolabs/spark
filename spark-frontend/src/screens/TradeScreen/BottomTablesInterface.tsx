@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import SizedBox from "@components/SizedBox";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
+import Button from "@components/Button";
 
 interface IProps {}
 
@@ -54,15 +55,14 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 			{ordersStore.myOrders.map((order) => (
 				<Row key={order.id} style={{ marginBottom: 4, height: 18 }}>
 					{/*<div style={{flex: 1}}>{order.timestamp}</div>*/}
-					<div style={{ flex: 1, fontSize: 10 }}>-</div>
-					<div style={{ flex: 1, fontSize: 10 }}>{order.market}</div>
-					<div style={{ flex: 1, fontSize: 10 }}>{order.type}</div>
-					<div style={{ flex: 1, fontSize: 10 }}>{order.price.toFixed(2)}</div>
-					<div style={{ flex: 1, fontSize: 10 }}>{order.amount}</div>
-					<div style={{ flex: 1, fontSize: 10 }}>{order.total}</div>
-					<div style={{ flex: 1, fontSize: 10 }}>{order.status}</div>
-					<div style={{ flex: 1, fontSize: 10 }}>
-						{order.status === "Active" && <button onClick={() => vm.cancelOrder(order.id)}>Cancel</button>}
+					<div style={{ flex: 1, fontSize: 13 }}>{order.market}</div>
+					<div style={{ flex: 1, fontSize: 13 }}>{order.type}</div>
+					<div style={{ flex: 1, fontSize: 13 }}>{order.price.toFixed(2)}</div>
+					<div style={{ flex: 1, fontSize: 13 }}>{order.amount}</div>
+					<div style={{ flex: 1, fontSize: 13 }}>{order.total}</div>
+					<div style={{ flex: 1, fontSize: 13 }}>{order.status}</div>
+					<div style={{ flex: 1, fontSize: 13 }}>
+						{order.status === "Active" && <Button onClick={() => vm.cancelOrder(order.orderId.toString())}>Cancel</Button>}
 					</div>
 				</Row>
 			))}

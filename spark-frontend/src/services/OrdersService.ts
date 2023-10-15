@@ -4,7 +4,8 @@ import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 
 interface IOrderResponse {
-	id: number;
+	id: string;
+	order_id: number;
 	owner: string;
 	asset0: string;
 	amount0: string;
@@ -31,6 +32,7 @@ export class Order {
 	fulfilled1: BN;
 	owner: string;
 	id: string;
+	orderId: number;
 	timestamp: string;
 	matcher_fee: BN;
 	matcher_fee_used: BN;
@@ -40,6 +42,7 @@ export class Order {
 
 	constructor(orderOutput: IOrderResponse) {
 		this.id = orderOutput.id.toString();
+		this.orderId = orderOutput.order_id;
 		this.asset0 = orderOutput.asset0;
 		this.amount0 = new BN(orderOutput.amount0.toString());
 		this.asset1 = orderOutput.asset1;
@@ -144,11 +147,11 @@ export const getOrderbook = async (
 					data: { query: ownerQuery }
 			  })
 	]);
-	res.map((res) => console.log(res?.data.data[0]));
+	// res.map((res) => console.log(res?.data.data[0]));
 	const [buy, sell, myOrders] = res.map((res) =>
 		res?.data.data[0] != null
 			? res.data.data[0].map((order: any) => {
-					console.log(order);
+					// console.log(order);
 					return new Order({
 						...order,
 						market,
@@ -167,6 +170,6 @@ export const getOrderbook = async (
 			  })
 			: []
 	);
-	console.log({ myOrders, orderbook: { sell, buy } });
+	// console.log({ myOrders, orderbook: { sell, buy } });
 	return { myOrders, orderbook: { sell, buy } };
 };

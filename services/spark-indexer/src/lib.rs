@@ -6,13 +6,16 @@ pub mod spark_indexer_index_mod {
 
     fn handle_block(block: BlockData) {
         let txs = block.transactions.len();
-        info!("Spark: 🧱 Block height: {} | transacrions: {txs}", block.height);
+        if block.height % 100 == 0 {
+            info!(
+                "Spark: 🧱 Block height: {} | transacrions: {txs}",
+                block.height
+            );
+        }
     }
 
     fn handle_order_change_event(event: OrderChangeEvent) {
-        info!("Spark: ✨ Ørder change event \n{:#?}", event);
-
-        let order_entry = OrderEntity {
+        let entry = OrderEntity {
             id: uid(event.order.id.to_be_bytes()),
             order_id: event.order.id,
             asset0: event.order.asset_0.0.into(),
@@ -31,12 +34,11 @@ pub mod spark_indexer_index_mod {
             matcher_fee: event.order.matcher_fee,
             matcher_fee_used: event.order.matcher_fee_used,
         };
-
-        order_entry.save();
+        info!("Spark: ✨ Ørder change event \n{:#?}", entry);
+        entry.save();
     }
 
     fn handle_trade_event(event: TradeEvent) {
-        info!("Spark: 🔀 Trade event \n{:#?}", event);
         let entry = TradeEntity::new(
             event.timestamp - (10 + (1 << 62)),
             event.address,
@@ -47,11 +49,12 @@ pub mod spark_indexer_index_mod {
             event.asset_1.0.into(),
             event.amount_1,
         );
+        info!("Spark: 🔀 Trade event \n{:#?}", entry);
         entry.save();
     }
 
     fn havdle_match_event(event: MatchEvent) {
-        info!("Spark: 💟 Match event \n{:#?}", event);
+        // info!("Spark: 💟 Match event \n{:#?}", event);
         self::handle_order_change_event(event.order_0);
         self::handle_order_change_event(event.order_1);
 

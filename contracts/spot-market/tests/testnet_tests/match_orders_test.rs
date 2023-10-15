@@ -82,6 +82,9 @@ async fn match_orders_test() {
     //     .value;
     // println!("✅ Orders has been matched");
 
+    println!("{:#?}", methods.order_by_id(69).simulate().await.unwrap().value);
+    return;
+
     let deposit = methods
         .get_deposit(alice_address)
         .simulate()
