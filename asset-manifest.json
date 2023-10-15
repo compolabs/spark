@@ -1,9 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.553681ee.css",
-    "main.js": "/static/js/main.92d853cb.js",
-    "static/js/787.51379c6d.chunk.js": "/static/js/787.51379c6d.chunk.js",
-    "static/media/design.png": "/static/media/design.e40536e5c58c64df7fee.png",
+    "main.js": "/static/js/main.9d6894e0.js",
     "static/media/JetBrainsMono-Medium.ttf": "/static/media/JetBrainsMono-Medium.2504f21abf8bf1f0613a.ttf",
     "static/media/SpaceGrotesk-Medium.ttf": "/static/media/SpaceGrotesk-Medium.d188dfade7a12bbb16c1.ttf",
     "static/media/SpaceGrotesk-Regular.ttf": "/static/media/SpaceGrotesk-Regular.3683ead52440efaeba4d.ttf",
@@ -16,12 +14,12 @@
     "static/media/bitcoin.svg": "/static/media/bitcoin.418ae0c4fea1a2b9413996ac86334673.svg",
     "static/media/ethereum.svg": "/static/media/ethereum.eba924eeaba637abfcc634f7f6ff5fef.svg",
     "index.html": "/index.html",
+    "static/media/arrowUp.svg": "/static/media/arrowUp.452af6f7b455cfcae1da186c253c7491.svg",
     "main.553681ee.css.map": "/static/css/main.553681ee.css.map",
-    "main.92d853cb.js.map": "/static/js/main.92d853cb.js.map",
-    "787.51379c6d.chunk.js.map": "/static/js/787.51379c6d.chunk.js.map"
+    "main.9d6894e0.js.map": "/static/js/main.9d6894e0.js.map"
   },
   "entrypoints": [
     "static/css/main.553681ee.css",
-    "static/js/main.92d853cb.js"
+    "static/js/main.9d6894e0.js"
   ]
 }

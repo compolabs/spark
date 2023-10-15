@@ -3210,7 +3210,7 @@ export interface ChartingLibraryWidgetOptions {
 	/**
 	 * Use this option to customize the style or inputs of the indicators.
 	 * You can also customize the styles and inputs of the `Compare` series using this argument.
-	 * See more details [here](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides)
+	 * Refer to [Indicator Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides.md) for more information.
 	 *
 	 * ```javascript
 	 * studies_overrides: {
@@ -3377,7 +3377,8 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	custom_font_family?: string;
 	/**
-	 * Items that should be marked as favorite by default. This option requires that the usage of localstorage is disabled (see [featuresets](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets) to know more). The `favorites` property is supposed to be an object. The following properties are supported:
+	 * Items that should be marked as favorite by default. This option requires that the usage of localstorage is disabled (see [featuresets](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets) to know more).
+	 * The `favorites` property is supposed to be an object. The following properties are supported:
 	 *
 	 * ```javascript
 	 * favorites: {
@@ -3387,6 +3388,9 @@ export interface ChartingLibraryWidgetOptions {
 	 *     chartTypes: ['Area', 'Candles'],
 	 * },
 	 * ```
+	 *
+	 * If you want to allow users to add/remove items from favorites, you should enable/disable the [`items_favoriting`](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md#items_favoriting) featureset.
+	 *
 	 */
 	favorites?: Favorites<ChartTypeFavorites>;
 	/**
@@ -3482,7 +3486,7 @@ export interface ChartingLibraryWidgetOptions {
 	 */
 	header_widget_buttons_mode?: HeaderWidgetButtonsMode;
 	/**
-	 * You could use this object to override context menu in some way.
+	 * You could use this object to override context menu. You can also change the menu on the fly using the {@link IChartingLibraryWidget.onContextMenu} method.
 	 */
 	context_menu?: ContextMenuOptions;
 	/**
@@ -7501,7 +7505,7 @@ export interface IChartWidgetApi {
 	 * ```javascript
 	 * widget.activeChart().onSymbolChanged().subscribe(null, () => console.log('The symbol is changed'));
 	 * ```
-	 * @returns A subscription object for the chart symbol changing.
+	 * @returns A subscription object for when a symbol is resolved (ie changing resolution, timeframe, currency, etc.)
 	 */
 	onSymbolChanged(): ISubscription<() => void>;
 	/**
@@ -8399,7 +8403,7 @@ export interface IChartingLibraryWidget {
 	 * @param callback A function that will be called when the `shortCut` keys are input.
 	 * @example
 	 * ```javascript
-	 * widget.onShortcut("alt+s", function() {
+	 * widget.onShortcut("alt+q", function() {
 	 *   widget.chart().executeActionById("symbolSearch");
 	 * });
 	 *
@@ -9030,8 +9034,9 @@ export interface IContext {
 	 * @param  {string} period - period for the new symbol
 	 * @param  {string} currencyCode? - Currency code
 	 * @param  {string} unitId? - Unit id
+	 * @param  {string} unitId? - Subsession id
 	 */
-	new_sym(tickerid: string, period: string, currencyCode?: string, unitId?: string): ISymbolInstrument;
+	new_sym(tickerid: string, period: string, currencyCode?: string, unitId?: string, subsessionId?: string): ISymbolInstrument;
 	/**
 	 * Switch context to the other symbol received through {@link IContext.new_sym}
 	 * @param  {number} i - the index of the symbol (`0` for the main series)
@@ -10913,7 +10918,7 @@ export interface IStudyApi {
 	sendToBack(): void;
 	/**
 	 * Override one or more of the study's properties.
-	 * See [Studies Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides) for a list of available overrides.
+	 * Refer to [Indicator Overrides](https://www.tradingview.com/charting-library-docs/latest/customization/overrides/Studies-Overrides.md) for a list of available overrides.
 	 *
 	 * @param overrides Property values to override.
 	 */
@@ -17470,9 +17475,9 @@ export type CellAlignment = "left" | "right";
  */
 export type ChartActionId = "chartProperties" | "compareOrAdd" | "scalesProperties" | "paneObjectTree" | "insertIndicator" | "symbolSearch" | "changeInterval" | "timeScaleReset" | "chartReset" | "seriesHide" | "studyHide" | "lineToggleLock" | "lineHide" | "scaleSeriesOnly" | "drawingToolbarAction" | "stayInDrawingModeAction" | "hideAllMarks" | "showCountdown" | "showSeriesLastValue" | "showSymbolLabelsAction" | "showStudyLastValue" | "showStudyPlotNamesAction" | "undo" | "redo" | "paneRemoveAllStudiesDrawingTools" | "showSymbolInfoDialog";
 /**
- * Chart type names for use within the `favourites` widget constructor option. This type is for Advanced Charts, if you are looking for the Trading Platform type then please see {@link TradingTerminalChartTypeFavorites}.
+ * Chart type names for use within the `favorites` Widget Constructor option. This type is for Advanced Charts, if you are looking for the Trading Platform type then please see {@link TradingTerminalChartTypeFavorites}.
  *
- * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link ChartingLibraryWidgetOptions.favorites} for the Widget Constructor option.
+ * See {@link Favorites} for the Widget Constructor option where you can define these favorites, and {@link ChartingLibraryWidgetOptions.favorites} for the Widget Constructor option.
  */
 export type ChartTypeFavorites = "Area" | "Bars" | "Candles" | "Heiken Ashi" | "Hollow Candles" | "Line" | "Line Break" | "Baseline" | "LineWithMarkers" | "Stepline" | "Columns" | "High-low";
 /** This is the list of all [featuresets](https://www.tradingview.com/charting-library-docs/latest/customization/Featuresets.md) that work in Advanced Charts */
@@ -17927,15 +17932,20 @@ export type IProjectionBar = [
 	number,
 	number
 ];
-export type ISeriesStudyResult = [ /* time */
+/**
+ * An array of bar values.
+ *
+ * [time, open, high, low, close, volume, updatetime, isBarClosed]
+ */
+export type ISeriesStudyResult = [
 	number,
 	number,
 	number,
 	number,
 	number,
 	number,
-	/* updatetime */ number | undefined,
-	/* isBarClosed */ boolean | undefined
+	number | undefined,
+	boolean | undefined
 ];
 /**
  * Input field validator
@@ -17943,7 +17953,7 @@ export type ISeriesStudyResult = [ /* time */
  */
 export type InputFieldValidator = (value: any) => InputFieldValidatorResult;
 export type InputFieldValidatorResult = PositiveBaseInputFieldValidatorResult | NegativeBaseInputFieldValidatorResult;
-export type LanguageCode = "ar" | "zh" | "cs" | "ca_ES" | "nl_NL" | "en" | "fr" | "de" | "el" | "he_IL" | "hu_HU" | "id_ID" | "it" | "ja" | "ko" | "fa" | "pl" | "pt" | "ro" | "ru" | "es" | "sv" | "th" | "tr" | "vi" | "ms_MY" | "zh_TW";
+export type LanguageCode = "ar" | "zh" | "cs" | "ca_ES" | "nl_NL" | "en" | "fr" | "de" | "el" | "he_IL" | "hu_HU" | "id_ID" | "it" | "ja" | "ko" | "pl" | "pt" | "ro" | "ru" | "es" | "sv" | "th" | "tr" | "vi" | "ms_MY" | "zh_TW";
 export type LayoutType = SingleChartLayoutType | MultipleChartsLayoutType;
 export type LegendMode = "horizontal" | "vertical";
 export type LibrarySessionId = "regular" | "extended" | "premarket" | "postmarket";
@@ -18145,9 +18155,9 @@ export type TimezoneId = CustomTimezones | "Etc/UTC" | "exchange";
 export type TradableSolutions = ChangeAccountSolution | ChangeSymbolSolution | OpenUrlSolution;
 export type TradingDialogCustomField = CheckboxFieldMetaInfo | TextWithCheckboxFieldMetaInfo | CustomComboBoxMetaInfo;
 /**
- * Chart type names for use within the `favourites` widget constructor option. This type is for Trading Platform, if you are looking for the Advanced Charts type then please see {@link ChartTypeFavorites}.
+ * Chart type names for use within the `favorites` Widget Constructor option. This type is for Trading Platform, if you are looking for the Advanced Charts type then please see {@link ChartTypeFavorites}.
  *
- * See {@link Favorites} for the widget constructor option where you can define these favorites, and {@link TradingTerminalWidgetOptions.favorites} for the Widget Constructor option.
+ * See {@link Favorites} for the Widget Constructor option where you can define these favorites, and {@link TradingTerminalWidgetOptions.favorites} for the Widget Constructor option.
  */
 export type TradingTerminalChartTypeFavorites = ChartTypeFavorites | "Renko" | "Kagi" | "Point & figure" | "Line Break";
 /** This is the list of all featuresets that work on Trading Platform (which is an extension of Advanced Charts) */
@@ -18170,7 +18180,7 @@ export type TradingTerminalFeatureset = ChartingLibraryFeatureset |
 "show_trading_notifications_history" | 
 /** If a bracket order is modified, the terminal passes its parent order to `modifyOrder`. The featureset disables this behavior @default false */
 "always_pass_called_order_to_modify" | 
-/** Enables Drawing Templates on Drawing toolbar @default true */
+/** Enables Drawing Templates on Drawing toolbar. If disabled users will still be able to apply the default settings for their selection. @default true */
 "drawing_templates" | 
 /** Shows the Account Manager Widget @default true */
 "trading_account_manager" | 
