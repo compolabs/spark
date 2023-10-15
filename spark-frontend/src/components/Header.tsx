@@ -12,7 +12,6 @@ import { Link, useLocation } from "react-router-dom";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import SizedBox from "@components/SizedBox";
 import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
-import { LOGIN_TYPE } from "@stores/AccountStore";
 
 interface IProps {}
 
@@ -144,7 +143,8 @@ const Header: React.FC<IProps> = observer(() => {
 						onClick={() =>
 							window.fuel == null
 								? window.open("https://wallet.fuel.network/docs/install/")
-								: accountStore.login(LOGIN_TYPE.FUEL_WALLET)
+								: accountStore.login()
+								// : accountStore.login(LOGIN_TYPE.FUEL_WALLET)
 						}
 					>
 						Connect wallet
