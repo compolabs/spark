@@ -14,55 +14,56 @@ import SizedBox from "@components/SizedBox";
 import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
 import { LOGIN_TYPE } from "@stores/AccountStore";
 
-interface IProps {}
+interface IProps {
+}
 
 const Root = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-	height: 46px;
-	padding: 0 16px;
-	box-sizing: border-box;
-	border: 1px solid white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: 46px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  border: 1px solid white;
 
-	* {
-		text-decoration: none;
-	}
+  * {
+    text-decoration: none;
+  }
 `;
 
 const Divider = styled.div`
-	margin: 0 20px;
-	width: 1px;
-	height: 12px;
-	background: ${({ theme }) => theme.colors.gray2};
+  margin: 0 20px;
+  width: 1px;
+  height: 12px;
+  background: ${({ theme }) => theme.colors.gray2};
 `;
 
 const MenuItem = styled.div<{ active?: boolean; disabled?: boolean }>`
-	cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-	width: 100px;
-	text-align: center;
-	color: ${({ theme, active, disabled }) => (active && !disabled ? theme.colors.white : theme.colors.gray1)};
-	position: relative;
-	${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
-	transition: .4s;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  width: 100px;
+  text-align: center;
+  color: ${({ theme, active, disabled }) => (active && !disabled ? theme.colors.white : theme.colors.gray1)};
+  position: relative;
+  ${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
+  transition: .4s;
 
-	:hover {
-		color: ${({ theme, disabled }) => (disabled ? theme.colors.gray1 : theme.colors.white)};
-	}
+  :hover {
+    color: ${({ theme, disabled }) => (disabled ? theme.colors.gray1 : theme.colors.white)};
+  }
 
-	::after {
-		transition: 0.4s;
-		position: absolute;
-		content: "";
-		width: 100%;
-		height: 2px;
-		border-radius: 4px;
-		background: ${({ theme, active }) => (active ? theme.colors.white : "transparent")};
-		left: 0;
-		right: 0;
-		bottom: -16px;
-	}
+  ::after {
+    transition: 0.4s;
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 2px;
+    border-radius: 4px;
+    background: ${({ theme, active }) => (active ? theme.colors.white : "transparent")};
+    left: 0;
+    right: 0;
+    bottom: -16px;
+  }
 `;
 type TMenuItem = {
 	title: string;
@@ -81,9 +82,9 @@ const menuItems: Array<TMenuItem> = [
 ];
 
 const SettingsButton = styled(Button)`
-	width: 32px;
-	height: 32px;
-	padding: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
 `;
 
 const Header: React.FC<IProps> = observer(() => {
@@ -142,7 +143,7 @@ const Header: React.FC<IProps> = observer(() => {
 					<Button
 						fitContent
 						onClick={() =>
-							accountStore.walletInstance == null
+							window.fuel == null
 								? window.open("https://wallet.fuel.network/docs/install/")
 								: accountStore.login(LOGIN_TYPE.FUEL_WALLET)
 						}
