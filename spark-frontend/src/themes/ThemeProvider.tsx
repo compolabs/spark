@@ -1,5 +1,5 @@
 import React from "react";
-import { ThemeProvider } from "@emotion/react";
+import { Theme, ThemeProvider } from "@emotion/react";
 
 import { useStores } from "@stores";
 import { darkThemeColors } from "@src/themes/colors";
@@ -14,7 +14,7 @@ interface IProps {
 	children: React.ReactNode;
 }
 
-export const themes = {
+export const themes: { darkTheme: Theme } = {
 	darkTheme: { colors: darkThemeColors }
 	// lightTheme,
 };

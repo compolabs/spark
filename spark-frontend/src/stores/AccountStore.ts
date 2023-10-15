@@ -1,6 +1,6 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction, when } from "mobx";
-import { Address, Mnemonic, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
+import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
 import { IToken, NODE_URL, SEED, TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import Balance from "@src/entities/Balance";
@@ -80,7 +80,7 @@ class AccountStore {
 
 	onFuelLoaded = () => {
 		if (this.walletInstance == null) return;
-		this.walletInstance.on(window?.fuel.events.currentAccount, this.handleAccEvent);
+		this.walletInstance.on(window?.fuel.events?.currentAccount, this.handleAccEvent);
 		this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
 	};
 	handleAccEvent = (account: string) => this.setAddress(account);
@@ -134,6 +134,7 @@ class AccountStore {
 	}
 
 	disconnect = async () => {
+		if (this.walletInstance == null) return;
 		try {
 			this.walletInstance.disconnect();
 		} catch (e) {

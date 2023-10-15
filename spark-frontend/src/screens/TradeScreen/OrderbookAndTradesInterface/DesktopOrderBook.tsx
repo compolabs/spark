@@ -235,7 +235,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 											{new BN(o.price).toFormat(+round)}
 										</div>
 										<div>
-											{/*Todo добавить плоосу закрытия*/}
+											{/*Todo добавить полосу закрытия*/}
 											{o.totalLeft}
 										</div>
 										<div>{o.amountLeft}</div>

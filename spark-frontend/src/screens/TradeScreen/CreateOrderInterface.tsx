@@ -73,7 +73,12 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 					label="TOTAL"
 				/>
 			</Column>
-			<Button primary={!vm.isSell} secondary={vm.isSell} onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}>
+			<Button
+				primary={!vm.isSell}
+				secondary={vm.isSell}
+				disabled={vm.isSell ? !vm.canSell : !vm.canBuy}
+				onClick={() => vm.createOrder(vm.isSell ? "sell" : "buy")}
+			>
 				{vm.isSell ? "Sell" : "Buy"}
 			</Button>
 		</Root>
