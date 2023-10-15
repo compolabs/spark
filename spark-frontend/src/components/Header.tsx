@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import { LOGIN_TYPE } from "@stores/AccountStore";
 import centerEllipsis from "@src/utils/centerEllipsis";
 import { Row } from "./Flex";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
@@ -120,7 +119,7 @@ const Header: React.FC<IProps> = observer(() => {
 						);
 				})}
 			</Row>
-			<Row alignItems="center" justifyContent="flex-end">
+			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<SizedBox width={10} />
 				<SettingsButton outline>
 					<GearIcon />
@@ -141,12 +140,12 @@ const Header: React.FC<IProps> = observer(() => {
 				) : (
 					<Button
 						fitContent
-						onClick={() => {
-							accountStore.setLoginType(LOGIN_TYPE.FUEL_WALLET);
-							accountStore.walletInstance == null
+						onClick={() =>
+							window.fuel == null
 								? window.open("https://wallet.fuel.network/docs/install/")
-								: accountStore.login(LOGIN_TYPE.FUEL_WALLET);
-						}}
+								: accountStore.login()
+								// : accountStore.login(LOGIN_TYPE.FUEL_WALLET)
+						}
 					>
 						Connect wallet
 					</Button>

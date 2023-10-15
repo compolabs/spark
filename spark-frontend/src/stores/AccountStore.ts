@@ -1,7 +1,7 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
+import { IToken, NODE_URL, SEED, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import Balance from "@src/entities/Balance";
 import { FuelWalletProvider } from "@fuel-wallet/sdk";
@@ -27,7 +27,8 @@ class AccountStore {
 		this.rootStore = rootStore;
 		if (initState) {
 			this.setLoginType(initState.loginType);
-			this.setAddress(initState.address);
+			// this.setAddress(initState.address);
+			this.setAddress("fuel10234lk7dncl0dpr4g9lntdaavauw07h6tu95kxg2x57mjqqcxgfqel2z8w");
 			if (initState.loginType != null) {
 				document.addEventListener("FuelLoaded", this.onFuelLoaded);
 			}
@@ -57,6 +58,11 @@ class AccountStore {
 		}
 		const address = Address.fromString(this.address);
 		const balances = (await this.provider?.getBalances(address)) ?? [];
+		// balances.map((b) => {
+		// 	const token = TOKENS_BY_ASSET_ID[b.assetId];
+		// 	const v = BN.formatUnits(b.amount.toString(),token.decimals )
+		// 	b.amount.gt(0) && console.log(token.symbol, v.toString());
+		// });
 		const assetBalances = TOKENS_LIST.map((asset) => {
 			const t = balances.find(({ assetId }) => asset.assetId === assetId);
 			const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
@@ -70,15 +76,14 @@ class AccountStore {
 	getBalance = (token: IToken): BN | null => {
 		const balance = this.findBalanceByAssetId(token.assetId);
 		if (balance == null) return null;
-		return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals);
+		return balance.balance ?? BN.ZERO;
 	};
-
 	findBalanceByAssetId = (assetId: string) =>
 		this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
 
 	onFuelLoaded = () => {
 		if (this.walletInstance == null) return;
-		this.walletInstance.on(window?.fuel.events.currentAccount, this.handleAccEvent);
+		this.walletInstance.on(window?.fuel.events?.currentAccount, this.handleAccEvent);
 		this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
 	};
 	handleAccEvent = (account: string) => this.setAddress(account);
@@ -100,24 +105,39 @@ class AccountStore {
 		loginType: this.loginType
 	});
 
-	login = async (loginType: LOGIN_TYPE) => {
-		this.setLoginType(loginType);
-		await this.loginWithWallet();
-		await this.onFuelLoaded();
+	// login = async (loginType: LOGIN_TYPE) => {
+	login = async () => {
+		const provider = await Provider.create(NODE_URL);
+		const wallet = Wallet.fromPrivateKey(SEED, provider);
+		this.setAddress(wallet.address.toString());
+		console.log("wallet.address.toString()", wallet.address.toString());
+
+		// const mnemonic = Mnemonic.generate(16);
+		// const seed = Mnemonic.mnemonicToSeed(mnemonic);
+		// console.log("seed", seed);
+		// const provider = await Provider.create(NODE_URL);
+		// const wallet = Wallet.fromPrivateKey(seed, provider);
+		// console.log("wallet", wallet.address)
+
+		//old
+		// this.setLoginType(loginType);
+		// await this.loginWithWallet();
+		// await this.onFuelLoaded();
 	};
 
 	get walletInstance() {
 		switch (this.loginType) {
 			case LOGIN_TYPE.FUEL_WALLET:
 				return window.fuel;
-			case LOGIN_TYPE.FUELET:
-				return window.fuelet;
+			// case LOGIN_TYPE.FUELET:
+			// 	return window.fuelet;
 			default:
 				return null;
 		}
 	}
 
 	disconnect = async () => {
+		if (this.walletInstance == null) return;
 		try {
 			this.walletInstance.disconnect();
 		} catch (e) {
@@ -152,8 +172,11 @@ class AccountStore {
 	}
 
 	getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
-		if (this.address == null || window.fuel == null) return null;
-		return window.fuel.getWallet(this.address);
+		if (this.provider == null) return null;
+		return Wallet.fromPrivateKey(SEED, this.provider);
+		//todo fix
+		// if (this.address == null || window.fuel == null) return null;
+		// return window.fuel.getWallet(this.address);
 	};
 
 	get walletToRead(): WalletLocked | null {
