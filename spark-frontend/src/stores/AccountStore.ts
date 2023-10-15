@@ -58,7 +58,11 @@ class AccountStore {
 		}
 		const address = Address.fromString(this.address);
 		const balances = (await this.provider?.getBalances(address)) ?? [];
-		balances.map((b) => b.amount.gt(0) && console.log(TOKENS_BY_ASSET_ID[b.assetId].symbol, b.amount.toString()));
+		// balances.map((b) => {
+		// 	const token = TOKENS_BY_ASSET_ID[b.assetId];
+		// 	const v = BN.formatUnits(b.amount.toString(),token.decimals )
+		// 	b.amount.gt(0) && console.log(token.symbol, v.toString());
+		// });
 		const assetBalances = TOKENS_LIST.map((asset) => {
 			const t = balances.find(({ assetId }) => asset.assetId === assetId);
 			const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
@@ -72,9 +76,8 @@ class AccountStore {
 	getBalance = (token: IToken): BN | null => {
 		const balance = this.findBalanceByAssetId(token.assetId);
 		if (balance == null) return null;
-		return BN.formatUnits(balance.balance ?? BN.ZERO, token.decimals);
+		return balance.balance ?? BN.ZERO;
 	};
-
 	findBalanceByAssetId = (assetId: string) =>
 		this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
 
@@ -126,8 +129,8 @@ class AccountStore {
 		switch (this.loginType) {
 			case LOGIN_TYPE.FUEL_WALLET:
 				return window.fuel;
-			case LOGIN_TYPE.FUELET:
-				return window.fuelet;
+			// case LOGIN_TYPE.FUELET:
+			// 	return window.fuelet;
 			default:
 				return null;
 		}
@@ -191,11 +194,6 @@ class AccountStore {
 		if (this.address == null) return null;
 		return Address.fromString(this.address).toB256();
 	}
-
-	selectConnector = () => {
-		//Fuelet Wallet
-		//Fuel Wallet
-	};
 }
 
 export default AccountStore;
