@@ -1,7 +1,7 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
-import { IToken, NODE_URL, SEED, TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
+import { IToken, NODE_URL, SEED, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import Balance from "@src/entities/Balance";
 import { FuelWalletProvider } from "@fuel-wallet/sdk";
@@ -106,7 +106,7 @@ class AccountStore {
 	});
 
 	// login = async (loginType: LOGIN_TYPE) => {
-	login = async (loginType?: LOGIN_TYPE) => {
+	login = async () => {
 		const provider = await Provider.create(NODE_URL);
 		const wallet = Wallet.fromPrivateKey(SEED, provider);
 		this.setAddress(wallet.address.toString());
