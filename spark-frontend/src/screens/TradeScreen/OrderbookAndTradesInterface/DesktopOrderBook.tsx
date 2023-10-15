@@ -25,17 +25,17 @@ const Root = styled.div`
 	grid-area: orderbook;
 `;
 
-const Settings = styled.div`
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	width: 100%;
-`;
-const Icon = styled.img<{ selected?: boolean }>`
-	cursor: pointer;
-	margin-right: 8px;
-	${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
-`;
+// const Settings = styled.div`
+// 	display: flex;
+// 	flex-direction: row;
+// 	align-items: center;
+// 	width: 100%;
+// `;
+// const Icon = styled.img<{ selected?: boolean }>`
+// 	cursor: pointer;
+// 	margin-right: 8px;
+// 	${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
+// `;
 const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -89,10 +89,10 @@ const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	${({ fitContent }) => !fitContent && "height: 100%;"};
 	${({ reverse }) => reverse && "flex-direction: column-reverse;"};
 `;
-const roundOptions = [2, 4, 5, 6].map((v) => ({
-	title: `${v} decimals`,
-	key: v.toString()
-}));
+// const roundOptions = [2, 4, 5, 6].map((v) => ({
+// 	title: `${v} decimals`,
+// 	key: v.toString()
+// }));
 // const filters = [sellAndBuy, sell, buy];
 
 const DesktopOrderBook: React.FC<IProps> = () => {
