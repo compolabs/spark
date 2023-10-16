@@ -29,7 +29,8 @@
       "@stores/*": ["src/stores/*"],
       "@screens": ["src/screens"],
       "@screens/*": ["src/screens/*"]
-    }
+    },
+    "types": ["@fuel-wallet/sdk"]
   },
   "include": [
     "src"
