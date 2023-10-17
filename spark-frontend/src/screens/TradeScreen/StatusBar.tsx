@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useEffect } from "react";
+import React from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
@@ -7,8 +7,6 @@ import Text, { TEXT_TYPES } from "@components/Text";
 import { Row } from "@components/Flex";
 import Chip from "@components/Chip";
 import { useTheme } from "@emotion/react";
-import dayjs from "dayjs";
-import axios from "axios";
 
 interface IProps {}
 

@@ -4,6 +4,7 @@ import { ChartingLibraryWidgetOptions, LanguageCode, ResolutionString, widget } 
 import { observer } from "mobx-react-lite";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
+import { useTheme } from "@emotion/react";
 
 export interface ChartContainerProps {
 	symbol: ChartingLibraryWidgetOptions["symbol"];
@@ -34,7 +35,7 @@ const getLanguageFromURL = (): LanguageCode | null => {
 const TVChartContainer = () => {
 	const vm = useTradeScreenVM();
 	const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
-
+	const theme = useTheme();
 	const defaultProps: Omit<ChartContainerProps, "container"> = {
 		symbol: `${vm.token0.symbol}/${vm.token1.symbol}`,
 		interval: "30" as ResolutionString,
@@ -49,14 +50,17 @@ const TVChartContainer = () => {
 		autosize: true,
 		studiesOverrides: {},
 		overrides: {
-			"paneProperties.background": "#050505",
+			"paneProperties.background": theme.colors.gray5,
 			"paneProperties.backgroundType": "solid",
-			"scalesProperties.lineColor": "#FFFFFD",
-			"scalesProperties.textColor": "#FFFFFD",
+			"scalesProperties.lineColor": theme.colors.gray3,
+			"scalesProperties.textColor": theme.colors.gray2,
+			"paneProperties.legendProperties.showSeriesOHLC": false,
+			"mainSeriesProperties.candleStyle.upColor": theme.colors.green,
+			"mainSeriesProperties.candleStyle.downColor": theme.colors.red,
 		},
 		custom_css_url: "src/screens/Trade/Chart/tw-styles.css",
 	};
-	const { location } = window;
+	// const { location } = window;
 	useEffect(() => {
 		const widgetOptions: ChartingLibraryWidgetOptions = {
 			symbol: defaultProps.symbol as string,
@@ -72,10 +76,10 @@ const TVChartContainer = () => {
 			disabled_features: [
 				"symbol_info",
 				"use_localstorage_for_settings",
-				// "header_widget",
-				// "header_symbol_search",
-				// "symbol_search_hot_key",
-				// "header_resolutions",
+				"header_widget",
+				"header_symbol_search",
+				"symbol_search_hot_key",
+				"header_resolutions",
 				"header_settings",
 				"header_indicators",
 				"header_compare",
@@ -95,9 +99,8 @@ const TVChartContainer = () => {
 			studies_overrides: defaultProps.studiesOverrides,
 			overrides: defaultProps.overrides,
 			theme: "dark",
-			custom_css_url: `${location.origin}/tw-chart-styles.css`,
+			// custom_css_url: `${location.origin}/tw-chart-styles.css`,
 		};
-
 		const tvWidget = new widget(widgetOptions);
 		// tvWidget.onChartReady(() => {
 		//   tvWidget.headerReady().then(() => {
