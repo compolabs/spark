@@ -9,7 +9,7 @@ const Root = styled.input<{ small?: boolean }>`
   font-weight: 400;
   line-height: 16px;
   letter-spacing: 0.48px;
-  caret-color: ${({ theme }) => theme.colors.primary01};
+  caret-color: ${({ theme }) => theme.colors.gray1};
   border: none;
   background: transparent;
   outline: none;
@@ -28,7 +28,7 @@ const Root = styled.input<{ small?: boolean }>`
   }
 
   ::placeholder {
-    color: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.gray2};
   }
 `;
 
