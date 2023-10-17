@@ -1,4 +1,7 @@
 import colors from "./colors";
-export default {
-  colors,
+
+const darkTheme = {
+	colors,
 };
+
+export default darkTheme;

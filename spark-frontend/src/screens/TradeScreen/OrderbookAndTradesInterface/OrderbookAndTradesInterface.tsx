@@ -9,9 +9,8 @@ interface IProps {}
 const Root = styled.div`
 	display: flex;
 	flex-direction: column;
-	//border: 1px solid white;
 	box-sizing: border-box;
-	padding: 16px;
+	padding: 16px 0;
 	flex: 2;
 	max-width: 280px;
 	height: 100%;
@@ -23,7 +22,7 @@ const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 	const [isOrderbook, setIsOrderbook] = useState(true);
 	return (
 		<Root>
-			<ButtonGroup>
+			<ButtonGroup style={{ padding: "0 16px" }}>
 				<Button outline={!isOrderbook} onClick={() => setIsOrderbook(true)}>
 					Orderbook
 				</Button>
