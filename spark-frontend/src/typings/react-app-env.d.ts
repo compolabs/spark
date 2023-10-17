@@ -1,12 +1,13 @@
 /// <reference types="node" />
 /// <reference types="react" />
 /// <reference types="react-dom" />
-
+/// <reference types="@fuel-wallet/sdk" />
+// import { Fuel } from "@fuel-wallet/sdk";
 
 declare global {
   interface Window {
-    fuel?: fuelSDK;
-    fuelet?: fuelSDK;
+    fuel?: Fuel;
+    fuelet?: Fuel;
   }
 }
 interface Window {

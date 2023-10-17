@@ -19,7 +19,7 @@ autorun(
 		console.dir(mobxStore);
 		saveState(mobxStore.serialize());
 	},
-	{ delay: 1000 }
+	{ delay: 1000 },
 );
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
@@ -44,5 +44,5 @@ root.render(
 				<GlobalStyles />
 			</ThemeWrapper>
 		</storesContext.Provider>
-	</React.StrictMode>
+	</React.StrictMode>,
 );
