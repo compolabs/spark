@@ -107,7 +107,7 @@ const TokenInput: React.FC<IProps> = (props) => {
 					<SizedBox height={4} />
 				</>
 			)}
-			<InputContainer focused={focused} readOnly={!props.setAmount}>
+			<InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
 				<BigNumberInput
 					renderInput={(props, ref) => (
 						<AmountInput
