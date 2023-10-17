@@ -6,7 +6,9 @@ pub mod spark_indexer_index_mod {
 
     fn handle_block(block: BlockData) {
         let txs = block.transactions.len();
-        info!("Spark: 🧱 Block height: {} | transacrions: {txs}", block.height);
+        if block.height % 100 == 0 {
+            info!("Spark: 🧱 Block height: {} | transacrions: {txs}", block.height);
+        }
     }
 
     fn handle_order_change_event(event: OrderChangeEvent) {

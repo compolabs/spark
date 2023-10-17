@@ -3247,8 +3247,19 @@ dependencies = [
  "fuels",
  "serde",
  "serde_json",
+ "src20_sdk",
  "tai64",
  "tokio",
+]
+
+[[package]]
+name = "src20_sdk"
+version = "0.0.3"
+source = "git+https://github.com/compolabs/src-20.git?branch=master#524a61b86ef980f638305eca4061b5cd30ebd642"
+dependencies = [
+ "dotenv",
+ "fuels",
+ "tai64",
 ]
 
 [[package]]

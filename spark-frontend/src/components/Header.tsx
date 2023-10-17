@@ -106,18 +106,17 @@ const Header: React.FC<IProps> = observer(() => {
 						);
 					else if (route != null)
 						return (
-							<Link to={route}>
-								<MenuItem active={isRoutesEquals(route, location.pathname)} key={key}>
-									{title}
-								</MenuItem>
+							<Link to={route} key={key}>
+								<MenuItem active={isRoutesEquals(route, location.pathname)}>{title}</MenuItem>
 							</Link>
 						);
 					else if (link != null)
 						return (
-							<a rel="noopener noreferrer" target="_blank" href={link}>
+							<a rel="noopener noreferrer" target="_blank" href={link} key={key}>
 								<MenuItem key={key}>{title}</MenuItem>
 							</a>
 						);
+					else return null;
 				})}
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">

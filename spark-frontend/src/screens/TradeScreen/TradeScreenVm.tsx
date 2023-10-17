@@ -65,8 +65,8 @@ class TradeScreenVm {
 
 	setMarketPrice = () => {
 		const { orderbook } = this.rootStore.ordersStore;
-		const buyPrice = BN.parseUnits(orderbook.buy[0].price, this.token1.decimals);
-		const sellPrice = BN.parseUnits(orderbook.sell[0].price, this.token1.decimals);
+		const buyPrice = orderbook.buy.length > 0 ? BN.parseUnits(orderbook.buy[0].price, this.token1.decimals) : BN.ZERO;
+		const sellPrice = orderbook.sell.length > 0 ? BN.parseUnits(orderbook.sell[0].price, this.token1.decimals) : BN.ZERO;
 		this.setBuyPrice(sellPrice);
 		this.setSellPrice(buyPrice);
 	};

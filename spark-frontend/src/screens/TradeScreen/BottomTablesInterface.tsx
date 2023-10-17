@@ -5,6 +5,11 @@ import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import dayjs from "dayjs";
+import { useTheme } from "@emotion/react";
+import Text from "@components/Text";
+import Chip from "@src/components/Chip";
+import Button from "@src/components/Button";
 
 interface IProps {}
 
@@ -18,10 +23,9 @@ const Root = styled.div`
 	max-height: 190px;
 	overflow: hidden;
 	border-radius: 10px;
-	//border: 1px solid #fff;
 `;
 
-const Title = styled.div`
+const Title = styled(Text)`
 	${TEXT_TYPES_MAP[TEXT_TYPES.BODY_SMALL]}
 	color: ${({ theme }) => theme.colors.gray2};
 	flex: 1;
@@ -33,10 +37,11 @@ const TitleRow = styled(Row)`
 	align-items: center;
 	padding: 0 12px;
 `;
-const TableText = styled.div`
+const TableText = styled(Text)`
 	${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
-	color: ${({ theme }) => theme.colors.white};
 	flex: 1;
+	display: flex;
+	align-items: center;
 `;
 
 const TableRow = styled(Row)`
@@ -53,9 +58,17 @@ const Body = styled(Column)`
 	width: 100%;
 `;
 
+const StyledButton = styled(Button)`
+	font-size: 8px;
+	height: 18px;
+	padding: 0 8px;
+`;
+
 const BottomTablesInterface: React.FC<IProps> = observer(() => {
 	const { ordersStore } = useStores();
+	const theme = useTheme();
 	const vm = useTradeScreenVM();
+
 	return (
 		<Root>
 			<TitleRow>
@@ -69,21 +82,33 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 				<Title>Action</Title>
 			</TitleRow>
 			<Body>
-				{ordersStore.myOrders.map((order) => (
-					<TableRow key={order.id}>
-						{/*<div style={{flex: 1}}>{order.timestamp}</div>*/}
-						<TableText>-</TableText>
-						<TableText>{order.market}</TableText>
-						<TableText>{order.type}</TableText>
-						<TableText>{order.price.toFixed(2)}</TableText>
-						<TableText>{order.amount}</TableText>
-						<TableText>{order.total}</TableText>
-						<TableText>{order.status}</TableText>
-						<TableText>
-							{order.status === "Active" && <button onClick={() => vm.cancelOrder(order.id)}>Cancel</button>}
-						</TableText>
-					</TableRow>
-				))}
+				{ordersStore.myOrders
+					.slice()
+					.sort((order) => -order.timestamp)
+					.map((order) => (
+						<TableRow key={order.id}>
+							<TableText>{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}</TableText>
+							<TableText>{order.market}</TableText>
+							<TableText color={order.type === "SELL" ? theme.colors.red : theme.colors.green}>{order.type}</TableText>
+							<TableText>{order.price.toFixed(2)}</TableText>
+							<TableText>
+								{order.amount}
+								<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>
+							</TableText>
+							<TableText>
+								{order.total}
+								<Chip>{order.type === "SELL" ? vm.token1.symbol : vm.token0.symbol}</Chip>
+							</TableText>
+							<TableText>{order.status}</TableText>
+							<TableText>
+								{order.status === "Active" && (
+									<StyledButton secondary fitContent onClick={() => vm.cancelOrder(order.id)}>
+										Cancel
+									</StyledButton>
+								)}
+							</TableText>
+						</TableRow>
+					))}
 			</Body>
 		</Root>
 	);

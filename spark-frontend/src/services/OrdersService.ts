@@ -33,7 +33,7 @@ export class Order {
 	owner: string;
 	id: string;
 	orderId: number;
-	timestamp: string;
+	timestamp: number;
 	matcher_fee: BN;
 	matcher_fee_used: BN;
 	type: "SELL" | "BUY";
@@ -51,7 +51,7 @@ export class Order {
 		this.fulfilled0 = new BN(orderOutput.fulfilled0.toString());
 		this.fulfilled1 = new BN(orderOutput.fulfilled1.toString());
 		this.owner = orderOutput.owner;
-		this.timestamp = orderOutput.timestamp.toString();
+		this.timestamp = orderOutput.timestamp;
 		this.matcher_fee = new BN(orderOutput.matcher_fee.toString());
 		this.matcher_fee_used = new BN(orderOutput.matcher_fee_used.toString());
 		this.type = orderOutput.type;

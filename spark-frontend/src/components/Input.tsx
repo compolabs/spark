@@ -1,5 +1,6 @@
 import styled from "@emotion/styled";
 import React, { ChangeEvent } from "react";
+import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 interface IProps
 	extends Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "onChange"> {
@@ -19,13 +20,7 @@ const Root = styled.div`
 
 		color: ${({ theme }) => theme.colors.gray1};
 
-		font-family: JetBrains Mono;
-		font-size: 12px;
-		font-style: normal;
-		font-weight: 500;
-		line-height: normal;
-		letter-spacing: 0.6px;
-
+		${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_MEDIUM]}
 		::placeholder {
 			color: ${({ theme }) => theme.colors.gray1};
 		}

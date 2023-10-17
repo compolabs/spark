@@ -52,9 +52,9 @@ const TVChartContainer = () => {
 			"paneProperties.background": "#050505",
 			"paneProperties.backgroundType": "solid",
 			"scalesProperties.lineColor": "#FFFFFD",
-			"scalesProperties.textColor": "#FFFFFD"
+			"scalesProperties.textColor": "#FFFFFD",
 		},
-		custom_css_url: "src/screens/Trade/Chart/tw-styles.css"
+		custom_css_url: "src/screens/Trade/Chart/tw-styles.css",
 	};
 	const { location } = window;
 	useEffect(() => {
@@ -70,6 +70,7 @@ const TVChartContainer = () => {
 
 			locale: getLanguageFromURL() || "en",
 			disabled_features: [
+				"symbol_info",
 				"use_localstorage_for_settings",
 				"header_widget",
 				"header_symbol_search",
@@ -82,7 +83,7 @@ const TVChartContainer = () => {
 				"header_fullscreen_button",
 				"left_toolbar",
 				"control_bar",
-				"timeframes_toolbar"
+				"timeframes_toolbar",
 			],
 			enabled_features: ["study_templates"],
 			// charts_storage_url: defaultProps.chartsStorageUrl,
@@ -94,7 +95,7 @@ const TVChartContainer = () => {
 			studies_overrides: defaultProps.studiesOverrides,
 			overrides: defaultProps.overrides,
 			theme: "dark",
-			custom_css_url: `${location.origin}/tw-chart-styles.css`
+			custom_css_url: `${location.origin}/tw-chart-styles.css`,
 		};
 
 		const tvWidget = new widget(widgetOptions);
