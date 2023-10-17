@@ -2,12 +2,13 @@ import styled from "@emotion/styled";
 import React, { useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import BN from "@src/utils/BN";
+import BigNumberInput from "./BigNumberInput";
+import AmountInput from "./AmountInput";
 import _ from "lodash";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import Text, {TEXT_TYPES, TEXT_TYPES_MAP} from "@components/Text";
 import SizedBox from "@components/SizedBox";
-import { FormattedInput } from "./FormattedInput";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useTheme } from "@emotion/react";
+import {TOKENS_BY_ASSET_ID} from "@src/constants";
 
 interface IProps {
 	assetId: string;
@@ -40,7 +41,7 @@ const InputContainer = styled.div<{
 	justify-content: center;
 	align-items: center;
 	padding: 8px;
-	height: 30px;
+	height: 32px;
 	width: 100%;
 	cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
 
@@ -83,10 +84,10 @@ const TokenInput: React.FC<IProps> = (props) => {
 		props.amount && setAmount(props.amount);
 	}, [props.amount]);
 
-	const handleChangeAmount = (e: any) => {
-		const value = BN.parseUnits(e.target.value, props.decimals);
-		setAmount(value);
-		debounce(value);
+	const handleChangeAmount = (v: BN) => {
+		if (props.disabled) return;
+		setAmount(v);
+		debounce(v);
 	};
 	//eslint-disable-next-line react-hooks/exhaustive-deps
 	const debounce = useCallback(
@@ -106,21 +107,33 @@ const TokenInput: React.FC<IProps> = (props) => {
 					<SizedBox height={4} />
 				</>
 			)}
-			<InputContainer focused={focused} readOnly={!props.setAmount} error={props.error} disabled={props.disabled}>
-				<FormattedInput
-					placeholder="0.00"
+			<InputContainer focused={focused} readOnly={!props.setAmount}>
+				<BigNumberInput
+					renderInput={(props, ref) => (
+						<AmountInput
+							{...props}
+							onFocus={(e) => {
+								props.onFocus && props.onFocus(e);
+								!props.readOnly && setFocused(true);
+							}}
+							onBlur={(e) => {
+								props.onBlur && props.onBlur(e);
+								setFocused(false);
+							}}
+							ref={ref}
+						/>
+					)}
+					autofocus={focused}
 					decimals={props.decimals}
-					formatSeparator=","
-					value={BN.formatUnits(amount, props.decimals).toString()}
+					value={amount}
 					onChange={handleChangeAmount}
-					autoFocus={focused}
-					onFocus={() => setFocused(true)}
-					onBlur={() => setFocused(false)}
+					placeholder="0.00"
 					readOnly={!props.setAmount}
 					disabled={props.disabled}
 				/>
 				<Symbol disabled={props.disabled}>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Symbol>
 			</InputContainer>
+			<SizedBox height={2} />
 			{props.error && (
 				<>
 					<SizedBox width={4} />
