@@ -13,11 +13,11 @@ const Root = styled.div`
 	display: flex;
 	align-items: center;
 	box-sizing: border-box;
-	//border: 1px solid #fff;
 	height: 50px;
 	width: 100%;
 	background: ${({ theme }) => theme.colors.gray4};
 	border-radius: 10px;
+	flex-shrink: 0;
 `;
 
 const MarketSelect = styled.div`
@@ -35,7 +35,6 @@ const MarketStatistics = styled.div`
 	align-items: center;
 	justify-content: space-between;
 	padding: 0 16px;
-	//border-left: 1px solid #fff;
 	flex: 7;
 	box-sizing: border-box;
 	width: 100%;
@@ -47,11 +46,12 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
 		<Root>
 			<MarketSelect>
 				<Row alignItems="center">
-					<img style={{ borderRadius: "50%", width: 24, height: 24 }} src={TOKENS_BY_SYMBOL.UNI.logo} alt="btc" />
+					<img style={{ width: 24, height: 24 }} src={TOKENS_BY_SYMBOL.UNI.logo} alt="btc" />
+					<img style={{ width: 24, height: 24, marginLeft: -8 }} src={TOKENS_BY_SYMBOL.USDC.logo} alt="btc" />
 					<SizedBox width={8} />
 					<Text type={TEXT_TYPES.H1}>UNI / USDC</Text>
 				</Row>
-				<h4 style={{ transform: "rotate(90deg)" }}>{">"}</h4>
+				{/*<h4 style={{ transform: "rotate(90deg)" }}>{">"}</h4>*/}
 			</MarketSelect>
 			<SizedBox width={1} height={32} style={{ background: theme.colors.gray5 }} />
 			<MarketStatistics>

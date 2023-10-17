@@ -13,6 +13,7 @@ const Root = styled.div`
 	box-sizing: border-box;
 	padding: 16px;
 	flex: 2;
+	max-width: 280px;
 	height: 100%;
 	border-radius: 10px;
 	background: ${({ theme }) => theme.colors.gray4};

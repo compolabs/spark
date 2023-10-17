@@ -24,7 +24,7 @@ const Root = styled.div`
 	height: 46px;
 	padding: 0 16px;
 	box-sizing: border-box;
-	//border: 1px solid white;
+	flex-shrink: 0;
 
 	* {
 		text-decoration: none;
@@ -72,11 +72,10 @@ type TMenuItem = {
 const menuItems: Array<TMenuItem> = [
 	{ title: "DASHBOARD" },
 	{ title: "TRADE", route: ROUTES.ROOT },
-	// {title: "EARN"},
+	{ title: "EARN" },
 	{ title: "FAUCET", link: "https://app.swaylend.com/#/faucet" },
-	{ title: "UIKIT", route: ROUTES.UI },
-	// {title: "DOCS",},
-	{ title: "GITHUB", link: "https://github.com/compolabs/spark" }
+	{ title: "DOCS" },
+	{ title: "GITHUB", link: "https://github.com/compolabs/spark" },
 	// {title: "MORE", route: ROUTES.ROOT},
 ];
 

@@ -51,7 +51,7 @@ const Option = styled.div<{ active?: boolean }>`
 	white-space: nowrap;
 
 	:hover {
-		color: #fff; //fixme
+		color: #fffffd;
 	}
 `;
 
@@ -69,7 +69,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 			config={{
 				placement: "bottom-start",
 				trigger: "click",
-				onVisibleChange: setFocused
+				onVisibleChange: setFocused,
 			}}
 			content={
 				<Column crossAxisSize="max">

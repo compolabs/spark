@@ -18,6 +18,7 @@ const Root = styled.div`
 	box-sizing: border-box;
 	padding: 16px;
 	flex: 2;
+	max-width: 280px;
 	height: 100%;
 	border-radius: 10px;
 	background: ${({ theme }) => theme.colors.gray4};
@@ -27,7 +28,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 	const vm = useTradeScreenVM();
 	const orderTypes = [
 		{ title: "Spot market", key: "market" },
-		{ title: "Perps", key: "perps" }
+		{ title: "Perps", key: "perps" },
 	];
 
 	return (
