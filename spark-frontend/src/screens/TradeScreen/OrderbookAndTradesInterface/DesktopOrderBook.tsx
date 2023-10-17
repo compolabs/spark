@@ -84,9 +84,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	const [orderFilter] = useState(0);
 	const theme = useTheme();
 	const [squareRef, { height: orderBookHeight }] = useElementSize();
-	const amountOfOrders = new BN(orderBookHeight).div(22).toFixed(0);
+	const amountOfOrders = new BN(orderBookHeight).minus(48).div(19).toFixed(0);
 	const oneSizeOrders = new BN(amountOfOrders).div(2).toFixed(0);
-	// console.log("amountOfOrders", amountOfOrders.toString(), orderBookHeight);
 
 	const buyOrders = ordersStore.orderbook.buy
 		.slice()
@@ -123,7 +122,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 		);
 	else
 		return (
-			<Root ref={squareRef}>
+			<Root>
 				<Columns noHover>
 					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "left" }}>
 						Amount {vm.token0.symbol}
@@ -137,7 +136,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 				</Columns>
 				{/*<Divider />*/}
 				<SizedBox height={8} />
-				<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
+				<Container ref={squareRef} fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
 					{!ordersStore.initialized ? (
 						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
 					) : (
@@ -189,14 +188,19 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 								<Skeleton height={20} />
 							</>
 						) : (
-							<Row>
-								<div>{vm.latestTrade?.priceFormatter}</div>
-								{/*todo add spread calc*/}
-								{/*<Text*/}
-								{/*  textAlign="right"*/}
-								{/*  type="secondary"*/}
-								{/*  size="small"*/}
-								{/*>{`SPREAD ${spread} %`}</Text>*/}
+							<Row style={{ paddingLeft: 14 }} alignItems="center">
+								<Text type={TEXT_TYPES.NUMBER_MEDIUM} color={theme.colors.gray1}>
+									SPREAD
+								</Text>
+								<SizedBox width={12} />
+								<Text>{ordersStore.spreadPrice?.toString()}</Text>
+								<SizedBox width={12} />
+								<Text
+									type={TEXT_TYPES.NUMBER_SMALL}
+									color={+ordersStore.spreadPercent > 0 ? theme.colors.green : theme.colors.error}
+								>
+									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}) %`}
+								</Text>
 							</Row>
 						)}
 					</Row>
@@ -218,7 +222,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 											const price = BN.parseUnits(o.price, vm.token1.decimals);
 											vm.setIsSell(true);
 											vm.setSellPrice(price, true);
-											// vm.setBuyAmount(new BN(o.amount), true);
 											vm.setBuyPrice(BN.ZERO, true);
 											vm.setBuyAmount(BN.ZERO, true);
 											vm.setBuyTotal(BN.ZERO, true);

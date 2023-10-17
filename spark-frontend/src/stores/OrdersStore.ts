@@ -1,6 +1,7 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction } from "mobx";
 import { getOrderbook, Order } from "@src/services/OrdersService";
+import BN from "@src/utils/BN";
 
 class OrdersStore {
 	public readonly rootStore: RootStore;
@@ -27,6 +28,19 @@ class OrdersStore {
 				this.setMyOrders(res.myOrders);
 			})
 			.catch(console.error);
+
+	get spreadPercent(): string {
+		const minBuyPriceOrder = this.orderbook.buy.reduce((acc, val) => (acc.price < val.price ? acc : val));
+		const minSellPriceOrder = this.orderbook.sell.reduce((acc, val) => (acc.price < val.price ? acc : val));
+		//(Ask Price – Bid Price) ÷ Ask Price
+		return new BN(minBuyPriceOrder.price).minus(minSellPriceOrder.price).div(minBuyPriceOrder.price).toFixed(2);
+	}
+
+	get spreadPrice(): string {
+		const minBuyPriceOrder = this.orderbook.buy.reduce((acc, val) => (acc.price < val.price ? acc : val));
+		const minSellPriceOrder = this.orderbook.sell.reduce((acc, val) => (acc.price < val.price ? acc : val));
+		return new BN(minBuyPriceOrder.price).minus(minSellPriceOrder.price).toFixed(2);
+	}
 }
 
 export default OrdersStore;
