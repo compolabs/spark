@@ -1,10 +1,14 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { Row } from "@components/Flex";
+import Chip from "@components/Chip";
+import { useTheme } from "@emotion/react";
+import dayjs from "dayjs";
+import axios from "axios";
 
 interface IProps {}
 
@@ -34,6 +38,7 @@ const Divider = styled.div`
 
 const StatusBar: React.FC<IProps> = observer(() => {
 	const { accountStore } = useStores();
+	const theme = useTheme();
 	return (
 		<Root>
 			<Row alignItems="center" mainAxisSize="fit-content">
@@ -50,7 +55,17 @@ const StatusBar: React.FC<IProps> = observer(() => {
 			<Divider />
 			<Text type={TEXT_TYPES.BODY_SMALL}>XX,XXX TPS</Text>
 			<Divider />
-			<Text type={TEXT_TYPES.BODY_SMALL}>Average Gas Prices: SPOT: X,XXXX€ PERP: X,XXXX€</Text>
+			<Text type={TEXT_TYPES.BODY_SMALL}>Average Gas Prices:</Text>
+			<SizedBox width={4} />
+			<Chip>
+				SPOT:&nbsp;
+				<div style={{ color: theme.colors.white }}>X,XXXX€</div>
+			</Chip>
+			<SizedBox width={8} />
+			<Chip>
+				PERP:&nbsp;
+				<div style={{ color: theme.colors.white }}>X,XXXX€</div>
+			</Chip>
 		</Root>
 	);
 });

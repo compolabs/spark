@@ -26,7 +26,7 @@ const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 				<Button outline={!isOrderbook} onClick={() => setIsOrderbook(true)}>
 					Orderbook
 				</Button>
-				<Button outline={isOrderbook} onClick={() => setIsOrderbook(false)}>
+				<Button disabled outline={isOrderbook} onClick={() => setIsOrderbook(false)}>
 					Trades
 				</Button>
 			</ButtonGroup>

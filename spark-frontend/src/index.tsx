@@ -41,7 +41,7 @@ root.render(
 					pauseOnFocusLoss
 					draggable
 					pauseOnHover
-					theme="colored"
+					theme="dark"
 				/>
 				<GlobalStyles />
 			</ThemeWrapper>

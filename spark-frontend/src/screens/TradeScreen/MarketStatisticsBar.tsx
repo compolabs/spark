@@ -1,11 +1,16 @@
 import styled from "@emotion/styled";
 import { Column, Row } from "@src/components/Flex";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { TOKENS_BY_SYMBOL } from "@src/constants";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
 import Button from "@components/Button";
+import dayjs from "dayjs";
+import axios from "axios";
+import BN from "@src/utils/BN";
+import { observer } from "mobx-react";
+import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 
 interface IProps {}
 
@@ -41,8 +46,45 @@ const MarketStatistics = styled.div`
 	width: 100%;
 `;
 
-const MarketStatisticsBar: React.FC<IProps> = () => {
+interface IState {
+	price?: BN;
+	priceChange?: BN;
+	high?: BN;
+	low?: BN;
+	volumeAsset0?: BN;
+	volumeAsset1?: BN;
+}
+
+const MarketStatisticsBar: React.FC<IProps> = observer(() => {
+	const vm = useTradeScreenVM();
 	const theme = useTheme();
+	let [state, setState] = useState<IState>({});
+	useEffect(() => {
+		const to = dayjs().unix();
+		const from = to - 60 * 60 * 24 * 2;
+		const req = `https://spark-tv-datafeed.spark-defi.com/api/v1/history?symbol=UNI%2FUSDC&resolution=1D&from=${from}&to=${to}&countback=2&currencyCode=USDC`;
+		axios
+			.get(req)
+			.then((res) => res.data)
+			.then((v) => {
+				console.log(v);
+				return v;
+			})
+			.then(
+				(data) =>
+					data.c[0] &&
+					data.c[1] &&
+					setState({
+						price: new BN(data.c[1]),
+						priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
+						high: new BN(data.h[1]),
+						low: new BN(data.l[1]),
+						//fixme
+						volumeAsset1: BN.formatUnits(data.v[1] * data.c[1], 9), //data.c[1] = price of USDC
+						volumeAsset0: BN.formatUnits(data.v[1] * 1, 9), //1 = price of USDC
+					}),
+			);
+	}, []);
 	return (
 		<Root>
 			<MarketSelect>
@@ -58,9 +100,14 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
 			<MarketStatistics>
 				<Row alignItems="center">
 					<Column alignItems="flex-end">
-						<Text type={TEXT_TYPES.NUMBER_LARGE}>$ 25 000,00</Text>
-						<Text type={TEXT_TYPES.NUMBER_SMALL} color={theme.colors.green}>
-							+2.22 %
+						<Text type={TEXT_TYPES.NUMBER_LARGE}>
+							{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
+						</Text>
+						<Text
+							type={TEXT_TYPES.NUMBER_SMALL}
+							color={state.priceChange?.isPositive() ? theme.colors.green : theme.colors.red}
+						>
+							{state.priceChange?.toFormat(2) ?? "-"}&nbsp;%
 						</Text>
 					</Column>
 					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
@@ -69,7 +116,9 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
 							24h High
 						</Text>
 						<SizedBox height={4} />
-						<Text type={TEXT_TYPES.NUMBER_SMALL}>$ 25 500,00</Text>
+						<Text type={TEXT_TYPES.NUMBER_SMALL}>
+							{state.high?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
+						</Text>
 					</Column>
 					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />{" "}
 					<Column>
@@ -77,23 +126,25 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
 							24h Low
 						</Text>
 						<SizedBox height={4} />
-						<Text type={TEXT_TYPES.NUMBER_SMALL}>$ 24 500,00</Text>
+						<Text type={TEXT_TYPES.NUMBER_SMALL}>
+							{state.low?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
+						</Text>
 					</Column>
 					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
 					<Column>
 						<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
-							Volume (USDC)
+							Volume 24h (USDC)
 						</Text>
 						<SizedBox height={4} />
-						<Text type={TEXT_TYPES.NUMBER_SMALL}>250,000k</Text>
+						<Text type={TEXT_TYPES.NUMBER_SMALL}>{state.volumeAsset1?.toFormat(2) ?? "-"}</Text>
 					</Column>{" "}
 					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
 					<Column>
 						<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
-							Volume (UNI)
+							Volume 24h (UNI)
 						</Text>
 						<SizedBox height={4} />
-						<Text type={TEXT_TYPES.NUMBER_SMALL}>50,000k</Text>
+						<Text type={TEXT_TYPES.NUMBER_SMALL}>{state.volumeAsset0?.toFormat(2) ?? "-"}</Text>
 					</Column>
 				</Row>
 				<Button fitContent outline disabled>
@@ -102,5 +153,5 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
 			</MarketStatistics>
 		</Root>
 	);
-};
+});
 export default MarketStatisticsBar;

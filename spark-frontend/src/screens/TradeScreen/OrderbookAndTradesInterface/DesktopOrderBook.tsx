@@ -66,7 +66,16 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 	}
 
 	color: ${({ type, theme }) => (type === "buy" ? theme.colors.green : theme.colors.red)};
+
 	${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_SMALL]}
+	& > :last-of-type {
+		text-align: right;
+	}
+
+	& > * {
+		flex: 1;
+		text-align: left;
+	}
 `;
 const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	display: flex;
@@ -162,12 +171,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 											vm.setSellTotal(BN.ZERO, true);
 										}}
 									>
-										<div style={{ textAlign: "center" }} color={theme.colors.white}>
-											{o.amountLeft}
-										</div>
-										<div style={{ textAlign: "right" }} color={theme.colors.white}>
-											{o.totalLeft}
-										</div>
+										<div color={theme.colors.white}>{o.amountLeft}</div>
+										<div color={theme.colors.white}>{o.totalLeft}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
@@ -227,8 +232,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 										type="buy"
 										key={index + "positive"}
 									>
-										<div style={{ textAlign: "center" }}>{o.totalLeft}</div>
-										<div style={{ textAlign: "right" }}>{o.amountLeft}</div>
+										<div>{o.totalLeft}</div>
+										<div>{o.amountLeft}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>

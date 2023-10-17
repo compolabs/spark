@@ -24,7 +24,7 @@ export enum TEXT_TYPES {
 
 	NUMBER_LARGE,
 	NUMBER_MEDIUM,
-	NUMBER_SMALL
+	NUMBER_SMALL,
 }
 
 interface IProps {
@@ -129,10 +129,11 @@ export const TEXT_TYPES_MAP = {
 
 	[TEXT_TYPES.NUMBER_LARGE]: numberLargeStyle,
 	[TEXT_TYPES.NUMBER_MEDIUM]: numberMediumStyle,
-	[TEXT_TYPES.NUMBER_SMALL]: numberSmallStyle
+	[TEXT_TYPES.NUMBER_SMALL]: numberSmallStyle,
 };
 
 const Text = styled.div<IProps>`
+	cursor: default;
 	color: ${({ color, theme }) => color ?? theme.colors.white};
 	${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM])}
 `;
