@@ -1,21 +1,15 @@
 import styled from "@emotion/styled";
 import React, { HTMLAttributes, useState } from "react";
 import { observer } from "mobx-react-lite";
-// import sell from "@src/assets/icons/sellOrderBookIcon.svg";
-// import buy from "@src/assets/icons/buyOrderBookIcon.svg";
-// import sellAndBuy from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
-// import Divider from "@src/components/Divider";
 import SizedBox from "@components/SizedBox";
-// import Text from "@components/Text";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import Skeleton from "react-loading-skeleton";
 import { Row } from "@src/components/Flex";
-// import Select from "@src/components/Select";
-// import NoData from "@components/NoData";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useTheme } from "@emotion/react";
+import useElementSize from "@src/utils/useElementSize";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -23,19 +17,8 @@ const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 	grid-area: orderbook;
+	height: 100%;
 `;
-
-// const Settings = styled.div`
-// 	display: flex;
-// 	flex-direction: row;
-// 	align-items: center;
-// 	width: 100%;
-// `;
-// const Icon = styled.img<{ selected?: boolean }>`
-// 	cursor: pointer;
-// 	margin-right: 8px;
-// 	${({ selected }) => selected && "background: #3A4050; border-radius: 4px;"};
-// `;
 const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
@@ -89,18 +72,17 @@ const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	${({ fitContent }) => !fitContent && "height: 100%;"};
 	${({ reverse }) => reverse && "flex-direction: column-reverse;"};
 `;
-// const roundOptions = [2, 4, 5, 6].map((v) => ({
-// 	title: `${v} decimals`,
-// 	key: v.toString()
-// }));
-// const filters = [sellAndBuy, sell, buy];
 
 const DesktopOrderBook: React.FC<IProps> = () => {
 	const vm = useTradeScreenVM();
-	const [round, setRound] = useState("2");
+	const [round] = useState("2");
 	const { ordersStore } = useStores();
-	const [orderFilter, setOrderFilter] = useState(0);
+	const [orderFilter] = useState(0);
 	const theme = useTheme();
+	const [squareRef, { height: orderBookHeight }] = useElementSize();
+	const amountOfOrders = new BN(orderBookHeight).div(20).toFixed(0);
+	const oneSizeOrders = new BN(amountOfOrders).div(2).toFixed(0);
+	// console.log("amountOfOrders", amountOfOrders.toString(), orderBookHeight);
 
 	const buyOrders = ordersStore.orderbook.buy
 		.slice()
@@ -111,7 +93,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			return a.price < b.price ? 1 : -1;
 		})
 		.reverse()
-		.slice(orderFilter === 0 ? -15 : -35)
+		// .slice(orderFilter === 0 ? -15 : -35)
+		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders)
 		.reverse();
 	const sellOrders = ordersStore.orderbook.sell
 		.slice()
@@ -121,7 +104,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			if (a.price == null && b.price == null) return -1;
 			return a.price < b.price ? 1 : -1;
 		})
-		.slice(orderFilter === 0 ? -15 : -35);
+		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
 	const columns = [`Price ${vm.token1.symbol}`, `Amount ${vm.token0.symbol}`, `Total ${vm.token1.symbol}`];
 
 	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
@@ -129,7 +112,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			<Root
 				style={{
 					alignItems: "center",
-					justifyContent: "center"
+					justifyContent: "center",
 				}}
 			>
 				No orders for this pair
@@ -137,27 +120,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 		);
 	else
 		return (
-			<Root>
-				{/*<Row justifyContent="space-between" alignItems="center">*/}
-				{/*  <Settings>*/}
-				{/*    {filters.map((image, index) => (*/}
-				{/*      <Icon*/}
-				{/*        key={index}*/}
-				{/*        src={image}*/}
-				{/*        alt="filter"*/}
-				{/*        selected={orderFilter === index}*/}
-				{/*        onClick={() => ordersStore.initialized && setOrderFilter(index)}*/}
-				{/*      />*/}
-				{/*    ))}*/}
-				{/*  </Settings>*/}
-				{/*  <Select*/}
-				{/*    options={roundOptions}*/}
-				{/*    selected={roundOptions.find(({ key }) => key === round)}*/}
-				{/*    onSelect={({ key }) => setRound(key)}*/}
-				{/*  />*/}
-				{/*</Row>*/}
-				{/*<SizedBox height={8} />*/}
-				{/*<Divider />*/}
+			<Root ref={squareRef}>
 				<Columns noHover>
 					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "left" }}>
 						{columns[0]}
@@ -176,7 +139,9 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
 					) : (
 						<>
-							{orderFilter === 0 && <Plug length={sellOrders.length < 15 ? 14 - sellOrders.length : 0} />}
+							{orderFilter === 0 && (
+								<Plug length={sellOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - sellOrders.length : 0} />
+							)}
 							{orderFilter !== 2 &&
 								sellOrders.map((o, index) => (
 									//Todo add hover
@@ -267,7 +232,9 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 										<span className="progress-bar" />
 									</OrderRow>
 								))}
-							{orderFilter === 0 && <Plug length={buyOrders.length < 15 ? 14 - buyOrders.length : 0} />}
+							{orderFilter === 0 && (
+								<Plug length={buyOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - buyOrders.length : 0} />
+							)}
 						</>
 					)}
 				</Container>
@@ -279,8 +246,10 @@ export default observer(DesktopOrderBook);
 const Plug: React.FC<{ length: number }> = ({ length }) => (
 	<>
 		{Array.from({ length }).map((_, index) => (
-			<Row style={{ marginBottom: 1, height: 18 }} key={index + "positive-plug"}>
-				<Text type={TEXT_TYPES.NUMBER_SMALL}>---</Text>
+			<Row style={{ marginBottom: 1, height: 18 }} key={index + "positive-plug"} justifyContent="space-between">
+				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
+				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
+				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
 			</Row>
 		))}
 	</>
