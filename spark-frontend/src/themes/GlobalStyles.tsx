@@ -1,13 +1,10 @@
 import React from "react";
-import { css, Global, useTheme } from "@emotion/react";
+import { Global } from "@emotion/react";
 
-const globalStyles = (theme: any) => `
-// PUT GLOBAL STYLED HERE
-`;
+// const globalModalStyles = (theme: any) => ``;
 
 const GlobalStyles: React.FC = () => {
-	const theme = useTheme();
-	return <Global styles={css(globalStyles(theme))} />;
+	return <Global styles={{}} />;
 };
 
 export default GlobalStyles;

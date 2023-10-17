@@ -1,22 +1,20 @@
 import React from "react";
-import { Theme, ThemeProvider } from "@emotion/react";
+import { ThemeProvider } from "@emotion/react";
 
+import darkTheme from "@src/themes/darkTheme";
 import { useStores } from "@stores";
-import { darkThemeColors } from "@src/themes/colors";
 import { observer } from "mobx-react";
 
 export enum THEME_TYPE {
-	// LIGHT_THEME = "lightTheme",
-	DARK_THEME = "darkTheme"
+	DARK_THEME = "darkTheme",
 }
 
 interface IProps {
 	children: React.ReactNode;
 }
 
-export const themes: { darkTheme: Theme } = {
-	darkTheme: { colors: darkThemeColors }
-	// lightTheme,
+export const themes = {
+	darkTheme,
 };
 //todo fix
 const ThemeWrapper: React.FC<IProps> = observer(({ children }) => {
