@@ -23,7 +23,7 @@ const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	${({ noHover }) => !noHover && "cursor: pointer;"};
-
+	padding: 0 18px;
 	text-align: center;
 
 	p:last-of-type {
@@ -46,17 +46,21 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 	width: 100%;
 	justify-content: space-between;
 	align-items: center;
+	padding: 0 18px;
+	box-sizing: border-box;
+	background: transparent;
+	transition: 0.4s;
 
 	&:hover {
-		background: #2d2d2d;
+		background: ${({ type }) => (type === "buy" ? "rgba(0,255,152,0.2)" : "rgba(253,10,83,0.2)")}; //fixme
 	}
 
 	.progress-bar {
 		position: absolute;
-		right: 0;
+		left: 0;
 		top: 0;
 		bottom: 0;
-		background: ${({ type }) => (type === "buy" ? "rgba(0,255,152,0.1)" : "rgba(253,10,83,0.1)")};
+		background: ${({ type }) => (type === "buy" ? "rgba(0,255,152,0.1)" : "rgba(253,10,83,0.1)")}; //fixme
 		transition: all 0.3s;
 		width: ${({ percent }) => (percent != null ? `${percent}%` : `0%`)};
 	}
@@ -80,7 +84,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	const [orderFilter] = useState(0);
 	const theme = useTheme();
 	const [squareRef, { height: orderBookHeight }] = useElementSize();
-	const amountOfOrders = new BN(orderBookHeight).div(20).toFixed(0);
+	const amountOfOrders = new BN(orderBookHeight).div(22).toFixed(0);
 	const oneSizeOrders = new BN(amountOfOrders).div(2).toFixed(0);
 	// console.log("amountOfOrders", amountOfOrders.toString(), orderBookHeight);
 
@@ -105,7 +109,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			return a.price < b.price ? 1 : -1;
 		})
 		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
-	const columns = [`Price ${vm.token1.symbol}`, `Amount ${vm.token0.symbol}`, `Total ${vm.token1.symbol}`];
 
 	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
 		return (
@@ -123,13 +126,13 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			<Root ref={squareRef}>
 				<Columns noHover>
 					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "left" }}>
-						{columns[0]}
+						Amount {vm.token0.symbol}
 					</Text>
 					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "center" }}>
-						{columns[1]}
+						Total {vm.token1.symbol}
 					</Text>
 					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "right" }}>
-						{columns[2]}
+						Price {vm.token1.symbol}
 					</Text>
 				</Columns>
 				{/*<Divider />*/}
@@ -159,12 +162,13 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 											vm.setSellTotal(BN.ZERO, true);
 										}}
 									>
-										<div>{new BN(o.price).toFormat(+round)}</div>
-										<div style={{ textAlign: "center" }}>
-											{/*Todo добавить плоосу закрытия*/}
+										<div style={{ textAlign: "center" }} color={theme.colors.white}>
 											{o.amountLeft}
 										</div>
-										<div style={{ textAlign: "right" }}>{o.totalLeft}</div>
+										<div style={{ textAlign: "right" }} color={theme.colors.white}>
+											{o.totalLeft}
+										</div>
+										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
 								))}
@@ -209,26 +213,23 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 						<>
 							{orderFilter !== 1 &&
 								buyOrders.map((o, index) => (
-									//Todo add hover
-									<OrderRow percent={+new BN(o.fullFillPercent).toFormat(0)} type="buy" key={index + "positive"}>
-										<div
-											onClick={() => {
-												const price = BN.parseUnits(o.price, vm.token1.decimals);
-												vm.setIsSell(true);
-												vm.setSellPrice(price, true);
-												// vm.setBuyAmount(new BN(o.amount), true);
-												vm.setBuyPrice(BN.ZERO, true);
-												vm.setBuyAmount(BN.ZERO, true);
-												vm.setBuyTotal(BN.ZERO, true);
-											}}
-										>
-											{new BN(o.price).toFormat(+round)}
-										</div>
-										<div>
-											{/*Todo добавить плоосу закрытия*/}
-											{o.totalLeft}
-										</div>
-										<div>{o.amountLeft}</div>
+									<OrderRow
+										onClick={() => {
+											const price = BN.parseUnits(o.price, vm.token1.decimals);
+											vm.setIsSell(true);
+											vm.setSellPrice(price, true);
+											// vm.setBuyAmount(new BN(o.amount), true);
+											vm.setBuyPrice(BN.ZERO, true);
+											vm.setBuyAmount(BN.ZERO, true);
+											vm.setBuyTotal(BN.ZERO, true);
+										}}
+										percent={+new BN(o.fullFillPercent).toFormat(0)}
+										type="buy"
+										key={index + "positive"}
+									>
+										<div style={{ textAlign: "center" }}>{o.totalLeft}</div>
+										<div style={{ textAlign: "right" }}>{o.amountLeft}</div>
+										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
 								))}
@@ -243,14 +244,26 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 };
 export default observer(DesktopOrderBook);
 
+const PlugRow = styled(Row)`
+	justify-content: space-between;
+	margin-bottom: 1px;
+	height: 18px;
+	padding: 0 18px;
+	box-sizing: border-box;
+
+	& > * {
+		color: ${({ theme }) => theme.colors.gray2};
+	}
+`;
+
 const Plug: React.FC<{ length: number }> = ({ length }) => (
 	<>
 		{Array.from({ length }).map((_, index) => (
-			<Row style={{ marginBottom: 1, height: 18 }} key={index + "positive-plug"} justifyContent="space-between">
+			<PlugRow key={index + "positive-plug"}>
 				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
 				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
 				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
-			</Row>
+			</PlugRow>
 		))}
 	</>
 );

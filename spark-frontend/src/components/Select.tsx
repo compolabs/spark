@@ -10,6 +10,7 @@ import { useTheme } from "@emotion/react";
 interface IOption {
 	key: string;
 	title: string;
+	disabled?: boolean;
 }
 
 interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
@@ -20,45 +21,55 @@ interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 }
 
 const Root = styled.div<{ focused?: boolean }>`
-	display: flex;
-	padding: 8px 10px;
-	border-radius: 4px;
-	background: ${({ theme }) => theme.colors.gray5};
-	border: 1px solid ${({ focused, theme }) => (focused ? theme.colors.gray1 : theme.colors.gray5)};
+  display: flex;
+  padding: 8px 10px;
+  border-radius: 4px;
+  background: ${({ theme }) => theme.colors.gray5};
+  border: 1px solid ${({ focused, theme }) => (focused ? theme.colors.gray1 : theme.colors.gray5)};
 
-	${TEXT_TYPES_MAP[TEXT_TYPES.BODY_LARGE]}
+  ${TEXT_TYPES_MAP[TEXT_TYPES.BODY_LARGE]} // color: ${({ theme, focused }) =>
+			focused ? theme.colors.white : theme.colors.gray1};
+  color: ${({ theme, focused }) => theme.colors.white};
+  align-items: center;
+  justify-content: space-between;
+  white-space: nowrap;
 
-	color: ${({ theme, focused }) => (focused ? theme.colors.white : theme.colors.gray1)};
-	align-items: center;
-	justify-content: space-between;
-	white-space: nowrap;
-
-	.menu-arrow {
-		transition: 0.4s;
-		transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(-180deg)")};
-	}
+  .menu-arrow {
+    transition: 0.4s;
+    transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(180deg)")};
+  }
+}
 `;
-const Option = styled.div<{ active?: boolean }>`
+const Option = styled.div<{ active?: boolean; disabled?: boolean }>`
 	${TEXT_TYPES_MAP[TEXT_TYPES.BODY_LARGE]}
-	width: 100%;
+	width: calc(100% + 32px);
 	display: flex;
-	cursor: pointer;
+	cursor: ${({ disabled }) => (!disabled ? "pointer" : "not-allowed")};
 	position: relative;
 	align-items: center;
-	color: ${({ active, theme }) => (active ? theme.colors.white : "#FFF")}; //fixme
+	color: ${({ active, theme, disabled }) =>
+		active ? theme.colors.white : !disabled ? theme.colors.white : theme.colors.gray2}; //fixme
 	padding: 8px 10px;
+	box-sizing: border-box;
 	margin: 0 -16px;
 	white-space: nowrap;
+	transition: 0.4s;
 
 	:hover {
-		color: #fffffd;
+		background: ${({ theme, disabled }) => (!disabled ? theme.colors.gray3 : "transparent")};
 	}
 `;
 
-const Wrap = styled.div`
+const Wrap = styled.div<{ focused?: boolean }>`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+
+	:hover {
+		.menu-arrow {
+			transform: ${({ focused }) => (focused ? "rotate(0)" : "rotate(90deg)")};
+		}
+	}
 `;
 
 const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
@@ -76,7 +87,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 					{options.map((v) => {
 						const active = selected?.key === v.key;
 						return (
-							<Option active={active} key={v.key + "_option"} onClick={() => onSelect(v)}>
+							<Option active={active} key={v.key + "_option"} onClick={() => onSelect(v)} disabled={v.disabled}>
 								{v.title}
 							</Option>
 						);
@@ -84,7 +95,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 				</Column>
 			}
 		>
-			<Wrap>
+			<Wrap focused={focused}>
 				<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
 					{label?.toUpperCase()}
 				</Text>

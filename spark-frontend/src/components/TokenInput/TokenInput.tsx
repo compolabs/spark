@@ -5,10 +5,11 @@ import BN from "@src/utils/BN";
 import BigNumberInput from "./BigNumberInput";
 import AmountInput from "./AmountInput";
 import _ from "lodash";
-import Text, {TEXT_TYPES, TEXT_TYPES_MAP} from "@components/Text";
+import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import { useTheme } from "@emotion/react";
-import {TOKENS_BY_ASSET_ID} from "@src/constants";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import Chip from "@components/Chip";
 
 interface IProps {
 	assetId: string;
@@ -64,18 +65,6 @@ const InputContainer = styled.div<{
 			})()};
 `;
 
-const Symbol = styled.div<{ disabled?: boolean }>`
-	display: flex;
-	padding: 4px 8px;
-	justify-content: center;
-	align-items: center;
-
-	color: ${({ theme }) => theme.colors.gray2};
-	background: ${({ disabled, theme }) => (disabled ? theme.colors.gray2 : theme.colors.gray4)};
-	text-align: center;
-	${TEXT_TYPES_MAP[TEXT_TYPES.LABEL]}
-	border-radius: 4px;
-`;
 const TokenInput: React.FC<IProps> = (props) => {
 	const [focused, setFocused] = useState(false);
 	const [amount, setAmount] = useState<BN>(props.amount);
@@ -94,7 +83,7 @@ const TokenInput: React.FC<IProps> = (props) => {
 		_.debounce((value: BN) => {
 			props.setAmount && props.setAmount(value);
 		}, 500),
-		[]
+		[],
 	);
 
 	return (
@@ -131,7 +120,7 @@ const TokenInput: React.FC<IProps> = (props) => {
 					readOnly={!props.setAmount}
 					disabled={props.disabled}
 				/>
-				<Symbol disabled={props.disabled}>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Symbol>
+				<Chip>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Chip>
 			</InputContainer>
 			<SizedBox height={2} />
 			{props.error && (

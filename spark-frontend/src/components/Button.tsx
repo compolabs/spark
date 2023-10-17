@@ -1,4 +1,3 @@
-import React, { PropsWithChildren } from "react";
 import styled from "@emotion/styled";
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
@@ -84,11 +83,10 @@ const Button = styled.button<{
 
 export default Button;
 
-interface IButtonGroupProps extends PropsWithChildren {}
-
-const ButtonGroupRoot = styled.div`
+export const ButtonGroup = styled.div`
 	display: flex;
 	width: 100%;
+	box-sizing: border-box;
 
 	& > button {
 		height: 44px;
@@ -104,7 +102,3 @@ const ButtonGroupRoot = styled.div`
 		border-radius: 0 10px 10px 0;
 	}
 `;
-
-export const ButtonGroup: React.FC<IButtonGroupProps> = ({ children }) => {
-	return <ButtonGroupRoot>{children}</ButtonGroupRoot>;
-};

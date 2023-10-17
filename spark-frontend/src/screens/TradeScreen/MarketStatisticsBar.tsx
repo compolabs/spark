@@ -27,6 +27,7 @@ const MarketSelect = styled.div`
 	padding: 0 16px;
 	box-sizing: border-box;
 	flex: 2;
+	max-width: 280px;
 	height: 100%;
 `;
 
@@ -62,28 +63,40 @@ const MarketStatisticsBar: React.FC<IProps> = () => {
 							+2.22 %
 						</Text>
 					</Column>
-					<SizedBox width={12} />
-					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5 }} />
-					<SizedBox width={12} />
+					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
 					<Column>
 						<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
-							Market price
+							24h High
 						</Text>
 						<SizedBox height={4} />
-						<Text type={TEXT_TYPES.NUMBER_SMALL}>$ 25 000,00</Text>
+						<Text type={TEXT_TYPES.NUMBER_SMALL}>$ 25 500,00</Text>
 					</Column>
-					<SizedBox width={12} />
-					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5 }} />
-					<SizedBox width={12} />
+					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />{" "}
 					<Column>
 						<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
-							Volume
+							24h Low
+						</Text>
+						<SizedBox height={4} />
+						<Text type={TEXT_TYPES.NUMBER_SMALL}>$ 24 500,00</Text>
+					</Column>
+					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
+					<Column>
+						<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
+							Volume (USDC)
 						</Text>
 						<SizedBox height={4} />
 						<Text type={TEXT_TYPES.NUMBER_SMALL}>250,000k</Text>
+					</Column>{" "}
+					<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
+					<Column>
+						<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
+							Volume (UNI)
+						</Text>
+						<SizedBox height={4} />
+						<Text type={TEXT_TYPES.NUMBER_SMALL}>50,000k</Text>
 					</Column>
 				</Row>
-				<Button fitContent outline>
+				<Button fitContent outline disabled>
 					SEE ALL MARKET DETAILS
 				</Button>
 			</MarketStatistics>

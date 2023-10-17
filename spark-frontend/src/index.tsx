@@ -1,7 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import "./index.css";
-import "normalize.css";
 import App from "./App";
 import { RootStore, storesContext } from "@stores";
 import { loadState, saveState } from "@src/utils/localStorage";
@@ -10,6 +8,10 @@ import { HashRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import ThemeWrapper from "@src/themes/ThemeProvider";
 import GlobalStyles from "@src/themes/GlobalStyles";
+// css
+import "react-toastify/dist/ReactToastify.css";
+import "./index.css";
+import "normalize.css";
 
 const initState = loadState();
 

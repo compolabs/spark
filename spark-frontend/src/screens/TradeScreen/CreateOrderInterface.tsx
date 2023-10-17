@@ -28,7 +28,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 	const vm = useTradeScreenVM();
 	const orderTypes = [
 		{ title: "Spot market", key: "market" },
-		{ title: "Perps", key: "perps" },
+		{ title: "Perpetual market", key: "perps", disabled: true },
 	];
 
 	return (

@@ -5,9 +5,6 @@ import { Route, Routes } from "react-router-dom";
 import { observer } from "mobx-react";
 import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
-// import design from "./design.png";
-// import Text, { TEXT_TYPES } from "@components/Text";
-// import SizedBox from "@components/SizedBox";
 
 const Root = styled(Column)`
 	width: 100%;
@@ -15,7 +12,7 @@ const Root = styled(Column)`
 	align-items: center;
 	background: ${({ theme }) => theme.colors.gray5};
 	height: 100vh;
-	overflow-y: hidden;
+	max-height: 100vh;
 `;
 
 const App: React.FC = observer(() => {

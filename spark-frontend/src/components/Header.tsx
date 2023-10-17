@@ -42,13 +42,14 @@ const MenuItem = styled.div<{ active?: boolean; disabled?: boolean }>`
 	cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
 	width: 100px;
 	text-align: center;
-	color: ${({ theme, active, disabled }) => (active && !disabled ? theme.colors.white : theme.colors.gray1)};
+	color: ${({ theme, active, disabled }) =>
+		active ? theme.colors.white : !disabled ? theme.colors.gray1 : theme.colors.gray2};
 	position: relative;
 	${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
 	transition: .4s;
 
 	:hover {
-		color: ${({ theme, disabled }) => (disabled ? theme.colors.gray1 : theme.colors.white)};
+		color: ${({ theme, disabled }) => (disabled ? theme.colors.gray2 : theme.colors.white)};
 	}
 
 	::after {
@@ -70,11 +71,11 @@ type TMenuItem = {
 	link?: string;
 };
 const menuItems: Array<TMenuItem> = [
-	{ title: "DASHBOARD" },
+	// { title: "DASHBOARD" },
 	{ title: "TRADE", route: ROUTES.ROOT },
-	{ title: "EARN" },
+	// { title: "EARN" },
 	{ title: "FAUCET", link: "https://app.swaylend.com/#/faucet" },
-	{ title: "DOCS" },
+	// { title: "DOCS" },
 	{ title: "GITHUB", link: "https://github.com/compolabs/spark" },
 	// {title: "MORE", route: ROUTES.ROOT},
 ];
@@ -120,15 +121,15 @@ const Header: React.FC<IProps> = observer(() => {
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<SizedBox width={10} />
-				<SettingsButton outline>
+				<SettingsButton outline disabled>
 					<GearIcon />
 				</SettingsButton>
 				<SizedBox width={10} />
-				<Button style={{ height: 32 }} outline fitContent>
+				<Button style={{ height: 32 }} outline fitContent disabled>
 					DEPOSIT/WITHDRAW
 				</Button>
 				<SizedBox width={10} />
-				<Button style={{ height: 32 }} outline fitContent>
+				<Button style={{ height: 32 }} outline fitContent disabled>
 					BRIDGE
 				</Button>
 				<SizedBox width={10} />
