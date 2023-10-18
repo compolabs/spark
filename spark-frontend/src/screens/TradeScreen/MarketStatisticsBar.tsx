@@ -63,6 +63,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		const to = dayjs().unix();
 		const from = to - 60 * 60 * 24 * 2;
 		const req = `https://spark-tv-datafeed.spark-defi.com/api/v1/history?symbol=UNI%2FUSDC&resolution=1D&from=${from}&to=${to}&countback=2&currencyCode=USDC`;
+		//fixme build that data based on trades
 		axios
 			.get(req)
 			.then((res) => res.data)
@@ -70,10 +71,8 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 				console.log(v);
 				return v;
 			})
-			.then(
-				(data) =>
-					data.c[0] &&
-					data.c[1] &&
+			.then((data) => {
+				if (data.h[1] != null && data.h[0] != null) {
 					setState({
 						price: new BN(data.c[1]),
 						priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
@@ -82,8 +81,19 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 						//fixme
 						volumeAsset1: BN.formatUnits(data.v[1] * data.c[1], 9), //data.c[1] = price of USDC
 						volumeAsset0: BN.formatUnits(data.v[1] * 1, 9), //1 = price of USDC
-					}),
-			);
+					});
+				} else if (data.h[0] != null && data.h[1] == null) {
+					setState({
+						price: new BN(data.c[0]),
+						// priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
+						high: new BN(data.h[0]),
+						low: new BN(data.l[0]),
+						//fixme
+						volumeAsset1: BN.formatUnits(data.v[0] * data.c[0], 9), //data.c[1] = price of USDC
+						volumeAsset0: BN.formatUnits(data.v[0] * 1, 9), //1 = price of USDC
+					});
+				}
+			});
 	}, []);
 	return (
 		<Root>
