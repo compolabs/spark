@@ -27,7 +27,6 @@ const Root = styled.div`
 	height: 100vh;
 `;
 const Pic = styled.div`
-	//background: url(${bg}) center no-repeat #eeeeee;
 	background-size: cover;
 	min-width: 640px;
 	height: 100vh;
@@ -42,7 +41,6 @@ const Pic = styled.div`
 const Layout = styled.div`
 	display: flex;
 	flex: 1;
-
 	flex-direction: column;
 	position: fixed;
 	top: 0;

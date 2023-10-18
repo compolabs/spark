@@ -26,6 +26,7 @@ export const CONTRACT_ADDRESSES = {
 	priceOracle: "0x633fad7666495c53daa41cc329b78a554f215af4b826671ee576f2a30096999d",
 	spotMarket: "0xebfc4ecfcb7f76b952ca76e1ee87633aef44f1cca43d1ee4ff6a296d78302748",
 	tokenFactory: "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a",
+	referral: "0x77ff598ab937e768d6d5deb9e17e7c9d9c141d9a0e444e143e66511b01898121",
 };
 
 export interface IToken {
