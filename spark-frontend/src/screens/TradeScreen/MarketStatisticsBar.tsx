@@ -63,7 +63,6 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		const to = dayjs().unix();
 		const from = to - 60 * 60 * 24 * 2;
 		const req = `https://spark-tv-datafeed.spark-defi.com/api/v1/history?symbol=UNI%2FUSDC&resolution=1D&from=${from}&to=${to}&countback=2&currencyCode=USDC`;
-		//fixme build that data based on trades
 		axios
 			.get(req)
 			.then((res) => res.data)

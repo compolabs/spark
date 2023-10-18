@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.39.1
-  Forc version: 0.35.5
-  Fuel-Core version: 0.17.3
+  Fuels version: 0.62.0
+  Forc version: 0.44.0
+  Fuel-Core version: 0.20.6
 */
 
 import type {
@@ -20,23 +20,19 @@ import type {
   InvokeFunction,
 } from 'fuels';
 
-import type { Enum } from "./common";
+import type { Option, Enum } from "./common";
 
-export type ErrorInput = Enum<{ InvalidPayment: [], InvalidArgument: [], InsufficientFunds: [], NotEnoughDeposit: [], OrderIsNotFound: [], AccessDenied: [], OrderIsNotActive: [], OrdersDontMatchByTokens: [], OrdersDontMatchByPrice: [] }>;
-export type ErrorOutput = ErrorInput;
-export type OrderTypeInput = Enum<{ Buy: [], Sell: [] }>;
-export type OrderTypeOutput = OrderTypeInput;
-export type StatusInput = Enum<{ Active: [], Canceled: [], Completed: [] }>;
-export type StatusOutput = StatusInput;
+export enum ErrorInput { InvalidPayment = 'InvalidPayment', InvalidArgument = 'InvalidArgument', InsufficientFunds = 'InsufficientFunds', NotEnoughDeposit = 'NotEnoughDeposit', OrderIsNotFound = 'OrderIsNotFound', AccessDenied = 'AccessDenied', OrderIsNotActive = 'OrderIsNotActive', OrdersDontMatchByTokens = 'OrdersDontMatchByTokens', OrdersDontMatchByPrice = 'OrdersDontMatchByPrice' };
+export enum ErrorOutput { InvalidPayment = 'InvalidPayment', InvalidArgument = 'InvalidArgument', InsufficientFunds = 'InsufficientFunds', NotEnoughDeposit = 'NotEnoughDeposit', OrderIsNotFound = 'OrderIsNotFound', AccessDenied = 'AccessDenied', OrderIsNotActive = 'OrderIsNotActive', OrdersDontMatchByTokens = 'OrdersDontMatchByTokens', OrdersDontMatchByPrice = 'OrdersDontMatchByPrice' };
+export enum StatusInput { Active = 'Active', Canceled = 'Canceled', Completed = 'Completed' };
+export enum StatusOutput { Active = 'Active', Canceled = 'Canceled', Completed = 'Completed' };
 
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;
-export type MarketInput = { id: string, asset0: string, asset1: string, admin: AddressInput, paused: boolean };
-export type MarketOutput = { id: string, asset0: string, asset1: string, admin: AddressOutput, paused: boolean };
-export type MarketChangeEventInput = { market: MarketInput };
-export type MarketChangeEventOutput = { market: MarketOutput };
-export type OrderInput = { id: BigNumberish, market_id: string, order_type: OrderTypeInput, asset0: string, amount0: BigNumberish, asset1: string, amount1: BigNumberish, status: StatusInput, fulfilled0: BigNumberish, fulfilled1: BigNumberish, owner: AddressInput, timestamp: BigNumberish, matcher_fee: BigNumberish, matcher_fee_used: BigNumberish };
-export type OrderOutput = { id: BN, market_id: string, order_type: OrderTypeOutput, asset0: string, amount0: BN, asset1: string, amount1: BN, status: StatusOutput, fulfilled0: BN, fulfilled1: BN, owner: AddressOutput, timestamp: BN, matcher_fee: BN, matcher_fee_used: BN };
+export type MatchEventInput = { order0: OrderChangeEventInput, order1: OrderChangeEventInput, trade0: Option<TradeEventInput>, trade1: Option<TradeEventInput> };
+export type MatchEventOutput = { order0: OrderChangeEventOutput, order1: OrderChangeEventOutput, trade0: Option<TradeEventOutput>, trade1: Option<TradeEventOutput> };
+export type OrderInput = { asset0: string, amount0: BigNumberish, asset1: string, amount1: BigNumberish, status: StatusInput, fulfilled0: BigNumberish, fulfilled1: BigNumberish, owner: AddressInput, id: BigNumberish, timestamp: BigNumberish, matcher_fee: BigNumberish, matcher_fee_used: BigNumberish };
+export type OrderOutput = { asset0: string, amount0: BN, asset1: string, amount1: BN, status: StatusOutput, fulfilled0: BN, fulfilled1: BN, owner: AddressOutput, id: BN, timestamp: BN, matcher_fee: BN, matcher_fee_used: BN };
 export type OrderChangeEventInput = { timestamp: BigNumberish, address: AddressInput, order: OrderInput };
 export type OrderChangeEventOutput = { timestamp: BN, address: AddressOutput, order: OrderOutput };
 export type TradeEventInput = { timestamp: BigNumberish, address: AddressInput, order0_id: BigNumberish, order1_id: BigNumberish, asset0: string, amount0: BigNumberish, asset1: string, amount1: BigNumberish };
@@ -44,65 +40,69 @@ export type TradeEventOutput = { timestamp: BN, address: AddressOutput, order0_i
 
 interface SpotMarketAbiInterface extends Interface {
   functions: {
-    calc_market_id: FunctionFragment;
+    cancel_all_orders: FunctionFragment;
     cancel_order: FunctionFragment;
-    create_market: FunctionFragment;
     create_order: FunctionFragment;
     deposit: FunctionFragment;
+    fulfill_order: FunctionFragment;
+    get_all_pending_funding_payment: FunctionFragment;
     get_deposit: FunctionFragment;
-    get_market: FunctionFragment;
+    get_mark_price: FunctionFragment;
+    get_market_price: FunctionFragment;
     match_orders: FunctionFragment;
+    modify_order: FunctionFragment;
     order_by_id: FunctionFragment;
     orders_amount: FunctionFragment;
-    pause_market: FunctionFragment;
-    resume_market: FunctionFragment;
     withdraw: FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: 'calc_market_id', values: [string, string]): Uint8Array;
+  encodeFunctionData(functionFragment: 'cancel_all_orders', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'cancel_order', values: [BigNumberish]): Uint8Array;
-  encodeFunctionData(functionFragment: 'create_market', values: [string, string]): Uint8Array;
   encodeFunctionData(functionFragment: 'create_order', values: [string, BigNumberish, BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'deposit', values: []): Uint8Array;
+  encodeFunctionData(functionFragment: 'fulfill_order', values: [BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'get_all_pending_funding_payment', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'get_deposit', values: [AddressInput]): Uint8Array;
-  encodeFunctionData(functionFragment: 'get_market', values: [string]): Uint8Array;
+  encodeFunctionData(functionFragment: 'get_mark_price', values: []): Uint8Array;
+  encodeFunctionData(functionFragment: 'get_market_price', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'match_orders', values: [BigNumberish, BigNumberish]): Uint8Array;
+  encodeFunctionData(functionFragment: 'modify_order', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'order_by_id', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'orders_amount', values: []): Uint8Array;
-  encodeFunctionData(functionFragment: 'pause_market', values: [string]): Uint8Array;
-  encodeFunctionData(functionFragment: 'resume_market', values: [string]): Uint8Array;
   encodeFunctionData(functionFragment: 'withdraw', values: [BigNumberish]): Uint8Array;
 
-  decodeFunctionData(functionFragment: 'calc_market_id', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'cancel_all_orders', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'cancel_order', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'create_market', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'create_order', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'deposit', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'fulfill_order', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'get_all_pending_funding_payment', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_deposit', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'get_market', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'get_mark_price', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'get_market_price', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'match_orders', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'modify_order', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'order_by_id', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'orders_amount', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'pause_market', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'resume_market', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'withdraw', data: BytesLike): DecodedValue;
 }
 
 export class SpotMarketAbi extends Contract {
   interface: SpotMarketAbiInterface;
   functions: {
-    calc_market_id: InvokeFunction<[asset0: string, asset1: string], string>;
+    cancel_all_orders: InvokeFunction<[], void>;
     cancel_order: InvokeFunction<[id: BigNumberish], void>;
-    create_market: InvokeFunction<[asset0: string, asset1: string], string>;
-    create_order: InvokeFunction<[market_id: string, amount1: BigNumberish, matcher_fee: BigNumberish], BN>;
+    create_order: InvokeFunction<[asset1: string, amount1: BigNumberish, matcher_fee: BigNumberish], BN>;
     deposit: InvokeFunction<[], void>;
+    fulfill_order: InvokeFunction<[id: BigNumberish], void>;
+    get_all_pending_funding_payment: InvokeFunction<[], BN>;
     get_deposit: InvokeFunction<[address: AddressInput], BN>;
-    get_market: InvokeFunction<[id: string], MarketOutput>;
+    get_mark_price: InvokeFunction<[], BN>;
+    get_market_price: InvokeFunction<[], BN>;
     match_orders: InvokeFunction<[order0_id: BigNumberish, order1_id: BigNumberish], void>;
+    modify_order: InvokeFunction<[id: BigNumberish], void>;
     order_by_id: InvokeFunction<[id: BigNumberish], OrderOutput>;
     orders_amount: InvokeFunction<[], BN>;
-    pause_market: InvokeFunction<[id: string], void>;
-    resume_market: InvokeFunction<[id: string], void>;
     withdraw: InvokeFunction<[amount: BigNumberish], void>;
   };
 }

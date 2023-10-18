@@ -5,8 +5,6 @@ import { IOrder, IOrderResponse, orderOutputToIOrder } from "./models/Order";
 import { CONTRACT_ADDRESS, NODE_URL, PORT, PRIVATE_KEY } from "./config";
 import { SpotMarketAbi, SpotMarketAbi__factory as SpotMarketAbiFactory } from "./contracts";
 import fetchIndexer from "./utils/fetchIndexer";
-import BN from "./utils/BN";
-import { log } from "console";
 
 enum STATUS {
   RUNNING,
@@ -78,12 +76,11 @@ class SparkMatcher {
           order1.status === "Active" &&
           this.processing.indexOf(order1.orderId) === -1
         ) {
-          const isOrdersActive = await fetchIndexer<Array<IOrderResponse>>(
-            `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spark_indexer.orderentity WHERE id = '${order0.id}' OR id = '${order1.id}') t;`
-          ).then((res) => res && res.length == 2 && res.every(({ status }) => status === "Active"));
+          let isOrdersActive =
+            await Promise.all([await this.contract.functions.order_by_id(order0.orderId).simulate(), await this.contract.functions.order_by_id(order1.orderId).simulate()]).then(orders => orders.every((res) => res.value.status == "Active"))
           if (isOrdersActive) {
-            let asset0 = order0.asset0;
-            let asset1 = order0.asset1;
+            // let asset0 = order0.asset0;
+            // let asset1 = order0.asset1;
             // console.log(
             //   `\n${order0.type} Order #${order0.orderId}: ${BN.formatUnits(
             //     new BN(order0.amount0).minus(order0.fulfilled0),
@@ -111,20 +108,20 @@ class SparkMatcher {
               .match_orders(order0.orderId, order1.orderId)
               .txParams({ gasPrice: 2 })
               .call()
-              .then(() => console.log(`✅ ${order0.id} + ${order1.id}`))
+              .then(() => console.log(`✅ ${order0.orderId} + ${order1.orderId}`))
               .catch((e) => {
                 if (e.reason) {
                   const status = okErrors.includes(e.reason) ? "✅" : "❌";
-                  console.log(`${status} ${order0.id} + ${order1.id} ${e.reason}`);
+                  console.log(`${status} ${order0.orderId} + ${order1.orderId} ${e.reason}`);
                 } else if (e.name && e.cause && e.cause.logs && e.cause.logs[0]) {
                   console.log(
-                    `❌ ${order0.id} + ${order1.id}: ${e.name}: ${e.cause.logs[0] ?? ""}`
+                    `❌ ${order0.orderId} + ${order1.orderId}: ${e.name}: ${e.cause.logs[0] ?? ""}`
                   );
                 } else if (/"reason": "(.+)"/.test(e.toString())) {
                   const reason = e.toString().match('"reason": "(.+)"')[1];
-                  console.log(`❌ ${order0.id} + ${order1.id}: ${reason}`);
+                  console.log(`❌ ${order0.orderId} + ${order1.orderId}: ${reason}`);
                 } else {
-                  console.log(`❌ ${order0.id} + ${order1.id}: ${e.toString()}`);
+                  console.log(`❌ ${order0.orderId} + ${order1.orderId}: ${e.toString()}`);
                   Object.entries(e);
                 }
               })

@@ -17,6 +17,10 @@ abigen!(Contract(
 
 const RPC: &str = "beta-4.fuel.network";
 
+// start_block: 5270152
+// 0x..   = 0xebfc4ecfcb7f76b952ca76e1ee87633aef44f1cca43d1ee4ff6a296d78302748
+// fuel.. = "fuel1a07yan7t0amtj5k2wms7apmr8th5fuwv5s73ae8ldg5k67psyayqmzuz30"
+
 #[tokio::test]
 async fn deploy() {
     print_title("Deploy");

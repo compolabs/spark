@@ -33,14 +33,9 @@ const Root = styled.div<{ focused?: boolean }>`
   align-items: center;
   justify-content: space-between;
   white-space: nowrap;
-
-  .menu-arrow {
-    transition: 0.4s;
-    transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(180deg)")};
-  }
 }
 `;
-const Option = styled.div<{ active?: boolean; disabled?: boolean }>`
+export const Option = styled.div<{ active?: boolean; disabled?: boolean }>`
 	${TEXT_TYPES_MAP[TEXT_TYPES.BODY_LARGE]}
 	width: calc(100% + 32px);
 	display: flex;
@@ -64,6 +59,11 @@ const Wrap = styled.div<{ focused?: boolean }>`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
+
+	.menu-arrow {
+		transition: 0.4s;
+		transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(180deg)")};
+	}
 
 	:hover {
 		.menu-arrow {
@@ -101,7 +101,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 				</Text>
 				<SizedBox height={4} />
 				<Root focused={focused} onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>
-					{selected?.title ?? options[0].title}
+					{selected?.title ?? options[0]?.title}
 					{/*<SizedBox width={10}/>*/}
 					<img src={arrowIcon} className="menu-arrow" alt="arrow" />
 				</Root>

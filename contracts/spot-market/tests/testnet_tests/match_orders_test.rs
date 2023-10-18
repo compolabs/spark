@@ -16,7 +16,7 @@ abigen!(Contract(
 ),);
 
 const RPC: &str = "beta-4.fuel.network";
-const CONTRACT_ADDRESS: &str = "0xa06a249aec454510179bf9b3d688d8983339ae56620e300fd1bcff34b1eb32ba";
+const CONTRACT_ADDRESS: &str = "0xebfc4ecfcb7f76b952ca76e1ee87633aef44f1cca43d1ee4ff6a296d78302748";
 const FACTORY_ADDRESS: &str = "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a";
 
 const ASSET0: &str = "USDC";
@@ -80,11 +80,6 @@ async fn match_orders_test() {
     let instance = DApp::new(id, alice.clone());
     let methods = instance.methods();
 
-    println!("{:#?}", methods.order_by_id(1).simulate().await.unwrap().value);
-    println!("{:#?}", methods.order_by_id(2).simulate().await.unwrap().value);
-    println!("{:#?}", methods.order_by_id(3).simulate().await.unwrap().value);
-    
-    return;
     let deposit = methods
         .get_deposit(alice_address)
         .simulate()

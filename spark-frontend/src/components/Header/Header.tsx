@@ -2,8 +2,6 @@ import styled from "@emotion/styled";
 import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import centerEllipsis from "@src/utils/centerEllipsis";
-import { Row } from "./Flex";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import Button from "@components/Button";
@@ -13,6 +11,8 @@ import isRoutesEquals from "@src/utils/isRoutesEquals";
 import SizedBox from "@components/SizedBox";
 import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
 import { LOGIN_TYPE } from "@src/stores/AccountStore";
+import { Row } from "@components/Flex";
+import ConnectedWallet from "@components/Header/ConnectedWallet";
 
 interface IProps {}
 
@@ -65,6 +65,7 @@ const MenuItem = styled.div<{ active?: boolean; disabled?: boolean }>`
 		bottom: -16px;
 	}
 `;
+
 type TMenuItem = {
 	title: string;
 	route?: string;
@@ -134,9 +135,7 @@ const Header: React.FC<IProps> = observer(() => {
 				</Button>
 				<SizedBox width={10} />
 				{accountStore.address != null ? (
-					<Button fitContent onClick={accountStore.disconnect}>
-						Disconnect {centerEllipsis(accountStore.address, 8)}
-					</Button>
+					<ConnectedWallet />
 				) : (
 					<Button
 						fitContent
