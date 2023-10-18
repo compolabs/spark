@@ -28,8 +28,11 @@ class SettingsStore {
 		this.setVerifiedAddresses([...this.verifiedAddresses, address]);
 	};
 
-	access: boolean = false;
-	setAccess = (address: string, s: boolean) => (this.access = s);
+	get access(): boolean {
+		const address = this.rootStore.accountStore.address;
+		if (address == null) return false;
+		return this.verifiedAddresses.includes(address);
+	}
 
 	serialize = (): ISerializedSettingsStore => ({
 		addresses: this.verifiedAddresses.length === 0 ? "" : this.verifiedAddresses.join(","),
