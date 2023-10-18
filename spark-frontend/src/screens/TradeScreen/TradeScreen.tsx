@@ -9,6 +9,9 @@ import OrderbookAndTradesInterface from "@screens/TradeScreen/OrderbookAndTrades
 import StatusBar from "@screens/TradeScreen/StatusBar";
 import { TradeScreenVMProvider } from "@screens/TradeScreen/TradeScreenVm";
 import SizedBox from "@components/SizedBox";
+import { useStores } from "@stores";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@src/constants";
 
 interface IProps {}
 
@@ -42,9 +45,14 @@ const TradeScreenImpl: React.FC<IProps> = () => {
 	);
 };
 
-const TradeScreen: React.FC<IProps> = () => (
-	<TradeScreenVMProvider>
-		<TradeScreenImpl />
-	</TradeScreenVMProvider>
-);
+const TradeScreen: React.FC<IProps> = () => {
+	const { settingsStore } = useStores();
+	// const navigate = useNavigate();
+	// if (!settingsStore.access) navigate(ROUTES.ROOT);
+	return (
+		<TradeScreenVMProvider>
+			<TradeScreenImpl />
+		</TradeScreenVMProvider>
+	);
+};
 export default TradeScreen;

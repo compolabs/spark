@@ -5,6 +5,8 @@ import { Route, Routes } from "react-router-dom";
 import { observer } from "mobx-react";
 import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
+import { ROUTES } from "./constants";
+import Referral from "@screens/Referral/Referral";
 
 const Root = styled(Column)`
 	width: 100%;
@@ -20,7 +22,8 @@ const App: React.FC = observer(() => {
 		<Root>
 			<Header />
 			<Routes>
-				<Route path="*" element={<TradeScreen />} />
+				<Route path={ROUTES.ROOT} element={<TradeScreen />} />
+				<Route path={ROUTES.REFERRAL} element={<Referral />} />
 				{/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
 			</Routes>
 		</Root>
