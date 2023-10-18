@@ -2,8 +2,8 @@ import tokens from "./tokens.json";
 import tokenLogos from "./tokenLogos";
 
 export const ROUTES = {
-	ROOT: "/",
-	REFERRAL: "/referral",
+	REFERRAL: "/",
+	TRADE: "/trade",
 };
 
 export const TOKENS_LIST: Array<IToken> = Object.values(tokens).map((t) => ({

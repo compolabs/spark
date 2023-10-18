@@ -73,7 +73,7 @@ type TMenuItem = {
 };
 const menuItems: Array<TMenuItem> = [
 	// { title: "DASHBOARD" },
-	{ title: "TRADE", route: ROUTES.ROOT },
+	{ title: "TRADE", route: ROUTES.TRADE },
 	// { title: "EARN" },
 	{ title: "FAUCET", link: "https://app.swaylend.com/#/faucet" },
 	// { title: "DOCS" },
@@ -138,6 +138,7 @@ const Header: React.FC<IProps> = observer(() => {
 					<ConnectedWallet />
 				) : (
 					<Button
+						primary
 						fitContent
 						onClick={() =>
 							window.fuel == null
