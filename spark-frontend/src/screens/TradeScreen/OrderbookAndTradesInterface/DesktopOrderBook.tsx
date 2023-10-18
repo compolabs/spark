@@ -164,7 +164,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 							)}
 							{orderFilter !== 2 &&
 								sellOrders.map((o, index) => (
-									//Todo add hover
 									<OrderRow
 										type="sell"
 										percent={+new BN(o.fullFillPercent).toFormat(2)}

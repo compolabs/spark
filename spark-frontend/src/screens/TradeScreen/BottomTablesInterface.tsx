@@ -84,7 +84,8 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 			<Body>
 				{ordersStore.myOrders
 					.slice()
-					.sort((order) => -order.timestamp)
+					.sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))
+					.sort((a, b) => (a.status === "Active" && b.status !== "Active" ? -1 : 1))
 					.map((order) => (
 						<TableRow key={order.id}>
 							<TableText>{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}</TableText>
