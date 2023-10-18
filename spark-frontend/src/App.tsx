@@ -24,7 +24,6 @@ const App: React.FC = observer(() => {
 			<Routes>
 				<Route path={ROUTES.ROOT} element={<TradeScreen />} />
 				<Route path={ROUTES.REFERRAL} element={<Referral />} />
-				{/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
 			</Routes>
 		</Root>
 	);

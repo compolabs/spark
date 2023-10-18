@@ -1,10 +1,10 @@
 import styled from "@emotion/styled";
 import React from "react";
-import { useStores } from "@src/stores";
 import { Column, Row } from "@src/components/Flex";
 import Text from "@src/components/Text";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
+// import bg from "@src/assets/referralBackground.svg";
 
 interface IProps {}
 
@@ -24,9 +24,10 @@ const Root = styled.div`
 	@media (min-width: 1280px) {
 		padding: 40px 0;
 	}
+	height: 100vh;
 `;
-// background: url(${pic}) center no-repeat #eeeeee;
 const Pic = styled.div`
+	background: url(${bg}) center no-repeat #eeeeee;
 	background-size: cover;
 	min-width: 640px;
 	height: 100vh;
@@ -59,9 +60,6 @@ const Container = styled(Column)`
 	width: 100%;
 `;
 const Referral: React.FC<IProps> = () => {
-	const { accountStore } = useStores();
-	// const handleLogin = (loginType: LOGIN_TYPE) => () =>
-	// 	accountStore.login(loginType).then(() => accountStore.setLoginModalOpened(false));
 
 	return (
 		<Layout>
