@@ -67,10 +67,6 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		axios
 			.get(req)
 			.then((res) => res.data)
-			.then((v) => {
-				console.log(v);
-				return v;
-			})
 			.then((data) => {
 				if (data.h[1] != null && data.h[0] != null) {
 					setState({
