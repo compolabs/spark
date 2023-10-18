@@ -1,12 +1,12 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useState } from "react";
 import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import Button from "@components/Button";
-import { useStores } from "@stores";
 import { observer } from "mobx-react";
 import Input from "@components/Input";
 import { Column } from "@components/Flex";
+import { useReferralVM } from "@screens/Referral/ReferralVm";
 
 interface IProps {}
 
@@ -32,7 +32,9 @@ const StyledInput = styled(Input)`
 `;
 
 const ReferralInterface: React.FC<IProps> = observer(() => {
-	const { accountStore } = useStores();
+	const vm = useReferralVM();
+	const [address, setAddress] = useState("");
+	//todo add verification of fuel address
 	return (
 		<>
 			<Text type={TEXT_TYPES.H1}>Spark Referral Program</Text>
@@ -46,12 +48,12 @@ const ReferralInterface: React.FC<IProps> = observer(() => {
 			<Column crossAxisSize="max">
 				<Text type={TEXT_TYPES.LABEL}>Referral address</Text>
 				<SizedBox height={4} />
-				<StyledInput />
+				<StyledInput value={address} onChange={(e) => setAddress(e.target.value)} />
 			</Column>
 
 			<SizedBox height={40} />
-			<Button primary onClick={() => null}>
-				Join Spark
+			<Button primary onClick={() => vm.registerUser(address)} disabled={address.length < 63 || vm.loading}>
+				{vm.loading ? "Loading..." : "Join Spark"}
 			</Button>
 		</>
 	);

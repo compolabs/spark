@@ -4,6 +4,7 @@ import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { ReferalContractAbi__factory } from "@src/contracts";
 import { CONTRACT_ADDRESSES } from "@src/constants";
+import { Address } from "fuels";
 
 const ctx = React.createContext<ReferralVM | null>(null);
 
@@ -51,10 +52,29 @@ class ReferralVM {
 		try {
 			await refContract.functions.verify(userAddress).simulate();
 			notificationStore.toast("You are verified to access app", { type: "success" });
-			this.rootStore.settingsStore.addVerifiedAddress(address);
+			settingsStore.addVerifiedAddress(address);
 		} catch (e) {
 			console.log("not verified user");
 			notificationStore.toast("You are not verified to access app", { type: "error" });
+		} finally {
+			this._setLoading(false);
+		}
+	};
+
+	registerUser = async (refAddress: string) => {
+		const { accountStore, notificationStore, settingsStore } = this.rootStore;
+		const wallet = await accountStore.getWallet();
+		const address = accountStore.address;
+		if (wallet == null || address == null) return;
+		this._setLoading(true);
+		const refContract = ReferalContractAbi__factory.connect(CONTRACT_ADDRESSES.referral, wallet);
+
+		try {
+			const ref = Address.fromString(refAddress).toB256();
+			await refContract.functions.chekin({ value: ref }).call();
+			settingsStore.addVerifiedAddress(address);
+		} catch (e) {
+			notificationStore.toast("Couldn't register ypu ref address", { type: "error" });
 		} finally {
 			this._setLoading(false);
 		}
