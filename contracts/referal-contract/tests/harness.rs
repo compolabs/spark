@@ -12,16 +12,16 @@ abigen!(Contract(
 ));
 
 // ✅ Contract deployed on beta-4
-// start_block: 5209016
-// 0x..   = 0x77ff598ab937e768d6d5deb9e17e7c9d9c141d9a0e444e143e66511b01898121
-// fuel.. = "fuel1wll4nz4exlnk34k4m6u7zlnunkwpg8v6pezyu9p7veg3kqvfsyss8f80t5"
+// start_block: 5209704
+// 0x..   = 0xe06f9223c5be21e37b76c073d50dab19c997c4b37d9246ffe9b4de930b8fee73
+// fuel.. = "fuel1upheyg79hcs7x7mkcpea2rdtr8ye039n0kfydllfkn0fxzu0aeesmgvscf"
 
 const RPC: &str = "beta-4.fuel.network";
-const CONTRACT_ADDRESS: &str = "0x77ff598ab937e768d6d5deb9e17e7c9d9c141d9a0e444e143e66511b01898121";
+const CONTRACT_ADDRESS: &str = "0xe06f9223c5be21e37b76c073d50dab19c997c4b37d9246ffe9b4de930b8fee73";
 
-const ADDRESS: &str = "";
-const INVITES_AMOUNT: u64 = 0;
-const NASTED_MAX_INVITES: u64 = 0;
+const ADDRESS: &str = "fuel1r9xy6hfjr63mct58zz054pjjpttqlyjfnrm8qp75slfuczkvghfqs6ndle";
+const INVITES_AMOUNT: u64 = 10;
+const NASTED_MAX_INVITES: u64 = 3;
 
 #[tokio::test]
 async fn accrue_invitations() {
@@ -31,16 +31,25 @@ async fn accrue_invitations() {
     let wallet =
         WalletUnlocked::new_from_private_key(secret.parse().unwrap(), Some(provider.clone()));
 
-    let id = Bech32ContractId::from_str(CONTRACT_ADDRESS).unwrap();
+    let id = ContractId::from_str(CONTRACT_ADDRESS).unwrap();
     let inctance = ReferalContract::new(id.clone(), wallet.clone());
-    let address = Address::from_str(ADDRESS).unwrap();
+    let address = Bech32Address::from_str(ADDRESS).unwrap();
     inctance
         .methods()
-        .accrue_invitations(address, INVITES_AMOUNT, NASTED_MAX_INVITES)
+        .accrue_invitations(address.clone(), INVITES_AMOUNT, NASTED_MAX_INVITES)
         .tx_params(TxParameters::default().with_gas_price(1))
         .call()
         .await
         .unwrap();
+
+    let (invites_left, nasted_max_invites) = inctance
+        .methods()
+        .verify(address)
+        .simulate()
+        .await
+        .unwrap()
+        .value;
+    println!("invites_left = {invites_left} nasted_max_invites = {nasted_max_invites}");
 }
 
 ////-----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -117,14 +126,32 @@ async fn main_test() {
         .await;
     assert!(res.is_ok());
 
-    let (invites_left, _) = bob_instance.verify().simulate().await.unwrap().value;
+    let (invites_left, _) = bob_instance
+        .verify(bob.address())
+        .simulate()
+        .await
+        .unwrap()
+        .value;
     assert_eq!(invites_left, 1);
-    assert!(chad_instance.verify().simulate().await.is_err());
+    assert!(chad_instance
+        .verify(chad.address())
+        .simulate()
+        .await
+        .is_err());
     let res = chad_instance.chekin(bob.address()).call().await;
     assert!(res.is_ok() && res.unwrap().value);
-    let (invites_left, _) = chad_instance.verify().simulate().await.unwrap().value;
+    let (invites_left, _) = chad_instance
+        .verify(chad.address())
+        .simulate()
+        .await
+        .unwrap()
+        .value;
     assert_eq!(invites_left, 1);
-    assert!(jack_instance.verify().simulate().await.is_err());
+    assert!(jack_instance
+        .verify(jack.address())
+        .simulate()
+        .await
+        .is_err());
     assert!(jack_instance.chekin(bob.address()).call().await.is_err());
     assert!(jack_instance.chekin(chad.address()).call().await.is_err());
 }

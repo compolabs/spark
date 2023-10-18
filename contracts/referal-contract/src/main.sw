@@ -39,7 +39,7 @@ abi ReferalContract {
     fn chekin(referal: Address) -> bool;
 
     #[storage(read)]
-    fn verify() -> (u64, u64);
+    fn verify(address: Address) -> (u64, u64);
 }
 
 impl ReferalContract for Contract {
@@ -82,9 +82,8 @@ impl ReferalContract for Contract {
     }
 
     #[storage(read)]
-    fn verify() -> (u64, u64) {
-        let caller = msg_sender_address();
-        storage.invitations.get(caller).read()
+    fn verify(address: Address) -> (u64, u64) {
+        storage.invitations.get(address).read()
     }
 }
 
