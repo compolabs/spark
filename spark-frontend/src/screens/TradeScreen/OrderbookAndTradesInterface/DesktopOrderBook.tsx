@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { HTMLAttributes, useState } from "react";
+import React, { HTMLAttributes, useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import SizedBox from "@components/SizedBox";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
@@ -9,7 +9,7 @@ import Skeleton from "react-loading-skeleton";
 import { Row } from "@src/components/Flex";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useTheme } from "@emotion/react";
-import useElementSize from "@src/utils/useElementSize";
+import useEventListener from "@src/utils/useEventListener";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
@@ -17,7 +17,6 @@ const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 	grid-area: orderbook;
-	height: 100%;
 `;
 const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
@@ -84,6 +83,7 @@ const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	width: 100%;
 	${({ fitContent }) => !fitContent && "height: 100%;"};
 	${({ reverse }) => reverse && "flex-direction: column-reverse;"};
+	height: 100%;
 `;
 
 const DesktopOrderBook: React.FC<IProps> = () => {
@@ -92,9 +92,19 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	const { ordersStore } = useStores();
 	const [orderFilter] = useState(0);
 	const theme = useTheme();
-	const [squareRef, { height: orderBookHeight }] = useElementSize();
-	const amountOfOrders = new BN(orderBookHeight).minus(48).div(19).toFixed(0);
-	const oneSizeOrders = new BN(amountOfOrders).div(2).toFixed(0);
+	const [amountOfOrders, setAmountOfOrders] = useState(0);
+	const oneSizeOrders = +new BN(amountOfOrders).div(2).toFixed(0) - 1;
+	const calcSize = () => {
+		const windowHeight = window.innerHeight - 212;
+		const v = new BN(windowHeight).minus(48).div(19);
+		const amountOfOrders = +v.toFixed(0);
+		setAmountOfOrders(amountOfOrders);
+	};
+
+	useEffect(calcSize, []);
+	const handleResize = useCallback(calcSize, []);
+
+	useEventListener("resize", handleResize);
 
 	const buyOrders = ordersStore.orderbook.buy
 		.slice()
@@ -105,7 +115,6 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 			return a.price < b.price ? 1 : -1;
 		})
 		.reverse()
-		// .slice(orderFilter === 0 ? -15 : -35)
 		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders)
 		.reverse();
 	const sellOrders = ordersStore.orderbook.sell
@@ -145,7 +154,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 				</Columns>
 				{/*<Divider />*/}
 				<SizedBox height={8} />
-				<Container ref={squareRef} fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
+				<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
 					{!ordersStore.initialized ? (
 						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
 					) : (
