@@ -9,6 +9,9 @@ import { useStores } from "@stores";
 import ConnectWalletInterface from "@screens/Referral/ConnectWalletInterface";
 import ReferralInterface from "@screens/Referral/ReferralInterface";
 import { observer } from "mobx-react";
+import { Navigate } from "react-router-dom";
+import { ROUTES } from "@src/constants";
+import StatusBar from "@screens/TradeScreen/StatusBar";
 
 interface IProps {}
 
@@ -28,7 +31,7 @@ const Image = styled.div`
 	background-size: cover;
 	display: none;
 	border-radius: 4px;
-	@media (min-width: 1080px) {
+	@media (min-width: 980px) {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -57,7 +60,8 @@ export const StyledLink = styled.a`
 }
 `;
 const ReferralImpl: React.FC<IProps> = observer(() => {
-	const { accountStore } = useStores();
+	const { accountStore, settingsStore } = useStores();
+	if (settingsStore.access) return <Navigate to={ROUTES.TRADE} />;
 	return (
 		<Root>
 			<Image />

@@ -49,16 +49,18 @@ class ReferralVM {
 		this._setLoading(true);
 		const refContract = ReferalContractAbi__factory.connect(CONTRACT_ADDRESSES.referral, wallet);
 
-		try {
-			await refContract.functions.verify(userAddress).simulate();
-			notificationStore.toast("You are verified to access app", { type: "success" });
-			settingsStore.addVerifiedAddress(address);
-		} catch (e) {
-			console.log("not verified user");
-			notificationStore.toast("You are not verified to access app", { type: "error" });
-		} finally {
-			this._setLoading(false);
-		}
+		await refContract.functions
+			.verify(userAddress)
+			.simulate()
+			.then(() => {
+				notificationStore.toast("You are verified to access app", { type: "success" });
+				settingsStore.addVerifiedAddress(address);
+			})
+			.catch(() => {
+				console.log("not verified user");
+				notificationStore.toast("You are not verified to access app", { type: "error" });
+			})
+			.finally(() => this._setLoading(false));
 	};
 
 	registerUser = async (refAddress: string) => {
@@ -74,6 +76,7 @@ class ReferralVM {
 			await refContract.functions.chekin({ value: ref }).call();
 			settingsStore.addVerifiedAddress(address);
 		} catch (e) {
+			console.error(e);
 			notificationStore.toast("Couldn't register ypu ref address", { type: "error" });
 		} finally {
 			this._setLoading(false);

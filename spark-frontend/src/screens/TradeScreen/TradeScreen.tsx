@@ -10,8 +10,9 @@ import StatusBar from "@screens/TradeScreen/StatusBar";
 import { TradeScreenVMProvider } from "@screens/TradeScreen/TradeScreenVm";
 import SizedBox from "@components/SizedBox";
 import { useStores } from "@stores";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { ROUTES } from "@src/constants";
+import { observer } from "mobx-react";
 
 interface IProps {}
 
@@ -25,7 +26,9 @@ const Root = styled.div`
 	padding: 0 4px;
 `;
 
-const TradeScreenImpl: React.FC<IProps> = () => {
+const TradeScreenImpl: React.FC<IProps> = observer(() => {
+	const { settingsStore } = useStores();
+	if (!settingsStore.access) return <Navigate to={ROUTES.REFERRAL} />;
 	return (
 		<Root>
 			<MarketStatisticsBar />
@@ -43,12 +46,9 @@ const TradeScreenImpl: React.FC<IProps> = () => {
 			<StatusBar />
 		</Root>
 	);
-};
+});
 
 const TradeScreen: React.FC<IProps> = () => {
-	const { settingsStore } = useStores();
-	// const navigate = useNavigate();
-	// if (!settingsStore.access) navigate(ROUTES.ROOT);
 	return (
 		<TradeScreenVMProvider>
 			<TradeScreenImpl />

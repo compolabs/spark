@@ -6,6 +6,8 @@ import Button from "@components/Button";
 import { observer } from "mobx-react";
 import Input from "@components/Input";
 import { Column } from "@components/Flex";
+import { Navigate } from "react-router-dom";
+import { ROUTES } from "@src/constants";
 import { useReferralVM } from "@screens/Referral/ReferralVm";
 
 interface IProps {}
