@@ -3,7 +3,7 @@ import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { ReferalContractAbi__factory } from "@src/contracts";
-import { CONTRACT_ADDRESSES } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL } from "@src/constants";
 import { Address } from "fuels";
 
 const ctx = React.createContext<ReferralVM | null>(null);
@@ -27,7 +27,6 @@ class ReferralVM {
 	private _setLoading = (l: boolean) => (this.loading = l);
 
 	constructor(rootStore: RootStore) {
-		console.log("constructor of ReferralVM");
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
 		this.verifyUser();
@@ -57,7 +56,6 @@ class ReferralVM {
 				settingsStore.addVerifiedAddress(address);
 			})
 			.catch(() => {
-				console.log("not verified user");
 				notificationStore.toast("You are not verified to access app", { type: "error" });
 			})
 			.finally(() => this._setLoading(false));
@@ -68,6 +66,12 @@ class ReferralVM {
 		const wallet = await accountStore.getWallet();
 		const address = accountStore.address;
 		if (wallet == null || address == null) return;
+
+		const ethBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.ETH);
+		if (ethBalance?.lt(50)) {
+			notificationStore.toast("You don't have enough ETH for fee", { type: "error" });
+			return;
+		}
 		this._setLoading(true);
 		const refContract = ReferalContractAbi__factory.connect(CONTRACT_ADDRESSES.referral, wallet);
 
@@ -77,7 +81,7 @@ class ReferralVM {
 			settingsStore.addVerifiedAddress(address);
 		} catch (e) {
 			console.error(e);
-			notificationStore.toast("Couldn't register ypu ref address", { type: "error" });
+			notificationStore.toast("Couldn't register your ref address", { type: "error" });
 		} finally {
 			this._setLoading(false);
 		}
