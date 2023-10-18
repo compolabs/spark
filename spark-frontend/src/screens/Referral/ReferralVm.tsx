@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { ReferalContractAbi__factory } from "@src/contracts";
 import { CONTRACT_ADDRESSES } from "@src/constants";
@@ -30,26 +30,31 @@ class ReferralVM {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
 		this.verifyUser();
+		reaction(
+			() => [this.rootStore.accountStore],
+			() => this.verifyUser(),
+		);
 	}
 
 	initialized: boolean = true;
 
 	verifyUser = async () => {
-		console.log("verifyUser");
-		this._setLoading(true);
-		const { accountStore, notificationStore } = this.rootStore;
+		const { accountStore, notificationStore, settingsStore } = this.rootStore;
 		const wallet = await accountStore.getWallet();
 		const userAddress = accountStore.addressInput;
-		if (wallet == null || userAddress == null) return;
+		const address = accountStore.address;
+		if (wallet == null || userAddress == null || address == null) return;
+		if (settingsStore.verifiedAddresses.includes(address)) return;
+		this._setLoading(true);
 		const refContract = ReferalContractAbi__factory.connect(CONTRACT_ADDRESSES.referral, wallet);
 
 		try {
-			const { transactionResult } = await refContract.functions.verify(userAddress).txParams({ gasPrice: 2 }).call();
-			console.log("transactionResult", transactionResult);
+			await refContract.functions.verify(userAddress).simulate();
+			notificationStore.toast("You are verified to access app", { type: "success" });
+			this.rootStore.settingsStore.addVerifiedAddress(address);
 		} catch (e) {
-			const errorText = e?.toString();
-			console.log(errorText);
-			notificationStore.toast(errorText ?? "", { type: "error" });
+			console.log("not verified user");
+			notificationStore.toast("You are not verified to access app", { type: "error" });
 		} finally {
 			this._setLoading(false);
 		}
