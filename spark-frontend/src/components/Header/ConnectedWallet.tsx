@@ -59,7 +59,7 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
 					<Option onClick={handleCopyAddress}>Copy address</Option>
 					<Option onClick={() => window.open(`${EXPLORER_URL}/address/${accountStore.address}`)}> View in Explorer</Option>
 					<Option disabled>Export log file</Option>
-					<Option>Disconnect</Option>
+					<Option onClick={accountStore.disconnect}>Disconnect</Option>
 				</Column>
 			}
 		>
