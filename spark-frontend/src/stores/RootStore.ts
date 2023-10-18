@@ -17,7 +17,7 @@ export default class RootStore {
 
 	constructor(initState?: ISerializedRootStore) {
 		this.accountStore = new AccountStore(this, initState?.accountStore);
-		this.settingsStore = new SettingsStore(this);
+		this.settingsStore = new SettingsStore(this, initState?.settingsStore);
 		this.notificationStore = new NotificationStore(this);
 		this.ordersStore = new OrdersStore(this);
 		makeAutoObservable(this);
@@ -28,6 +28,7 @@ export default class RootStore {
 	}
 
 	serialize = (): ISerializedRootStore => ({
-		accountStore: this.accountStore.serialize()
+		accountStore: this.accountStore.serialize(),
+		settingsStore: this.settingsStore.serialize()
 	});
 }
