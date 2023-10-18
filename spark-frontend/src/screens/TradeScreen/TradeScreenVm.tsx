@@ -162,7 +162,8 @@ class TradeScreenVm {
 	sellTotal: BN = BN.ZERO;
 	setSellTotal = (total: BN, sync?: boolean) => {
 		this.sellTotal = total;
-		if (this.sellAmount.gt(0) && this.sellPrice.gt(0) && sync) {
+		console.log(total.toString());
+		if (this.sellPrice.gt(0) && sync) {
 			const v1 = BN.formatUnits(this.sellPrice, this.token1.decimals);
 			const v2 = BN.formatUnits(total, this.token1.decimals);
 			const amount = BN.parseUnits(v2.div(v1), this.token0.decimals);
