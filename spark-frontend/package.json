@@ -2,7 +2,7 @@
   "name": "spark-frontend",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://app.allspark.gg",
+  "homepage": "https://app.sprk.fi",
   "dependencies": {
     "@babel/core": "^7.16.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
