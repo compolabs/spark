@@ -10,7 +10,6 @@ import ReferralInterface from "@screens/Referral/ReferralInterface";
 import { observer } from "mobx-react";
 import { Navigate } from "react-router-dom";
 import { ROUTES } from "@src/constants";
-import referralStore from "@stores/ReferralStore";
 
 interface IProps {}
 
@@ -50,9 +49,10 @@ export const StyledLink = styled.a`
   color: ${({ theme }) => theme.colors.green};
   cursor: pointer;
   transition: .4s;
+  text-decoration: none;
 
   :hover {
-    text-decoration: none;
+    opacity: .8;
   }
 
   ${TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM]}

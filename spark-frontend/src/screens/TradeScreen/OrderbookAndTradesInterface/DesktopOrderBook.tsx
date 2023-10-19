@@ -117,8 +117,10 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 		.reverse()
 		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders)
 		.reverse();
+	console.log(ordersStore.orderbook.sell);
 	const sellOrders = ordersStore.orderbook.sell
 		.slice()
+		.filter((order) => order.amount0.minus(order.fulfilled0).gt(0) && order.amount1.minus(order.fulfilled1).gt(0))
 		.sort((a, b) => {
 			if (a.price == null && b.price == null) return 0;
 			if (a.price == null && b.price != null) return 1;

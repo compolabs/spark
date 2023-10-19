@@ -1,12 +1,9 @@
-import styled from "@emotion/styled";
 import React from "react";
 import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import Button from "@components/Button";
 import { LOGIN_TYPE } from "@stores/AccountStore";
-import { Column } from "@components/Flex";
 import { useStores } from "@stores";
-import { StyledLink } from "./Referral";
 import { observer } from "mobx-react";
 
 interface IProps {}
