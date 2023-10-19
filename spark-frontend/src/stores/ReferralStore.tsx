@@ -30,7 +30,7 @@ class ReferralStore {
 
 		when(() => this.rootStore.accountStore.initialized, this.verifyUser);
 		reaction(
-			() => [this.rootStore.accountStore],
+			() => this.rootStore.accountStore.address,
 			() => this.verifyUser(),
 		);
 	}
@@ -63,12 +63,11 @@ class ReferralStore {
 		if (this.verifiedAddresses.includes(address)) return;
 		this._setLoading(true);
 		const refContract = ReferalContractAbi__factory.connect(CONTRACT_ADDRESSES.referral, wallet);
-		console.log(userAddress);
 		await refContract.functions
 			.verify(userAddress)
 			.simulate()
-			.then((verifyResult) => {
-				console.log({ verifyResult });
+			.then(({ value }) => {
+				console.log({ invitationsLeft: value[0].toString(), nasted_invites_amount: value[1].toString() });
 				notificationStore.toast("You are verified to access app", { type: "success" });
 				this.addVerifiedAddress(address);
 			})
