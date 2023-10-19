@@ -1,7 +1,8 @@
 {
   "files": {
     "main.css": "/static/css/main.bcc0a218.css",
-    "main.js": "/static/js/main.a56fe535.js",
+    "main.js": "/static/js/main.d05c992e.js",
+    "static/media/referralBackground.png": "/static/media/referralBackground.2fcee11610c18fe3410c.png",
     "static/media/JetBrainsMono-Medium.ttf": "/static/media/JetBrainsMono-Medium.2504f21abf8bf1f0613a.ttf",
     "static/media/SpaceGrotesk-Medium.ttf": "/static/media/SpaceGrotesk-Medium.d188dfade7a12bbb16c1.ttf",
     "static/media/SpaceGrotesk-Regular.ttf": "/static/media/SpaceGrotesk-Regular.3683ead52440efaeba4d.ttf",
@@ -11,15 +12,16 @@
     "static/media/uni.svg": "/static/media/uni.a33fad7be203fd92982c0aab645c0bab.svg",
     "static/media/logo.svg": "/static/media/logo.6364ff6e3c4de935284c6b7bc2c64507.svg",
     "static/media/usdc.svg": "/static/media/usdc.294855a32a0c99a77bc9974bc654a978.svg",
+    "static/media/health.svg": "/static/media/health.1e873908aebb422161ccf2c1976d65f2.svg",
     "static/media/bitcoin.svg": "/static/media/bitcoin.418ae0c4fea1a2b9413996ac86334673.svg",
     "static/media/ethereum.svg": "/static/media/ethereum.eba924eeaba637abfcc634f7f6ff5fef.svg",
     "index.html": "/index.html",
     "static/media/arrowUp.svg": "/static/media/arrowUp.452af6f7b455cfcae1da186c253c7491.svg",
     "main.bcc0a218.css.map": "/static/css/main.bcc0a218.css.map",
-    "main.a56fe535.js.map": "/static/js/main.a56fe535.js.map"
+    "main.d05c992e.js.map": "/static/js/main.d05c992e.js.map"
   },
   "entrypoints": [
     "static/css/main.bcc0a218.css",
-    "static/js/main.a56fe535.js"
+    "static/js/main.d05c992e.js"
   ]
 }
