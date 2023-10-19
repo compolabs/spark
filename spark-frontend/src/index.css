@@ -46,3 +46,13 @@ code {
     url(assets/fonts/Syne-SemiBold.ttf) format("truetype");
     font-weight: 600;
 }
+
+:root {
+    --toastify-color-light: #FFFFFD;
+    --toastify-color-dark: #050505;
+    --toastify-color-info: #3498db;
+    --toastify-color-success: #00FF98;
+    --toastify-color-warning: #FF6F06;
+    --toastify-color-error: #FD0A53;
+    --toastify-font-family: Syne, sans-serif;
+}
