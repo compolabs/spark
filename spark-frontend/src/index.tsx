@@ -33,6 +33,7 @@ root.render(
 				<App />
 			</Router>
 			<ToastContainer
+				icon={<div />}
 				position="bottom-right"
 				autoClose={5000}
 				newestOnTop={true}

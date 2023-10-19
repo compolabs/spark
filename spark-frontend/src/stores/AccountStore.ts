@@ -8,7 +8,7 @@ import { FuelWalletProvider } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
 	FUEL_WALLET = "FUEL_WALLET",
-	FUELET = "FUELET"
+	FUELET = "FUELET",
 }
 
 export interface ISerializedAccountStore {
@@ -19,6 +19,11 @@ export interface ISerializedAccountStore {
 class AccountStore {
 	public readonly rootStore: RootStore;
 	public provider: Provider | null = null;
+
+	public get initialized() {
+		return this.provider != null;
+	}
+
 	private setProvider = (provider: Provider | null) => (this.provider = provider);
 
 	constructor(rootStore: RootStore, initState?: ISerializedAccountStore) {
@@ -37,7 +42,7 @@ class AccountStore {
 		setInterval(this.updateAccountBalances, 10 * 1000);
 		reaction(
 			() => this.address,
-			() => Promise.all([this.updateAccountBalances()])
+			() => Promise.all([this.updateAccountBalances()]),
 		);
 	}
 
@@ -101,7 +106,7 @@ class AccountStore {
 
 	serialize = (): ISerializedAccountStore => ({
 		address: this.address,
-		loginType: this.loginType
+		loginType: this.loginType,
 	});
 
 	login = async (loginType: LOGIN_TYPE) => {
@@ -139,7 +144,7 @@ class AccountStore {
 		const res = await this.walletInstance.connect();
 		if (!res) {
 			this.rootStore.notificationStore.toast("User denied", {
-				type: "error"
+				type: "error",
 			});
 			return;
 		}

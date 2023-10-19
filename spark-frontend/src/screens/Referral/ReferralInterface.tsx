@@ -6,9 +6,7 @@ import Button from "@components/Button";
 import { observer } from "mobx-react";
 import Input from "@components/Input";
 import { Column } from "@components/Flex";
-import { Navigate } from "react-router-dom";
-import { ROUTES } from "@src/constants";
-import { useReferralVM } from "@screens/Referral/ReferralVm";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -34,7 +32,7 @@ const StyledInput = styled(Input)`
 `;
 
 const ReferralInterface: React.FC<IProps> = observer(() => {
-	const vm = useReferralVM();
+	const { referralStore } = useStores();
 	const [address, setAddress] = useState("");
 	//todo add verification of fuel address
 	return (
@@ -54,8 +52,12 @@ const ReferralInterface: React.FC<IProps> = observer(() => {
 			</Column>
 
 			<SizedBox height={40} />
-			<Button primary onClick={() => vm.registerUser(address)} disabled={address.length < 63 || vm.loading}>
-				{vm.loading ? "Loading..." : "Join Spark"}
+			<Button
+				primary
+				onClick={() => referralStore.registerUser(address)}
+				disabled={address.length < 63 || referralStore.loading}
+			>
+				{referralStore.loading ? "Loading..." : "Join Spark"}
 			</Button>
 		</>
 	);
