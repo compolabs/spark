@@ -5,5 +5,15 @@ import AccountStore from "./AccountStore";
 import SettingsStore from "./SettingsStore";
 import NotificationStore from "./NotificationStore";
 import OrdersStore from "./OrdersStore";
+import ReferralStore from "./ReferralStore";
 
-export { RootStore, SettingsStore, AccountStore, NotificationStore, OrdersStore, storesContext, useStores };
+export {
+	RootStore,
+	SettingsStore,
+	AccountStore,
+	NotificationStore,
+	OrdersStore,
+	ReferralStore,
+	storesContext,
+	useStores,
+};

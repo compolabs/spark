@@ -4,14 +4,12 @@ import { Column } from "@src/components/Flex";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@src/components/Text";
 import SizedBox from "@components/SizedBox";
 import bg from "@src/assets/referralBackground.png";
-import { ReferralVMProvider } from "@screens/Referral/ReferralVm";
 import { useStores } from "@stores";
 import ConnectWalletInterface from "@screens/Referral/ConnectWalletInterface";
 import ReferralInterface from "@screens/Referral/ReferralInterface";
 import { observer } from "mobx-react";
 import { Navigate } from "react-router-dom";
 import { ROUTES } from "@src/constants";
-import StatusBar from "@screens/TradeScreen/StatusBar";
 
 interface IProps {}
 
@@ -51,17 +49,18 @@ export const StyledLink = styled.a`
   color: ${({ theme }) => theme.colors.green};
   cursor: pointer;
   transition: .4s;
+  text-decoration: none;
 
   :hover {
-    text-decoration: none;
+    opacity: .8;
   }
 
   ${TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM]}
 }
 `;
-const ReferralImpl: React.FC<IProps> = observer(() => {
-	const { accountStore, settingsStore } = useStores();
-	if (settingsStore.access) return <Navigate to={ROUTES.TRADE} />;
+const Referral: React.FC<IProps> = observer(() => {
+	const { accountStore, referralStore } = useStores();
+	if (referralStore.access) return <Navigate to={ROUTES.TRADE} />;
 	return (
 		<Root>
 			<Image />
@@ -83,9 +82,5 @@ const ReferralImpl: React.FC<IProps> = observer(() => {
 		</Root>
 	);
 });
-const Referral: React.FC<IProps> = () => (
-	<ReferralVMProvider>
-		<ReferralImpl />
-	</ReferralVMProvider>
-);
+
 export default Referral;

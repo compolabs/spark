@@ -71,7 +71,7 @@ type TMenuItem = {
 	route?: string;
 	link?: string;
 };
-const menuItems: Array<TMenuItem> = [
+export const MENU_ITEMS: Array<TMenuItem> = [
 	// { title: "DASHBOARD" },
 	{ title: "TRADE", route: ROUTES.TRADE },
 	// { title: "EARN" },
@@ -98,7 +98,7 @@ const Header: React.FC<IProps> = observer(() => {
 					<Logo />
 				</a>
 				<Divider />
-				{menuItems.map(({ title, link, route }, key) => {
+				{MENU_ITEMS.map(({ title, link, route }, key) => {
 					if (link == null && route == null)
 						return (
 							<MenuItem key={key} disabled>

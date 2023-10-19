@@ -8,6 +8,7 @@ const Button = styled.button<{
 	outline?: boolean;
 	fitContent?: boolean;
 }>`
+	text-decoration: none;
 	white-space: nowrap;
 	display: flex;
 	justify-content: center;
