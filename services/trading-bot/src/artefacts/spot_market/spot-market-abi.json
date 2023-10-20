@@ -1,0 +1,763 @@
+{
+  "types": [
+    {
+      "typeId": 0,
+      "type": "()",
+      "components": [],
+      "typeParameters": null
+    },
+    {
+      "typeId": 1,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 2,
+      "type": "enum Error",
+      "components": [
+        {
+          "name": "InvalidPayment",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "InvalidArgument",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "InsufficientFunds",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "NotEnoughDeposit",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "OrderIsNotFound",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "AccessDenied",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "OrderIsNotActive",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "OrdersDontMatchByTokens",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "OrdersDontMatchByPrice",
+          "type": 0,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 3,
+      "type": "enum Option",
+      "components": [
+        {
+          "name": "None",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "Some",
+          "type": 5,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        5
+      ]
+    },
+    {
+      "typeId": 4,
+      "type": "enum Status",
+      "components": [
+        {
+          "name": "Active",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "Canceled",
+          "type": 0,
+          "typeArguments": null
+        },
+        {
+          "name": "Completed",
+          "type": 0,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 5,
+      "type": "generic T",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 6,
+      "type": "struct Address",
+      "components": [
+        {
+          "name": "value",
+          "type": 1,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 7,
+      "type": "struct MatchEvent",
+      "components": [
+        {
+          "name": "order0",
+          "type": 9,
+          "typeArguments": null
+        },
+        {
+          "name": "order1",
+          "type": 9,
+          "typeArguments": null
+        },
+        {
+          "name": "trade0",
+          "type": 3,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 10,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "trade1",
+          "type": 3,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 10,
+              "typeArguments": null
+            }
+          ]
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 8,
+      "type": "struct Order",
+      "components": [
+        {
+          "name": "asset0",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "amount0",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "asset1",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "amount1",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "status",
+          "type": 4,
+          "typeArguments": null
+        },
+        {
+          "name": "fulfilled0",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "fulfilled1",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "owner",
+          "type": 6,
+          "typeArguments": null
+        },
+        {
+          "name": "id",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "timestamp",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "matcher_fee",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "matcher_fee_used",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 9,
+      "type": "struct OrderChangeEvent",
+      "components": [
+        {
+          "name": "timestamp",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "address",
+          "type": 6,
+          "typeArguments": null
+        },
+        {
+          "name": "order",
+          "type": 8,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 10,
+      "type": "struct TradeEvent",
+      "components": [
+        {
+          "name": "timestamp",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "address",
+          "type": 6,
+          "typeArguments": null
+        },
+        {
+          "name": "order0_id",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "order1_id",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "asset0",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "amount0",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "asset1",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "amount1",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 11,
+      "type": "u64",
+      "components": null,
+      "typeParameters": null
+    }
+  ],
+  "functions": [
+    {
+      "inputs": [],
+      "name": "cancel_all_orders",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "id",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "cancel_order",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "asset1",
+          "type": 1,
+          "typeArguments": null
+        },
+        {
+          "name": "amount1",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "matcher_fee",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "create_order",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "deposit",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "payable",
+          "arguments": []
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "id",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "fulfill_order",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        },
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "get_all_pending_funding_payment",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "address",
+          "type": 6,
+          "typeArguments": null
+        }
+      ],
+      "name": "get_deposit",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "get_mark_price",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "get_market_price",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "order0_id",
+          "type": 11,
+          "typeArguments": null
+        },
+        {
+          "name": "order1_id",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "match_orders",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "id",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "modify_order",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "id",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "order_by_id",
+      "output": {
+        "name": "",
+        "type": 8,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "orders_amount",
+      "output": {
+        "name": "",
+        "type": 11,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "amount",
+          "type": 11,
+          "typeArguments": null
+        }
+      ],
+      "name": "withdraw",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    }
+  ],
+  "loggedTypes": [
+    {
+      "logId": 0,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 1,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 2,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 3,
+      "loggedType": {
+        "name": "",
+        "type": 9,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 4,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 5,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 6,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 7,
+      "loggedType": {
+        "name": "",
+        "type": 9,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 8,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 9,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 10,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 11,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 12,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 13,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 14,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 15,
+      "loggedType": {
+        "name": "",
+        "type": 2,
+        "typeArguments": []
+      }
+    }
+  ],
+  "messagesTypes": [],
+  "configurables": []
+}

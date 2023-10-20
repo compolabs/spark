@@ -1,0 +1,288 @@
+{
+  "types": [
+    {
+      "typeId": 0,
+      "type": "()",
+      "components": [],
+      "typeParameters": null
+    },
+    {
+      "typeId": 1,
+      "type": "(_, _)",
+      "components": [
+        {
+          "name": "__tuple_element",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "__tuple_element",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 2,
+      "type": "b256",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 3,
+      "type": "enum Identity",
+      "components": [
+        {
+          "name": "Address",
+          "type": 7,
+          "typeArguments": null
+        },
+        {
+          "name": "ContractId",
+          "type": 8,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 4,
+      "type": "generic T",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 5,
+      "type": "raw untyped ptr",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 6,
+      "type": "str",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 7,
+      "type": "struct Address",
+      "components": [
+        {
+          "name": "value",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 8,
+      "type": "struct ContractId",
+      "components": [
+        {
+          "name": "value",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 9,
+      "type": "struct Price",
+      "components": [
+        {
+          "name": "asset_id",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "price",
+          "type": 12,
+          "typeArguments": null
+        },
+        {
+          "name": "last_update",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 10,
+      "type": "struct RawVec",
+      "components": [
+        {
+          "name": "ptr",
+          "type": 5,
+          "typeArguments": null
+        },
+        {
+          "name": "cap",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        4
+      ]
+    },
+    {
+      "typeId": 11,
+      "type": "struct Vec",
+      "components": [
+        {
+          "name": "buf",
+          "type": 10,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 4,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        4
+      ]
+    },
+    {
+      "typeId": 12,
+      "type": "u64",
+      "components": null,
+      "typeParameters": null
+    }
+  ],
+  "functions": [
+    {
+      "inputs": [
+        {
+          "name": "asset_id",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "name": "get_price",
+      "output": {
+        "name": "",
+        "type": 9,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "output": {
+        "name": "",
+        "type": 3,
+        "typeArguments": null
+      },
+      "attributes": null
+    },
+    {
+      "inputs": [
+        {
+          "name": "asset_id",
+          "type": 2,
+          "typeArguments": null
+        },
+        {
+          "name": "price",
+          "type": 12,
+          "typeArguments": null
+        }
+      ],
+      "name": "set_price",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    },
+    {
+      "inputs": [
+        {
+          "name": "prices",
+          "type": 11,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 1,
+              "typeArguments": null
+            }
+          ]
+        }
+      ],
+      "name": "set_prices",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        }
+      ]
+    }
+  ],
+  "loggedTypes": [
+    {
+      "logId": 0,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 1,
+      "loggedType": {
+        "name": "",
+        "type": 6,
+        "typeArguments": null
+      }
+    }
+  ],
+  "messagesTypes": [],
+  "configurables": [
+    {
+      "name": "ADMIN",
+      "configurableType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": []
+      },
+      "offset": 10524
+    }
+  ]
+}
