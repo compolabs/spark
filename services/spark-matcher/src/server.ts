@@ -5,6 +5,7 @@ import { IOrder, IOrderResponse, orderOutputToIOrder } from "./models/Order";
 import { CONTRACT_ADDRESS, NODE_URL, PORT, PRIVATE_KEY } from "./config";
 import { SpotMarketAbi, SpotMarketAbi__factory as SpotMarketAbiFactory } from "./contracts";
 import fetchIndexer from "./utils/fetchIndexer";
+import BN from "./utils/BN";
 
 enum STATUS {
   RUNNING,
@@ -74,10 +75,17 @@ class SparkMatcher {
             (order1.type === "BUY" && order0.type === "SELL" && order0.price <= order1.price)) &&
           order0.status === "Active" &&
           order1.status === "Active" &&
-          this.processing.indexOf(order1.orderId) === -1
+          this.processing.indexOf(order1.orderId) === -1 &&
+          new BN(order0.amount0).minus(order0.fulfilled0).gt(0) &&
+          new BN(order0.amount1).minus(order0.fulfilled1).gt(0) &&
+          new BN(order1.amount0).minus(order1.fulfilled0).gt(0) &&
+          new BN(order1.amount1).minus(order1.fulfilled1).gt(0)
         ) {
           let isOrdersActive =
-            await Promise.all([await this.contract.functions.order_by_id(order0.orderId).simulate(), await this.contract.functions.order_by_id(order1.orderId).simulate()]).then(orders => orders.every((res) => res.value.status == "Active"))
+            await Promise.all([
+              await this.contract.functions.order_by_id(order0.orderId).simulate().catch(console.error),
+              await this.contract.functions.order_by_id(order1.orderId).simulate().catch(console.error)]
+            ).then(orders => orders.every((res) => res != null && res.value.status == "Active"))
           if (isOrdersActive) {
             // let asset0 = order0.asset0;
             // let asset1 = order0.asset1;

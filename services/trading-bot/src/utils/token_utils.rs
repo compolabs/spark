@@ -1,27 +1,41 @@
-use fuels::prelude::{abigen, WalletUnlocked};
-use fuels::tx::Address;
+use std::collections::HashMap;
 
-abigen!(Contract(
-    name = "TokenContract",
-    abi = "src/artefacts/token/token_contract-abi.json"
-));
+use fuels::types::{AssetId, Bits256};
+use serde::Deserialize;
 
-pub mod token_abi_calls {
+pub struct Asset {
+    pub bits256: Bits256,
+    pub asset_id: AssetId,
+    pub decimals: u64,
+    pub symbol: String,
+}
 
-    use fuels::{prelude::TxParameters, programs::call_response::FuelCallResponse};
+#[derive(Deserialize)]
+pub struct TokenConfig {
+    pub asset_id: String,
+    pub name: String,
+    pub symbol: String,
+    pub decimals: u64,
+}
 
-    use super::*;
+pub async fn load_tokens(tokens_json_path: &str) -> HashMap<String, Asset> {
+    let tokens_json = std::fs::read_to_string(tokens_json_path).unwrap();
+    let token_configs: Vec<TokenConfig> = serde_json::from_str(&tokens_json).unwrap();
 
-    pub async fn mint_and_transfer(
-        c: &TokenContract<WalletUnlocked>,
-        amount: u64,
-        recipient: Address,
-    ) -> Result<FuelCallResponse<()>, fuels::types::errors::Error> {
-        c.methods()
-            .mint_and_transfer(amount, recipient)
-            .append_variable_outputs(1)
-            .tx_params(TxParameters::default().set_gas_price(1))
-            .call()
-            .await
+    let mut assets: HashMap<String, Asset> = HashMap::new();
+
+    for config in token_configs {
+        let bits256 = Bits256::from_hex_str(&config.asset_id).unwrap();
+        let symbol = config.symbol;
+        assets.insert(
+            symbol.clone(),
+            Asset {
+                bits256,
+                asset_id: AssetId::from(bits256.0),
+                decimals: config.decimals,
+                symbol: symbol.clone(),
+            },
+        );
     }
+    assets
 }

@@ -32,7 +32,7 @@ async fn accrue_invitations() {
         WalletUnlocked::new_from_private_key(secret.parse().unwrap(), Some(provider.clone()));
 
     let id = ContractId::from_str(CONTRACT_ADDRESS).unwrap();
-    let inctance = ReferalContract::new(id.clone(), wallet.clone());
+    let inctance: ReferalContract<WalletUnlocked> = ReferalContract::new(id.clone(), wallet.clone());
     let address = Bech32Address::from_str(ADDRESS).unwrap();
     inctance
         .methods()
