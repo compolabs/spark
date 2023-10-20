@@ -7,8 +7,8 @@ import Balance from "@src/entities/Balance";
 import { FuelWalletProvider } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
-	FUEL_WALLET = "FUEL_WALLET",
-	FUELET = "FUELET",
+	FUEL_WALLET = "Fuel Wallet",
+	FUELET = "Fuelet Wallet",
 }
 
 export interface ISerializedAccountStore {
@@ -33,9 +33,7 @@ class AccountStore {
 		if (initState) {
 			this.setLoginType(initState.loginType);
 			this.setAddress(initState.address);
-			if (initState.loginType != null) {
-				document.addEventListener("FuelLoaded", this.onFuelLoaded);
-			}
+			document.addEventListener("FuelLoaded", this.onFuelLoaded);
 		}
 		this.initProvider();
 		when(() => this.provider != null, this.updateAccountBalances);
@@ -45,6 +43,9 @@ class AccountStore {
 			() => Promise.all([this.updateAccountBalances()]),
 		);
 	}
+
+	listConnectors: string[] = [];
+	setListConnectors = (value: string[]) => (this.listConnectors = value);
 
 	initProvider = async () => {
 		Provider.create(NODE_URL)
@@ -62,11 +63,6 @@ class AccountStore {
 		}
 		const address = Address.fromString(this.address);
 		const balances = (await this.provider?.getBalances(address)) ?? [];
-		// balances.map((b) => {
-		// 	const token = TOKENS_BY_ASSET_ID[b.assetId];
-		// 	const v = BN.formatUnits(b.amount.toString(),token.decimals )
-		// 	b.amount.gt(0) && console.log(token.symbol, v.toString());
-		// });
 		const assetBalances = TOKENS_LIST.map((asset) => {
 			const t = balances.find(({ assetId }) => asset.assetId === assetId);
 			const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
@@ -86,11 +82,20 @@ class AccountStore {
 		this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
 
 	onFuelLoaded = () => {
-		if (this.walletInstance == null) return;
-		this.walletInstance.on(window?.fuel.events?.currentAccount, this.handleAccEvent);
-		this.walletInstance.on(window?.fuel.events?.network, this.handleNetworkEvent);
+		if (window.fuel == null) return;
+		const connectors = window.fuel.listConnectors();
+		this.setListConnectors(connectors.map((c: { name: string }) => c.name));
+		window.fuel.on(window.fuel?.events?.currentAccount, this.handleAccEvent);
+		window.fuel.on(window.fuel?.events?.network, this.handleNetworkEvent);
+		window.fuel.on(window.fuel?.events?.currentConnector, this.handleConnectorEvent);
 	};
-	handleAccEvent = (account: string) => this.setAddress(account);
+	handleAccEvent = (account: string) => {
+		console.log("handleAccEvent", account);
+		this.setAddress(account);
+	};
+	handleConnectorEvent = (con: string) => {
+		console.log("handleConnectorEvent", con);
+	};
 
 	handleNetworkEvent = (network: FuelWalletProvider) => {
 		if (network.url !== NODE_URL) {
@@ -111,49 +116,38 @@ class AccountStore {
 
 	login = async (loginType: LOGIN_TYPE) => {
 		this.setLoginType(loginType);
-		await this.loginWithWallet();
-		await this.onFuelLoaded();
+		await this.loginWithWallet(loginType);
 	};
-
-	get walletInstance() {
-		switch (this.loginType) {
-			case LOGIN_TYPE.FUEL_WALLET:
-				return window.fuel;
-			// case LOGIN_TYPE.FUELET:
-			// 	return window.fuelet;
-			default:
-				return null;
-		}
-	}
 
 	disconnect = async () => {
 		try {
-			this.walletInstance?.disconnect();
+			window.fuel?.disconnect();
 		} catch (e) {
 			this.setAddress(null);
 			this.setLoginType(null);
+			return;
 		}
 		this.setAddress(null);
 		this.setLoginType(null);
 	};
 
-	loginWithWallet = async () => {
+	loginWithWallet = async (connector: LOGIN_TYPE) => {
 		//fixme change to notification
-		if (this.walletInstance == null) throw new Error("There is no wallet instance");
-		// const res = await this.walletInstance.connect({ url: NODE_URL });
-		const res = await this.walletInstance.connect();
-		if (!res) {
+		try {
+			await window.fuel.selectConnector(connector);
+			await window.fuel.connect();
+			const account = await window.fuel.currentAccount();
+			const provider = await window.fuel.getProvider();
+			if (provider.url !== NODE_URL) {
+				this.rootStore.notificationStore.toast(`Please change network url to beta 4`);
+			}
+			this.setAddress(account);
+		} catch (e) {
 			this.rootStore.notificationStore.toast("User denied", {
 				type: "error",
 			});
 			return;
 		}
-		const account = await this.walletInstance.currentAccount();
-		const provider = await this.walletInstance.getProvider();
-		if (provider.url !== NODE_URL) {
-			this.rootStore.notificationStore.toast(`Please change network url to beta 4`);
-		}
-		this.setAddress(account);
 	};
 
 	get isLoggedIn() {
