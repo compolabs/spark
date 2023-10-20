@@ -31,23 +31,18 @@ class OrdersStore {
 			.catch(console.error);
 
 	get spreadPercent(): string {
-		// const minBuyPriceOrder = this.orderbook.buy.reduce((acc, val) => (acc.price < val.price ? acc : val));
-		const minBuyPriceOrder = _.minBy(this.orderbook.buy, "price");
-		// const minSellPriceOrder = this.orderbook.sell.reduce((acc, val) => (acc.price < val.price ? acc : val));
+		const maxBuyPriceOrder = _.maxBy(this.orderbook.buy, "price");
 		const minSellPriceOrder = _.minBy(this.orderbook.sell, "price");
-		//(Ask Price – Bid Price) ÷ Ask Price
-		return minBuyPriceOrder != null && minSellPriceOrder != null
-			? new BN(minBuyPriceOrder.price).minus(minSellPriceOrder.price).div(minBuyPriceOrder.price).toFixed(2)
+		return maxBuyPriceOrder != null && minSellPriceOrder != null
+			? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).div(maxBuyPriceOrder.price).toFixed(2)
 			: "x";
 	}
 
 	get spreadPrice(): string {
-		// const minBuyPriceOrder = this.orderbook.buy.reduce((acc, val) => (acc.price < val.price ? acc : val));
-		const minBuyPriceOrder = _.minBy(this.orderbook.buy, "price");
-		// const minSellPriceOrder = this.orderbook.sell.reduce((acc, val) => (acc.price < val.price ? acc : val));
+		const maxBuyPriceOrder = _.maxBy(this.orderbook.buy, "price");
 		const minSellPriceOrder = _.minBy(this.orderbook.sell, "price");
-		return minBuyPriceOrder != null && minSellPriceOrder != null
-			? new BN(minBuyPriceOrder.price).minus(minSellPriceOrder.price).toFixed(2)
+		return maxBuyPriceOrder != null && minSellPriceOrder != null
+			? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).toFixed(2)
 			: "";
 	}
 }

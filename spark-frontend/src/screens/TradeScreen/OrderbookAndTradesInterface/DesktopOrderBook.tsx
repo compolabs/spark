@@ -213,7 +213,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 									type={TEXT_TYPES.NUMBER_SMALL}
 									color={+ordersStore.spreadPercent > 0 ? theme.colors.green : theme.colors.red}
 								>
-									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}) %`}
+									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
 								</Text>
 							</Row>
 						)}
