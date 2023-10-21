@@ -23,6 +23,13 @@ const Root = styled.div`
 	max-height: 190px;
 	overflow: hidden;
 	border-radius: 10px;
+
+	max-width: 100%;
+	overflow-x: scroll;
+
+	& > * {
+		min-width: 580px;
+	}
 `;
 
 const Title = styled(Text)`
@@ -36,6 +43,7 @@ const TitleRow = styled(Row)`
 	flex-shrink: 0;
 	align-items: center;
 	padding: 0 12px;
+	box-sizing: border-box;
 `;
 const TableText = styled(Text)`
 	${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
@@ -51,11 +59,13 @@ const TableRow = styled(Row)`
 	background: ${({ theme }) => theme.colors.gray5};
 	align-items: center;
 	padding: 0 12px;
+	box-sizing: border-box;
 `;
 
 const Body = styled(Column)`
 	overflow: scroll;
 	width: 100%;
+	box-sizing: border-box;
 `;
 
 const StyledButton = styled(Button)`
@@ -88,7 +98,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 					.sort((a, b) => (a.status === "Active" && b.status !== "Active" ? -1 : 1))
 					.map((order) => (
 						<TableRow key={order.id}>
-							<TableText>{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}</TableText>
+							<TableText style={{ minWidth: 24 }}>{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}</TableText>
 							<TableText>{order.market}</TableText>
 							<TableText color={order.type === "SELL" ? theme.colors.red : theme.colors.green}>{order.type}</TableText>
 							<TableText>{order.price.toFixed(2)}</TableText>

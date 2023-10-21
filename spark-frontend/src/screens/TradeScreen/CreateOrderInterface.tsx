@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Column } from "@src/components/Flex";
-import React from "react";
+import React, { ComponentProps } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
@@ -8,7 +8,7 @@ import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
 
-interface IProps {}
+interface IProps extends ComponentProps<any> {}
 
 const Root = styled.div`
 	display: flex;
@@ -24,7 +24,7 @@ const Root = styled.div`
 	background: ${({ theme }) => theme.colors.gray4};
 `;
 
-const CreateOrderInterface: React.FC<IProps> = observer(() => {
+const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 	const vm = useTradeScreenVM();
 	const orderTypes = [
 		{ title: "Spot market", key: "market" },
@@ -32,7 +32,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(() => {
 	];
 
 	return (
-		<Root>
+		<Root {...rest}>
 			<Column crossAxisSize="max">
 				<ButtonGroup>
 					<Button primary={!vm.isSell} outline={vm.isSell} onClick={() => vm.setIsSell(false)}>

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useState } from "react";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import { Column, Row } from "@src/components/Flex";
 import CreateOrderInterface from "@screens/TradeScreen/CreateOrderInterface";
@@ -13,6 +13,9 @@ import { useStores } from "@stores";
 import { Navigate } from "react-router-dom";
 import { ROUTES } from "@src/constants";
 import { observer } from "mobx-react";
+import useWindowSize from "@src/hooks/useWindowSize";
+import Button from "@components/Button";
+import Dialog from "@components/Dialog";
 
 interface IProps {}
 
@@ -29,7 +32,9 @@ const Root = styled.div`
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	const { referralStore } = useStores();
 	if (!referralStore.access) return <Navigate to={ROUTES.REFERRAL} />;
-	return (
+	const width = useWindowSize().width;
+	const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
+	return width && width >= 1080 ? (
 		<Root>
 			<MarketStatisticsBar />
 			<SizedBox height={4} />
@@ -44,6 +49,25 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<OrderbookAndTradesInterface />
 			</Row>
 			<StatusBar />
+		</Root>
+	) : (
+		<Root>
+			<MarketStatisticsBar />
+			<SizedBox height={4} />
+			<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
+				<Chart />
+				<BottomTablesInterface />
+			</Column>
+			<SizedBox height={16} />
+			<Button primary onClick={() => setCreateOrderDialogOpen(true)}>
+				Create order
+			</Button>
+			<StatusBar />
+			<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>
+				<Row crossAxisSize="max">
+					<CreateOrderInterface style={{ maxWidth: "100%", height: "100%" }} />
+				</Row>
+			</Dialog>
 		</Root>
 	);
 });
