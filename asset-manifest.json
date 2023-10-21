@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.c036e945.css",
-    "main.js": "/static/js/main.afca72c0.js",
+    "main.css": "/static/css/main.b382c503.css",
+    "main.js": "/static/js/main.92e2cc29.js",
     "static/media/referralBackground.png": "/static/media/referralBackground.2fcee11610c18fe3410c.png",
     "static/media/JetBrainsMono-Medium.ttf": "/static/media/JetBrainsMono-Medium.2504f21abf8bf1f0613a.ttf",
     "static/media/SpaceGrotesk-Medium.ttf": "/static/media/SpaceGrotesk-Medium.d188dfade7a12bbb16c1.ttf",
@@ -16,12 +16,13 @@
     "static/media/bitcoin.svg": "/static/media/bitcoin.418ae0c4fea1a2b9413996ac86334673.svg",
     "static/media/ethereum.svg": "/static/media/ethereum.eba924eeaba637abfcc634f7f6ff5fef.svg",
     "index.html": "/index.html",
+    "static/media/close.svg": "/static/media/close.94297e6946ee41b57f695b67749c3f37.svg",
     "static/media/arrowUp.svg": "/static/media/arrowUp.452af6f7b455cfcae1da186c253c7491.svg",
-    "main.c036e945.css.map": "/static/css/main.c036e945.css.map",
-    "main.afca72c0.js.map": "/static/js/main.afca72c0.js.map"
+    "main.b382c503.css.map": "/static/css/main.b382c503.css.map",
+    "main.92e2cc29.js.map": "/static/js/main.92e2cc29.js.map"
   },
   "entrypoints": [
-    "static/css/main.c036e945.css",
-    "static/js/main.afca72c0.js"
+    "static/css/main.b382c503.css",
+    "static/js/main.92e2cc29.js"
   ]
 }
