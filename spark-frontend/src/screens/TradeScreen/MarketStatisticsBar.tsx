@@ -75,12 +75,12 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			.get(req)
 			.then((res) => res.data)
 			.then((data) => {
-				if (data.h[1] != null && data.h[0] != null) {
+				if (data.t[1] != null && data.t[0] != null) {
 					setState({
 						price: new BN(data.c[1]),
 						priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
-						high: new BN(data.h[1]),
-						low: new BN(data.l[1]),
+						high: new BN(data.h[1] ?? BN.ZERO),
+						low: new BN(data.l[1] ?? BN.ZERO),
 						//fixme
 						volumeAsset1: BN.formatUnits(data.v[1] * data.c[1], 9), //data.c[1] = price of USDC
 						volumeAsset0: BN.formatUnits(data.v[1] * 1, 9), //1 = price of USDC
