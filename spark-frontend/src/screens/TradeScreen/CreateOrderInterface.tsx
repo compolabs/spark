@@ -73,7 +73,9 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 					label="TOTAL"
 				/>
 				<SizedBox height={16} />
-				<Button outline>Setup market making algorithm</Button>
+				<Button outline onClick={vm.setupMarketMakingAlgorithm}>
+					Setup market making algorithm
+				</Button>
 			</Column>
 			<Button
 				primary={!vm.isSell}

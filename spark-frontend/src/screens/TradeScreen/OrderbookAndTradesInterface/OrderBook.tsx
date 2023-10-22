@@ -181,8 +181,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 											vm.setSellTotal(BN.ZERO, true);
 										}}
 									>
-										<div color={theme.colors.white}>{o.amountLeft.toFormat(o.amountLeft.lt(0.01) ? 6 : 2)}</div>
-										<div color={theme.colors.white}>{o.totalLeft.toFormat(o.totalLeft.lt(0.01) ? 6 : 2)}</div>
+										<div color={theme.colors.white}>{o.amountLeftStr}</div>
+										<div color={theme.colors.white}>{o.totalLeftStr}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
@@ -250,8 +250,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 										type="buy"
 										key={index + "positive"}
 									>
-										<div>{o.totalLeft.toFormat(o.totalLeft.lt(0.01) ? 6 : 2)}</div>
-										<div>{o.amountLeft.toFormat(o.amountLeft.lt(0.01) ? 6 : 2)}</div>
+										<div>{o.totalLeftStr}</div>
+										<div>{o.amountLeftStr}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>

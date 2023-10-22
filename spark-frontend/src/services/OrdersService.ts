@@ -94,13 +94,18 @@ export class Order {
 	//   return am0.div(am1);
 	// }
 
-	get amount() {
+	get amountStr() {
 		const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
 		return am0.toFormat(am0.lt(0.01) ? 9 : 2);
 	}
 
 	get amountLeft() {
-		return BN.formatUnits(this.amount0.minus(this.fulfilled0), this.token0.decimals);
+		return this.amount0.minus(this.fulfilled0);
+	}
+
+	get amountLeftStr() {
+		const value = BN.formatUnits(this.amountLeft, this.token0.decimals);
+		return value.toFormat(value.lt(0.01) ? 6 : 2);
 	}
 
 	get total() {
@@ -109,7 +114,12 @@ export class Order {
 	}
 
 	get totalLeft() {
-		return BN.formatUnits(this.amount1.minus(this.fulfilled1), this.token1.decimals);
+		return this.amount1.minus(this.fulfilled1);
+	}
+
+	get totalLeftStr() {
+		const value = BN.formatUnits(this.totalLeft, this.token1.decimals);
+		return value.toFormat(value.lt(0.01) ? 6 : 2);
 	}
 }
 
