@@ -14,7 +14,6 @@ const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
-	//border: 1px solid white;
 	box-sizing: border-box;
 	padding: 16px;
 	flex: 2;
@@ -74,6 +73,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 					label="TOTAL"
 				/>
 				<SizedBox height={16} />
+				<Button outline>Setup market making algorithm</Button>
 			</Column>
 			<Button
 				primary={!vm.isSell}

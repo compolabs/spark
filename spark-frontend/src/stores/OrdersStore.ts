@@ -30,20 +30,20 @@ class OrdersStore {
 			})
 			.catch(console.error);
 
-	get spreadPercent(): string {
+	get spreadPercent(): BN | null {
 		const maxBuyPriceOrder = _.maxBy(this.orderbook.buy, "price");
 		const minSellPriceOrder = _.minBy(this.orderbook.sell, "price");
 		return maxBuyPriceOrder != null && minSellPriceOrder != null
-			? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).div(maxBuyPriceOrder.price).toFixed(2)
-			: "x";
+			? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).div(maxBuyPriceOrder.price)
+			: null;
 	}
 
-	get spreadPrice(): string {
+	get spreadPrice(): BN | null {
 		const maxBuyPriceOrder = _.maxBy(this.orderbook.buy, "price");
 		const minSellPriceOrder = _.minBy(this.orderbook.sell, "price");
 		return maxBuyPriceOrder != null && minSellPriceOrder != null
-			? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).toFixed(2)
-			: "";
+			? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price)
+			: null;
 	}
 }
 

@@ -100,8 +100,7 @@ export class Order {
 	}
 
 	get amountLeft() {
-		const amount = BN.formatUnits(this.amount0.minus(this.fulfilled0), this.token0.decimals);
-		return amount.toFormat(amount.lt(0.01) ? 6 : 2);
+		return BN.formatUnits(this.amount0.minus(this.fulfilled0), this.token0.decimals);
 	}
 
 	get total() {
@@ -110,14 +109,13 @@ export class Order {
 	}
 
 	get totalLeft() {
-		const left = BN.formatUnits(this.amount1.minus(this.fulfilled1), this.token1.decimals);
-		return left.toFormat(left.lt(0.01) ? 6 : 2);
+		return BN.formatUnits(this.amount1.minus(this.fulfilled1), this.token1.decimals);
 	}
 }
 
 export const getOrderbook = async (
 	owner: string,
-	market: string
+	market: string,
 ): Promise<{
 	myOrders: Array<Order>;
 	orderbook: { buy: Array<Order>; sell: Array<Order> };
@@ -132,7 +130,7 @@ export const getOrderbook = async (
 	const url = INDEXER;
 	const headers = {
 		"Content-Type": "application/json",
-		Accept: "application/json"
+		Accept: "application/json",
 	};
 
 	const res = await Promise.all([
@@ -144,32 +142,38 @@ export const getOrderbook = async (
 					method: "POST",
 					url,
 					headers,
-					data: { query: ownerQuery }
-			  })
+					data: { query: ownerQuery },
+			  }),
 	]);
 	// res.map((res) => console.log(res?.data.data[0]));
 	const [buy, sell, myOrders] = res.map((res) =>
 		res?.data.data[0] != null
-			? res.data.data[0].map((order: any) => {
-					// console.log(order);
-					return new Order({
-						...order,
-						market,
-						asset0: `0x${order.asset0}`,
-						asset1: `0x${order.asset1}`,
-						type: assetId0 === order.asset0 ? "SELL" : "BUY",
-						price:
-							assetId0 === order.asset0
-								? BN.formatUnits(order.amount1, TOKENS_BY_SYMBOL.USDC.decimals)
-										.div(BN.formatUnits(order.amount0, TOKENS_BY_SYMBOL.UNI.decimals))
-										.toNumber()
-								: BN.formatUnits(order.amount0, TOKENS_BY_SYMBOL.USDC.decimals)
-										.div(BN.formatUnits(order.amount1, TOKENS_BY_SYMBOL.UNI.decimals))
-										.toNumber()
-					});
-			  })
-			: []
+			? res.data.data[0].map(
+					(order: IOrderResponse): Order =>
+						new Order({
+							...order,
+							market,
+							asset0: `0x${order.asset0}`,
+							asset1: `0x${order.asset1}`,
+							type: assetId0 === order.asset0 ? "SELL" : "BUY",
+							price:
+								assetId0 === order.asset0
+									? BN.formatUnits(order.amount1, TOKENS_BY_SYMBOL.USDC.decimals)
+											.div(BN.formatUnits(order.amount0, TOKENS_BY_SYMBOL.UNI.decimals))
+											.toNumber()
+									: BN.formatUnits(order.amount0, TOKENS_BY_SYMBOL.USDC.decimals)
+											.div(BN.formatUnits(order.amount1, TOKENS_BY_SYMBOL.UNI.decimals))
+											.toNumber(),
+						}),
+			  )
+			: [],
 	);
 	// console.log({ myOrders, orderbook: { sell, buy } });
-	return { myOrders, orderbook: { sell, buy } };
+	return {
+		myOrders,
+		orderbook: {
+			sell: sell.filter((order: Order) => order.amountLeft.gt(0) && order.totalLeft.gt(0)),
+			buy: buy.filter((order: Order) => order.amountLeft.gt(0) && order.totalLeft.gt(0)),
+		},
+	};
 };

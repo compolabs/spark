@@ -162,7 +162,6 @@ class TradeScreenVm {
 	sellTotal: BN = BN.ZERO;
 	setSellTotal = (total: BN, sync?: boolean) => {
 		this.sellTotal = total;
-		console.log(total.toString());
 		if (this.sellPrice.gt(0) && sync) {
 			const v1 = BN.formatUnits(this.sellPrice, this.token1.decimals);
 			const v2 = BN.formatUnits(total, this.token1.decimals);
@@ -307,5 +306,11 @@ class TradeScreenVm {
 		this.rootStore.notificationStore.toast(title, {
 			type: "error",
 		});
+	};
+
+	setupMarketMakingAlgorithm = () => {
+		if (this.rootStore.ordersStore.spreadPercent == null) return;
+		if (this.rootStore.ordersStore.spreadPercent.gt(0)) {
+		}
 	};
 }

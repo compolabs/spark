@@ -122,7 +122,6 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		.reverse();
 	const sellOrders = ordersStore.orderbook.sell
 		.slice()
-		.filter((order) => order.amount0.minus(order.fulfilled0).gt(0) && order.amount1.minus(order.fulfilled1).gt(0))
 		.sort((a, b) => {
 			if (a.price == null && b.price == null) return 0;
 			if (a.price == null && b.price != null) return 1;
@@ -182,8 +181,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 											vm.setSellTotal(BN.ZERO, true);
 										}}
 									>
-										<div color={theme.colors.white}>{o.amountLeft}</div>
-										<div color={theme.colors.white}>{o.totalLeft}</div>
+										<div color={theme.colors.white}>{o.amountLeft.toFormat(o.amountLeft.lt(0.01) ? 6 : 2)}</div>
+										<div color={theme.colors.white}>{o.totalLeft.toFormat(o.totalLeft.lt(0.01) ? 6 : 2)}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
@@ -210,13 +209,17 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 									SPREAD
 								</Text>
 								<SizedBox width={12} />
-								<Text>{ordersStore.spreadPrice?.toString()}</Text>
+								<Text>{ordersStore.spreadPrice != null ? ordersStore.spreadPrice.toFixed(2) : ""}</Text>
 								<SizedBox width={12} />
 								<Text
 									type={TEXT_TYPES.NUMBER_SMALL}
-									color={+ordersStore.spreadPercent > 0 ? theme.colors.green : theme.colors.red}
+									color={
+										ordersStore.spreadPercent && ordersStore.spreadPercent.toNumber() > 0 ? theme.colors.green : theme.colors.red
+									}
 								>
-									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
+									{`(${ordersStore.spreadPercent && ordersStore.spreadPercent.toNumber() > 0 ? "+" : ""}${
+										ordersStore.spreadPercent ? ordersStore.spreadPercent.toFixed(2) : "x"
+									}%) `}
 								</Text>
 							</Row>
 						)}
@@ -247,8 +250,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 										type="buy"
 										key={index + "positive"}
 									>
-										<div>{o.totalLeft}</div>
-										<div>{o.amountLeft}</div>
+										<div>{o.totalLeft.toFormat(o.totalLeft.lt(0.01) ? 6 : 2)}</div>
+										<div>{o.amountLeft.toFormat(o.amountLeft.lt(0.01) ? 6 : 2)}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
