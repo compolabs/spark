@@ -16,6 +16,7 @@ import { observer } from "mobx-react";
 import useWindowSize from "@src/hooks/useWindowSize";
 import Button from "@components/Button";
 import Dialog from "@components/Dialog";
+import OrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/OrderBook";
 
 interface IProps {}
 
@@ -27,6 +28,16 @@ const Root = styled.div`
 	flex: 1;
 	box-sizing: border-box;
 	padding: 0 4px;
+`;
+
+const MobileCreateOrderDialogContainer = styled(Column)`
+	width: 100%;
+
+	& > * {
+		width: 100%;
+		flex: 1;
+		height: 100%;
+	}
 `;
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
@@ -64,9 +75,10 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 			</Button>
 			<StatusBar />
 			<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>
-				<Row crossAxisSize="max">
+				<MobileCreateOrderDialogContainer>
+					<OrderBook mobileMode />
 					<CreateOrderInterface style={{ maxWidth: "100%", height: "100%" }} />
-				</Row>
+				</MobileCreateOrderDialogContainer>
 			</Dialog>
 		</Root>
 	);

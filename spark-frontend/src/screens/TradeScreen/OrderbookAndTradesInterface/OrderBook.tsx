@@ -11,12 +11,15 @@ import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useTheme } from "@emotion/react";
 import useEventListener from "@src/utils/useEventListener";
 
-interface IProps extends HTMLAttributes<HTMLDivElement> {}
+interface IProps extends HTMLAttributes<HTMLDivElement> {
+	mobileMode?: boolean;
+}
 
 const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 	grid-area: orderbook;
+	width: 100%;
 `;
 const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
@@ -86,7 +89,7 @@ const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	height: 100%;
 `;
 
-const DesktopOrderBook: React.FC<IProps> = () => {
+const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	const vm = useTradeScreenVM();
 	const [round] = useState("2");
 	const { ordersStore } = useStores();
@@ -95,7 +98,7 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 	const [amountOfOrders, setAmountOfOrders] = useState(0);
 	const oneSizeOrders = +new BN(amountOfOrders).div(2).toFixed(0) - 1;
 	const calcSize = () => {
-		const windowHeight = window.innerHeight - 212;
+		const windowHeight = window.innerHeight - (mobileMode ? window.innerHeight / 2 + 96 : 212);
 		const v = new BN(windowHeight).minus(48).div(19);
 		const amountOfOrders = +v.toFixed(0);
 		setAmountOfOrders(amountOfOrders);
@@ -258,8 +261,8 @@ const DesktopOrderBook: React.FC<IProps> = () => {
 				</Container>
 			</Root>
 		);
-};
-export default observer(DesktopOrderBook);
+});
+export default OrderBook;
 
 const PlugRow = styled(Row)`
 	justify-content: space-between;
