@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React, { useState } from "react";
-import DesktopOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/DesktopOrderBook";
+import OrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/OrderBook";
 import SizedBox from "@components/SizedBox";
 import Button, { ButtonGroup } from "@components/Button";
 
@@ -31,7 +31,7 @@ const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 				</Button>
 			</ButtonGroup>
 			<SizedBox height={16} />
-			{isOrderbook ? <DesktopOrderBook /> : null}
+			{isOrderbook ? <OrderBook /> : null}
 		</Root>
 	);
 };

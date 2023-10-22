@@ -10,7 +10,7 @@ import Referral from "@screens/Referral/Referral";
 
 const Root = styled(Column)`
 	width: 100%;
-	min-width: 1080px;
+	//min-width: 1080px;
 	align-items: center;
 	background: ${({ theme }) => theme.colors.gray5};
 	height: 100vh;

@@ -36,7 +36,11 @@ class SparkMatcher {
         this.status = STATUS.RUNNING;
         new Promise(this.doMatch)
           // .then(this.fetcher.sync)
-          .catch(console.log)
+          .catch((err) => {
+            console.log(err)
+            this.processing = [];
+            this.status = STATUS.CHILLED;
+          })
           .finally(() => {
             this.processing = [];
             this.status = STATUS.CHILLED;
@@ -60,7 +64,8 @@ class SparkMatcher {
 
     const totalOrders: number = await fetchIndexer<Array<{ count: number }>>(
       `SELECT json_agg(t) FROM (SELECT COUNT(id) FROM composabilitylabs_spark_indexer.orderentity) t;`
-    ).then(([{ count }]) => count);
+    )
+      .then((res) => res && res[0] ? res[0].count : -1);
 
     console.log(
       `Buy orders: ${activeOrders.filter((o) => o.type === "BUY").length}`,

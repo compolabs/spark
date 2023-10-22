@@ -25,3 +25,12 @@ export const Column = styled.div<IFlexProps>`
 	width: ${({ crossAxisSize }) => (crossAxisSize === "max" ? "100%" : "fit-content")};
 	height: ${({ mainAxisSize }) => (mainAxisSize === "stretch" ? "100%" : "fit-content")};
 `;
+
+export const DesktopRow = styled(Row)`
+	align-items: center;
+	width: fit-content;
+	display: none;
+	@media (min-width: 1080px) {
+		display: flex;
+	}
+`;

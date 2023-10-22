@@ -11,7 +11,7 @@ import isRoutesEquals from "@src/utils/isRoutesEquals";
 import SizedBox from "@components/SizedBox";
 import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
 import { LOGIN_TYPE } from "@src/stores/AccountStore";
-import { Row } from "@components/Flex";
+import { DesktopRow, Row } from "@components/Flex";
 import ConnectedWallet from "@components/Header/ConnectedWallet";
 
 interface IProps {}
@@ -98,42 +98,46 @@ const Header: React.FC<IProps> = observer(() => {
 					<Logo />
 				</a>
 				<Divider />
-				{MENU_ITEMS.map(({ title, link, route }, key) => {
-					if (link == null && route == null)
-						return (
-							<MenuItem key={key} disabled>
-								{title}
-							</MenuItem>
-						);
-					else if (route != null)
-						return (
-							<Link to={route} key={key}>
-								<MenuItem active={isRoutesEquals(route, location.pathname)}>{title}</MenuItem>
-							</Link>
-						);
-					else if (link != null)
-						return (
-							<a rel="noopener noreferrer" target="_blank" href={link} key={key}>
-								<MenuItem key={key}>{title}</MenuItem>
-							</a>
-						);
-					else return null;
-				})}
+				<DesktopRow>
+					{MENU_ITEMS.map(({ title, link, route }, key) => {
+						if (link == null && route == null)
+							return (
+								<MenuItem key={key} disabled>
+									{title}
+								</MenuItem>
+							);
+						else if (route != null)
+							return (
+								<Link to={route} key={key}>
+									<MenuItem active={isRoutesEquals(route, location.pathname)}>{title}</MenuItem>
+								</Link>
+							);
+						else if (link != null)
+							return (
+								<a rel="noopener noreferrer" target="_blank" href={link} key={key}>
+									<MenuItem key={key}>{title}</MenuItem>
+								</a>
+							);
+						else return null;
+					})}
+				</DesktopRow>
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
-				<SizedBox width={10} />
-				<SettingsButton outline disabled>
-					<GearIcon />
-				</SettingsButton>
-				<SizedBox width={10} />
-				<Button style={{ height: 32 }} outline fitContent disabled>
-					DEPOSIT/WITHDRAW
-				</Button>
-				<SizedBox width={10} />
-				<Button style={{ height: 32 }} outline fitContent disabled>
-					BRIDGE
-				</Button>
-				<SizedBox width={10} />
+				<DesktopRow>
+					<SizedBox width={10} />
+					<SettingsButton outline disabled>
+						<GearIcon />
+					</SettingsButton>
+					<SizedBox width={10} />
+					<Button style={{ height: 32 }} outline fitContent disabled>
+						DEPOSIT/WITHDRAW
+					</Button>
+					<SizedBox width={10} />
+					<Button style={{ height: 32 }} outline fitContent disabled>
+						BRIDGE
+					</Button>
+					<SizedBox width={10} />
+				</DesktopRow>
 				{accountStore.address != null ? (
 					<ConnectedWallet />
 				) : (

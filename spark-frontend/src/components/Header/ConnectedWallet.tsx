@@ -19,7 +19,7 @@ interface IProps {}
 const Root = styled(Button)<{ focused?: boolean }>`
 	background: transparent;
 	border: 1px solid ${({ theme }) => theme.colors.white};
-	padding: 0;
+	padding: 0 8px;
 
 	${TEXT_TYPES_MAP[TEXT_TYPES.H2]}
 	:hover {

@@ -4,7 +4,7 @@ import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import Text, { TEXT_TYPES } from "@components/Text";
-import { Row } from "@components/Flex";
+import { DesktopRow, Row } from "@components/Flex";
 import Chip from "@components/Chip";
 import { useTheme } from "@emotion/react";
 
@@ -50,20 +50,22 @@ const StatusBar: React.FC<IProps> = observer(() => {
 				<SizedBox width={8} />
 				<Text type={TEXT_TYPES.BODY_SMALL}> Response Time Name holder (xxxms)</Text>
 			</Row>
-			<Divider />
-			<Text type={TEXT_TYPES.BODY_SMALL}>XX,XXX TPS</Text>
-			<Divider />
-			<Text type={TEXT_TYPES.BODY_SMALL}>Average Gas Prices:</Text>
-			<SizedBox width={4} />
-			<Chip>
-				SPOT:&nbsp;
-				<div style={{ color: theme.colors.white }}>X,XXXX€</div>
-			</Chip>
-			<SizedBox width={8} />
-			<Chip>
-				PERP:&nbsp;
-				<div style={{ color: theme.colors.white }}>X,XXXX€</div>
-			</Chip>
+			<DesktopRow>
+				<Divider />
+				<Text type={TEXT_TYPES.BODY_SMALL}>XX,XXX TPS</Text>
+				<Divider />
+				<Text type={TEXT_TYPES.BODY_SMALL}>Average Gas Prices:</Text>
+				<SizedBox width={4} />
+				<Chip>
+					SPOT:&nbsp;
+					<div style={{ color: theme.colors.white }}>X,XXXX€</div>
+				</Chip>
+				<SizedBox width={8} />
+				<Chip>
+					PERP:&nbsp;
+					<div style={{ color: theme.colors.white }}>X,XXXX€</div>
+				</Chip>
+			</DesktopRow>
 		</Root>
 	);
 });
