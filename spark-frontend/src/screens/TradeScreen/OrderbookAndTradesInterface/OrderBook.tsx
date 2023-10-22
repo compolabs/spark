@@ -104,8 +104,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		setAmountOfOrders(amountOfOrders);
 	};
 
-	useEffect(calcSize, []);
-	const handleResize = useCallback(calcSize, []);
+	useEffect(calcSize, [mobileMode]);
+	const handleResize = useCallback(calcSize, [mobileMode]);
 
 	useEventListener("resize", handleResize);
 
