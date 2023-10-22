@@ -7,6 +7,7 @@ import { observer } from "mobx-react";
 import Input from "@components/Input";
 import { Column } from "@components/Flex";
 import { useStores } from "@stores";
+import { useLocation } from "react-router-dom";
 
 interface IProps {}
 
@@ -33,7 +34,9 @@ const StyledInput = styled(Input)`
 
 const ReferralInterface: React.FC<IProps> = observer(() => {
 	const { referralStore } = useStores();
-	const [address, setAddress] = useState("");
+	const location = useLocation();
+	const ref = new URLSearchParams(location.search).get("ref");
+	const [address, setAddress] = useState(ref ?? "");
 	//todo add verification of fuel address
 	return (
 		<>
