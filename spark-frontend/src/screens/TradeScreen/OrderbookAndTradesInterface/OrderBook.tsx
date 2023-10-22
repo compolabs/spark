@@ -209,17 +209,13 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 									SPREAD
 								</Text>
 								<SizedBox width={12} />
-								<Text>{ordersStore.spreadPrice != null ? ordersStore.spreadPrice.toFixed(2) : ""}</Text>
+								<Text>{ordersStore.spreadPrice}</Text>
 								<SizedBox width={12} />
 								<Text
 									type={TEXT_TYPES.NUMBER_SMALL}
-									color={
-										ordersStore.spreadPercent && ordersStore.spreadPercent.toNumber() > 0 ? theme.colors.green : theme.colors.red
-									}
+									color={+ordersStore.spreadPercent > 0 ? theme.colors.green : theme.colors.red}
 								>
-									{`(${ordersStore.spreadPercent && ordersStore.spreadPercent.toNumber() > 0 ? "+" : ""}${
-										ordersStore.spreadPercent ? ordersStore.spreadPercent.toFixed(2) : "x"
-									}%) `}
+									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
 								</Text>
 							</Row>
 						)}
