@@ -15,28 +15,28 @@ const ConnectWalletInterface: React.FC<IProps> = observer(() => {
 			name: "Fuel Wallet",
 			type: LOGIN_TYPE.FUEL_WALLET,
 			downloadLink: "https://wallet.fuel.network/docs/install/",
-			disabled: accountStore.listConnectors.includes(LOGIN_TYPE.FUEL_WALLET),
+			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUEL_WALLET),
 		},
 		{
 			name: "Fuelet",
 			type: LOGIN_TYPE.FUELET,
 			downloadLink: "https://fuelet.app",
-			disabled: accountStore.listConnectors.includes(LOGIN_TYPE.FUELET),
+			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUELET),
 		},
-		{ name: "Metamask", disabled: true },
-		{ name: "Ledger", disabled: true },
+		{ name: "Metamask", active: false },
+		{ name: "Ledger", active: false },
 	];
 
 	return (
 		<>
 			<Text type={TEXT_TYPES.H1}>Connect wallet</Text>
 			<SizedBox height={40} />
-			{wallets.map(({ name, disabled, downloadLink, type }) => (
+			{wallets.map(({ name, active, downloadLink, type }) => (
 				<Button
 					key={name}
 					style={{ marginBottom: 16 }}
 					onClick={() => (type == null ? window.open(downloadLink) : accountStore.login(type))}
-					disabled={disabled}
+					disabled={!active}
 				>
 					{name}
 				</Button>

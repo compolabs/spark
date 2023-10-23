@@ -4,7 +4,7 @@ import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
 import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import Balance from "@src/entities/Balance";
-import { FuelWalletProvider } from "@fuel-wallet/sdk";
+import { Fuel, FuelWalletProvider } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
 	FUEL_WALLET = "Fuel Wallet",
@@ -33,8 +33,9 @@ class AccountStore {
 		if (initState) {
 			this.setLoginType(initState.loginType);
 			this.setAddress(initState.address);
-			document.addEventListener("FuelLoaded", this.onFuelLoaded);
 		}
+
+		this.initFuel();
 		this.initProvider();
 		when(() => this.provider != null, this.updateAccountBalances);
 		setInterval(this.updateAccountBalances, 10 * 1000);
@@ -44,8 +45,22 @@ class AccountStore {
 		);
 	}
 
+	initFuel = () => {
+		const fuel = new Fuel();
+		this.setFuel(fuel);
+		fuel.on(fuel.events.connectors, (connectors: Record<number, { name: string }>) => {
+			const arr: any[] = Object.values(connectors).map((c) => c.name);
+			this.setListConnectors(arr);
+		});
+		fuel?.on(this.fuel?.events?.currentAccount, (address: string) => this.setAddress(address));
+		fuel?.on(this.fuel?.events?.network, this.handleNetworkEvent);
+	};
+
 	listConnectors: string[] = [];
 	setListConnectors = (value: string[]) => (this.listConnectors = value);
+
+	fuel: any = null;
+	setFuel = (fuel: any) => (this.fuel = fuel);
 
 	initProvider = async () => {
 		Provider.create(NODE_URL)
@@ -81,22 +96,6 @@ class AccountStore {
 	findBalanceByAssetId = (assetId: string) =>
 		this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
 
-	onFuelLoaded = () => {
-		if (window.fuel == null) return;
-		const connectors = window.fuel.listConnectors();
-		this.setListConnectors(connectors.map((c: { name: string }) => c.name));
-		window.fuel.on(window.fuel?.events?.currentAccount, this.handleAccEvent);
-		window.fuel.on(window.fuel?.events?.network, this.handleNetworkEvent);
-		window.fuel.on(window.fuel?.events?.currentConnector, this.handleConnectorEvent);
-	};
-	handleAccEvent = (account: string) => {
-		console.log("handleAccEvent", account);
-		this.setAddress(account);
-	};
-	handleConnectorEvent = (con: string) => {
-		console.log("handleConnectorEvent", con);
-	};
-
 	handleNetworkEvent = (network: FuelWalletProvider) => {
 		if (network.url !== NODE_URL) {
 			this.rootStore.notificationStore.toast(`Please change network url to Testnet Beta 4`);
@@ -121,7 +120,7 @@ class AccountStore {
 
 	disconnect = async () => {
 		try {
-			window.fuel?.disconnect();
+			this.fuel?.disconnect();
 		} catch (e) {
 			this.setAddress(null);
 			this.setLoginType(null);
@@ -132,12 +131,11 @@ class AccountStore {
 	};
 
 	loginWithWallet = async (connector: LOGIN_TYPE) => {
-		//fixme change to notification
 		try {
-			await window.fuel.selectConnector(connector);
-			await window.fuel.connect();
-			const account = await window.fuel.currentAccount();
-			const provider = await window.fuel.getProvider();
+			await this.fuel.selectConnector(connector);
+			await this.fuel.connect();
+			const account = await this.fuel.currentAccount();
+			const provider = await this.fuel.getProvider();
 			if (provider.url !== NODE_URL) {
 				this.rootStore.notificationStore.toast(`Please change network url to beta 4`);
 			}
@@ -155,8 +153,8 @@ class AccountStore {
 	}
 
 	getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
-		if (this.address == null || window.fuel == null) return null;
-		return window.fuel.getWallet(this.address);
+		if (this.address == null || this.fuel == null) return null;
+		return this.fuel.getWallet(this.address);
 	};
 
 	get walletToRead(): WalletLocked | null {
