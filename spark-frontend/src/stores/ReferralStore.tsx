@@ -88,8 +88,8 @@ class ReferralStore {
 					: notificationStore.toast(
 							<Column>
 								<Text type={TEXT_TYPES.H1}>❌ You are not verified to access app</Text>
-								<SizedBox height={8} />
-								<Text type={TEXT_TYPES.NUMBER_MEDIUM}>{e.toString()}</Text>
+								{/*<SizedBox height={8} />*/}
+								{/*<Text type={TEXT_TYPES.NUMBER_MEDIUM}>{e.toString()}</Text>*/}
 							</Column>,
 							{ type: "error" },
 					  );
