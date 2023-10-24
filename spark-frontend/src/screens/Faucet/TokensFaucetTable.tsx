@@ -73,7 +73,7 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 			})),
 		);
 		/* eslint-disable */
-	}, [accountStore.address, accountStore.isLoggedIn, settingsStore, vm.loading]);
+	}, [accountStore.address, accountStore.isLoggedIn, settingsStore, vm.loading, ethBalance]);
 	const columns = React.useMemo(
 		() => [
 			{

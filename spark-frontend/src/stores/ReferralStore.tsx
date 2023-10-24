@@ -77,7 +77,7 @@ class ReferralStore {
 							<Column>
 								<Text type={TEXT_TYPES.H1}>💸 You need to mint some ETH</Text>
 								<SizedBox height={8} />
-								<Button onClick={() => window.open(`#${ROUTES.FAUCET}`)}>Go to faucet </Button>
+								<Button onClick={() => window.open(`#${ROUTES.FAUCET}`, "_self")}>Go to faucet </Button>
 							</Column>,
 							{ type: "error" },
 					  )
