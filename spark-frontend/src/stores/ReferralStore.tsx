@@ -67,7 +67,7 @@ class ReferralStore {
 			.simulate()
 			.then(({ value }) => {
 				console.log({ invitationsLeft: value[0].toString(), nasted_invites_amount: value[1].toString() });
-				notificationStore.toast("You are verified to access app", { type: "success" });
+				notificationStore.toast("You are verified to access Trade page", { type: "success" });
 				this.addVerifiedAddress(address);
 			})
 			.catch((e) => {
@@ -83,7 +83,7 @@ class ReferralStore {
 					  )
 					: notificationStore.toast(
 							<Column>
-								<Text type={TEXT_TYPES.H1}>❌ You are not verified to access app</Text>
+								<Text type={TEXT_TYPES.H1}>❌ You are not verified to access Trade page</Text>
 								<SizedBox height={8} />
 								<Text type={TEXT_TYPES.NUMBER_MEDIUM}>{e.toString()}</Text>
 							</Column>,

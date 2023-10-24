@@ -16,14 +16,14 @@ interface IProps extends TableProps {
 const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
   width: ${({fitContent}) => (fitContent ? "fit-content" : "100%")};
   border-radius: 4px !important;
-  background: ${({theme}) => `${theme.colors.gray3}`};
+  background: ${({theme}) => `${theme.colors.gray4}`};
 
   table {
     width: 100%;
     border-spacing: 0;
 
+
     tr {
-      font-weight: 400;
       font-size: 14px;
       line-height: 20px;
       color: ${({theme}) => `${theme.colors.gray2}`};
@@ -42,17 +42,21 @@ const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
     }
 
     th {
+      color: ${({theme}) => `${theme.colors.gray2}`};
+      font-family: Space Grotesk;
+      font-size: 10px;
+      font-style: normal;
       font-weight: 400;
-      font-size: 14px;
-      line-height: 16px;
+      line-height: normal;
+      letter-spacing: 1.12px;
       text-align: left;
       padding: 14px;
+      color: ${({theme}) => `${theme.colors.gray2}`};
       border-bottom: 2px solid ${({theme}) => `${theme.colors.gray5}`};
       cursor: default;
     }
 
     td {
-      font-weight: 400;
       font-size: 16px;
       line-height: 20px;
       color: ${({theme}) => `${theme.colors.gray2}`};
