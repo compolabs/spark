@@ -78,7 +78,6 @@ class FaucetVM {
 			this._setLoading(true);
 			this.setActionTokenAssetId(assetId);
 			const tokenFactory = CONTRACT_ADDRESSES.tokenFactory;
-			console.log("tokenFactory");
 			const wallet = await accountStore.getWallet();
 			if (wallet == null) return;
 			const tokenFactoryContract = TokenFactoryAbi__factory.connect(tokenFactory, wallet);
