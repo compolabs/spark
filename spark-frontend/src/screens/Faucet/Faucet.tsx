@@ -6,7 +6,6 @@ import { Observer } from "mobx-react-lite";
 import { FaucetVMProvider, useFaucetVM } from "@screens/Faucet/FaucetVm";
 import TokensFaucetTable from "@screens/Faucet/TokensFaucetTable";
 import Skeleton from "react-loading-skeleton";
-import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -27,20 +26,12 @@ const Root = styled.div`
 
 const FaucetImpl: React.FC<IProps> = () => {
 	const vm = useFaucetVM();
-	const { accountStore } = useStores();
 	return (
 		<Observer>
 			{() => {
 				return (
 					<Root>
 						<Text type={TEXT_TYPES.H1}>Faucet for Fuel Network</Text>
-						{!accountStore.isLoggedIn && (
-							<>
-								<SizedBox height={8} />
-								<Text>Connect wallet to mint tokens</Text>
-								<SizedBox height={8} />
-							</>
-						)}
 						<SizedBox height={16} />
 						{vm.faucetTokens.length === 0 ? <Skeleton height={70} style={{ margin: 4 }} count={5} /> : <TokensFaucetTable />}
 					</Root>

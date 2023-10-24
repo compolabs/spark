@@ -38,13 +38,18 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 					</Column>
 				),
 				btn: (() => {
-					if (!accountStore.isLoggedIn)
+					if (!accountStore.isLoggedIn && t.symbol !== "ETH")
 						return (
 							<Button primary onClick={() => navigate("/")}>
 								Connect wallet
 							</Button>
 						);
-					if (!vm.initialized) return <Button primary>Loading</Button>;
+					if (!vm.initialized)
+						return (
+							<Button primary disabled>
+								Loading...
+							</Button>
+						);
 					if (ethBalance?.eq(0) && t.symbol !== "ETH") return <Button primary>Mint</Button>;
 					return (
 						<Button
@@ -61,7 +66,7 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 								}
 							}}
 						>
-							{vm.loading && vm.actionTokenAssetId === t.assetId ? "Loading" : "Mint"}
+							{vm.loading && vm.actionTokenAssetId === t.assetId ? "Loading..." : "Mint"}
 						</Button>
 					);
 				})(),

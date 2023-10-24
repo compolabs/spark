@@ -72,15 +72,12 @@ class ReferralStore {
 			})
 			.catch((e) => {
 				console.log(e);
-				console.log("not verified user");
 				(accountStore.getBalance(TOKENS_BY_SYMBOL.ETH) ?? BN.ZERO).lt(5)
 					? notificationStore.toast(
 							<Column>
 								<Text type={TEXT_TYPES.H1}>💸 You need to mint some ETH</Text>
 								<SizedBox height={8} />
-								<a href={ROUTES.FAUCET}>
-									<Button>Mint </Button>
-								</a>
+								<Button onClick={() => window.open(`#${ROUTES.FAUCET}`)}>Go to faucet </Button>
 							</Column>,
 							{ type: "error" },
 					  )
