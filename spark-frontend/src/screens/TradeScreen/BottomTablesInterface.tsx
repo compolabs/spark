@@ -103,7 +103,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 							<TableText color={order.type === "SELL" ? theme.colors.red : theme.colors.green}>{order.type}</TableText>
 							<TableText>{order.price.toFixed(2)}</TableText>
 							<TableText>
-								{order.amount}
+								{order.amountStr}
 								<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>
 							</TableText>
 							<TableText>

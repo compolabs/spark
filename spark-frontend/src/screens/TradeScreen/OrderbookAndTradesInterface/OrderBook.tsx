@@ -122,7 +122,6 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		.reverse();
 	const sellOrders = ordersStore.orderbook.sell
 		.slice()
-		.filter((order) => order.amount0.minus(order.fulfilled0).gt(0) && order.amount1.minus(order.fulfilled1).gt(0))
 		.sort((a, b) => {
 			if (a.price == null && b.price == null) return 0;
 			if (a.price == null && b.price != null) return 1;
@@ -182,8 +181,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 											vm.setSellTotal(BN.ZERO, true);
 										}}
 									>
-										<div color={theme.colors.white}>{o.amountLeft}</div>
-										<div color={theme.colors.white}>{o.totalLeft}</div>
+										<div color={theme.colors.white}>{o.amountLeftStr}</div>
+										<div color={theme.colors.white}>{o.totalLeftStr}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
@@ -210,7 +209,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 									SPREAD
 								</Text>
 								<SizedBox width={12} />
-								<Text>{ordersStore.spreadPrice?.toString()}</Text>
+								<Text>{ordersStore.spreadPrice}</Text>
 								<SizedBox width={12} />
 								<Text
 									type={TEXT_TYPES.NUMBER_SMALL}
@@ -247,8 +246,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 										type="buy"
 										key={index + "positive"}
 									>
-										<div>{o.totalLeft}</div>
-										<div>{o.amountLeft}</div>
+										<div>{o.totalLeftStr}</div>
+										<div>{o.amountLeftStr}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
