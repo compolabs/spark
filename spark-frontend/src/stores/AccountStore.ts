@@ -1,6 +1,6 @@
 import RootStore from "@stores/RootStore";
 import { makeAutoObservable, reaction, when } from "mobx";
-import { Address, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
+import { Address, Mnemonic, Provider, Wallet, WalletLocked, WalletUnlocked } from "fuels";
 import { IToken, NODE_URL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import Balance from "@src/entities/Balance";
@@ -9,11 +9,13 @@ import { Fuel, FuelWalletProvider } from "@fuel-wallet/sdk";
 export enum LOGIN_TYPE {
 	FUEL_WALLET = "Fuel Wallet",
 	FUELET = "Fuelet Wallet",
+	GENERATE_SEED = "Generate seed",
 }
 
 export interface ISerializedAccountStore {
 	address: string | null;
 	loginType: LOGIN_TYPE | null;
+	seed: string | null;
 }
 
 class AccountStore {
@@ -33,6 +35,7 @@ class AccountStore {
 		if (initState) {
 			this.setLoginType(initState.loginType);
 			this.setAddress(initState.address);
+			this.setSeed(initState.seed);
 		}
 
 		this.initFuel();
@@ -44,6 +47,9 @@ class AccountStore {
 			() => Promise.all([this.updateAccountBalances()]),
 		);
 	}
+
+	seed: string | null = null;
+	setSeed = (seed: string | null) => (this.seed = seed);
 
 	initFuel = () => {
 		const fuel = new Fuel();
@@ -111,18 +117,29 @@ class AccountStore {
 	serialize = (): ISerializedAccountStore => ({
 		address: this.address,
 		loginType: this.loginType,
+		seed: this.seed,
 	});
 
 	login = async (loginType: LOGIN_TYPE) => {
 		this.setLoginType(loginType);
+		if (loginType === LOGIN_TYPE.GENERATE_SEED) {
+			this.loginWithMnemonicPhrase();
+			return;
+		}
 		await this.loginWithWallet(loginType);
 	};
 
 	disconnect = async () => {
 		try {
+			if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
+				this.setSeed(null);
+				this.setAddress(null);
+				return;
+			}
 			this.fuel?.disconnect();
 		} catch (e) {
 			this.setAddress(null);
+			this.setSeed(null);
 			this.setLoginType(null);
 			return;
 		}
@@ -148,11 +165,26 @@ class AccountStore {
 		}
 	};
 
+	loginWithMnemonicPhrase = () => {
+		const mnemonic = Mnemonic.generate(16);
+		this.setSeed(mnemonic);
+		const seed = Mnemonic.mnemonicToSeed(mnemonic);
+		if (this.provider == null) return;
+		const wallet = Wallet.fromPrivateKey(seed, this.provider);
+		this.setAddress(wallet.address.toAddress());
+		this.rootStore.notificationStore.toast("You can copy your seed in account section", { type: "info" });
+	};
+
 	get isLoggedIn() {
 		return this.address != null;
 	}
 
 	getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
+		if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
+			if (this.seed == null) return null;
+			const seed = Mnemonic.mnemonicToSeed(this.seed);
+			return Wallet.fromPrivateKey(seed, this.provider!);
+		}
 		if (this.address == null || this.fuel == null) return null;
 		return this.fuel.getWallet(this.address);
 	};

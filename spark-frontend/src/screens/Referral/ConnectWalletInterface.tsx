@@ -23,6 +23,7 @@ const ConnectWalletInterface: React.FC<IProps> = observer(() => {
 			downloadLink: "https://fuelet.app",
 			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUELET),
 		},
+		{ name: "Create account", type: LOGIN_TYPE.GENERATE_SEED, active: true },
 		{ name: "Metamask", active: false },
 		{ name: "Ledger", active: false },
 	];

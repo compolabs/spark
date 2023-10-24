@@ -2,13 +2,12 @@ import React from "react";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore } from "@stores";
 import { ReferalContractAbi__factory } from "@src/contracts";
-import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL } from "@src/constants";
+import { CONTRACT_ADDRESSES, ROUTES, TOKENS_BY_SYMBOL } from "@src/constants";
 import { Address } from "fuels";
 import { Column } from "@components/Flex";
 import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import BN from "@src/utils/BN";
-import { MENU_ITEMS } from "@components/Header/Header";
 import Button from "@components/Button";
 
 export interface ISerializedReferralStore {
@@ -79,8 +78,8 @@ class ReferralStore {
 							<Column>
 								<Text type={TEXT_TYPES.H1}>💸 You need to mint some ETH</Text>
 								<SizedBox height={8} />
-								<a href={MENU_ITEMS.find((v) => v.title === "FAUCET")?.link} rel="noopener noreferrer" target="_blank">
-									<Button>Mint on swaylend</Button>
+								<a href={ROUTES.FAUCET}>
+									<Button>Mint </Button>
 								</a>
 							</Column>,
 							{ type: "error" },

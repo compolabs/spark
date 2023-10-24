@@ -23,7 +23,6 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 			vm.faucetTokens.map((t) => ({
 				asset: (
 					<Row>
-						{/*<TokenIcon size="small" src={t.logo} alt="logo" />*/}
 						<SizedBox width={16} />
 						<Text style={{ whiteSpace: "nowrap" }}>{t.name}</Text>
 					</Row>
@@ -39,12 +38,6 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 					</Column>
 				),
 				btn: (() => {
-					if (t.symbol === "ETH")
-						return (
-							<Button onClick={() => window.open(FAUCET_URL, "blank")} primary>
-								Mint
-							</Button>
-						);
 					if (!accountStore.isLoggedIn)
 						return (
 							<Button primary onClick={() => navigate("/")}>
@@ -59,7 +52,10 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 							disabled={vm.loading || !vm.initialized}
 							onClick={() => {
 								if (t.symbol === "ETH") {
-									window.open(`${FAUCET_URL}/?address=${accountStore.address}`, "blank");
+									window.open(
+										accountStore.address == null ? FAUCET_URL : `${FAUCET_URL}/?address=${accountStore.address}`,
+										"blank",
+									);
 								} else {
 									vm.mint(t.assetId);
 								}
