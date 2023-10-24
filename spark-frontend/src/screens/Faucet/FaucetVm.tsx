@@ -89,7 +89,7 @@ class FaucetVM {
 
 			const { transactionResult } = await tokenFactoryContract.functions
 				.mint({ value: userAddress }, hash, amount.toString())
-				.txParams({ gasPrice: 2 })
+				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
 				const token = TOKENS_BY_ASSET_ID[assetId];

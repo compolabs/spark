@@ -183,7 +183,8 @@ class AccountStore {
 		if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
 			if (this.seed == null) return null;
 			const seed = Mnemonic.mnemonicToSeed(this.seed);
-			return Wallet.fromPrivateKey(seed, this.provider!);
+			const provider = await Provider.create(NODE_URL);
+			return Wallet.fromPrivateKey(seed, provider);
 		}
 		if (this.address == null || this.fuel == null) return null;
 		return this.fuel.getWallet(this.address);
