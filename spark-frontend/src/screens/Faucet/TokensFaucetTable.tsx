@@ -50,7 +50,7 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 								Loading...
 							</Button>
 						);
-					if (ethBalance?.eq(0) && t.symbol !== "ETH") return <Button primary>Mint</Button>;
+					if (ethBalance?.eq(0) && t.symbol !== "ETH" ) return <Button disabled primary>Mint</Button>;
 					return (
 						<Button
 							primary
