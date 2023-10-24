@@ -8,6 +8,7 @@ import { Fuel, FuelWalletProvider } from "@fuel-wallet/sdk";
 
 export enum LOGIN_TYPE {
 	FUEL_WALLET = "Fuel Wallet",
+	FUEL_DEV = "Fuel Wallet Development",
 	FUELET = "Fuelet Wallet",
 	GENERATE_SEED = "Generate seed",
 }
@@ -121,6 +122,7 @@ class AccountStore {
 	});
 
 	login = async (loginType: LOGIN_TYPE) => {
+		console.log("login", loginType);
 		this.setLoginType(loginType);
 		if (loginType === LOGIN_TYPE.GENERATE_SEED) {
 			this.loginWithMnemonicPhrase();
