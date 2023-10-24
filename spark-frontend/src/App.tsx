@@ -7,6 +7,7 @@ import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
 import { ROUTES } from "./constants";
 import Referral from "@screens/Referral/Referral";
+import Faucet from "@screens/Faucet";
 
 const Root = styled(Column)`
 	width: 100%;
@@ -24,6 +25,7 @@ const App: React.FC = observer(() => {
 			<Routes>
 				<Route path={ROUTES.REFERRAL} element={<Referral />} />
 				<Route path={ROUTES.TRADE} element={<TradeScreen />} />
+				<Route path={ROUTES.FAUCET} element={<Faucet />} />
 				{/*<Route path="*" element={<Redirect/>} />*/}
 			</Routes>
 		</Root>

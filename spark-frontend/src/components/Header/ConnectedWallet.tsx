@@ -43,9 +43,11 @@ const Root = styled(Button)<{ focused?: boolean }>`
 const ConnectedWallet: React.FC<IProps> = observer(() => {
 	const { accountStore, notificationStore } = useStores();
 	const [focused, setFocused] = useState(false);
-	const handleCopyAddress = () => {
-		accountStore.address && copy(accountStore.address);
-		notificationStore.toast("Your address was copied", { type: "info" });
+	const handleCopy = (object: string) => {
+		object === "address"
+			? accountStore.address && copy(accountStore.address)
+			: accountStore.seed && copy(accountStore.seed);
+		notificationStore.toast(`Your ${object} was copied`, { type: "info" });
 	};
 	return (
 		<Tooltip
@@ -56,9 +58,10 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
 			}}
 			content={
 				<Column crossAxisSize="max">
-					<Option onClick={handleCopyAddress}>Copy address</Option>
+					<Option onClick={() => handleCopy("address")}>Copy address</Option>
 					<Option onClick={() => window.open(`${EXPLORER_URL}/address/${accountStore.address}`)}> View in Explorer</Option>
 					<Option disabled>Export log file</Option>
+					{accountStore.seed != null && <Option onClick={() => handleCopy("seed")}>Copy seed</Option>}
 					<Option onClick={accountStore.disconnect}>Disconnect</Option>
 				</Column>
 			}

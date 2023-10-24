@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.54.0
+  Fuels version: 0.62.0
   Forc version: 0.44.0
-  Fuel-Core version: 0.20.4
+  Fuel-Core version: 0.20.6
 */
 
 import type {
@@ -29,6 +29,8 @@ export type IdentityOutput = Enum<{ Address: AddressOutput, ContractId: Contract
 
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;
+export type AssetIdInput = { value: string };
+export type AssetIdOutput = AssetIdInput;
 export type ContractIdInput = { value: string };
 export type ContractIdOutput = ContractIdInput;
 
@@ -64,7 +66,7 @@ export class TokenFactoryAbi extends Contract {
   interface: TokenFactoryAbiInterface;
   functions: {
     admin: InvokeFunction<[symbol_hash: string], IdentityOutput>;
-    asset_id: InvokeFunction<[symbol_hash: string], string>;
+    asset_id: InvokeFunction<[symbol_hash: string], AssetIdOutput>;
     decimals: InvokeFunction<[symbol_hash: string], number>;
     deploy: InvokeFunction<[symbol_hash: string, name: string, decimals: BigNumberish], void>;
     mint: InvokeFunction<[recipient: AddressInput, symbol_hash: string, amount: BigNumberish], void>;

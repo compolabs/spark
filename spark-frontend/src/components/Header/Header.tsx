@@ -3,14 +3,13 @@ import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
-import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import Button from "@components/Button";
 import { ROUTES } from "@src/constants";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import SizedBox from "@components/SizedBox";
 import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
-import { LOGIN_TYPE } from "@src/stores/AccountStore";
 import { DesktopRow, Row } from "@components/Flex";
 import ConnectedWallet from "@components/Header/ConnectedWallet";
 
@@ -75,7 +74,7 @@ export const MENU_ITEMS: Array<TMenuItem> = [
 	// { title: "DASHBOARD" },
 	{ title: "TRADE", route: ROUTES.TRADE },
 	// { title: "EARN" },
-	{ title: "FAUCET", link: "https://app.swaylend.com/#/faucet" },
+	{ title: "FAUCET", route: ROUTES.FAUCET },
 	// { title: "DOCS" },
 	{ title: "GITHUB", link: "https://github.com/compolabs/spark" },
 	// {title: "MORE", route: ROUTES.ROOT},
@@ -90,6 +89,7 @@ const SettingsButton = styled(Button)`
 const Header: React.FC<IProps> = observer(() => {
 	const { accountStore } = useStores();
 	const location = useLocation();
+	const navigate = useNavigate();
 
 	return (
 		<Root>
@@ -102,9 +102,9 @@ const Header: React.FC<IProps> = observer(() => {
 					{MENU_ITEMS.map(({ title, link, route }, key) => {
 						if (link == null && route == null)
 							return (
-								<MenuItem key={key} disabled>
+								<Text type={TEXT_TYPES.BODY_LARGE} key={key}>
 									{title}
-								</MenuItem>
+								</Text>
 							);
 						else if (route != null)
 							return (
@@ -145,9 +145,7 @@ const Header: React.FC<IProps> = observer(() => {
 						primary
 						fitContent
 						onClick={() =>
-							window.fuel == null
-								? window.open("https://wallet.fuel.network/docs/install/")
-								: accountStore.login(LOGIN_TYPE.FUEL_WALLET)
+							accountStore.fuel == null ? window.open("https://wallet.fuel.network/docs/install/") : navigate(ROUTES.TRADE)
 						}
 					>
 						Connect wallet

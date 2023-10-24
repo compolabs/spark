@@ -4,6 +4,7 @@ import tokenLogos from "./tokenLogos";
 export const ROUTES = {
 	REFERRAL: "/",
 	TRADE: "/trade",
+	FAUCET: "/faucet",
 };
 
 export const TOKENS_LIST: Array<IToken> = Object.values(tokens).map((t) => ({
@@ -18,7 +19,7 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
 
 export const NODE_URL = "https://beta-4.fuel.network/graphql";
 export const EXPLORER_URL = "https://fuellabs.github.io/block-explorer-v2/beta-4/#";
-// export const FAUCET_URL = "https://faucet-beta-4.fuel.network";
+export const FAUCET_URL = "https://faucet-beta-4.fuel.network";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 export const INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabilitylabs/spark_indexer";
