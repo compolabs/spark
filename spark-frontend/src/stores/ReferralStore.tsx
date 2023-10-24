@@ -110,7 +110,7 @@ class ReferralStore {
 		try {
 			const ref = Address.fromString(refAddress).toB256();
 			await refContract.functions.chekin({ value: ref }).txParams({ gasPrice: 1 }).call();
-			this.addVerifiedAddress(accountStore.address);
+			this.addVerifiedAddress(address);
 		} catch (e) {
 			console.error(e);
 			notificationStore.toast("Couldn't register your ref address", { type: "error" });
