@@ -160,7 +160,7 @@ class AccountStore {
 			}
 			this.setAddress(account);
 		} catch (e) {
-			this.rootStore.notificationStore.toast("User denied", {
+			this.rootStore.notificationStore.toast(e?.toString(), {
 				type: "error",
 			});
 			return;
