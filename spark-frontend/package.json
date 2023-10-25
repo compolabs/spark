@@ -8,6 +8,7 @@
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
+    "@ethersproject/bignumber": "^5.7.0",
     "@fuel-wallet/sdk": "^0.13.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@svgr/webpack": "^8.1.0",
