@@ -10,6 +10,7 @@
     "@emotion/styled": "^11.11.0",
     "@fuel-wallet/sdk": "^0.13.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
+    "@pythnetwork/pyth-evm-js": "^1.29.1",
     "@svgr/webpack": "^8.1.0",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
