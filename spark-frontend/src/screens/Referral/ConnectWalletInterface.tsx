@@ -10,7 +10,6 @@ interface IProps {}
 
 const ConnectWalletInterface: React.FC<IProps> = observer(() => {
 	const { accountStore } = useStores();
-	console.log("accountStore.listConnectors", accountStore.listConnectors);
 	const wallets = [
 		{
 			name: "Fuel Wallet",

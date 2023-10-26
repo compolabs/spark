@@ -1,7 +1,7 @@
 import { IToken } from "@src/constants";
 import BN from "@src/utils/BN";
 
-export interface IAssetBalance extends Omit<IToken, "logo"> {
+export interface IAssetBalance extends Omit<IToken, "logo" | "priceFeed"> {
 	balance?: BN;
 	usdEquivalent?: BN;
 	logo?: string;
