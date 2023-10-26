@@ -33,10 +33,8 @@ class OracleStore {
 		this.setPythClient(connection);
 		// You can find the ids of prices at https://pyth.network/developers/price-feed-ids
 		const priceIds = TOKENS_LIST.filter((t) => t.priceFeed).map((t) => t.priceFeed);
+		const v = await connection.getPriceFeedsUpdateData(priceIds);
 		await connection.subscribePriceFeedUpdates(priceIds as string[], (priceFeed: PriceFeed) => {
-			// In order to use Pyth prices in your protocol you need to submit the price update data to Pyth contract in your target
-			// chain. `getPriceFeedsUpdateData` creates the update data which can be submitted to your contract. Then your contract should
-			// call the Pyth Contract with this data.
 			const price = priceFeed.getPriceUnchecked();
 			this.setPrices((prev: any) => ({ ...prev, [priceFeed.id]: price }));
 		});
