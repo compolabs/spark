@@ -36,7 +36,7 @@ export interface IToken {
 	name: string;
 	symbol: string;
 	decimals: number;
-	priceFeed?: string;
+	priceFeed: string;
 }
 
 export interface IContractsConfig {
