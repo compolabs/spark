@@ -2,13 +2,12 @@ import React from "react";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore } from "@stores";
 import { ReferalContractAbi__factory } from "@src/contracts";
-import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL } from "@src/constants";
+import { CONTRACT_ADDRESSES, ROUTES, TOKENS_BY_SYMBOL } from "@src/constants";
 import { Address } from "fuels";
 import { Column } from "@components/Flex";
 import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import BN from "@src/utils/BN";
-import { MENU_ITEMS } from "@components/Header/Header";
 import Button from "@components/Button";
 
 export interface ISerializedReferralStore {
@@ -68,28 +67,25 @@ class ReferralStore {
 			.simulate()
 			.then(({ value }) => {
 				console.log({ invitationsLeft: value[0].toString(), nasted_invites_amount: value[1].toString() });
-				notificationStore.toast("You are verified to access app", { type: "success" });
+				notificationStore.toast("You are verified to access Trade page", { type: "success" });
 				this.addVerifiedAddress(address);
 			})
 			.catch((e) => {
 				console.log(e);
-				console.log("not verified user");
 				(accountStore.getBalance(TOKENS_BY_SYMBOL.ETH) ?? BN.ZERO).lt(5)
 					? notificationStore.toast(
 							<Column>
 								<Text type={TEXT_TYPES.H1}>💸 You need to mint some ETH</Text>
 								<SizedBox height={8} />
-								<a href={MENU_ITEMS.find((v) => v.title === "FAUCET")?.link} rel="noopener noreferrer" target="_blank">
-									<Button>Mint on swaylend</Button>
-								</a>
+								<Button onClick={() => window.open(`#${ROUTES.FAUCET}`, "_self")}>Go to faucet </Button>
 							</Column>,
 							{ type: "error" },
 					  )
 					: notificationStore.toast(
 							<Column>
-								<Text type={TEXT_TYPES.H1}>❌ You are not verified to access app</Text>
-								{/*<SizedBox height={8} />*/}
-								{/*<Text type={TEXT_TYPES.NUMBER_MEDIUM}>{e.toString()}</Text>*/}
+								<Text type={TEXT_TYPES.H1}>❌ You are not verified to access Trade page</Text>
+								<SizedBox height={8} />
+								<Text type={TEXT_TYPES.NUMBER_MEDIUM}>{e.toString()}</Text>
 							</Column>,
 							{ type: "error" },
 					  );
@@ -113,7 +109,7 @@ class ReferralStore {
 
 		try {
 			const ref = Address.fromString(refAddress).toB256();
-			await refContract.functions.chekin({ value: ref }).call();
+			await refContract.functions.chekin({ value: ref }).txParams({ gasPrice: 1 }).call();
 			this.addVerifiedAddress(address);
 		} catch (e) {
 			console.error(e);
