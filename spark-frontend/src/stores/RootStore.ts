@@ -4,6 +4,7 @@ import NotificationStore from "@stores/NotificationStore";
 import { makeAutoObservable } from "mobx";
 import OrdersStore from "@stores/OrdersStore";
 import ReferralStore, { ISerializedReferralStore } from "@stores/ReferralStore";
+import OracleStore from "@stores/OracleStore";
 
 export interface ISerializedRootStore {
 	accountStore?: ISerializedAccountStore;
@@ -16,6 +17,7 @@ export default class RootStore {
 	public notificationStore: NotificationStore;
 	public ordersStore: OrdersStore;
 	public referralStore: ReferralStore;
+	public oracleStore: OracleStore;
 
 	constructor(initState?: ISerializedRootStore) {
 		this.accountStore = new AccountStore(this, initState?.accountStore);
@@ -23,6 +25,7 @@ export default class RootStore {
 		this.notificationStore = new NotificationStore(this);
 		this.ordersStore = new OrdersStore(this);
 		this.referralStore = new ReferralStore(this, initState?.referralStore);
+		this.oracleStore = new OracleStore(this);
 		makeAutoObservable(this);
 	}
 

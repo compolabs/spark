@@ -15,20 +15,17 @@ const ConnectWalletInterface: React.FC<IProps> = observer(() => {
 		{
 			name: "Fuel Wallet",
 			type: LOGIN_TYPE.FUEL_WALLET,
-			// downloadLink: "https://wallet.fuel.network/docs/install/",
 			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUEL_WALLET),
 		},
 		{
 			name: "Fuelet",
 			type: LOGIN_TYPE.FUELET,
-			// downloadLink: "https://fuelet.app",
 			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUELET),
 		},
 		{ name: "Create account", type: LOGIN_TYPE.GENERATE_SEED, active: true },
 		{
 			name: "Fuel Wallet Dev",
 			type: LOGIN_TYPE.FUEL_DEV,
-			// downloadLink: "https://chrome.google.com/webstore/detail/fuel-wallet-development/hcgmehahnlbhpilepakbdinkhhaackmc",
 			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUEL_DEV),
 		},
 		{ name: "Metamask", active: false },
