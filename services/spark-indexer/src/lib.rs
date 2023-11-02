@@ -1,13 +1,15 @@
 extern crate alloc;
 use fuel_indexer_utils::prelude::*;
 
+// const MARKETS: [(&str, &str); 3] = [("UNI", "USDC"), ("BTC", "USDC"), ("ETH", "USDC")];
+
 #[indexer(manifest = "spark_indexer.manifest.yaml")]
 pub mod spark_indexer_index_mod {
 
     fn handle_block(block: BlockData) {
         let txs = block.transactions.len();
         if block.height % 100 == 0 {
-            info!("Spark: 🧱 Block height: {} | transacrions: {txs}", block.height);
+            info!("Spark: 🧱 Block height: {} | txs: {txs}", block.height);
         }
     }
 

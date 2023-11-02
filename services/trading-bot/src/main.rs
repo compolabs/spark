@@ -23,7 +23,7 @@ mod utils;
 
 const RPC: &str = "beta-4.fuel.network";
 const SPOT_MARKET_ADDRESS: &str =
-    "0xebfc4ecfcb7f76b952ca76e1ee87633aef44f1cca43d1ee4ff6a296d78302748";
+    "0x8f635c31df8bc419ab51f48abd901593ee2fc28879d66ce5a3be7bfb57c7d42b";
 const ORACLE_ADDRESS: &str = "0x8f7a76602f1fce4e4f20135a0ab4d22b3d9a230215ccee16c0980cf286aaa93c";
 const FACTORY_ADDRESS: &str = "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a";
 

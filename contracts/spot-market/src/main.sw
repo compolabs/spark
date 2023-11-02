@@ -77,20 +77,6 @@ abi OrderBookContract {
     #[storage(read)]
     fn order_by_id(id: u64) -> Order;
 
-    //todo implemement
-    #[storage(read)]
-    fn get_mark_price() -> u64;
-
-    //todo implemement
-    #[storage(read)]
-    fn get_all_pending_funding_payment() -> u64;
-    
-    //todo implemement
-    #[storage(read)]
-    fn get_market_price() -> u64;
-
-
-
 // ## Match orders
 // This function is used by the Matching Engines to partially or completely close two orders against each other.
    
@@ -221,24 +207,6 @@ impl OrderBookContract for Contract {
         let order = storage.orders.get(id).try_read();
         require(order.is_some(), Error::OrderIsNotFound);
         order.unwrap()
-    }
-
-    //todo implemement
-    #[storage(read)]
-    fn get_mark_price() -> u64{
-        0
-    }
-
-    //todo implemement
-    #[storage(read)]
-    fn get_all_pending_funding_payment() -> u64{
-        0
-    }
-    
-    //todo implemement
-    #[storage(read)]
-    fn get_market_price() -> u64 {
-        0
     }
 
 
