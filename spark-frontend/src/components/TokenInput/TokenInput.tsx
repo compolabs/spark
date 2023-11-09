@@ -90,7 +90,7 @@ const TokenInput: React.FC<IProps> = (props) => {
 		<Root>
 			{props.label != null && (
 				<>
-					<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
+					<Text >
 						{props.label}
 					</Text>
 					<SizedBox height={4} />
@@ -126,7 +126,7 @@ const TokenInput: React.FC<IProps> = (props) => {
 			{props.error && (
 				<>
 					<SizedBox width={4} />
-					<Text color={theme.colors.error} type={TEXT_TYPES.BODY_SMALL}>
+					<Text >
 						{props.errorMessage}
 					</Text>
 				</>

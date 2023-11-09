@@ -105,7 +105,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 					<img style={{ width: 24, height: 24 }} src={TOKENS_BY_SYMBOL.UNI.logo} alt="btc" />
 					<img style={{ width: 24, height: 24, marginLeft: -8 }} src={TOKENS_BY_SYMBOL.USDC.logo} alt="btc" />
 					<SizedBox width={8} />
-					<Text type={TEXT_TYPES.H1}>UNI / USDC</Text>
+					<Text type={TEXT_TYPES.H}>UNI / USDC</Text>
 				</Row>
 				{/*<h4 style={{ transform: "rotate(90deg)" }}>{">"}</h4>*/}
 			</MarketSelect>
@@ -113,12 +113,10 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			<MarketStatistics>
 				<PriceRow alignItems="center">
 					<Column alignItems="flex-end">
-						<Text type={TEXT_TYPES.NUMBER_LARGE}>
+						<Text >
 							{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
 						</Text>
 						<Text
-							type={TEXT_TYPES.NUMBER_SMALL}
-							color={state.priceChange?.isPositive() ? theme.colors.green : theme.colors.red}
 						>
 							{state.priceChange?.toFormat(2) ?? "-"}&nbsp;%
 						</Text>
@@ -126,44 +124,38 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 					<DesktopRow>
 						<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
 						<Column>
-							<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
+							<Text >
 								24h High
 							</Text>
 							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.NUMBER_SMALL}>
+							<Text >
 								{state.high?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
 							</Text>
 						</Column>
 						<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />{" "}
 						<Column>
-							<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
-								24h Low
-							</Text>
+							<Text>24h Low</Text>
 							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.NUMBER_SMALL}>
+							<Text>
 								{state.low?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
 							</Text>
 						</Column>
 						<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
 						<Column>
-							<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
-								Volume 24h (USDC)
-							</Text>
+							<Text>Volume 24h (USDC)</Text>
 							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.NUMBER_SMALL}>{state.volumeAsset1?.toFormat(2) ?? "-"}</Text>
+							<Text>{state.volumeAsset1?.toFormat(2) ?? "-"}</Text>
 						</Column>{" "}
 						<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
 						<Column>
-							<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
-								Volume 24h (UNI)
-							</Text>
+							<Text>Volume 24h (UNI)</Text>
 							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.NUMBER_SMALL}>{state.volumeAsset0?.toFormat(2) ?? "-"}</Text>
+							<Text>{state.volumeAsset0?.toFormat(2) ?? "-"}</Text>
 						</Column>
 					</DesktopRow>
 				</PriceRow>
 				<DesktopRow>
-					<Button fitContent outline disabled>
+					<Button fitContent disabled>
 						SEE ALL MARKET DETAILS
 					</Button>
 				</DesktopRow>

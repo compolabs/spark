@@ -23,10 +23,10 @@ const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 	return (
 		<Root>
 			<ButtonGroup style={{ padding: "0 16px" }}>
-				<Button outline={!isOrderbook} onClick={() => setIsOrderbook(true)}>
+				<Button onClick={() => setIsOrderbook(true)}>
 					Orderbook
 				</Button>
-				<Button disabled outline={isOrderbook} onClick={() => setIsOrderbook(false)}>
+				<Button disabled  onClick={() => setIsOrderbook(false)}>
 					Trades
 				</Button>
 			</ButtonGroup>

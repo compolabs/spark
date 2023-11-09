@@ -75,7 +75,7 @@ class ReferralStore {
 				(accountStore.getBalance(TOKENS_BY_SYMBOL.ETH) ?? BN.ZERO).lt(5)
 					? notificationStore.toast(
 							<Column>
-								<Text type={TEXT_TYPES.H1}>💸 You need to mint some ETH</Text>
+								<Text >💸 You need to mint some ETH</Text>
 								<SizedBox height={8} />
 								<Button onClick={() => window.open(`#${ROUTES.FAUCET}`, "_self")}>Go to faucet </Button>
 							</Column>,
@@ -83,9 +83,9 @@ class ReferralStore {
 					  )
 					: notificationStore.toast(
 							<Column>
-								<Text type={TEXT_TYPES.H1}>❌ You are not verified to access Trade page</Text>
+								<Text>❌ You are not verified to access Trade page</Text>
 								<SizedBox height={8} />
-								<Text type={TEXT_TYPES.NUMBER_MEDIUM}>{e.toString()}</Text>
+								<Text >{e.toString()}</Text>
 							</Column>,
 							{ type: "error" },
 					  );

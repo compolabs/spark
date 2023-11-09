@@ -33,7 +33,6 @@ const Root = styled.div`
 `;
 
 const Title = styled(Text)`
-	${TEXT_TYPES_MAP[TEXT_TYPES.BODY_SMALL]}
 	color: ${({ theme }) => theme.colors.gray2};
 	flex: 1;
 `;
@@ -46,7 +45,6 @@ const TitleRow = styled(Row)`
 	box-sizing: border-box;
 `;
 const TableText = styled(Text)`
-	${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
 	flex: 1;
 	display: flex;
 	align-items: center;
@@ -100,7 +98,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 						<TableRow key={order.id}>
 							<TableText style={{ minWidth: 24 }}>{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}</TableText>
 							<TableText>{order.market}</TableText>
-							<TableText color={order.type === "SELL" ? theme.colors.red : theme.colors.green}>{order.type}</TableText>
+							{/*<TableText color={order.type === "SELL" ? theme.colors.red : theme.colors.green}>{order.type}</TableText>*/}
 							<TableText>{order.price.toFixed(2)}</TableText>
 							<TableText>
 								{order.amountStr}

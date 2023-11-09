@@ -40,16 +40,16 @@ const ReferralInterface: React.FC<IProps> = observer(() => {
 	//todo add verification of fuel address
 	return (
 		<>
-			<Text type={TEXT_TYPES.H1}>Spark Referral Program</Text>
+			<Text >Spark Referral Program</Text>
 			<SizedBox height={8} />
-			<Text type={TEXT_TYPES.BODY_MEDIUM}>
+			<Text >
 				Unlock Early Access & Multiply Benefits! Connect your wallet to check early user status and share your referral
 				link. As a Level 0 user, invite 3 friends, who invite 2, and so on. Help Spark grow – limited referral links
 				available!
 			</Text>
 			<SizedBox height={40} />
 			<Column crossAxisSize="max">
-				<Text type={TEXT_TYPES.LABEL}>Referral address</Text>
+				<Text >Referral address</Text>
 				<SizedBox height={4} />
 				<StyledInput value={address} onChange={(e) => setAddress(e.target.value)} />
 			</Column>

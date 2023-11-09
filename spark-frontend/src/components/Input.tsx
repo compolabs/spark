@@ -20,7 +20,6 @@ const Root = styled.div`
 
 		color: ${({ theme }) => theme.colors.gray1};
 
-		${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_MEDIUM]}
 		::placeholder {
 			color: ${({ theme }) => theme.colors.gray1};
 		}

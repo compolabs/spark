@@ -27,8 +27,6 @@ const Root = styled.div<{ focused?: boolean }>`
   background: ${({ theme }) => theme.colors.gray5};
   border: 1px solid ${({ focused, theme }) => (focused ? theme.colors.gray1 : theme.colors.gray5)};
 
-  ${TEXT_TYPES_MAP[TEXT_TYPES.BODY_LARGE]} // color: ${({ theme, focused }) =>
-			focused ? theme.colors.white : theme.colors.gray1};
   color: ${({ theme, focused }) => theme.colors.white};
   align-items: center;
   justify-content: space-between;
@@ -36,7 +34,6 @@ const Root = styled.div<{ focused?: boolean }>`
 }
 `;
 export const Option = styled.div<{ active?: boolean; disabled?: boolean }>`
-	${TEXT_TYPES_MAP[TEXT_TYPES.BODY_LARGE]}
 	width: calc(100% + 32px);
 	display: flex;
 	cursor: ${({ disabled }) => (!disabled ? "pointer" : "not-allowed")};
@@ -96,7 +93,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 			}
 		>
 			<Wrap focused={focused}>
-				<Text type={TEXT_TYPES.LABEL} color={theme.colors.gray2}>
+				<Text >
 					{label?.toUpperCase()}
 				</Text>
 				<SizedBox height={4} />

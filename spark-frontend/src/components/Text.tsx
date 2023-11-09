@@ -4,137 +4,88 @@ import styled from "@emotion/styled";
     Fonts:
 
     JetBrains Mono 500  = assets/fonts/JetBrainsMono-Medium.ttf
+    JetBrains Mono 400  = assets/fonts/JetBrainsMono-Regular.ttf
     Space Grotesk  500  = assets/fonts/SpaceGrotesk-Medium.ttf
     Space Grotesk  400  = assets/fonts/SpaceGrotesk-Regular.ttf
-    Syne           500  = assets/fonts/Syne-Medium.ttf
-    Syne           600  = assets/fonts/Syne-SemiBold.ttf
 */
 
+type TTextColor = "primary" | "secondary" | "disabled";
+
 export enum TEXT_TYPES {
-	H1,
-	H2,
-	H3,
-
-	BODY_LARGE,
-	BODY_MEDIUM,
-	BODY_SMALL,
-
-	LABEL,
+	H,
+	BODY,
 	BUTTON,
-
-	NUMBER_LARGE,
-	NUMBER_MEDIUM,
-	NUMBER_SMALL,
+	BUTTON_SECONDARY,
+	SUPPORTING,
 }
 
 interface IProps {
 	type?: TEXT_TYPES;
-	color?: string;
+	color?: TTextColor;
 }
 
-export const h1Style = `
-font-family: Syne;
-font-size: 13px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
-`;
-export const h2Style = `
-font-family: Syne;
-font-size: 10px;
-font-style: normal;
-font-weight: 600;
-line-height: normal;
-letter-spacing: 1px;
-`;
-export const h3Style = `
-font-family: Syne;
-font-size: 10px;
+//todo уточнить про font-variant-numeric:
+
+export const hStyle = `
+font-family: JetBrains Mono;
+font-size: 14px;
 font-style: normal;
 font-weight: 500;
-line-height: normal;
-letter-spacing: 1px;
+line-height: 16px;
 `;
-export const bodyLargeStyle = `
-font-family: Space Grotesk;
-font-size: 12px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-`;
-export const bodyMediumStyle = `
-font-family: Space Grotesk;
+export const bodyStyle = `
+font-family: JetBrains Mono;
 font-size: 10px;
 font-style: normal;
 font-weight: 400;
-line-height: normal;
-`;
-export const bodySmallStyle = `
-font-family: Space Grotesk;
-font-size: 8px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-`;
-export const labelStyle = `
-font-family: Space Grotesk;
-font-size: 8px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-letter-spacing: 1.12px;
+line-height: 14px;
+letter-spacing: 0.2px;
 `;
 export const buttonStyle = `
 font-family: Space Grotesk;
-font-size: 8px;
-font-style: normal;
-font-weight: 500;
-line-height: normal;
-letter-spacing: 0.8px;
-`;
-export const numberLargeStyle = `
-font-family: JetBrains Mono;
-font-size: 16px;
-font-style: normal;
-font-weight: 500;
-line-height: normal;
-`;
-export const numberMediumStyle = `
-font-family: JetBrains Mono;
 font-size: 12px;
 font-style: normal;
 font-weight: 500;
-line-height: normal;
-letter-spacing: 0.6px;
+line-height: 16px;
 `;
-export const numberSmallStyle = `
-font-family: JetBrains Mono;
+export const buttonSecondaryStyle = `
+font-family: Space Grotesk;
 font-size: 10px;
 font-style: normal;
 font-weight: 500;
-line-height: normal;
-letter-spacing: 1px;
+line-height: 16px; 
+text-transform: uppercase;
+`;
+export const supportStyle = `
+font-family: Space Grotesk;
+font-size: 10px;
+font-style: normal;
+font-weight: 400;
+line-height: 10px; 
+letter-spacing: 0.2px;
 `;
 export const TEXT_TYPES_MAP = {
-	[TEXT_TYPES.H1]: h1Style,
-	[TEXT_TYPES.H2]: h2Style,
-	[TEXT_TYPES.H3]: h3Style,
-
-	[TEXT_TYPES.BODY_LARGE]: bodyLargeStyle,
-	[TEXT_TYPES.BODY_MEDIUM]: bodyMediumStyle,
-	[TEXT_TYPES.BODY_SMALL]: bodySmallStyle,
-
-	[TEXT_TYPES.LABEL]: labelStyle,
+	[TEXT_TYPES.H]: hStyle,
+	[TEXT_TYPES.BODY]: bodyStyle,
 	[TEXT_TYPES.BUTTON]: buttonStyle,
-
-	[TEXT_TYPES.NUMBER_LARGE]: numberLargeStyle,
-	[TEXT_TYPES.NUMBER_MEDIUM]: numberMediumStyle,
-	[TEXT_TYPES.NUMBER_SMALL]: numberSmallStyle,
+	[TEXT_TYPES.BUTTON_SECONDARY]: buttonSecondaryStyle,
+	[TEXT_TYPES.SUPPORTING]: supportStyle,
 };
 
 const Text = styled.div<IProps>`
-	cursor: default;
-	color: ${({ color, theme }) => color ?? theme.colors.white};
-	${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM])}
+	${({ type, theme }) =>
+		(() => {
+			switch (type as any) {
+				case "primary":
+					return `color: ${theme.colors?.textPrimary};`;
+				case "secondary":
+					return `color: ${theme.colors?.textSecondary};`;
+				case "disabled":
+					return `color: ${theme.colors?.textDisabled};`;
+				default:
+					return `color: ${theme.colors?.textSecondary};`;
+			}
+		})()}
+	${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY])}
 `;
 export default Text;

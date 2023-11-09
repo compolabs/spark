@@ -55,7 +55,6 @@ export const StyledLink = styled.a`
     opacity: .8;
   }
 
-  ${TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM]}
 }
 `;
 const Referral: React.FC<IProps> = observer(() => {
@@ -69,7 +68,7 @@ const Referral: React.FC<IProps> = observer(() => {
 				<Column justifyContent="center" alignItems="center" crossAxisSize="max" style={{ maxWidth: 360 }}>
 					{accountStore.address != null ? <ReferralInterface /> : <ConnectWalletInterface />}
 					<SizedBox height={40} />
-					<Text type={TEXT_TYPES.BODY_MEDIUM}>New to Waves blockchain?</Text>
+					<Text >New to Waves blockchain?</Text>
 					<StyledLink
 						rel="noopener noreferrer"
 						target="_blank"

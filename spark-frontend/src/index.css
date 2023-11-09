@@ -18,6 +18,12 @@ code {
     url(assets/fonts/JetBrainsMono-Medium.ttf) format("truetype");
     font-weight: 500;
 }
+@font-face {
+    font-family: "JetBrains Mono";
+    src: local("JetBrains Mono"),
+    url(assets/fonts/JetBrainsMono-Regular.ttf) format("truetype");
+    font-weight: 400;
+}
 
 @font-face {
     font-family: "Space Grotesk";
@@ -31,20 +37,6 @@ code {
     src: local("Space Grotesk"),
     url(assets/fonts/SpaceGrotesk-Regular.ttf) format("truetype");
     font-weight: 400;
-}
-
-@font-face {
-    font-family: "Syne";
-    src: local("Syne"),
-    url(assets/fonts/Syne-Medium.ttf) format("truetype");
-    font-weight: 500;
-}
-
-@font-face {
-    font-family: "Syne";
-    src: local("Syne"),
-    url(assets/fonts/Syne-SemiBold.ttf) format("truetype");
-    font-weight: 600;
 }
 
 :root {

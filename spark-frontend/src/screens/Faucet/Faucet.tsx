@@ -31,7 +31,7 @@ const FaucetImpl: React.FC<IProps> = () => {
 			{() => {
 				return (
 					<Root>
-						<Text type={TEXT_TYPES.H1}>Faucet for Fuel Network</Text>
+						<Text >Faucet for Fuel Network</Text>
 						<SizedBox height={16} />
 						{vm.faucetTokens.length === 0 ? <Skeleton height={70} style={{ margin: 4 }} count={5} /> : <TokensFaucetTable />}
 					</Root>

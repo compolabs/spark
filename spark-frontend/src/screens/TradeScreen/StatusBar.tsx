@@ -39,33 +39,33 @@ const StatusBar: React.FC<IProps> = observer(() => {
 	const theme = useTheme();
 	return (
 		<Root>
-			<Row alignItems="center" mainAxisSize="fit-content">
-				<Indicator error={accountStore.provider == null} />
-				<SizedBox width={8} />
-				<Text type={TEXT_TYPES.BODY_SMALL}>Stable Connection</Text>
-			</Row>
-			<Divider />
-			<Row alignItems="center" mainAxisSize="fit-content">
-				<Indicator />
-				<SizedBox width={8} />
-				<Text type={TEXT_TYPES.BODY_SMALL}> Response Time Name holder (xxxms)</Text>
-			</Row>
-			<DesktopRow>
-				<Divider />
-				<Text type={TEXT_TYPES.BODY_SMALL}>XX,XXX TPS</Text>
-				<Divider />
-				<Text type={TEXT_TYPES.BODY_SMALL}>Average Gas Prices:</Text>
-				<SizedBox width={4} />
-				<Chip>
-					SPOT:&nbsp;
-					<div style={{ color: theme.colors.white }}>X,XXXX€</div>
-				</Chip>
-				<SizedBox width={8} />
-				<Chip>
-					PERP:&nbsp;
-					<div style={{ color: theme.colors.white }}>X,XXXX€</div>
-				</Chip>
-			</DesktopRow>
+			{/*<Row alignItems="center" mainAxisSize="fit-content">*/}
+			{/*	<Indicator error={accountStore.provider == null} />*/}
+			{/*	<SizedBox width={8} />*/}
+			{/*	<Text> Stable Connection</Text>*/}
+			{/*</Row>*/}
+			{/*<Divider />*/}
+			{/*<Row alignItems="center" mainAxisSize="fit-content">*/}
+			{/*	<Indicator />*/}
+			{/*	<SizedBox width={8} />*/}
+			{/*	<Text Response Time Name holder (xxxms)</Text>*/}
+			{/*</Row>*/}
+			{/*<DesktopRow>*/}
+			{/*	<Divider />*/}
+			{/*	<Text >XX,XXX TPS</Text>*/}
+			{/*	<Divider />*/}
+			{/*	<Text >Average Gas Prices:</Text>*/}
+			{/*	<SizedBox width={4} />*/}
+			{/*	<Chip>*/}
+			{/*		SPOT:&nbsp;*/}
+			{/*		<div style={{ color: theme.colors.white }}>X,XXXX€</div>*/}
+			{/*	</Chip>*/}
+			{/*	<SizedBox width={8} />*/}
+			{/*	<Chip>*/}
+			{/*		PERP:&nbsp;*/}
+			{/*		<div style={{ color: theme.colors.white }}>X,XXXX€</div>*/}
+			{/*	</Chip>*/}
+			{/*</DesktopRow>*/}
 		</Root>
 	);
 });

@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 const Root = styled.input<{ small?: boolean }>`
-	${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_MEDIUM]}
 	caret-color: ${({ theme }) => theme.colors.white};
 	border: none;
 	background: transparent;

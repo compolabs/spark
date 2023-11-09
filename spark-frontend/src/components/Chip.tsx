@@ -8,7 +8,6 @@ const Chip = styled(Text)`
   text-align: center;
   height: 18px;
   border-radius: 4px;
-  ${TEXT_TYPES_MAP[TEXT_TYPES.LABEL]}
   color: ${({ theme }) => theme.colors.gray2};
   background: ${({ theme }) => theme.colors.gray4};
   padding: 4px;

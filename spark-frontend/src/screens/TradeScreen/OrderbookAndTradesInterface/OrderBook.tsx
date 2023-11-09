@@ -69,7 +69,6 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 
 	color: ${({ type, theme }) => (type === "buy" ? theme.colors.green : theme.colors.red)};
 
-	${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_SMALL]}
 	& > :last-of-type {
 		text-align: right;
 	}
@@ -145,13 +144,13 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		return (
 			<Root>
 				<Columns noHover>
-					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "left" }}>
+					<Text >
 						Amount {vm.token0.symbol}
 					</Text>
-					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "center" }}>
+					<Text >
 						Total {vm.token1.symbol}
 					</Text>
-					<Text type={TEXT_TYPES.BODY_SMALL} color={theme.colors.gray2} style={{ textAlign: "right" }}>
+					<Text >
 						Price {vm.token1.symbol}
 					</Text>
 				</Columns>
@@ -205,16 +204,13 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 							</>
 						) : (
 							<Row style={{ paddingLeft: 14 }} alignItems="center">
-								<Text type={TEXT_TYPES.NUMBER_MEDIUM} color={theme.colors.gray1}>
+								<Text >
 									SPREAD
 								</Text>
 								<SizedBox width={12} />
 								<Text>{ordersStore.spreadPrice}</Text>
 								<SizedBox width={12} />
-								<Text
-									type={TEXT_TYPES.NUMBER_SMALL}
-									color={+ordersStore.spreadPercent > 0 ? theme.colors.green : theme.colors.red}
-								>
+								<Text>
 									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
 								</Text>
 							</Row>
@@ -279,9 +275,9 @@ const Plug: React.FC<{ length: number }> = ({ length }) => (
 	<>
 		{Array.from({ length }).map((_, index) => (
 			<PlugRow key={index + "positive-plug"}>
-				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
-				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
-				<Text type={TEXT_TYPES.NUMBER_SMALL}>-</Text>
+				<Text >-</Text>
+				<Text >-</Text>
+				<Text >-</Text>
 			</PlugRow>
 		))}
 	</>

@@ -34,10 +34,10 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 		<Root {...rest}>
 			<Column crossAxisSize="max">
 				<ButtonGroup>
-					<Button primary={!vm.isSell} outline={vm.isSell} onClick={() => vm.setIsSell(false)}>
+					<Button primary={!vm.isSell}onClick={() => vm.setIsSell(false)}>
 						Buy
 					</Button>
-					<Button secondary={vm.isSell} outline={!vm.isSell} onClick={() => vm.setIsSell(true)}>
+					<Button secondary={vm.isSell} onClick={() => vm.setIsSell(true)}>
 						Sell
 					</Button>
 				</ButtonGroup>
@@ -73,7 +73,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 					label="TOTAL"
 				/>
 				<SizedBox height={16} />
-				<Button outline onClick={vm.setupMarketMakingAlgorithm}>
+				<Button  onClick={vm.setupMarketMakingAlgorithm}>
 					Setup market making algorithm
 				</Button>
 			</Column>
