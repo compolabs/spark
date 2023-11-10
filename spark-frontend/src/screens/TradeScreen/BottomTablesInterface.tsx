@@ -76,7 +76,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 	const { ordersStore } = useStores();
 	const theme = useTheme();
 	const vm = useTradeScreenVM();
-
+	return <Root />;
 	return (
 		<Root>
 			<TitleRow>

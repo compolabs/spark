@@ -21,6 +21,7 @@ const Root = styled.div`
 `;
 
 const Chart: React.FC<IProps> = () => {
+	return <Root />;
 	return (
 		<Root>
 			<ChartVMProvider>

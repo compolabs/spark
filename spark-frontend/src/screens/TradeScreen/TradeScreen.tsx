@@ -27,7 +27,7 @@ const Root = styled.div`
 	height: 100%;
 	flex: 1;
 	box-sizing: border-box;
-	padding: 0 4px;
+	padding: 0 12px;
 `;
 
 const MobileCreateOrderDialogContainer = styled(Column)`

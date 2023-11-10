@@ -29,12 +29,12 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 		{ title: "Spot market", key: "market" },
 		{ title: "Perpetual market", key: "perps", disabled: true },
 	];
-
+	return <Root />;
 	return (
 		<Root {...rest}>
 			<Column crossAxisSize="max">
 				<ButtonGroup>
-					<Button primary={!vm.isSell}onClick={() => vm.setIsSell(false)}>
+					<Button primary={!vm.isSell} onClick={() => vm.setIsSell(false)}>
 						Buy
 					</Button>
 					<Button secondary={vm.isSell} onClick={() => vm.setIsSell(true)}>
@@ -73,9 +73,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 					label="TOTAL"
 				/>
 				<SizedBox height={16} />
-				<Button  onClick={vm.setupMarketMakingAlgorithm}>
-					Setup market making algorithm
-				</Button>
+				<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>
 			</Column>
 			<Button
 				primary={!vm.isSell}

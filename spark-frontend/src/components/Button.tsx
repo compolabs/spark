@@ -20,6 +20,7 @@ const Button = styled.button<{
 	height: 24px;
 	padding: 12px 16px;
 	border-radius: 32px;
+	cursor: pointer;
 	@media (min-width: 880px) {
 		padding: 8px 12px;
 		height: 32px;

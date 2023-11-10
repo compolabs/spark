@@ -98,6 +98,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 				}
 			});
 	}, []);
+	return <Root />;
 	return (
 		<Root>
 			<MarketSelect>
@@ -113,22 +114,17 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			<MarketStatistics>
 				<PriceRow alignItems="center">
 					<Column alignItems="flex-end">
-						<Text >
+						<Text>
 							{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
 						</Text>
-						<Text
-						>
-							{state.priceChange?.toFormat(2) ?? "-"}&nbsp;%
-						</Text>
+						<Text>{state.priceChange?.toFormat(2) ?? "-"}&nbsp;%</Text>
 					</Column>
 					<DesktopRow>
 						<SizedBox width={1} height={32} style={{ background: theme.colors.gray5, margin: "0 12px" }} />
 						<Column>
-							<Text >
-								24h High
-							</Text>
+							<Text>24h High</Text>
 							<SizedBox height={4} />
-							<Text >
+							<Text>
 								{state.high?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
 							</Text>
 						</Column>

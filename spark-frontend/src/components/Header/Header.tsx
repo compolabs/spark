@@ -43,8 +43,8 @@ const DesktopMenuItem = styled(Text)<{ active?: boolean }>`
 	padding: 8px 4px;
 	margin-right: 32px;
 	cursor: pointer;
-	color: ${({ theme, active }) => (active ? theme.colors.white : theme.colors.gray2)};
-	border-bottom: 2px solid ${({ theme, active }) => (active ? theme.colors.white : "transparent")};
+	color: ${({ theme, active }) => (active ? theme.colors.textPrimary : theme.colors.textSecondary)};
+	border-bottom: 2px solid ${({ theme, active }) => (active ? theme.colors.textPrimary : "transparent")};
 `;
 
 type TMenuItem = {
@@ -62,9 +62,13 @@ export const MENU_ITEMS: Array<TMenuItem> = [
 const SettingsButton = styled(Button)`
 	width: 32px;
 	height: 32px;
-	padding: 0;
 	border-radius: 32px;
 	border: 1px solid ${({ theme }) => theme.colors.borderPrimary};
+	padding: 0 !important;
+
+	path {
+		fill: ${({ theme }) => theme.colors.iconSecondary};
+	}
 `;
 //todo add dropdown
 const Header: React.FC<IProps> = observer(() => {
@@ -114,7 +118,7 @@ const Header: React.FC<IProps> = observer(() => {
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<DesktopRow>
 					{/*<SizedBox width={10} />*/}
-					<SettingsButton  disabled>
+					<SettingsButton disabled>
 						<GearIcon />
 					</SettingsButton>
 					<SizedBox width={10} />

@@ -20,13 +20,12 @@ const Root = styled.div`
 
 const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 	const [isOrderbook, setIsOrderbook] = useState(true);
+	return <Root />;
 	return (
 		<Root>
 			<ButtonGroup style={{ padding: "0 16px" }}>
-				<Button onClick={() => setIsOrderbook(true)}>
-					Orderbook
-				</Button>
-				<Button disabled  onClick={() => setIsOrderbook(false)}>
+				<Button onClick={() => setIsOrderbook(true)}>Orderbook</Button>
+				<Button disabled onClick={() => setIsOrderbook(false)}>
 					Trades
 				</Button>
 			</ButtonGroup>
