@@ -1,14 +1,14 @@
 import styled from "@emotion/styled";
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-
-//TODO use colors from theme
-type TTextColor = "green" | "red" | "outline" | "no-outline";
+import { css } from "@emotion/react";
 
 const Button = styled.button<{
-	primary?: boolean;
-	secondary?: boolean;
+	green?: boolean;
+	red?: boolean;
+	text?: boolean;
 	fitContent?: boolean;
-	color?: TTextColor;
+	//этот active и &:active отлтчаются: это состояние нажатой кнопки, а &:active - это цвеь в момент нажатия
+	active?: boolean;
 }>`
 	text-decoration: none;
 	white-space: nowrap;
@@ -17,29 +17,101 @@ const Button = styled.button<{
 	align-items: center;
 	box-sizing: border-box;
 	${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON]}
-	height: 24px;
-	padding: 12px 16px;
+	height: 40px;
+	padding: 0 16px;
 	border-radius: 32px;
 	cursor: pointer;
+	background: transparent;
+	transition: 0.4s;
+	width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
+	color: ${({ theme }) => theme.colors.textPrimary};
 	@media (min-width: 880px) {
-		padding: 8px 12px;
+		padding: 0 12px;
 		height: 32px;
 	}
-	${({ color, theme }) =>
+
+	${({ green, red, text, theme, active }) =>
 		(() => {
-			switch (color as any) {
-				case "green":
-					return `background: #004C2D; border: #00E388;`;
-				case "red":
-					return `background: #57011B; border: #E80247;`;
-				case "outline":
-					return `background: transparent; border: #969696;`;
-				case "no-outline":
-					return `background: #004C2D; border: #00E388;`;
+			switch (true) {
+				case green:
+					return css`
+						border: 1px solid ${theme.colors.greenLight};
+						background: ${active ? theme.colors.greenMedium : theme.colors.greenDark};
+
+						&:hover {
+							background: ${theme.colors.greenMedium};
+						}
+
+						&:active {
+							background: ${theme.colors.greenDark};
+						}
+
+						&:disabled {
+							border-color: ${theme.colors.borderSecondary};
+							background: ${theme.colors.borderSecondary};
+							color: ${theme.colors.textDisabled};
+						}
+					`;
+				case red:
+					return css`
+						border: 1px solid ${theme.colors.redLight};
+						background: ${active ? theme.colors.redMedium : theme.colors.redDark};
+
+						&:hover {
+							background: ${theme.colors.redMedium};
+						}
+
+						&:active {
+							background: ${theme.colors.redDark};
+						}
+
+						&:disabled {
+							border-color: ${theme.colors.borderSecondary};
+							background: ${theme.colors.borderSecondary};
+							color: ${theme.colors.textDisabled};
+						}
+					`;
+				case text:
+					return css`
+						color: ${active ? theme.colors.textPrimary : theme.colors.textSecondary};
+						border: 0;
+
+						&:hover {
+							color: ${theme.colors.textPrimary};
+						}
+
+						&:active {
+							color: ${theme.colors.textPrimary};
+						}
+
+						&:disabled {
+							color: ${theme.colors.textDisabled};
+						}
+					`;
 				default:
-					return `background: transparent; border: #969696;`;
+					return css`
+						border: 1px solid ${active ? theme.colors.borderAccent : theme.colors.borderPrimary};
+						color: ${active ? theme.colors.textPrimary : theme.colors.textSecondary};
+
+						&:hover {
+							border: 1px solid ${theme.colors.borderAccent};
+							color: ${theme.colors.textPrimary};
+						}
+
+						&:active {
+							color: ${theme.colors.textPrimary};
+						}
+
+						&:disabled {
+							border-color: ${theme.colors.borderSecondary};
+							color: ${theme.colors.textDisabled};
+						}
+					`;
 			}
 		})()}
+	&:disabled {
+		cursor: not-allowed;
+	}
 `;
 
 export default Button;
@@ -50,9 +122,17 @@ export const ButtonGroup = styled.div`
 	box-sizing: border-box;
 
 	& > button {
-		height: 44px;
+		height: 32px;
 		border-radius: 0;
-		${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON]}
+
+		${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON_SECONDARY]}
+		:hover {
+			background: ${({ theme }) => theme.colors.borderPrimary};
+		}
+
+		:active {
+			background: transparent;
+		}
 	}
 
 	& > :first-of-type {

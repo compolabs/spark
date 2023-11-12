@@ -21,7 +21,7 @@ const Root = styled.div`
 	justify-content: space-between;
 	width: 100%;
 	height: 48px;
-	padding: 0 16px;
+	padding: 0 12px;
 	box-sizing: border-box;
 	flex-shrink: 0;
 
@@ -45,6 +45,11 @@ const DesktopMenuItem = styled(Text)<{ active?: boolean }>`
 	cursor: pointer;
 	color: ${({ theme, active }) => (active ? theme.colors.textPrimary : theme.colors.textSecondary)};
 	border-bottom: 2px solid ${({ theme, active }) => (active ? theme.colors.textPrimary : "transparent")};
+	transition: 0.4s;
+
+	:hover {
+		color: ${({ theme }) => theme.colors.textPrimary};
+	}
 `;
 
 type TMenuItem = {
@@ -63,11 +68,22 @@ const SettingsButton = styled(Button)`
 	width: 32px;
 	height: 32px;
 	border-radius: 32px;
-	border: 1px solid ${({ theme }) => theme.colors.borderPrimary};
 	padding: 0 !important;
 
 	path {
 		fill: ${({ theme }) => theme.colors.iconSecondary};
+	}
+
+	:active {
+		path {
+			fill: ${({ theme }) => theme.colors.iconPrimary};
+		}
+	}
+
+	:disabled {
+		path {
+			fill: ${({ theme }) => theme.colors.iconDisabled};
+		}
 	}
 `;
 //todo add dropdown
@@ -127,7 +143,7 @@ const Header: React.FC<IProps> = observer(() => {
 					<ConnectedWallet />
 				) : (
 					<Button
-						primary
+						green
 						fitContent
 						onClick={() =>
 							accountStore.fuel == null ? window.open("https://wallet.fuel.network/docs/install/") : navigate(ROUTES.TRADE)

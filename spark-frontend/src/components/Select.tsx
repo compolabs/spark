@@ -5,7 +5,6 @@ import arrowIcon from "@src/assets/icons/arrowUp.svg";
 import SizedBox from "@components/SizedBox";
 import { Column } from "./Flex";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "./Text";
-import { useTheme } from "@emotion/react";
 
 interface IOption {
 	key: string;
@@ -18,16 +17,20 @@ interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 	selected?: IOption;
 	onSelect: (option: IOption) => void;
 	label?: string;
+	disabled?: boolean;
 }
 
-const Root = styled.div<{ focused?: boolean }>`
+const Root = styled.div<{ focused?: boolean; disabled?: boolean }>`
   display: flex;
-  padding: 8px 10px;
+  height: 32px;
+  padding: 0 8px;
+  box-sizing: border-box;
   border-radius: 4px;
-  background: ${({ theme }) => theme.colors.gray5};
-  border: 1px solid ${({ focused, theme }) => (focused ? theme.colors.gray1 : theme.colors.gray5)};
-
-  color: ${({ theme, focused }) => theme.colors.white};
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  border: 1px solid ${({ focused, theme }) => (focused ? theme.colors.borderAccent : theme.colors.borderSecondary)};
+  ${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
+  color: ${({ theme, disabled }) => (!disabled ? theme.colors.textPrimary : theme.colors.textDisabled)};
+  cursor: ${({ disabled }) => (!disabled ? "pointer" : "not-allowed")};
   align-items: center;
   justify-content: space-between;
   white-space: nowrap;
@@ -52,26 +55,25 @@ export const Option = styled.div<{ active?: boolean; disabled?: boolean }>`
 	}
 `;
 
-const Wrap = styled.div<{ focused?: boolean }>`
+const Wrap = styled.div<{ focused?: boolean; disabled?: boolean }>`
 	display: flex;
 	flex-direction: column;
 	width: 100%;
 
 	.menu-arrow {
 		transition: 0.4s;
-		transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(180deg)")};
+		transform: ${({ focused }) => (focused ? "rotate(-180deg)" : "rotate(0deg)")};
 	}
 
 	:hover {
 		.menu-arrow {
-			transform: ${({ focused }) => (focused ? "rotate(0)" : "rotate(90deg)")};
+			transform: ${({ focused, disabled }) => (focused ? "rotate(-180)" : disabled ? "rotate(0deg)" : "rotate(-90deg)")};
 		}
 	}
 `;
 
 const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
 	const [focused, setFocused] = useState(false);
-	const theme = useTheme();
 	return (
 		<Tooltip
 			config={{
@@ -92,12 +94,10 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 				</Column>
 			}
 		>
-			<Wrap focused={focused}>
-				<Text >
-					{label?.toUpperCase()}
-				</Text>
-				<SizedBox height={4} />
-				<Root focused={focused} onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>
+			<Wrap focused={focused} disabled={rest.disabled}>
+				<Text>{label}</Text>
+				<SizedBox height={2} />
+				<Root onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>
 					{selected?.title ?? options[0]?.title}
 					{/*<SizedBox width={10}/>*/}
 					<img src={arrowIcon} className="menu-arrow" alt="arrow" />

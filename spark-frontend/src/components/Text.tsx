@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+import { css } from "@emotion/react";
 
 /*
     Fonts:
@@ -8,8 +9,6 @@ import styled from "@emotion/styled";
     Space Grotesk  500  = assets/fonts/SpaceGrotesk-Medium.ttf
     Space Grotesk  400  = assets/fonts/SpaceGrotesk-Regular.ttf
 */
-
-type TTextColor = "primary" | "secondary" | "disabled";
 
 export enum TEXT_TYPES {
 	H,
@@ -21,7 +20,9 @@ export enum TEXT_TYPES {
 
 interface IProps {
 	type?: TEXT_TYPES;
-	color?: TTextColor;
+	primary?: boolean;
+	secondary?: boolean;
+	disabled?: boolean;
 }
 
 //todo уточнить про font-variant-numeric:
@@ -73,17 +74,25 @@ export const TEXT_TYPES_MAP = {
 };
 
 const Text = styled.div<IProps>`
-	${({ type, theme }) =>
+	${({ primary, secondary, disabled, theme }) =>
 		(() => {
-			switch (type as any) {
-				case "primary":
-					return `color: ${theme.colors?.textPrimary};`;
-				case "secondary":
-					return `color: ${theme.colors?.textSecondary};`;
-				case "disabled":
-					return `color: ${theme.colors?.textDisabled};`;
+			switch (true) {
+				case primary:
+					return css`
+						color: ${theme.colors?.textPrimary};
+					`;
+				case secondary:
+					return css`
+						color: ${theme.colors?.textSecondary};
+					`;
+				case disabled:
+					return css`
+						color: ${theme.colors?.textDisabled};
+					`;
 				default:
-					return `color: ${theme.colors?.textSecondary};`;
+					return css`
+						color: ${theme.colors?.textSecondary};
+					`;
 			}
 		})()}
 	${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY])}

@@ -111,7 +111,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 							<TableText>{order.status}</TableText>
 							<TableText>
 								{order.status === "Active" && (
-									<StyledButton secondary fitContent onClick={() => vm.cancelOrder(order.orderId.toString())}>
+									<StyledButton red fitContent onClick={() => vm.cancelOrder(order.orderId.toString())}>
 										Cancel
 									</StyledButton>
 								)}

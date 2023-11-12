@@ -13,7 +13,7 @@ const Root = styled(Column)`
 	width: 100%;
 	//min-width: 1080px;
 	align-items: center;
-	// background: ${({ theme }) => theme.colors.bgPrimary};
+	background: ${({ theme }) => theme.colors.bgPrimary};
 	height: 100vh;
 	max-height: 100vh;
 `;

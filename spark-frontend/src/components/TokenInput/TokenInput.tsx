@@ -5,15 +5,14 @@ import BN from "@src/utils/BN";
 import BigNumberInput from "./BigNumberInput";
 import AmountInput from "./AmountInput";
 import _ from "lodash";
-import Text, { TEXT_TYPES } from "@components/Text";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import { useTheme } from "@emotion/react";
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import Chip from "@components/Chip";
 
 interface IProps {
-	assetId: string;
-	setAssetId?: (assetId: string) => void;
+	assetId?: string;
 	decimals: number;
 	label?: string;
 	amount: BN;
@@ -41,7 +40,7 @@ const InputContainer = styled.div<{
 	flex-direction: row;
 	justify-content: center;
 	align-items: center;
-	padding: 8px;
+	padding: 0 8px;
 	height: 32px;
 	width: 100%;
 	cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
@@ -50,18 +49,19 @@ const InputContainer = styled.div<{
 
 	input {
 		cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
+		${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
 	}
 
-	background: ${({ disabled, theme }) => (disabled ? theme.colors.gray2 : theme.colors.gray5)};
+	background: ${({ theme }) => theme.colors.bgPrimary};
 
 	border-radius: 4px;
 	border: 1px solid
 		${({ error, focused, disabled, theme }) =>
 			(() => {
-				if (disabled) return theme.colors.gray2;
-				if (error) return theme.colors.error;
-				if (focused) return theme.colors.gray1;
-				return theme.colors.gray5;
+				if (disabled) return theme.colors.borderSecondary;
+				if (error) return theme.colors.attention;
+				if (focused) return theme.colors.borderAccent;
+				return theme.colors.borderSecondary;
 			})()};
 `;
 
@@ -90,10 +90,8 @@ const TokenInput: React.FC<IProps> = (props) => {
 		<Root>
 			{props.label != null && (
 				<>
-					<Text >
-						{props.label}
-					</Text>
-					<SizedBox height={4} />
+					<Text>{props.label}</Text>
+					<SizedBox height={2} />
 				</>
 			)}
 			<InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
@@ -120,15 +118,13 @@ const TokenInput: React.FC<IProps> = (props) => {
 					readOnly={!props.setAmount}
 					disabled={props.disabled}
 				/>
-				<Chip>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Chip>
+				{props.assetId && <Chip>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Chip>}
 			</InputContainer>
 			<SizedBox height={2} />
 			{props.error && (
 				<>
 					<SizedBox width={4} />
-					<Text >
-						{props.errorMessage}
-					</Text>
+					<Text>{props.errorMessage}</Text>
 				</>
 			)}
 		</Root>

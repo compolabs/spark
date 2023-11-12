@@ -70,7 +70,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<BottomTablesInterface />
 			</Column>
 			<SizedBox height={16} />
-			<Button primary onClick={() => setCreateOrderDialogOpen(true)}>
+			<Button green onClick={() => setCreateOrderDialogOpen(true)}>
 				Create order
 			</Button>
 			<StatusBar />

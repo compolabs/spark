@@ -18,22 +18,22 @@ interface IProps {}
 
 const Root = styled(Button)<{ focused?: boolean }>`
 	background: transparent;
-	border: 1px solid ${({ theme }) => theme.colors.white};
 	padding: 0 8px;
+	color: ${({ theme }) => theme.colors.white};
+	${TEXT_TYPES_MAP[TEXT_TYPES.BODY]};
 
 	:hover {
 		background: transparent;
-		border: 1px solid ${({ theme }) => theme.colors.white};
 	}
 
 	.menu-arrow {
 		transition: 0.4s;
-		transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(180deg)")};
+		transform: ${({ focused }) => (focused ? "rotate(-180deg)" : "rotate(0deg)")};
 	}
 
 	:hover {
 		.menu-arrow {
-			transform: ${({ focused }) => (focused ? "rotate(0)" : "rotate(90deg)")};
+			transform: ${({ focused }) => (focused ? "rotate(-180)" : "rotate(-90deg)")};
 		}
 	}
 `;

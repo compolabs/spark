@@ -1,7 +1,7 @@
 import React from "react";
 import { ChartVMProvider } from "@screens/TradeScreen/Chart/ChartVm";
-import TVChartContainer from "@screens/TradeScreen/Chart/TVChartContainer";
 import styled from "@emotion/styled";
+import TradingViewWidget from "@screens/TradeScreen/Chart/TradingViewWidget";
 
 interface IProps {}
 
@@ -21,11 +21,11 @@ const Root = styled.div`
 `;
 
 const Chart: React.FC<IProps> = () => {
-	return <Root />;
 	return (
 		<Root>
 			<ChartVMProvider>
-				<TVChartContainer />
+				<TradingViewWidget />
+				{/*<TVChartContainer />*/}
 			</ChartVMProvider>
 		</Root>
 	);

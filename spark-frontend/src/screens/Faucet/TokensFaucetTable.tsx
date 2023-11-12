@@ -40,20 +40,25 @@ const TokensFaucetTable: React.FC<IProps> = () => {
 				btn: (() => {
 					if (!accountStore.isLoggedIn && t.symbol !== "ETH")
 						return (
-							<Button primary onClick={() => navigate("/")}>
+							<Button green onClick={() => navigate("/")}>
 								Connect wallet
 							</Button>
 						);
 					if (!vm.initialized)
 						return (
-							<Button primary disabled>
+							<Button green disabled>
 								Loading...
 							</Button>
 						);
-					if (ethBalance?.eq(0) && t.symbol !== "ETH" ) return <Button disabled primary>Mint</Button>;
+					if (ethBalance?.eq(0) && t.symbol !== "ETH")
+						return (
+							<Button green disabled>
+								Mint
+							</Button>
+						);
 					return (
 						<Button
-							primary
+							green
 							disabled={vm.loading || !vm.initialized}
 							onClick={() => {
 								if (t.symbol === "ETH") {
