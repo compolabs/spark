@@ -25,7 +25,7 @@ const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	${({ noHover }) => !noHover && "cursor: pointer;"};
-	padding: 0 18px;
+	padding: 0 12px;
 	text-align: center;
 
 	p:last-of-type {
@@ -44,11 +44,11 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 	position: relative;
 	cursor: pointer;
 	margin-bottom: 1px;
-	height: 18px;
+	height: 16px;
 	width: 100%;
 	justify-content: space-between;
 	align-items: center;
-	padding: 0 18px;
+	padding: 0 12px;
 	box-sizing: border-box;
 	background: transparent;
 	transition: 0.4s;
@@ -76,6 +76,8 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 	& > * {
 		flex: 1;
 		text-align: left;
+		//color: {({ theme }) => theme.colors.textPrimary}
+		${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
 	}
 `;
 const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
@@ -88,6 +90,13 @@ const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
 	height: 100%;
 `;
 
+const SpreadRow = styled(Row)`
+	padding-left: 12px;
+	height: 24px;
+	background: ${({ theme }) => theme.colors.bgPrimary};
+	align-items: center;
+`;
+
 const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	const vm = useTradeScreenVM();
 	const [round] = useState("2");
@@ -97,9 +106,10 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	const [amountOfOrders, setAmountOfOrders] = useState(0);
 	const oneSizeOrders = +new BN(amountOfOrders).div(2).toFixed(0) - 1;
 	const calcSize = () => {
-		const windowHeight = window.innerHeight - (mobileMode ? window.innerHeight / 2 + 96 : 212);
-		const v = new BN(windowHeight).minus(48).div(19);
-		const amountOfOrders = +v.toFixed(0);
+		// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 16 + 24); //220
+		// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 32 + 8 + 16 + 24); //260
+		// const windowHeight = window.innerHeight - (mobileMode ? window.innerHeight / 2 + 96 : 212);
+		const amountOfOrders = +new BN(window.innerHeight - 220).div(17).toFixed(0);
 		setAmountOfOrders(amountOfOrders);
 	};
 
@@ -144,13 +154,13 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		return (
 			<Root>
 				<Columns noHover>
-					<Text >
+					<Text style={{ textAlign: "left" }} type={TEXT_TYPES.SUPPORTING}>
 						Amount {vm.token0.symbol}
 					</Text>
-					<Text >
+					<Text style={{ textAlign: "left" }} type={TEXT_TYPES.SUPPORTING}>
 						Total {vm.token1.symbol}
 					</Text>
-					<Text >
+					<Text style={{ textAlign: "right" }} type={TEXT_TYPES.SUPPORTING}>
 						Price {vm.token1.symbol}
 					</Text>
 				</Columns>
@@ -203,17 +213,15 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 								<Skeleton height={20} />
 							</>
 						) : (
-							<Row style={{ paddingLeft: 14 }} alignItems="center">
-								<Text >
-									SPREAD
-								</Text>
+							<SpreadRow>
+								<Text type={TEXT_TYPES.SUPPORTING}>SPREAD</Text>
 								<SizedBox width={12} />
-								<Text>{ordersStore.spreadPrice}</Text>
+								<Text primary>{ordersStore.spreadPrice}</Text>
 								<SizedBox width={12} />
-								<Text>
-									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
-								</Text>
-							</Row>
+								<Text style={{ color: +ordersStore.spreadPercent > 0 ? theme.colors.green : theme.colors.red }}>{`(${
+									+ordersStore.spreadPercent > 0 ? "+" : ""
+								}${ordersStore.spreadPercent}%) `}</Text>
+							</SpreadRow>
 						)}
 					</Row>
 					{orderFilter === 0 && (
@@ -262,8 +270,8 @@ export default OrderBook;
 const PlugRow = styled(Row)`
 	justify-content: space-between;
 	margin-bottom: 1px;
-	height: 18px;
-	padding: 0 18px;
+	height: 16px;
+	padding: 0 12px;
 	box-sizing: border-box;
 
 	& > * {
@@ -275,9 +283,9 @@ const Plug: React.FC<{ length: number }> = ({ length }) => (
 	<>
 		{Array.from({ length }).map((_, index) => (
 			<PlugRow key={index + "positive-plug"}>
-				<Text >-</Text>
-				<Text >-</Text>
-				<Text >-</Text>
+				<Text>-</Text>
+				<Text>-</Text>
+				<Text>-</Text>
 			</PlugRow>
 		))}
 	</>

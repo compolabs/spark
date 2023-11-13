@@ -114,6 +114,9 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 					<Text type={TEXT_TYPES.SUPPORTING}>&nbsp;{vm.isSell ? vm.token0.symbol : vm.token1.symbol}</Text>
 				</Row>
 			</Row>
+			{/*<SizedBox height={28} />*/}
+			{/*<input type="range" />*/}
+			{/*<SizedBox height={28} />*/}
 			{/*<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>*/}
 			<SizedBox height={16} />
 			<Button

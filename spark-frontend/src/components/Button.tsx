@@ -130,6 +130,10 @@ export const ButtonGroup = styled.div`
 			background: ${({ theme }) => theme.colors.borderPrimary};
 		}
 
+		:disabled {
+			background: transparent;
+		}
+
 		:active {
 			background: transparent;
 		}
