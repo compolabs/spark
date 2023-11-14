@@ -6,46 +6,40 @@ import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import Skeleton from "react-loading-skeleton";
-import { Row } from "@src/components/Flex";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { Column, Row } from "@src/components/Flex";
+import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
 import useEventListener from "@src/utils/useEventListener";
+import hexToRgba from "@src/utils/hexToRgb";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {
 	mobileMode?: boolean;
 }
 
-const Root = styled.div`
-	display: flex;
-	flex-direction: column;
+const Root = styled(Column)`
 	grid-area: orderbook;
 	width: 100%;
 `;
-const Columns = styled.div<{
-	noHover?: boolean;
-	percent?: number;
-}>`
+const OrderBookHeader = styled.div<{}>`
+	width: 100%;
+	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
-	${({ noHover }) => !noHover && "cursor: pointer;"};
 	padding: 0 12px;
 	text-align: center;
 
-	p:last-of-type {
-		text-align: end;
-	}
-
-	p:first-of-type {
+	& > * {
 		text-align: start;
 	}
 
-	:hover {
-		${({ noHover }) => !noHover && "background:  #323846;"};
+	& > :last-of-type {
+		text-align: end;
 	}
 `;
 const OrderRow = styled(Row)<{
 	type: "buy" | "sell";
-	percent?: number;
+	fulfillPercent?: number;
+	volumePercent?: number;
 }>`
 	position: relative;
 	cursor: pointer;
@@ -60,30 +54,42 @@ const OrderRow = styled(Row)<{
 	transition: 0.4s;
 
 	&:hover {
-		background: ${({ type }) => (type === "buy" ? "rgba(0,255,152,0.2)" : "rgba(253,10,83,0.2)")}; //fixme
+		background: ${({ type, theme }) =>
+			type === "buy" ? hexToRgba(theme.colors.greenLight, 0.1) : hexToRgba(theme.colors.redLight, 0.1)};
 	}
 
 	.progress-bar {
+		z-index: 0;
 		position: absolute;
 		left: 0;
 		top: 0;
 		bottom: 0;
-		background: ${({ type }) => (type === "buy" ? "rgba(0,255,152,0.1)" : "rgba(253,10,83,0.1)")}; //fixme
+		background: ${({ type, theme }) =>
+			type === "buy" ? hexToRgba(theme.colors.greenLight, 0.1) : hexToRgba(theme.colors.redLight, 0.1)};
 		transition: all 0.3s;
-		width: ${({ percent }) => (percent != null ? `${percent}%` : `0%`)};
+		width: ${({ fulfillPercent }) => (fulfillPercent != null ? `${fulfillPercent}%` : `0%`)};
 	}
 
-	color: ${({ type, theme }) => (type === "buy" ? theme.colors.greenLight : theme.colors.redLight)};
+	.volume-bar {
+		z-index: 0;
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		background: ${({ type, theme }) =>
+			type === "buy" ? hexToRgba(theme.colors.greenLight, 0.3) : hexToRgba(theme.colors.redLight, 0.3)};
+		transition: all 0.3s;
+		width: ${({ volumePercent }) => (volumePercent != null ? `${volumePercent}%` : `0%`)};
+	}
 
-	& > :last-of-type {
+	& > div:last-of-type {
 		text-align: right;
 	}
 
-	& > * {
+	& > div {
 		flex: 1;
 		text-align: left;
-		//color: {({ theme }) => theme.colors.textPrimary}
-		${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
+		z-index: 1;
 	}
 `;
 const Container = styled.div<{
@@ -123,7 +129,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	};
 
 	useEffect(calcSize, [mobileMode]);
-	const handleResize = useCallback(calcSize, [mobileMode]);
+	const handleResize = useCallback(calcSize, []);
 
 	useEventListener("resize", handleResize);
 
@@ -148,31 +154,22 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		})
 		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
 
+	const totalBuy = buyOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
+	const totalSell = sellOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
 	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
 		return (
-			<Root
-				style={{
-					alignItems: "center",
-					justifyContent: "center",
-				}}
-			>
+			<Root alignItems="center" justifyContent="center">
 				<Text type={TEXT_TYPES.H}>No orders for this pair</Text>
 			</Root>
 		);
 	else
 		return (
 			<Root>
-				<Columns noHover>
-					<Text style={{ textAlign: "left" }} type={TEXT_TYPES.SUPPORTING}>
-						Amount {vm.token0.symbol}
-					</Text>
-					<Text style={{ textAlign: "left" }} type={TEXT_TYPES.SUPPORTING}>
-						Total {vm.token1.symbol}
-					</Text>
-					<Text style={{ textAlign: "right" }} type={TEXT_TYPES.SUPPORTING}>
-						Price {vm.token1.symbol}
-					</Text>
-				</Columns>
+				<OrderBookHeader>
+					<Text type={TEXT_TYPES.SUPPORTING}>Amount {vm.token0.symbol}</Text>
+					<Text type={TEXT_TYPES.SUPPORTING}>Total {vm.token1.symbol}</Text>
+					<Text type={TEXT_TYPES.SUPPORTING}>Price {vm.token1.symbol}</Text>
+				</OrderBookHeader>
 				{/*<Divider />*/}
 				<SizedBox height={8} />
 				<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
@@ -187,7 +184,8 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 								sellOrders.map((o, index) => (
 									<OrderRow
 										type="sell"
-										percent={+new BN(o.fullFillPercent).toFormat(2)}
+										fulfillPercent={+new BN(o.fullFillPercent).toFormat(2)}
+										volumePercent={o.amountLeft.div(totalSell).times(100).toNumber()}
 										key={index + "negative"}
 										onClick={() => {
 											const price = BN.parseUnits(o.price, vm.token1.decimals);
@@ -199,10 +197,11 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 											vm.setSellTotal(BN.ZERO, true);
 										}}
 									>
-										<div color={theme.colors.textPrimary}>{o.amountLeftStr}</div>
-										<div color={theme.colors.textPrimary}>{o.totalLeftStr}</div>
-										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
+										<span className="volume-bar" />
+										<Text primary>{o.amountLeftStr}</Text>
+										<Text primary>{o.totalLeftStr}</Text>
+										<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(+round)}</Text>
 									</OrderRow>
 								))}
 						</>
@@ -255,14 +254,16 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 											vm.setBuyAmount(BN.ZERO, true);
 											vm.setBuyTotal(BN.ZERO, true);
 										}}
-										percent={+new BN(o.fullFillPercent).toFormat(0)}
+										fulfillPercent={+new BN(o.fullFillPercent).toFormat(0)}
+										volumePercent={o.amountLeft.div(totalBuy).times(100).toNumber()}
 										type="buy"
 										key={index + "positive"}
 									>
-										<div>{o.totalLeftStr}</div>
-										<div>{o.amountLeftStr}</div>
-										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
+										<span className="volume-bar" />
+										<Text primary>{o.totalLeftStr}</Text>
+										<Text primary>{o.amountLeftStr}</Text>
+										<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(+round)}</Text>
 									</OrderRow>
 								))}
 							{orderFilter === 0 && (

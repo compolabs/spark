@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 import { Column } from "@src/components/Flex";
-import Text from "@src/components/Text";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@src/components/Text";
 import SizedBox from "@components/SizedBox";
 import bg from "@src/assets/referralBackground.png";
 import { useStores } from "@stores";
@@ -50,6 +50,7 @@ export const StyledLink = styled.a`
   cursor: pointer;
   transition: .4s;
   text-decoration: none;
+  ${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]};
 
   :hover {
     opacity: .8;
@@ -68,7 +69,8 @@ const Referral: React.FC<IProps> = observer(() => {
 				<Column justifyContent="center" alignItems="center" crossAxisSize="max" style={{ maxWidth: 360 }}>
 					{accountStore.address != null ? <ReferralInterface /> : <ConnectWalletInterface />}
 					<SizedBox height={40} />
-					<Text>New to Waves blockchain?</Text>
+					<Text>New to Fuel blockchain?</Text>
+					<SizedBox height={4} />
 					<StyledLink
 						rel="noopener noreferrer"
 						target="_blank"

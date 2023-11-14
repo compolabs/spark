@@ -9,7 +9,6 @@ import dayjs from "dayjs";
 import { useTheme } from "@emotion/react";
 import Text from "@components/Text";
 import Chip from "@src/components/Chip";
-import Button from "@src/components/Button";
 import Tab from "@components/Tab";
 
 interface IProps {}
@@ -105,7 +104,9 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 				<Title>Filled</Title>
 				<Title>Price</Title>
 				<Title>
-					<CancelButton>Cancel all</CancelButton>
+					<Row justifyContent="flex-end">
+						<CancelButton>Cancel all</CancelButton>
+					</Row>
 				</Title>
 			</TableRow>
 			<Body>
@@ -115,13 +116,15 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 					.sort((a, b) => (a.status === "Active" && b.status !== "Active" ? -1 : 1))
 					.map((order) => (
 						<TableRow key={order.id}>
-							<TableText style={{ minWidth: 24 }}>{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}</TableText>
-							<TableText>{order.market}</TableText>
-							<TableText>{order.status}</TableText>
+							<TableText primary style={{ minWidth: 24 }}>
+								{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}
+							</TableText>
+							<TableText primary>{order.market}</TableText>
+							<TableText primary>{order.status}</TableText>
 							<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
 								{order.type}
 							</TableText>
-							<TableText>
+							<TableText primary>
 								{order.amountStr}
 								&nbsp;
 								<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>
@@ -130,11 +133,13 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 							{/*	{order.total}*/}
 							{/*	<Chip>{order.type === "SELL" ? vm.token1.symbol : vm.token0.symbol}</Chip>*/}
 							{/*</TableText>*/}
-							<TableText>{order.fulfilled0.div(order.amount0).times(100).toFormat(2)}%</TableText>
-							<TableText>{order.price.toFixed(2)}</TableText>
+							<TableText primary>{order.fulfilled0.div(order.amount0).times(100).toFormat(2)}%</TableText>
+							<TableText primary>{order.price.toFixed(2)}</TableText>
 							<TableText>
 								{order.status === "Active" && (
-									<CancelButton onClick={() => vm.cancelOrder(order.orderId.toString())}>Cancel</CancelButton>
+									<Row justifyContent="flex-end">
+										<CancelButton onClick={() => vm.cancelOrder(order.orderId.toString())}>Cancel</CancelButton>
+									</Row>
 								)}
 							</TableText>
 						</TableRow>

@@ -24,6 +24,7 @@ interface IProps {
 	secondary?: boolean;
 	disabled?: boolean;
 	color?: string;
+	nowrap?: boolean;
 }
 
 //todo уточнить про font-variant-numeric:
@@ -75,7 +76,8 @@ export const TEXT_TYPES_MAP = {
 };
 
 const Text = styled.div<IProps>`
-	${({ primary, secondary, disabled, theme, color }) =>
+	white-space: ${({ nowrap }) => (nowrap ? "nowrap" : "normal")};
+	${({ nowrap, primary, secondary, disabled, theme, color }) =>
 		(() => {
 			switch (true) {
 				case primary:

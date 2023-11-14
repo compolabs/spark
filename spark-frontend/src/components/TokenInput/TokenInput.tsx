@@ -7,7 +7,6 @@ import AmountInput from "./AmountInput";
 import _ from "lodash";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import SizedBox from "@components/SizedBox";
-import { useTheme } from "@emotion/react";
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import Chip from "@components/Chip";
 
@@ -68,7 +67,6 @@ const InputContainer = styled.div<{
 const TokenInput: React.FC<IProps> = (props) => {
 	const [focused, setFocused] = useState(false);
 	const [amount, setAmount] = useState<BN>(props.amount);
-	const theme = useTheme();
 	useEffect(() => {
 		props.amount && setAmount(props.amount);
 	}, [props.amount]);

@@ -17,7 +17,6 @@ interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 	selected?: IOption;
 	onSelect: (option: IOption) => void;
 	label?: string;
-	disabled?: boolean;
 }
 
 const Root = styled.div<{
@@ -43,22 +42,27 @@ export const Option = styled.div<{
 	active?: boolean;
 	disabled?: boolean;
 }>`
-	width: calc(100% + 32px);
+	width: 100%;
 	display: flex;
 	cursor: ${({ disabled }) => (!disabled ? "pointer" : "not-allowed")};
-	position: relative;
 	align-items: center;
-	color: ${({ active, theme, disabled }) =>
-		active ? theme.colors.textPrimary : !disabled ? theme.colors.textPrimary : theme.colors.bgSecondary}; //fixme
+	background: ${({ active, theme }) => (active ? theme.colors.borderPrimary : "transparent")};
+	color: ${({ disabled, theme }) => (disabled ? theme.colors.textDisabled : theme.colors.textPrimary)};
 	padding: 8px 10px;
 	box-sizing: border-box;
-	margin: 0 -16px;
 	white-space: nowrap;
 	transition: 0.4s;
 
 	:hover {
-		background: ${({ theme, disabled }) => (!disabled ? theme.colors.bgPrimary : "transparent")};
+		background: ${({ theme, active, disabled }) =>
+			active ? theme.colors.borderPrimary : disabled ? "transparent" : theme.colors.borderSecondary};
 	}
+
+	:active {
+		background: ${({ theme, disabled }) => (!disabled ? theme.colors.borderPrimary : "transparent")};
+	}
+
+	${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON_SECONDARY]};
 `;
 
 const Wrap = styled.div<{
@@ -103,7 +107,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 				</Column>
 			}
 		>
-			<Wrap focused={focused} disabled={rest.disabled}>
+			<Wrap focused={focused}>
 				<Text>{label}</Text>
 				<SizedBox height={2} />
 				<Root onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>

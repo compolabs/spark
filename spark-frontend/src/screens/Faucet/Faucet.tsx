@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-import Text, { TEXT_TYPES } from "@components/Text";
+import Text from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import { Observer } from "mobx-react-lite";
 import { FaucetVMProvider, useFaucetVM } from "@screens/Faucet/FaucetVm";
@@ -31,7 +31,7 @@ const FaucetImpl: React.FC<IProps> = () => {
 			{() => {
 				return (
 					<Root>
-						<Text >Faucet for Fuel Network</Text>
+						<Text>Faucet for Fuel Network</Text>
 						<SizedBox height={16} />
 						{vm.faucetTokens.length === 0 ? <Skeleton height={70} style={{ margin: 4 }} count={5} /> : <TokensFaucetTable />}
 					</Root>
