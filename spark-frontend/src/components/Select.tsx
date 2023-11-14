@@ -20,7 +20,10 @@ interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 	disabled?: boolean;
 }
 
-const Root = styled.div<{ focused?: boolean; disabled?: boolean }>`
+const Root = styled.div<{
+	focused?: boolean;
+	disabled?: boolean;
+}>`
   display: flex;
   height: 32px;
   padding: 0 8px;
@@ -36,14 +39,17 @@ const Root = styled.div<{ focused?: boolean; disabled?: boolean }>`
   white-space: nowrap;
 }
 `;
-export const Option = styled.div<{ active?: boolean; disabled?: boolean }>`
+export const Option = styled.div<{
+	active?: boolean;
+	disabled?: boolean;
+}>`
 	width: calc(100% + 32px);
 	display: flex;
 	cursor: ${({ disabled }) => (!disabled ? "pointer" : "not-allowed")};
 	position: relative;
 	align-items: center;
 	color: ${({ active, theme, disabled }) =>
-		active ? theme.colors.white : !disabled ? theme.colors.white : theme.colors.gray2}; //fixme
+		active ? theme.colors.textPrimary : !disabled ? theme.colors.textPrimary : theme.colors.bgSecondary}; //fixme
 	padding: 8px 10px;
 	box-sizing: border-box;
 	margin: 0 -16px;
@@ -51,11 +57,14 @@ export const Option = styled.div<{ active?: boolean; disabled?: boolean }>`
 	transition: 0.4s;
 
 	:hover {
-		background: ${({ theme, disabled }) => (!disabled ? theme.colors.gray3 : "transparent")};
+		background: ${({ theme, disabled }) => (!disabled ? theme.colors.bgPrimary : "transparent")};
 	}
 `;
 
-const Wrap = styled.div<{ focused?: boolean; disabled?: boolean }>`
+const Wrap = styled.div<{
+	focused?: boolean;
+	disabled?: boolean;
+}>`
 	display: flex;
 	flex-direction: column;
 	width: 100%;

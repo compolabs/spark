@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React, { useState } from "react";
-import Text, { TEXT_TYPES } from "@components/Text";
+import Text from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import Button from "@components/Button";
 import { observer } from "mobx-react";
@@ -17,10 +17,10 @@ const StyledInput = styled(Input)`
 	height: 32px;
 
 	& > input {
-		color: ${({ theme }) => theme.colors.white};
+		color: ${({ theme }) => theme.colors.textPrimary};
 	}
 
-	background: ${({ theme }) => theme.colors.gray5};
+	background: ${({ theme }) => theme.colors.bgSecondary};
 	border-radius: 4px;
 	padding: 0 10px;
 	box-sizing: border-box;
@@ -28,7 +28,7 @@ const StyledInput = styled(Input)`
 	border: 1px solid transparent;
 
 	:hover {
-		border-color: ${({ theme }) => theme.colors.white};
+		border-color: ${({ theme }) => theme.colors.textPrimary};
 	}
 `;
 

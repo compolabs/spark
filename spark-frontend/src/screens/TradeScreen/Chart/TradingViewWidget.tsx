@@ -51,8 +51,8 @@ export default function TradingViewWidget() {
 					style: "1",
 					locale: "en",
 					enable_publishing: false,
-					backgroundColor: theme.colors.gray5,
-					gridColor: theme.colors.gray3,
+					backgroundColor: theme.colors.bgPrimary,
+					gridColor: theme.colors.borderSecondary,
 					hide_top_toolbar: true,
 					hide_legend: true,
 					save_image: false,
@@ -60,7 +60,7 @@ export default function TradingViewWidget() {
 				});
 			}
 		}
-	}, [theme.colors.gray3, theme.colors.gray5]);
+	}, [theme]);
 
 	return (
 		<Root className="tradingview-widget-container">

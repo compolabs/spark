@@ -10,15 +10,17 @@ import { useTheme } from "@emotion/react";
 import Text from "@components/Text";
 import Chip from "@src/components/Chip";
 import Button from "@src/components/Button";
+import Tab from "@components/Tab";
 
 interface IProps {}
 
 const Root = styled.div`
-	background: ${({ theme }) => theme.colors.gray4};
+	background: ${({ theme }) => theme.colors.bgSecondary};
 	display: flex;
 	width: 100%;
 	flex-direction: column;
 	box-sizing: border-box;
+	border: 1px solid ${({ theme }) => theme.colors.bgSecondary};
 	flex: 1;
 	max-height: 190px;
 	overflow: hidden;
@@ -33,17 +35,10 @@ const Root = styled.div`
 `;
 
 const Title = styled(Text)`
-	color: ${({ theme }) => theme.colors.gray2};
 	flex: 1;
+	${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]}
 `;
 
-const TitleRow = styled(Row)`
-	height: 28px;
-	flex-shrink: 0;
-	align-items: center;
-	padding: 0 12px;
-	box-sizing: border-box;
-`;
 const TableText = styled(Text)`
 	flex: 1;
 	display: flex;
@@ -51,13 +46,17 @@ const TableText = styled(Text)`
 `;
 
 const TableRow = styled(Row)`
-	margin-bottom: 10px;
+	margin-bottom: 1px;
 	height: 32px;
 	flex-shrink: 0;
-	background: ${({ theme }) => theme.colors.gray5};
+	background: ${({ theme }) => theme.colors.bgPrimary};
 	align-items: center;
 	padding: 0 12px;
 	box-sizing: border-box;
+
+	:last-of-type {
+		margin-bottom: 0;
+	}
 `;
 
 const Body = styled(Column)`
@@ -66,29 +65,49 @@ const Body = styled(Column)`
 	box-sizing: border-box;
 `;
 
-const StyledButton = styled(Button)`
-	font-size: 8px;
-	height: 18px;
-	padding: 0 8px;
+const TabContainer = styled(Row)`
+	align-items: center;
+	box-sizing: border-box;
+	padding: 0 12px;
+	height: 32px;
+
+	& > * {
+		margin: 0 12px;
+	}
+`;
+
+const CancelButton = styled(Chip)`
+	cursor: pointer;
+	border: 1px solid ${({ theme }) => theme.colors.borderPrimary} !important;
 `;
 
 const BottomTablesInterface: React.FC<IProps> = observer(() => {
 	const { ordersStore } = useStores();
 	const theme = useTheme();
 	const vm = useTradeScreenVM();
-	return <Root />;
 	return (
 		<Root>
-			<TitleRow>
+			<TabContainer>
+				<Tab disabled>POSITIONS</Tab>
+				<Tab active>ORDERS</Tab>
+				<Tab disabled>TRADES</Tab>
+				<Tab disabled>UNSETTLED P&L</Tab>
+				<Tab disabled>BALANCES</Tab>
+				<Tab disabled>HISTORY</Tab>
+			</TabContainer>
+			<TableRow>
 				<Title>Date</Title>
 				<Title>Pair</Title>
-				<Title>Type</Title>
-				<Title>Price</Title>
-				<Title>Amount</Title>
-				<Title>Total</Title>
 				<Title>Status</Title>
-				<Title>Action</Title>
-			</TitleRow>
+				<Title>Type</Title>
+				<Title>Amount</Title>
+				{/*<Title>Total</Title>*/}
+				<Title>Filled</Title>
+				<Title>Price</Title>
+				<Title>
+					<CancelButton>Cancel all</CancelButton>
+				</Title>
+			</TableRow>
 			<Body>
 				{ordersStore.myOrders
 					.slice()
@@ -98,22 +117,24 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 						<TableRow key={order.id}>
 							<TableText style={{ minWidth: 24 }}>{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}</TableText>
 							<TableText>{order.market}</TableText>
-							{/*<TableText color={order.type === "SELL" ? theme.colors.red : theme.colors.green}>{order.type}</TableText>*/}
-							<TableText>{order.price.toFixed(2)}</TableText>
+							<TableText>{order.status}</TableText>
+							<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+								{order.type}
+							</TableText>
 							<TableText>
 								{order.amountStr}
+								&nbsp;
 								<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>
 							</TableText>
-							<TableText>
-								{order.total}
-								<Chip>{order.type === "SELL" ? vm.token1.symbol : vm.token0.symbol}</Chip>
-							</TableText>
-							<TableText>{order.status}</TableText>
+							{/*<TableText>*/}
+							{/*	{order.total}*/}
+							{/*	<Chip>{order.type === "SELL" ? vm.token1.symbol : vm.token0.symbol}</Chip>*/}
+							{/*</TableText>*/}
+							<TableText>{order.fulfilled0.div(order.amount0).times(100).toFormat(2)}%</TableText>
+							<TableText>{order.price.toFixed(2)}</TableText>
 							<TableText>
 								{order.status === "Active" && (
-									<StyledButton red fitContent onClick={() => vm.cancelOrder(order.orderId.toString())}>
-										Cancel
-									</StyledButton>
+									<CancelButton onClick={() => vm.cancelOrder(order.orderId.toString())}>Cancel</CancelButton>
 								)}
 							</TableText>
 						</TableRow>

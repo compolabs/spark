@@ -13,6 +13,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
     "@pythnetwork/pyth-evm-js": "^1.29.1",
     "@svgr/webpack": "^8.1.0",
+    "@szhsin/react-accordion": "^1.2.3",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

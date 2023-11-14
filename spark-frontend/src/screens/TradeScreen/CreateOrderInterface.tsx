@@ -10,6 +10,8 @@ import Select from "@components/Select";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import { useStores } from "@stores";
+import { Accordion, AccordionItem } from "@components/Accordion/Accordion";
+import BN from "@src/utils/BN";
 
 interface IProps extends ComponentProps<any> {}
 
@@ -22,7 +24,7 @@ const Root = styled.div`
 	max-width: 280px;
 	height: 100%;
 	border-radius: 10px;
-	background: ${({ theme }) => theme.colors.gray4};
+	background: ${({ theme }) => theme.colors.bgSecondary};
 `;
 
 const MaxButton = styled(Button)`
@@ -114,10 +116,49 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 					<Text type={TEXT_TYPES.SUPPORTING}>&nbsp;{vm.isSell ? vm.token0.symbol : vm.token1.symbol}</Text>
 				</Row>
 			</Row>
-			{/*<SizedBox height={28} />*/}
-			{/*<input type="range" />*/}
-			{/*<SizedBox height={28} />*/}
 			{/*<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>*/}
+			<SizedBox height={28} />
+			<input
+				type="range"
+				min={0}
+				max={accountStore.findBalanceByAssetId(vm.isSell ? vm.assetId0 : vm.assetId1)?.balance?.toNumber() ?? 0}
+				onChange={({ target: { value } }) =>
+					vm.isSell ? vm.setSellAmount(new BN(value), true) : vm.setBuyAmount(new BN(value), true)
+				}
+			/>
+			<SizedBox height={28} />
+			<Accordion transition transitionTimeout={400}>
+				<AccordionItem
+					defaultChecked
+					header={
+						<Row justifyContent="space-between" mainAxisSize="stretch" alignItems="center">
+							<Text style={{ width: "100%", textAlign: "left" }} primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+								Order Details
+							</Text>
+							<Row justifyContent="flex-end" alignItems="center">
+								<Text primary>0.20</Text>
+								<Text>&nbsp;ETH</Text>
+							</Row>
+						</Row>
+					}
+					initialEntered
+				>
+					<Row alignItems="center" justifyContent="space-between">
+						<Text>Max buy (TODO)</Text>
+						<Text primary>9.90</Text>
+					</Row>
+					<SizedBox height={8} />
+					<Row alignItems="center" justifyContent="space-between">
+						<Text>Est. Fee (TODO)</Text>
+						<Text primary>0.0001423</Text>
+					</Row>
+					<SizedBox height={8} />
+					<Row alignItems="center" justifyContent="space-between">
+						<Text>Total amount (TODO)</Text>
+						<Text primary>0.20</Text>
+					</Row>
+				</AccordionItem>
+			</Accordion>
 			<SizedBox height={16} />
 			<Button
 				green={!vm.isSell}

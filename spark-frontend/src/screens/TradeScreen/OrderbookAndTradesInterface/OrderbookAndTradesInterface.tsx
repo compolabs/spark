@@ -15,7 +15,7 @@ const Root = styled.div`
 	max-width: 280px;
 	height: 100%;
 	border-radius: 10px;
-	background: ${({ theme }) => theme.colors.gray4};
+	background: ${({ theme }) => theme.colors.bgSecondary};
 `;
 
 const OrderbookAndTradesInterface: React.FC<IProps> = () => {

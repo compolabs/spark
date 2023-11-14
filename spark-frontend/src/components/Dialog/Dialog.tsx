@@ -11,7 +11,7 @@ interface IProps extends IDialogPropTypes {}
 const StyledCloseIcon = styled(CloseIcon)`
 	path {
 		transition: 0.4s;
-		stroke: ${({ theme }) => theme.colors.white};
+		stroke: ${({ theme }) => theme.colors.textPrimary};
 	}
 `;
 

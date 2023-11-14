@@ -23,6 +23,7 @@ interface IProps {
 	primary?: boolean;
 	secondary?: boolean;
 	disabled?: boolean;
+	color?: string;
 }
 
 //todo уточнить про font-variant-numeric:
@@ -74,7 +75,7 @@ export const TEXT_TYPES_MAP = {
 };
 
 const Text = styled.div<IProps>`
-	${({ primary, secondary, disabled, theme }) =>
+	${({ primary, secondary, disabled, theme, color }) =>
 		(() => {
 			switch (true) {
 				case primary:
@@ -91,7 +92,7 @@ const Text = styled.div<IProps>`
 					`;
 				default:
 					return css`
-						color: ${theme.colors?.textSecondary};
+						color: ${color ?? theme.colors?.textSecondary};
 					`;
 			}
 		})()}

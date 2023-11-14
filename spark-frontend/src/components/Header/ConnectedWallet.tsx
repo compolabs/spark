@@ -16,10 +16,12 @@ import copy from "copy-to-clipboard";
 
 interface IProps {}
 
-const Root = styled(Button)<{ focused?: boolean }>`
+const Root = styled(Button)<{
+	focused?: boolean;
+}>`
 	background: transparent;
 	padding: 0 8px;
-	color: ${({ theme }) => theme.colors.white};
+	color: ${({ theme }) => theme.colors.textPrimary};
 	${TEXT_TYPES_MAP[TEXT_TYPES.BODY]};
 
 	:hover {

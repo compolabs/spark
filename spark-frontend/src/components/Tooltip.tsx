@@ -11,13 +11,14 @@ interface IProps {
 	children: React.ReactNode;
 }
 
-const Root = styled.div<{ fixed?: boolean }>`
+const Root = styled.div<{
+	fixed?: boolean;
+}>`
 	display: flex;
-	background: ${({ theme }) => `${theme.colors.gray5}`};
+	background: ${({ theme }) => `${theme.colors.bgSecondary}`};
 	z-index: 2;
 	box-sizing: border-box;
 	padding: 8px 16px 12px;
-	border: 1px solid ${({ theme }) => `${theme.colors.gray1}`};
 	border-radius: 4px;
 	height: auto;
 	overflow-y: auto;

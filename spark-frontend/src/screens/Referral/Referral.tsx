@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 import { Column } from "@src/components/Flex";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@src/components/Text";
+import Text from "@src/components/Text";
 import SizedBox from "@components/SizedBox";
 import bg from "@src/assets/referralBackground.png";
 import { useStores } from "@stores";
@@ -29,7 +29,7 @@ const Image = styled.div`
 	background-size: cover;
 	display: none;
 	border-radius: 4px;
-	@media (min-width: 980px) {
+	@media (min-width: 880px) {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -41,12 +41,12 @@ const Body = styled(Column)`
 	justify-content: center;
 	flex: 3;
 	height: 100%;
-	background: ${({ theme }) => theme.colors.gray4};
+	background: ${({ theme }) => theme.colors.bgSecondary};
 	border-radius: 4px;
 `;
 
 export const StyledLink = styled.a`
-  color: ${({ theme }) => theme.colors.green};
+  color: ${({ theme }) => theme.colors.greenLight};
   cursor: pointer;
   transition: .4s;
   text-decoration: none;
@@ -68,7 +68,7 @@ const Referral: React.FC<IProps> = observer(() => {
 				<Column justifyContent="center" alignItems="center" crossAxisSize="max" style={{ maxWidth: 360 }}>
 					{accountStore.address != null ? <ReferralInterface /> : <ConnectWalletInterface />}
 					<SizedBox height={40} />
-					<Text >New to Waves blockchain?</Text>
+					<Text>New to Waves blockchain?</Text>
 					<StyledLink
 						rel="noopener noreferrer"
 						target="_blank"

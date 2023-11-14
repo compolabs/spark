@@ -21,7 +21,10 @@ const Root = styled.div`
 	grid-area: orderbook;
 	width: 100%;
 `;
-const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
+const Columns = styled.div<{
+	noHover?: boolean;
+	percent?: number;
+}>`
 	display: grid;
 	grid-template-columns: repeat(3, 1fr);
 	${({ noHover }) => !noHover && "cursor: pointer;"};
@@ -40,7 +43,10 @@ const Columns = styled.div<{ noHover?: boolean; percent?: number }>`
 		${({ noHover }) => !noHover && "background:  #323846;"};
 	}
 `;
-const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
+const OrderRow = styled(Row)<{
+	type: "buy" | "sell";
+	percent?: number;
+}>`
 	position: relative;
 	cursor: pointer;
 	margin-bottom: 1px;
@@ -67,7 +73,7 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 		width: ${({ percent }) => (percent != null ? `${percent}%` : `0%`)};
 	}
 
-	color: ${({ type, theme }) => (type === "buy" ? theme.colors.green : theme.colors.red)};
+	color: ${({ type, theme }) => (type === "buy" ? theme.colors.greenLight : theme.colors.redLight)};
 
 	& > :last-of-type {
 		text-align: right;
@@ -80,7 +86,10 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell"; percent?: number }>`
 		${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
 	}
 `;
-const Container = styled.div<{ fitContent?: boolean; reverse?: boolean }>`
+const Container = styled.div<{
+	fitContent?: boolean;
+	reverse?: boolean;
+}>`
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
@@ -147,7 +156,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 					justifyContent: "center",
 				}}
 			>
-				No orders for this pair
+				<Text type={TEXT_TYPES.H}>No orders for this pair</Text>
 			</Root>
 		);
 	else
@@ -190,21 +199,21 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 											vm.setSellTotal(BN.ZERO, true);
 										}}
 									>
-										<div color={theme.colors.white}>{o.amountLeftStr}</div>
-										<div color={theme.colors.white}>{o.totalLeftStr}</div>
+										<div color={theme.colors.textPrimary}>{o.amountLeftStr}</div>
+										<div color={theme.colors.textPrimary}>{o.totalLeftStr}</div>
 										<div>{new BN(o.price).toFormat(+round)}</div>
 										<span className="progress-bar" />
 									</OrderRow>
 								))}
 						</>
 					)}
-					{orderFilter === 0 && (
-						<>
-							<SizedBox height={8} />
-							{/*<Divider />*/}
-							<SizedBox height={8} />
-						</>
-					)}
+					{/*{orderFilter === 0 && (*/}
+					{/*	<>*/}
+					{/*		<SizedBox height={8} />*/}
+					{/*		/!*<Divider />*!/*/}
+					{/*		<SizedBox height={8} />*/}
+					{/*	</>*/}
+					{/*)}*/}
 					<Row>
 						{!ordersStore.initialized ? (
 							<>
@@ -218,19 +227,19 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 								<SizedBox width={12} />
 								<Text primary>{ordersStore.spreadPrice}</Text>
 								<SizedBox width={12} />
-								<Text style={{ color: +ordersStore.spreadPercent > 0 ? theme.colors.green : theme.colors.red }}>{`(${
-									+ordersStore.spreadPercent > 0 ? "+" : ""
-								}${ordersStore.spreadPercent}%) `}</Text>
+								<Text color={+ordersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>
+									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
+								</Text>
 							</SpreadRow>
 						)}
 					</Row>
-					{orderFilter === 0 && (
-						<>
-							<SizedBox height={8} />
-							{/*<Divider />*/}
-							<SizedBox height={8} />
-						</>
-					)}
+					{/*{orderFilter === 0 && (*/}
+					{/*	<>*/}
+					{/*		<SizedBox height={8} />*/}
+					{/*		/!*<Divider />*!/*/}
+					{/*		<SizedBox height={8} />*/}
+					{/*	</>*/}
+					{/*)}*/}
 					{!ordersStore.initialized ? (
 						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
 					) : (
@@ -273,13 +282,11 @@ const PlugRow = styled(Row)`
 	height: 16px;
 	padding: 0 12px;
 	box-sizing: border-box;
-
-	& > * {
-		color: ${({ theme }) => theme.colors.gray2};
-	}
 `;
 
-const Plug: React.FC<{ length: number }> = ({ length }) => (
+const Plug: React.FC<{
+	length: number;
+}> = ({ length }) => (
 	<>
 		{Array.from({ length }).map((_, index) => (
 			<PlugRow key={index + "positive-plug"}>

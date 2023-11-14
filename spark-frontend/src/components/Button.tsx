@@ -157,7 +157,7 @@ export const ButtonGroup = styled.div`
 // 	height: ${({ outline }) => (outline ? 26 : 32)}px;
 // 	border-radius: 100px;
 // 	box-shadow: none;
-// 	color: ${({ outline, theme }) => (outline ? theme.colors.gray1 : theme.colors.white)};
+// 	color: ${({ outline, theme }) => (outline ? theme.colors.gray1 : theme.colors.textPrimary)};
 // 	${({ outline }) => (outline ? TEXT_TYPES_MAP[TEXT_TYPES.BUTTON] : TEXT_TYPES_MAP[TEXT_TYPES.H1])}
 // 	width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
 // 	padding: 0 12px;
@@ -165,8 +165,8 @@ export const ButtonGroup = styled.div`
 //
 // 	border: 1px solid
 // 		${({ theme, primary, secondary, outline }) => {
-// 			if (primary) return theme.colors.green;
-// 			else if (secondary) return theme.colors.red;
+// 			if (primary) return theme.colors.greenLight;
+// 			else if (secondary) return theme.colors.redLight;
 // 			else if (outline) return theme.colors.gray3;
 // 			else return theme.colors.gray1;
 // 		}};
@@ -174,35 +174,35 @@ export const ButtonGroup = styled.div`
 // 	background-color: ${({ primary, secondary, outline, theme }) => {
 // 		if (primary) return "rgba(0, 255, 152, 0.10)";
 // 		else if (secondary) return "rgba(253, 10, 83, 0.10)";
-// 		else if (outline) return theme.colors.gray5;
+// 		else if (outline) return theme.colors.bgSecondary;
 // 		else return "rgba(255, 255, 253, 0.10)";
 // 	}};
 //
 // 	path {
 // 		transition: 0.4s;
-// 		fill: ${({ outline, theme }) => (outline ? theme.colors.gray1 : theme.colors.white)};
+// 		fill: ${({ outline, theme }) => (outline ? theme.colors.gray1 : theme.colors.textPrimary)};
 // 	}
 //
 // 	:active {
 // 		path {
-// 			fill: ${({ theme }) => theme.colors.white};
+// 			fill: ${({ theme }) => theme.colors.textPrimary};
 // 		}
 //
-// 		color: ${({ theme }) => theme.colors.white};
+// 		color: ${({ theme }) => theme.colors.textPrimary};
 // 	}
 //
 // 	:hover {
 // 		background-color: ${({ primary, secondary, outline, theme }) => {
 // 			if (primary) return "rgba(0, 255, 152, 0.40)";
 // 			else if (secondary) return "rgba(253, 10, 83, 0.40)";
-// 			else if (outline) return theme.colors.gray5;
+// 			else if (outline) return theme.colors.bgSecondary;
 // 			else return "rgba(255, 255, 253, 0.40)";
 // 		}};
 // 		border: 1px solid
 // 			${({ theme, primary, secondary, outline }) => {
-// 				if (primary) return theme.colors.green;
-// 				else if (secondary) return theme.colors.red;
-// 				else if (outline) return theme.colors.gray2;
+// 				if (primary) return theme.colors.greenLight;
+// 				else if (secondary) return theme.colors.redLight;
+// 				else if (outline) return theme.colors.bgSecondary;
 // 				else return theme.colors.gray1;
 // 			}};
 // 		cursor: pointer;
@@ -213,7 +213,7 @@ export const ButtonGroup = styled.div`
 // 		background-color: ${({ primary, secondary, outline, theme }) => {
 // 			if (primary) return "rgba(0, 255, 152, 0.10)";
 // 			else if (secondary) return "rgba(253, 10, 83, 0.10)";
-// 			else if (outline) return theme.colors.gray5;
+// 			else if (outline) return theme.colors.bgSecondary;
 // 			else return "rgba(255, 255, 253, 0.10)";
 // 		}};
 // 		opacity: 0.4;

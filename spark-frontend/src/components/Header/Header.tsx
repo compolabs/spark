@@ -3,7 +3,7 @@ import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
-import Text, { TEXT_TYPES } from "@components/Text";
+import { TEXT_TYPES } from "@components/Text";
 import Button from "@components/Button";
 import { ROUTES } from "@src/constants";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -12,6 +12,7 @@ import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
 import { DesktopRow, Row } from "@components/Flex";
 import ConnectedWallet from "@components/Header/ConnectedWallet";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
+import Tab from "@components/Tab";
 
 interface IProps {}
 
@@ -36,27 +37,18 @@ const Divider = styled.div`
 	height: 32px;
 	background: ${({ theme }) => theme.colors.bgSecondary};
 `;
-const DesktopMenuItem = styled(Text)<{ active?: boolean }>`
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 8px 4px;
-	margin-right: 32px;
-	cursor: pointer;
-	color: ${({ theme, active }) => (active ? theme.colors.textPrimary : theme.colors.textSecondary)};
-	border-bottom: 2px solid ${({ theme, active }) => (active ? theme.colors.textPrimary : "transparent")};
-	transition: 0.4s;
-
-	:hover {
-		color: ${({ theme }) => theme.colors.textPrimary};
-	}
-`;
 
 type TMenuItem = {
 	title: string;
 	route?: string;
 	link?: string;
 };
+
+const TabContainer = styled(DesktopRow)`
+	& > * {
+		margin-right: 28px;
+	}
+`;
 export const MENU_ITEMS: Array<TMenuItem> = [
 	{ title: "TRADE", route: ROUTES.TRADE },
 	{ title: "FAUCET", route: ROUTES.FAUCET },
@@ -99,37 +91,33 @@ const Header: React.FC<IProps> = observer(() => {
 					<Logo />
 				</a>
 				<Divider />
-				<DesktopRow>
+				<TabContainer>
 					{MENU_ITEMS.map(({ title, link, route }, key) => {
 						if (link == null && route == null)
 							return (
-								<DesktopMenuItem type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
+								<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
 									{title}
-								</DesktopMenuItem>
+								</Tab>
 							);
 						else if (route != null)
 							return (
 								<Link to={route} key={key}>
-									<DesktopMenuItem
-										type={TEXT_TYPES.BUTTON_SECONDARY}
-										key={key}
-										active={isRoutesEquals(route, location.pathname)}
-									>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key} active={isRoutesEquals(route, location.pathname)}>
 										{title}
-									</DesktopMenuItem>
+									</Tab>
 								</Link>
 							);
 						else if (link != null)
 							return (
 								<a rel="noopener noreferrer" target="_blank" href={link} key={key}>
-									<DesktopMenuItem type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
 										{title}
-									</DesktopMenuItem>
+									</Tab>
 								</a>
 							);
 						else return null;
 					})}
-				</DesktopRow>
+				</TabContainer>
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<DesktopRow>

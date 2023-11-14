@@ -13,61 +13,63 @@ interface IProps extends TableProps {
 	loading?: boolean;
 }
 
-const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
-  width: ${({fitContent}) => (fitContent ? "fit-content" : "100%")};
-  border-radius: 4px !important;
-  background: ${({theme}) => `${theme.colors.gray4}`};
+const Root = styled.div<{
+	hovered?: boolean;
+	fitContent?: boolean;
+}>`
+	width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
+	border-radius: 4px !important;
+	background: ${({ theme }) => `${theme.colors.bgSecondary}`};
 
-  table {
-    width: 100%;
-    border-spacing: 0;
+	table {
+		width: 100%;
+		border-spacing: 0;
 
+		tr {
+			font-size: 14px;
+			line-height: 20px;
+			color: ${({ theme }) => `${theme.colors.bgSecondary}`};
+			width: 100%;
+			transition: 0.4s;
 
-    tr {
-      font-size: 14px;
-      line-height: 20px;
-      color: ${({theme}) => `${theme.colors.gray2}`};
-      width: 100%;
-      transition: 0.4s;
+			:hover {
+				${({ hovered }) => hovered && "cursor: pointer;"};
+				${({ hovered, theme }) => hovered && `background: ${theme.colors.bgSecondary};`};
+			}
 
-      :hover {
-        ${({hovered}) => hovered && "cursor: pointer;"};
-        ${({hovered, theme}) => hovered && `background: ${theme.colors.gray2};`};
-      }
+			:last-child {
+				td {
+				}
+			}
+		}
 
-      :last-child {
-        td {
-        }
-      }
-    }
+		th {
+			color: ${({ theme }) => `${theme.colors.bgSecondary}`};
+			font-family: Space Grotesk;
+			font-size: 10px;
+			font-style: normal;
+			font-weight: 400;
+			line-height: normal;
+			letter-spacing: 1.12px;
+			text-align: left;
+			padding: 14px;
+			color: ${({ theme }) => `${theme.colors.bgSecondary}`};
+			border-bottom: 2px solid ${({ theme }) => `${theme.colors.bgSecondary}`};
+			cursor: default;
+		}
 
-    th {
-      color: ${({theme}) => `${theme.colors.gray2}`};
-      font-family: Space Grotesk;
-      font-size: 10px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-      letter-spacing: 1.12px;
-      text-align: left;
-      padding: 14px;
-      color: ${({theme}) => `${theme.colors.gray2}`};
-      border-bottom: 2px solid ${({theme}) => `${theme.colors.gray5}`};
-      cursor: default;
-    }
+		td {
+			font-size: 16px;
+			line-height: 20px;
+			color: ${({ theme }) => `${theme.colors.bgSecondary}`};
+			padding: 16px;
+			border-bottom: 2px solid ${({ theme }) => `${theme.colors.bgSecondary}`};
 
-    td {
-      font-size: 16px;
-      line-height: 20px;
-      color: ${({theme}) => `${theme.colors.gray2}`};
-      padding: 16px;
-      border-bottom: 2px solid ${({theme}) => `${theme.colors.gray5}`};
-
-      :last-child {
-        border-right: 0;
-      }
-    }
-  }
+			:last-child {
+				border-right: 0;
+			}
+		}
+	}
 `;
 
 const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover, loading, ...rest }) => {
