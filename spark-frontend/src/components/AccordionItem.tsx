@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem as RawAccordionItem } from "@szhsin/react-accordion";
+import { AccordionItem as RawAccordionItem } from "@szhsin/react-accordion";
 import styled from "@emotion/styled";
 import { ReactComponent as ArrowIcon } from "@src/assets/icons/arrowUp.svg";
 import React from "react";
@@ -63,4 +63,4 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ header, ...rest }) => (
 	/>
 );
 
-export { Accordion, AccordionItem };
+export default AccordionItem

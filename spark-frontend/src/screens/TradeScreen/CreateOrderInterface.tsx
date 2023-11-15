@@ -10,9 +10,10 @@ import Select from "@components/Select";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import { useStores } from "@stores";
-import { Accordion, AccordionItem } from "@components/Accordion/Accordion";
+import AccordionItem from "@components/AccordionItem";
 import BN from "@src/utils/BN";
 import Slider from "@components/Slider";
+import { Accordion } from "@szhsin/react-accordion";
 
 interface IProps extends ComponentProps<any> {}
 
@@ -72,7 +73,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 		const balance = accountStore.findBalanceByAssetId(vm.isSell ? vm.assetId0 : vm.assetId1)?.balance;
 		const value = vm.isSell ? vm.sellAmount : vm.buyAmount;
 		if (balance != null) {
-			_setPercent(value.div(balance).times(100).toNumber());
+			balance.eq(0) ? _setPercent(0) : _setPercent(value.div(balance).times(100).toNumber());
 		}
 		/* eslint-disable */
 	}, [accountStore.assetBalances, vm.assetId0, vm.assetId1, vm.buyAmount, vm.isSell, vm.sellAmount]);

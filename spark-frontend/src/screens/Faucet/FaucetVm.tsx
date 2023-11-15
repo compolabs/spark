@@ -6,7 +6,6 @@ import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST }
 import BN from "@src/utils/BN";
 import { TokenFactoryAbi__factory } from "@src/contracts";
 import { hashMessage } from "fuels";
-import { LOGIN_TYPE } from "@src/stores/AccountStore";
 
 const ctx = React.createContext<FaucetVM | null>(null);
 
@@ -68,12 +67,6 @@ class FaucetVM {
 	mint = async (assetId?: string) => {
 		if (assetId == null) return;
 		const { accountStore, notificationStore } = this.rootStore;
-		if (accountStore.loginType === LOGIN_TYPE.FUEL_WALLET || accountStore.loginType === LOGIN_TYPE.FUELET) {
-			const addedAssets: Array<any> = await accountStore.fuel?.assets();
-			if (addedAssets != null && !addedAssets.some((v) => v.assetId === assetId)) {
-				await this.addAsset(assetId);
-			}
-		}
 		try {
 			this._setLoading(true);
 			this.setActionTokenAssetId(assetId);

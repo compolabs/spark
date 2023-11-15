@@ -98,7 +98,7 @@ const StyledSlider = styled(RCSlider)<IProps>`
 		}
 
 		&::after {
-			content: "${({ percent }) => `${percent !== 0 ? "<" : ""} ${percent?.toFixed(0)}% ${percent !== 100 ? ">" : ""} `}";
+			content: "${({ percent }) => `${percent !== 0 ? "<" : ""} ${percent?.toFixed(0)}% ${percent !== 100 ? ">" : " "} `}";
 			height: 20px;
 			position: absolute;
 			top: 2px;
