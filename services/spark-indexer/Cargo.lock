@@ -672,7 +672,7 @@ checksum = "77ac38b692cf1d259c4576e96969ddc1b21880f3059744a730d1677b6f9fd4df"
 dependencies = [
  "bitflags",
  "serde",
- "strum 0.24.1",
+ "strum",
 ]
 
 [[package]]
@@ -746,9 +746,9 @@ dependencies = [
 
 [[package]]
 name = "fuel-indexer-database-types"
-version = "0.21.0"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "09d9d819799b04ebfe21b42f04a07914a228a8d79af2a3e4b3c3ccf3033ff4df"
+checksum = "e7595bfd2e7b0fb608237e1c9754b708b2ba953d4a245f1da6d3e2530f20b593"
 dependencies = [
  "async-graphql-parser",
  "async-graphql-value",
@@ -756,29 +756,28 @@ dependencies = [
  "fuel-indexer-lib",
  "fuel-indexer-types",
  "serde",
- "strum 0.24.1",
+ "strum",
 ]
 
 [[package]]
 name = "fuel-indexer-lib"
-version = "0.21.0"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d5c66fb616453ab4b6b35e5bec51c989cc8d2d519766ada2e874a0e361ea0bb2"
+checksum = "a76b0625fc1679c1dc4e51017fa2819b48050dd0e3c7fc5b781180229ea8efef"
 dependencies = [
  "anyhow",
  "async-graphql-parser",
+ "async-graphql-value",
  "bincode",
  "clap",
  "fuel-indexer-types",
  "http",
  "lazy_static",
- "proc-macro2",
- "quote",
  "serde",
  "serde_json",
  "serde_yaml",
  "sha2 0.9.9",
- "strum 0.24.1",
+ "strum",
  "thiserror",
  "tokio",
  "tracing",
@@ -788,9 +787,9 @@ dependencies = [
 
 [[package]]
 name = "fuel-indexer-macros"
-version = "0.21.0"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d29af4273ec5753be1e4dd0249d3ced3d188c7905a1f071d7a11bc26f6033b3c"
+checksum = "e4ffc2936cf419574740f5427941959e5a3d5ad00b4a2dbc527b5e029d68d45b"
 dependencies = [
  "async-graphql-parser",
  "async-graphql-value",
@@ -800,7 +799,7 @@ dependencies = [
  "fuel-indexer-schema",
  "fuel-indexer-types",
  "fuels",
- "fuels-code-gen",
+ "fuels-code-gen 0.46.0",
  "lazy_static",
  "proc-macro-error",
  "proc-macro2",
@@ -812,10 +811,11 @@ dependencies = [
 
 [[package]]
 name = "fuel-indexer-plugin"
-version = "0.21.0"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7a1c83a0d35a43995f66e171448b6005ad2f0b5ecbe6fa435fc4054bfef0fdf4"
+checksum = "37f55a10c7a1724f1da1fe63625525f1c85fa73d3c97008fa99ff29968bdc5eb"
 dependencies = [
+ "anyhow",
  "bincode",
  "fuel-indexer-lib",
  "fuel-indexer-schema",
@@ -829,9 +829,9 @@ dependencies = [
 
 [[package]]
 name = "fuel-indexer-schema"
-version = "0.21.0"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f873cf2dd5ffaf6ad7af43bf73f03ed0ea9a8ba96a6d1396d8899532e83e7fdb"
+checksum = "809f373dde2d513131cdc38dcdd99099afd597276fe2a0a1223b6630ab08a616"
 dependencies = [
  "async-graphql-parser",
  "fuel-indexer-lib",
@@ -844,9 +844,9 @@ dependencies = [
 
 [[package]]
 name = "fuel-indexer-types"
-version = "0.21.0"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eada047fafdbc9c5e27e6a3d843c5c341828904577abb45e185700b94de664d5"
+checksum = "f354f00fa2e683f83aa5caee47293ad5889c2246bf57aacfef74dfbab4c4f7cf"
 dependencies = [
  "bytes",
  "fuel-tx",
@@ -859,9 +859,9 @@ dependencies = [
 
 [[package]]
 name = "fuel-indexer-utils"
-version = "0.21.0"
+version = "0.23.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22312781617fbb971dd9b2c360d6856f612e4484b0cc8315a4e08c273e2f4a4b"
+checksum = "5fc5b82d7cdc61308c08e42dc7356108208e081481bb16791c49988a5df2e743"
 dependencies = [
  "fuel-indexer-macros",
  "fuel-indexer-plugin",
@@ -904,8 +904,8 @@ dependencies = [
  "rand",
  "serde",
  "serde_json",
- "strum 0.24.1",
- "strum_macros 0.24.3",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]
@@ -947,9 +947,9 @@ dependencies = [
 
 [[package]]
 name = "fuels"
-version = "0.46.0"
+version = "0.49.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71ee1f9244ce01bd8fae9122a16bf6f8ddad3dbf38aa6269c23e9c90f6b60522"
+checksum = "1e1f341432e0ee313e75c7f66befc2e12231fc5b77a33b7f2a4f2ba0074dfe03"
 dependencies = [
  "fuel-tx",
  "fuels-core",
@@ -973,48 +973,58 @@ dependencies = [
 ]
 
 [[package]]
-name = "fuels-core"
-version = "0.46.0"
+name = "fuels-code-gen"
+version = "0.49.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "711a5940eec515cbcac468eb2630322f60d50333fe455ffee4e527019d4541d4"
+checksum = "3afd5ba59c905adfae0e8afc09588e2a3acf451520053e5e2cefb58d38ac3253"
+dependencies = [
+ "Inflector",
+ "fuel-abi-types",
+ "itertools 0.11.0",
+ "proc-macro2",
+ "quote",
+ "regex",
+ "serde_json",
+ "syn 2.0.38",
+]
+
+[[package]]
+name = "fuels-core"
+version = "0.49.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e16971e154ed4faba1d548aae3767b56f70f6ba77d46b0b5567305334e876267"
 dependencies = [
  "bech32",
  "chrono",
  "fuel-abi-types",
  "fuel-asm",
  "fuel-core-chain-config",
+ "fuel-crypto",
  "fuel-tx",
  "fuel-types",
  "fuel-vm",
  "fuels-macros",
  "hex",
  "itertools 0.11.0",
- "proc-macro2",
- "regex",
  "serde",
  "serde_json",
  "sha2 0.10.8",
- "strum 0.25.0",
- "strum_macros 0.25.2",
  "thiserror",
  "uint",
+ "zeroize",
 ]
 
 [[package]]
 name = "fuels-macros"
-version = "0.46.0"
+version = "0.49.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "574c6c7292c19344fea36ff74e8c40c9bb62a1321a4f7a96300dd0a85312e9ab"
+checksum = "2c01910eb50f2781d57ca04bad11c43dce39d0490f33c9ce9c377cb1eaf890ed"
 dependencies = [
- "Inflector",
- "fuel-abi-types",
- "fuels-code-gen",
+ "fuels-code-gen 0.49.0",
  "itertools 0.11.0",
  "proc-macro2",
  "quote",
  "rand",
- "regex",
- "serde_json",
  "syn 2.0.38",
 ]
 
@@ -1883,14 +1893,8 @@ version = "0.24.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "063e6045c0e62079840579a7e47a355ae92f60eb74daaf156fb1e84ba164e63f"
 dependencies = [
- "strum_macros 0.24.3",
+ "strum_macros",
 ]
-
-[[package]]
-name = "strum"
-version = "0.25.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "290d54ea6f91c969195bdbcd7442c8c2a2ba87da8bf60a7ee86a235d4bc1e125"
 
 [[package]]
 name = "strum_macros"
@@ -1903,19 +1907,6 @@ dependencies = [
  "quote",
  "rustversion",
  "syn 1.0.109",
-]
-
-[[package]]
-name = "strum_macros"
-version = "0.25.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ad8d03b598d3d0fff69bf533ee3ef19b8eeb342729596df84bcc7e1f96ec4059"
-dependencies = [
- "heck",
- "proc-macro2",
- "quote",
- "rustversion",
- "syn 2.0.38",
 ]
 
 [[package]]
