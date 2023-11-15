@@ -4,10 +4,9 @@ import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
-import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import dayjs from "dayjs";
 import { useTheme } from "@emotion/react";
-import Text from "@components/Text";
 import Chip from "@src/components/Chip";
 import Tab from "@components/Tab";
 
@@ -33,18 +32,18 @@ const Root = styled.div`
 	}
 `;
 
-const Title = styled(Text)`
+export const TableTitle = styled(Text)`
 	flex: 1;
 	${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]}
 `;
 
-const TableText = styled(Text)`
+export const TableText = styled(Text)`
 	flex: 1;
 	display: flex;
 	align-items: center;
 `;
 
-const TableRow = styled(Row)`
+export const TableRow = styled(Row)`
 	margin-bottom: 1px;
 	height: 32px;
 	flex-shrink: 0;
@@ -58,7 +57,7 @@ const TableRow = styled(Row)`
 	}
 `;
 
-const Body = styled(Column)`
+export const TableBody = styled(Column)`
 	overflow: scroll;
 	width: 100%;
 	box-sizing: border-box;
@@ -95,21 +94,21 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 				<Tab disabled>HISTORY</Tab>
 			</TabContainer>
 			<TableRow>
-				<Title>Date</Title>
-				<Title>Pair</Title>
-				<Title>Status</Title>
-				<Title>Type</Title>
-				<Title>Amount</Title>
+				<TableTitle>Date</TableTitle>
+				<TableTitle>Pair</TableTitle>
+				<TableTitle>Status</TableTitle>
+				<TableTitle>Type</TableTitle>
+				<TableTitle>Amount</TableTitle>
 				{/*<Title>Total</Title>*/}
-				<Title>Filled</Title>
-				<Title>Price</Title>
-				<Title>
+				<TableTitle>Filled</TableTitle>
+				<TableTitle>Price</TableTitle>
+				<TableTitle>
 					<Row justifyContent="flex-end">
 						<CancelButton>Cancel all</CancelButton>
 					</Row>
-				</Title>
+				</TableTitle>
 			</TableRow>
-			<Body>
+			<TableBody>
 				{ordersStore.myOrders
 					.slice()
 					.sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))
@@ -144,7 +143,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 							</TableText>
 						</TableRow>
 					))}
-			</Body>
+			</TableBody>
 		</Root>
 	);
 });

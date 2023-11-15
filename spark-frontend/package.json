@@ -69,7 +69,6 @@
     "react-popper-tooltip": "^4.4.2",
     "react-refresh": "^0.11.0",
     "react-router-dom": "^6.16.0",
-    "react-table": "^7.8.0",
     "react-toastify": "^9.1.3",
     "resolve": "^1.20.0",
     "resolve-url-loader": "^5.0.0",
@@ -170,7 +169,6 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.199",
-    "@types/react-table": "^7.7.17",
     "gh-pages": "^6.0.0",
     "prettier": "^3.0.3",
     "tslint": "^6.1.3",
