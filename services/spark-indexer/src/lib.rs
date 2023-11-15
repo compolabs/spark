@@ -6,17 +6,8 @@ use fuel_indexer_utils::prelude::*;
 #[indexer(manifest = "spark_indexer.manifest.yaml")]
 pub mod spark_indexer_index_mod {
 
-    fn handle_block(block: BlockData) {
-        let txs = block.transactions.len();
-        if block.height % 100 == 0 {
-            info!("Spark: 🧱 Block height: {} | txs: {txs}", block.height);
-        }
-    }
-
-    fn handle_order_change_event(event: OrderChangeEvent) {
-        info!("Spark: ✨ Ørder change event \n{:#?}", event);
-
-        let order_entry = OrderEntity {
+    fn handle_order_change_event(event: OrderChangeEvent, block: BlockData) {
+        let entry = OrderEntity {
             id: uid(event.order.id.to_be_bytes()),
             order_id: event.order.id,
             asset0: event.order.asset_0.0.into(),
@@ -36,11 +27,13 @@ pub mod spark_indexer_index_mod {
             matcher_fee_used: event.order.matcher_fee_used,
         };
 
-        order_entry.save();
+        entry.save();
+
+        let height = block.height;
+        info!("✨ Spark (height: {height}): 🚀 Ørder change\n{:#?}", entry);
     }
 
-    fn handle_trade_event(event: TradeEvent) {
-        info!("Spark: 🔀 Trade event \n{:#?}", event);
+    fn handle_trade_event(event: TradeEvent, block: BlockData) {
         let entry = TradeEntity::new(
             event.timestamp - (10 + (1 << 62)),
             event.address,
@@ -52,18 +45,23 @@ pub mod spark_indexer_index_mod {
             event.amount_1,
         );
         entry.save();
+
+        let height = block.height;
+        info!("✨ Spark (height: {height}): 🔀 Trade event \n{:#?}", entry);
     }
 
-    fn havdle_match_event(event: MatchEvent) {
-        info!("Spark: 💟 Match event \n{:#?}", event);
-        self::handle_order_change_event(event.order_0);
-        self::handle_order_change_event(event.order_1);
+    fn havdle_match_event(event: MatchEvent, block: BlockData) {
+        let height = block.height;
+        info!("✨ Spark (height: {height}): 💟 Match event");
+
+        self::handle_order_change_event(event.order_0, block.clone());
+        self::handle_order_change_event(event.order_1, block.clone());
 
         if event.trade_0.is_some() {
-            self::handle_trade_event(event.trade_0.unwrap());
+            self::handle_trade_event(event.trade_0.unwrap(), block.clone());
         }
         if event.trade_1.is_some() {
-            self::handle_trade_event(event.trade_1.unwrap());
+            self::handle_trade_event(event.trade_1.unwrap(), block.clone());
         }
     }
 }
