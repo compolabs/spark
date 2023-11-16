@@ -91,7 +91,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 			<SizedBox height={16} />
 			<Row>
 				<Column crossAxisSize="max">
-					<Select label="Order type" options={orderTypes} selected={orderTypes[1]} onSelect={() => null} />
+					<Select label="Order type" options={orderTypes} selected={orderTypes[1].key} onSelect={() => null} />
 					<SizedBox height={2} />
 					<Row alignItems="center">
 						<StyledInfoIcon />

@@ -5,12 +5,15 @@ import SizedBox from "@components/SizedBox";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
-import Skeleton from "react-loading-skeleton";
 import { Column, Row } from "@src/components/Flex";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
 import useEventListener from "@src/utils/useEventListener";
 import hexToRgba from "@src/utils/hexToRgb";
+import Select from "@components/Select";
+import sell from "@src/assets/icons/sellOrderBookIcon.svg";
+import buy from "@src/assets/icons/buyOrderBookIcon.svg";
+import sellAndBuy from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {
 	mobileMode?: boolean;
@@ -20,6 +23,35 @@ const Root = styled(Column)`
 	grid-area: orderbook;
 	width: 100%;
 `;
+
+const SettingsContainder = styled(Row)`
+	justify-content: space-between;
+	align-items: center;
+	width: 100%;
+	padding: 0 12px;
+	box-sizing: border-box;
+
+	& > * {
+		margin-right: 8px;
+	}
+
+	& > :last-child {
+		margin-right: 0;
+	}
+`;
+
+const SettingIcon = styled.img<{ selected?: boolean }>`
+	cursor: pointer;
+	box-sizing: border-box;
+	transition: 0.4s;
+	border-radius: 4px;
+	border: 1px solid ${({ selected, theme }) => (selected ? theme.colors.borderAccent : "transparent")};
+
+	&:hover {
+		border: 1px solid ${({ selected, theme }) => (selected ? theme.colors.borderAccent : theme.colors.borderPrimary)};
+	}
+`;
+
 const OrderBookHeader = styled.div<{}>`
 	width: 100%;
 	box-sizing: border-box;
@@ -111,22 +143,19 @@ const SpreadRow = styled(Row)`
 	background: ${({ theme }) => theme.colors.bgPrimary};
 	align-items: center;
 `;
-
+//todo fix decimals
 const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	const vm = useTradeScreenVM();
-	const [round] = useState("2");
 	const { ordersStore } = useStores();
-	const [orderFilter] = useState(0);
 	const theme = useTheme();
+	const [decimalSetting, setDecimalSetting] = useState("0");
+	const [orderFilter, setOrderFilter] = useState(0);
 	const [amountOfOrders, setAmountOfOrders] = useState(0);
 	const oneSizeOrders = +new BN(amountOfOrders).div(2).toFixed(0) - 1;
-	const calcSize = () => {
-		// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 16 + 24); //220
-		// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 32 + 8 + 16 + 24); //260
-		// const windowHeight = window.innerHeight - (mobileMode ? window.innerHeight / 2 + 96 : 212);
-		const amountOfOrders = +new BN(window.innerHeight - 220).div(17).toFixed(0);
-		setAmountOfOrders(amountOfOrders);
-	};
+
+	// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 16 + 24); //220
+	// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 32 + 8 + 16 + 24); //260
+	const calcSize = () => setAmountOfOrders(+new BN(window.innerHeight - 260).div(17).toFixed(0));
 
 	useEffect(calcSize, [mobileMode]);
 	const handleResize = useCallback(calcSize, []);
@@ -156,124 +185,120 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 
 	const totalBuy = buyOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
 	const totalSell = sellOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
+
 	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
 		return (
-			<Root alignItems="center" justifyContent="center">
-				<Text type={TEXT_TYPES.H}>No orders for this pair</Text>
+			<Root alignItems="center" justifyContent="center" mainAxisSize="stretch">
+				<Text type={TEXT_TYPES.SUPPORTING}>No orders yet</Text>
 			</Root>
 		);
-	else
-		return (
-			<Root>
-				<OrderBookHeader>
-					<Text type={TEXT_TYPES.SUPPORTING}>Amount {vm.token0.symbol}</Text>
-					<Text type={TEXT_TYPES.SUPPORTING}>Total {vm.token1.symbol}</Text>
-					<Text type={TEXT_TYPES.SUPPORTING}>Price {vm.token1.symbol}</Text>
-				</OrderBookHeader>
-				{/*<Divider />*/}
-				<SizedBox height={8} />
-				<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
-					{!ordersStore.initialized ? (
-						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
-					) : (
-						<>
-							{orderFilter === 0 && (
-								<Plug length={sellOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - sellOrders.length : 0} />
-							)}
-							{orderFilter !== 2 &&
-								sellOrders.map((o, index) => (
-									<OrderRow
-										type="sell"
-										fulfillPercent={+new BN(o.fullFillPercent).toFormat(2)}
-										volumePercent={o.amountLeft.div(totalSell).times(100).toNumber()}
-										key={index + "negative"}
-										onClick={() => {
-											const price = BN.parseUnits(o.price, vm.token1.decimals);
-											vm.setIsSell(false);
-											vm.setBuyPrice(price, true);
-											// vm.setSellAmpount(new BN(o.amount), true);
-											vm.setSellPrice(BN.ZERO, true);
-											vm.setSellAmount(BN.ZERO, true);
-											vm.setSellTotal(BN.ZERO, true);
-										}}
-									>
-										<span className="progress-bar" />
-										<span className="volume-bar" />
-										<Text primary>{o.amountLeftStr}</Text>
-										<Text primary>{o.totalLeftStr}</Text>
-										<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(+round)}</Text>
-									</OrderRow>
-								))}
-						</>
-					)}
-					{/*{orderFilter === 0 && (*/}
-					{/*	<>*/}
-					{/*		<SizedBox height={8} />*/}
-					{/*		/!*<Divider />*!/*/}
-					{/*		<SizedBox height={8} />*/}
-					{/*	</>*/}
-					{/*)}*/}
-					<Row>
-						{!ordersStore.initialized ? (
-							<>
-								<Skeleton height={20} />
-								<div />
-								<Skeleton height={20} />
-							</>
-						) : (
-							<SpreadRow>
-								<Text type={TEXT_TYPES.SUPPORTING}>SPREAD</Text>
-								<SizedBox width={12} />
-								<Text primary>{ordersStore.spreadPrice}</Text>
-								<SizedBox width={12} />
-								<Text color={+ordersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>
-									{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
-								</Text>
-							</SpreadRow>
-						)}
-					</Row>
-					{/*{orderFilter === 0 && (*/}
-					{/*	<>*/}
-					{/*		<SizedBox height={8} />*/}
-					{/*		/!*<Divider />*!/*/}
-					{/*		<SizedBox height={8} />*/}
-					{/*	</>*/}
-					{/*)}*/}
-					{!ordersStore.initialized ? (
-						<Skeleton height={20} style={{ marginBottom: 4 }} count={15} />
-					) : (
-						<>
-							{orderFilter !== 1 &&
-								buyOrders.map((o, index) => (
-									<OrderRow
-										onClick={() => {
-											const price = BN.parseUnits(o.price, vm.token1.decimals);
-											vm.setIsSell(true);
-											vm.setSellPrice(price, true);
-											vm.setBuyPrice(BN.ZERO, true);
-											vm.setBuyAmount(BN.ZERO, true);
-											vm.setBuyTotal(BN.ZERO, true);
-										}}
-										fulfillPercent={+new BN(o.fullFillPercent).toFormat(0)}
-										volumePercent={o.amountLeft.div(totalBuy).times(100).toNumber()}
-										type="buy"
-										key={index + "positive"}
-									>
-										<span className="progress-bar" />
-										<span className="volume-bar" />
-										<Text primary>{o.totalLeftStr}</Text>
-										<Text primary>{o.amountLeftStr}</Text>
-										<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(+round)}</Text>
-									</OrderRow>
-								))}
-							{orderFilter === 0 && (
-								<Plug length={buyOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - buyOrders.length : 0} />
-							)}
-						</>
-					)}
-				</Container>
-			</Root>
-		);
+
+	return (
+		<Root>
+			<SettingsContainder>
+				<Select
+					options={[2, 4, 5, 6].map((v, index) => ({
+						title: `${v} decimals`,
+						key: index.toString(),
+					}))}
+					selected={decimalSetting}
+					onSelect={({ key }) => setDecimalSetting(key)}
+				/>
+				{[sellAndBuy, sell, buy].map((image, index) => (
+					<SettingIcon
+						key={index}
+						src={image}
+						alt="filter"
+						selected={orderFilter === index}
+						onClick={() => ordersStore.initialized && setOrderFilter(index)}
+					/>
+				))}
+			</SettingsContainder>
+			<SizedBox height={8} />
+			<OrderBookHeader>
+				<Text type={TEXT_TYPES.SUPPORTING}>Amount {vm.token0.symbol}</Text>
+				<Text type={TEXT_TYPES.SUPPORTING}>Total {vm.token1.symbol}</Text>
+				<Text type={TEXT_TYPES.SUPPORTING}>Price {vm.token1.symbol}</Text>
+			</OrderBookHeader>
+			<SizedBox height={8} />
+			<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
+				{orderFilter === 0 && (
+					<Plug length={sellOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - sellOrders.length : 0} />
+				)}
+				{orderFilter === 1 && (
+					<Plug length={sellOrders.length < +amountOfOrders ? +amountOfOrders - 1 - sellOrders.length : 0} />
+				)}
+
+				{orderFilter !== 2 &&
+					sellOrders.map((o, index) => (
+						<OrderRow
+							type="sell"
+							fulfillPercent={+new BN(o.fullFillPercent).toFormat(2)}
+							volumePercent={o.amountLeft.div(totalSell).times(100).toNumber()}
+							key={index + "negative"}
+							onClick={() => {
+								const price = BN.parseUnits(o.price, vm.token1.decimals);
+								vm.setIsSell(false);
+								vm.setBuyPrice(price, true);
+								// vm.setSellAmpount(new BN(o.amount), true);
+								vm.setSellPrice(BN.ZERO, true);
+								vm.setSellAmount(BN.ZERO, true);
+								vm.setSellTotal(BN.ZERO, true);
+							}}
+						>
+							<span className="progress-bar" />
+							<span className="volume-bar" />
+							<Text primary>{o.amountLeftStr}</Text>
+							<Text primary>{o.totalLeftStr}</Text>
+							<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(+decimalSetting)}</Text>
+						</OrderRow>
+					))}
+
+				{orderFilter === 0 && (
+					<SpreadRow>
+						<Text type={TEXT_TYPES.SUPPORTING}>SPREAD</Text>
+						<SizedBox width={12} />
+						<Text primary>{ordersStore.spreadPrice}</Text>
+						<SizedBox width={12} />
+						<Text color={+ordersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>
+							{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
+						</Text>
+					</SpreadRow>
+				)}
+
+				{orderFilter !== 1 &&
+					buyOrders.map((o, index) => (
+						<OrderRow
+							onClick={() => {
+								const price = BN.parseUnits(o.price, vm.token1.decimals);
+								vm.setIsSell(true);
+								vm.setSellPrice(price, true);
+								vm.setBuyPrice(BN.ZERO, true);
+								vm.setBuyAmount(BN.ZERO, true);
+								vm.setBuyTotal(BN.ZERO, true);
+							}}
+							fulfillPercent={+new BN(o.fullFillPercent).toFormat(0)}
+							volumePercent={o.amountLeft.div(totalBuy).times(100).toNumber()}
+							type="buy"
+							key={index + "positive"}
+						>
+							<span className="progress-bar" />
+							<span className="volume-bar" />
+							<Text primary>{o.totalLeftStr}</Text>
+							<Text primary>{o.amountLeftStr}</Text>
+							<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(+decimalSetting)}</Text>
+						</OrderRow>
+					))}
+
+				{orderFilter === 2 && (
+					<Plug length={buyOrders.length < +amountOfOrders ? +amountOfOrders - 1 - buyOrders.length : 0} />
+				)}
+				{orderFilter === 0 && (
+					<Plug length={buyOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - buyOrders.length : 0} />
+				)}
+			</Container>
+		</Root>
+	);
 });
 export default OrderBook;
 

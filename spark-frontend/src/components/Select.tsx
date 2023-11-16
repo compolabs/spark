@@ -14,7 +14,7 @@ interface IOption {
 
 interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 	options: IOption[];
-	selected?: IOption;
+	selected?: string;
 	onSelect: (option: IOption) => void;
 	label?: string;
 }
@@ -87,6 +87,7 @@ const Wrap = styled.div<{
 
 const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
 	const [focused, setFocused] = useState(false);
+	const selectedOption = options.find(({ key }) => selected === key);
 	return (
 		<Tooltip
 			config={{
@@ -97,7 +98,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 			content={
 				<Column crossAxisSize="max">
 					{options.map((v) => {
-						const active = selected?.key === v.key;
+						const active = selected === v.key;
 						return (
 							<Option active={active} key={v.key + "_option"} onClick={() => onSelect(v)} disabled={v.disabled}>
 								{v.title}
@@ -111,7 +112,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 				<Text>{label}</Text>
 				<SizedBox height={2} />
 				<Root onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>
-					{selected?.title ?? options[0]?.title}
+					{selectedOption?.title ?? options[0]?.title}
 					{/*<SizedBox width={10}/>*/}
 					<img src={arrowIcon} className="menu-arrow" alt="arrow" />
 				</Root>

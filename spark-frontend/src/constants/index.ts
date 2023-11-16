@@ -25,7 +25,7 @@ export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 export const INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabilitylabs/spark_indexer";
 export const CONTRACT_ADDRESSES = {
 	priceOracle: "0x633fad7666495c53daa41cc329b78a554f215af4b826671ee576f2a30096999d",
-	spotMarket: "0x8f635c31df8bc419ab51f48abd901593ee2fc28879d66ce5a3be7bfb57c7d42b",
+	spotMarket: "0x9cf9ccbf69b30530ccb62c927ed4bad12a22815a8f9e2c3a5b14f644a43889f6",
 	tokenFactory: "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a",
 	referral: "0xe06f9223c5be21e37b76c073d50dab19c997c4b37d9246ffe9b4de930b8fee73",
 };
