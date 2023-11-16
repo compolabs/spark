@@ -16,11 +16,12 @@ const Root = styled.div<{
 }>`
 	display: flex;
 	background: ${({ theme }) => `${theme.colors.bgSecondary}`};
-	z-index: 2;
+	z-index: 3;
 	box-sizing: border-box;
 	padding: 8px 0;
 	border-radius: 10px;
 	width: 100%;
+	min-width: fit-content;
 	box-shadow:
 		0 4px 20px 0 rgba(0, 0, 0, 0.5),
 		1px 1px 2px 0 rgba(0, 0, 0, 0.25);

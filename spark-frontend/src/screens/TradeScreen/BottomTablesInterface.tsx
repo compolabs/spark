@@ -103,9 +103,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 				<TableTitle>Filled</TableTitle>
 				<TableTitle>Price</TableTitle>
 				<TableTitle>
-					<Row justifyContent="flex-end">
-						<CancelButton>Cancel all</CancelButton>
-					</Row>
+					<Row justifyContent="flex-end">{/*<CancelButton>Cancel all</CancelButton>*/}</Row>
 				</TableTitle>
 			</TableRow>
 			<TableBody>

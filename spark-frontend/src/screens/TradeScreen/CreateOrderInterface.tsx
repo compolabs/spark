@@ -65,18 +65,18 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 		const balance = accountStore.findBalanceByAssetId(vm.isSell ? vm.assetId0 : vm.assetId1)?.balance;
 		if (balance != null) {
 			const value = balance.times(v / 100).toNumber();
-			vm.isSell ? vm.setSellAmount(new BN(value), true) : vm.setBuyAmount(new BN(value), true);
+			vm.isSell ? vm.setSellAmount(new BN(value), true) : vm.setBuyTotal(new BN(value), true);
 		}
 	};
 
 	useEffect(() => {
 		const balance = accountStore.findBalanceByAssetId(vm.isSell ? vm.assetId0 : vm.assetId1)?.balance;
-		const value = vm.isSell ? vm.sellAmount : vm.buyAmount;
+		const value = vm.isSell ? vm.sellAmount : vm.buyTotal;
 		if (balance != null) {
 			balance.eq(0) ? _setPercent(0) : _setPercent(value.div(balance).times(100).toNumber());
 		}
 		/* eslint-disable */
-	}, [accountStore.assetBalances, vm.assetId0, vm.assetId1, vm.buyAmount, vm.isSell, vm.sellAmount]);
+	}, [accountStore.assetBalances, vm.assetId0, vm.assetId1, vm.buyTotal, vm.isSell, vm.sellAmount]);
 
 	return (
 		<Root {...rest}>
@@ -116,7 +116,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 					amount={vm.isSell ? vm.sellAmount : vm.buyAmount}
 					setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
 					error={vm.isSell ? vm.sellAmountError : undefined}
-					errorMessage="Insufficient amount"
+					// errorMessage="Insufficient amount"
 					label="Order size"
 				/>
 				<SizedBox width={8} />
@@ -128,7 +128,7 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 						decimals={vm.token1.decimals}
 						amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
 						setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
-						errorMessage="Insufficient amount"
+						// errorMessage="Insufficient amount"
 						error={vm.isSell ? undefined : vm.buyTotalError}
 					/>
 				</Column>

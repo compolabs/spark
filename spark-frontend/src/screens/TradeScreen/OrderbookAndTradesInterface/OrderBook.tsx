@@ -143,12 +143,14 @@ const SpreadRow = styled(Row)`
 	background: ${({ theme }) => theme.colors.bgPrimary};
 	align-items: center;
 `;
-//todo fix decimals
+
+const DECIMAL_OPTIONS = [2, 4, 5, 6];
+
 const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	const vm = useTradeScreenVM();
 	const { ordersStore } = useStores();
 	const theme = useTheme();
-	const [decimalSetting, setDecimalSetting] = useState("0");
+	const [decimalKey, setDecimalKey] = useState("0");
 	const [orderFilter, setOrderFilter] = useState(0);
 	const [amountOfOrders, setAmountOfOrders] = useState(0);
 	const oneSizeOrders = +new BN(amountOfOrders).div(2).toFixed(0) - 1;
@@ -197,12 +199,12 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		<Root>
 			<SettingsContainder>
 				<Select
-					options={[2, 4, 5, 6].map((v, index) => ({
+					options={DECIMAL_OPTIONS.map((v, index) => ({
 						title: `${v} decimals`,
 						key: index.toString(),
 					}))}
-					selected={decimalSetting}
-					onSelect={({ key }) => setDecimalSetting(key)}
+					selected={decimalKey}
+					onSelect={({ key }) => setDecimalKey(key)}
 				/>
 				{[sellAndBuy, sell, buy].map((image, index) => (
 					<SettingIcon
@@ -250,7 +252,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 							<span className="volume-bar" />
 							<Text primary>{o.amountLeftStr}</Text>
 							<Text primary>{o.totalLeftStr}</Text>
-							<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(+decimalSetting)}</Text>
+							<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
 						</OrderRow>
 					))}
 
@@ -286,7 +288,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 							<span className="volume-bar" />
 							<Text primary>{o.totalLeftStr}</Text>
 							<Text primary>{o.amountLeftStr}</Text>
-							<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(+decimalSetting)}</Text>
+							<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
 						</OrderRow>
 					))}
 

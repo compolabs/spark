@@ -78,7 +78,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 				if (data.t[1] != null && data.t[0] != null) {
 					setState({
 						price: new BN(data.c[1]),
-						priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
+						priceChange: data.c[0] === 0 ? BN.ZERO : new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
 						high: new BN(data.h[1] ?? BN.ZERO),
 						low: new BN(data.l[1] ?? BN.ZERO),
 						//fixme
