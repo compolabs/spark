@@ -19,6 +19,7 @@ const Root = styled.div`
 	margin-bottom: 24px;
 	margin-top: 40px;
 	text-align: left;
+
 	@media (min-width: 880px) {
 		margin-top: 56px;
 	}

@@ -186,6 +186,12 @@ class AccountStore {
 		return this.fuel.getWallet(this.address);
 	};
 
+	checkConnectionWithWallet = async () => {
+		if (this.loginType == null || this.loginType === LOGIN_TYPE.GENERATE_SEED) return;
+		const isConnected = await this.fuel.isConnected();
+		if (!isConnected) await this.loginWithWallet(this.loginType);
+	};
+
 	get walletToRead(): WalletLocked | null {
 		return this.provider == null
 			? null

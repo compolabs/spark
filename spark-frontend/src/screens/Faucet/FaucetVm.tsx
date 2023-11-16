@@ -67,6 +67,7 @@ class FaucetVM {
 	mint = async (assetId?: string) => {
 		if (assetId == null) return;
 		const { accountStore, notificationStore } = this.rootStore;
+		await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
 			this.setActionTokenAssetId(assetId);

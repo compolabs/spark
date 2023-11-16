@@ -23,7 +23,7 @@ const Root = styled.div`
 	flex: 1;
 	overflow: hidden;
 	border-radius: 10px;
-
+	overflow-x: auto;
 	max-width: 100%;
 
 	& > * {
