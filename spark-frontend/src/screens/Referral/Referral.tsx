@@ -29,7 +29,7 @@ const Image = styled.div`
 	background-size: cover;
 	display: none;
 	border-radius: 4px;
-	@media (min-width: 980px) {
+	@media (min-width: 880px) {
 		width: 100%;
 		height: 100%;
 		display: flex;
@@ -41,21 +41,21 @@ const Body = styled(Column)`
 	justify-content: center;
 	flex: 3;
 	height: 100%;
-	background: ${({ theme }) => theme.colors.gray4};
+	background: ${({ theme }) => theme.colors.bgSecondary};
 	border-radius: 4px;
 `;
 
 export const StyledLink = styled.a`
-  color: ${({ theme }) => theme.colors.green};
+  color: ${({ theme }) => theme.colors.greenLight};
   cursor: pointer;
   transition: .4s;
   text-decoration: none;
+  ${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]};
 
   :hover {
     opacity: .8;
   }
 
-  ${TEXT_TYPES_MAP[TEXT_TYPES.BODY_MEDIUM]}
 }
 `;
 const Referral: React.FC<IProps> = observer(() => {
@@ -69,7 +69,8 @@ const Referral: React.FC<IProps> = observer(() => {
 				<Column justifyContent="center" alignItems="center" crossAxisSize="max" style={{ maxWidth: 360 }}>
 					{accountStore.address != null ? <ReferralInterface /> : <ConnectWalletInterface />}
 					<SizedBox height={40} />
-					<Text type={TEXT_TYPES.BODY_MEDIUM}>New to Waves blockchain?</Text>
+					<Text>New to Fuel blockchain?</Text>
+					<SizedBox height={4} />
 					<StyledLink
 						rel="noopener noreferrer"
 						target="_blank"

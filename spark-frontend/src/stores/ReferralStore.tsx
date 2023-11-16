@@ -5,7 +5,7 @@ import { ReferalContractAbi__factory } from "@src/contracts";
 import { CONTRACT_ADDRESSES, ROUTES, TOKENS_BY_SYMBOL } from "@src/constants";
 import { Address } from "fuels";
 import { Column } from "@components/Flex";
-import Text, { TEXT_TYPES } from "@components/Text";
+import Text from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import BN from "@src/utils/BN";
 import Button from "@components/Button";
@@ -75,7 +75,7 @@ class ReferralStore {
 				(accountStore.getBalance(TOKENS_BY_SYMBOL.ETH) ?? BN.ZERO).lt(5)
 					? notificationStore.toast(
 							<Column>
-								<Text type={TEXT_TYPES.H1}>💸 You need to mint some ETH</Text>
+								<Text>💸 You need to mint some ETH</Text>
 								<SizedBox height={8} />
 								<Button onClick={() => window.open(`#${ROUTES.FAUCET}`, "_self")}>Go to faucet </Button>
 							</Column>,
@@ -83,9 +83,9 @@ class ReferralStore {
 					  )
 					: notificationStore.toast(
 							<Column>
-								<Text type={TEXT_TYPES.H1}>❌ You are not verified to access Trade page</Text>
+								<Text>❌ You are not verified to access Trade page</Text>
 								<SizedBox height={8} />
-								<Text type={TEXT_TYPES.NUMBER_MEDIUM}>{e.toString()}</Text>
+								<Text>{e.toString()}</Text>
 							</Column>,
 							{ type: "error" },
 					  );

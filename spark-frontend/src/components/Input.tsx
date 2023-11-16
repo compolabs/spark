@@ -1,6 +1,5 @@
 import styled from "@emotion/styled";
 import React, { ChangeEvent } from "react";
-import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 interface IProps
 	extends Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "onChange"> {
@@ -18,11 +17,10 @@ const Root = styled.div`
 		border: none;
 		background-color: transparent;
 
-		color: ${({ theme }) => theme.colors.gray1};
+		color: ${({ theme }) => theme.colors.textPrimary};
 
-		${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_MEDIUM]}
 		::placeholder {
-			color: ${({ theme }) => theme.colors.gray1};
+			color: ${({ theme }) => theme.colors.textSecondary};
 		}
 	}
 `;

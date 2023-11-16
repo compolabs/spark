@@ -31,14 +31,12 @@ class AccountStore {
 
 	constructor(rootStore: RootStore, initState?: ISerializedAccountStore) {
 		makeAutoObservable(this);
-
 		this.rootStore = rootStore;
 		if (initState) {
 			this.setLoginType(initState.loginType);
 			this.setAddress(initState.address);
 			this.setSeed(initState.seed);
 		}
-
 		this.initFuel();
 		this.initProvider();
 		when(() => this.provider != null, this.updateAccountBalances);
@@ -122,49 +120,45 @@ class AccountStore {
 	});
 
 	login = async (loginType: LOGIN_TYPE) => {
-		console.log("login", loginType);
-		this.setLoginType(loginType);
-		if (loginType === LOGIN_TYPE.GENERATE_SEED) {
-			this.loginWithMnemonicPhrase();
-			return;
-		}
-		await this.loginWithWallet(loginType);
-	};
-
-	disconnect = async () => {
 		try {
-			if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
-				this.setSeed(null);
-				this.setAddress(null);
-				return;
+			if (loginType === LOGIN_TYPE.GENERATE_SEED) {
+				this.loginWithMnemonicPhrase();
+			} else {
+				await this.loginWithWallet(loginType);
 			}
-			this.fuel?.disconnect();
-		} catch (e) {
-			this.setAddress(null);
-			this.setSeed(null);
-			this.setLoginType(null);
-			return;
-		}
-		this.setAddress(null);
-		this.setLoginType(null);
-	};
-
-	loginWithWallet = async (connector: LOGIN_TYPE) => {
-		try {
-			await this.fuel.selectConnector(connector);
-			await this.fuel.connect();
-			const account = await this.fuel.currentAccount();
-			const provider = await this.fuel.getProvider();
-			if (provider.url !== NODE_URL) {
-				this.rootStore.notificationStore.toast(`Please change network url to beta 4`);
-			}
-			this.setAddress(account);
 		} catch (e) {
 			this.rootStore.notificationStore.toast(e?.toString(), {
 				type: "error",
 			});
-			return;
 		}
+		this.setLoginType(loginType);
+	};
+
+	disconnect = async () => {
+		try {
+			if (this.loginType === LOGIN_TYPE.GENERATE_SEED) this.setSeed(null);
+			else {
+				const isConnected = await this.fuel.isConnected();
+				if (isConnected) this.fuel?.disconnect();
+			}
+		} catch (e) {
+			console.log("Error while disconnect");
+		} finally {
+			this.setSeed(null);
+			this.setAddress(null);
+			this.setLoginType(null);
+		}
+	};
+
+	loginWithWallet = async (connector: LOGIN_TYPE) => {
+		await this.fuel.selectConnector(connector);
+		await this.fuel.connect();
+		const account = await this.fuel.currentAccount();
+		const provider = await this.fuel.getProvider();
+		if (provider.url !== NODE_URL) {
+			this.rootStore.notificationStore.toast(`Please change network url to beta 4`);
+		}
+		this.setAddress(account);
 	};
 
 	loginWithMnemonicPhrase = () => {
@@ -190,6 +184,12 @@ class AccountStore {
 		}
 		if (this.address == null || this.fuel == null) return null;
 		return this.fuel.getWallet(this.address);
+	};
+
+	checkConnectionWithWallet = async () => {
+		if (this.loginType == null || this.loginType === LOGIN_TYPE.GENERATE_SEED) return;
+		const isConnected = await this.fuel.isConnected();
+		if (!isConnected) await this.loginWithWallet(this.loginType);
 	};
 
 	get walletToRead(): WalletLocked | null {

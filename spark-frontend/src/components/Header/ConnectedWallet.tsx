@@ -16,26 +16,26 @@ import copy from "copy-to-clipboard";
 
 interface IProps {}
 
-const Root = styled(Button)<{ focused?: boolean }>`
+const Root = styled(Button)<{
+	focused?: boolean;
+}>`
 	background: transparent;
-	border: 1px solid ${({ theme }) => theme.colors.white};
 	padding: 0 8px;
+	color: ${({ theme }) => theme.colors.textPrimary};
+	${TEXT_TYPES_MAP[TEXT_TYPES.BODY]};
 
-	${TEXT_TYPES_MAP[TEXT_TYPES.H2]}
 	:hover {
 		background: transparent;
-		border: 1px solid ${({ theme }) => theme.colors.white};
-		${TEXT_TYPES_MAP[TEXT_TYPES.H2]}
 	}
 
 	.menu-arrow {
 		transition: 0.4s;
-		transform: ${({ focused }) => (focused ? "rotate(0deg)" : "rotate(180deg)")};
+		transform: ${({ focused }) => (focused ? "rotate(-180deg)" : "rotate(0deg)")};
 	}
 
 	:hover {
 		.menu-arrow {
-			transform: ${({ focused }) => (focused ? "rotate(0)" : "rotate(90deg)")};
+			transform: ${({ focused }) => (focused ? "rotate(-180)" : "rotate(-90deg)")};
 		}
 	}
 `;

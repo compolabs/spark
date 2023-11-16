@@ -27,7 +27,7 @@ const Root = styled.div`
 	height: 100%;
 	flex: 1;
 	box-sizing: border-box;
-	padding: 0 4px;
+	padding: 0 12px;
 `;
 
 const MobileCreateOrderDialogContainer = styled(Column)`
@@ -45,7 +45,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	const width = useWindowSize().width;
 	const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
 	if (!referralStore.access) return <Navigate to={ROUTES.REFERRAL} />;
-	return width && width >= 1080 ? (
+	return width && width >= 880 ? (
 		<Root>
 			<MarketStatisticsBar />
 			<SizedBox height={4} />
@@ -59,6 +59,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<SizedBox width={4} />
 				<OrderbookAndTradesInterface />
 			</Row>
+			<SizedBox height={4} />
 			<StatusBar />
 		</Root>
 	) : (
@@ -70,7 +71,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<BottomTablesInterface />
 			</Column>
 			<SizedBox height={16} />
-			<Button primary onClick={() => setCreateOrderDialogOpen(true)}>
+			<Button green onClick={() => setCreateOrderDialogOpen(true)}>
 				Create order
 			</Button>
 			<StatusBar />

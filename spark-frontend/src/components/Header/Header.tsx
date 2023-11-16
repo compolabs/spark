@@ -3,15 +3,16 @@ import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { TEXT_TYPES } from "@components/Text";
 import Button from "@components/Button";
 import { ROUTES } from "@src/constants";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import isRoutesEquals from "@src/utils/isRoutesEquals";
 import SizedBox from "@components/SizedBox";
 import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
 import { DesktopRow, Row } from "@components/Flex";
 import ConnectedWallet from "@components/Header/ConnectedWallet";
+import isRoutesEquals from "@src/utils/isRoutesEquals";
+import Tab from "@components/Tab";
 
 interface IProps {}
 
@@ -20,8 +21,8 @@ const Root = styled.div`
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	height: 46px;
-	padding: 0 16px;
+	height: 48px;
+	padding: 0 12px;
 	box-sizing: border-box;
 	flex-shrink: 0;
 
@@ -31,38 +32,10 @@ const Root = styled.div`
 `;
 
 const Divider = styled.div`
-	margin: 0 20px;
+	margin: 0 16px;
 	width: 1px;
-	height: 12px;
-	background: ${({ theme }) => theme.colors.gray2};
-`;
-
-const MenuItem = styled.div<{ active?: boolean; disabled?: boolean }>`
-	cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-	width: 100px;
-	text-align: center;
-	color: ${({ theme, active, disabled }) =>
-		active ? theme.colors.white : !disabled ? theme.colors.gray1 : theme.colors.gray2};
-	position: relative;
-	${TEXT_TYPES_MAP[TEXT_TYPES.H3]}
-	transition: .4s;
-
-	:hover {
-		color: ${({ theme, disabled }) => (disabled ? theme.colors.gray2 : theme.colors.white)};
-	}
-
-	::after {
-		transition: 0.4s;
-		position: absolute;
-		content: "";
-		width: 100%;
-		height: 2px;
-		border-radius: 4px;
-		background: ${({ theme, active }) => (active ? theme.colors.white : "transparent")};
-		left: 0;
-		right: 0;
-		bottom: -16px;
-	}
+	height: 32px;
+	background: ${({ theme }) => theme.colors.bgSecondary};
 `;
 
 type TMenuItem = {
@@ -70,22 +43,42 @@ type TMenuItem = {
 	route?: string;
 	link?: string;
 };
+
+const TabContainer = styled(DesktopRow)`
+	& > * {
+		margin-right: 28px;
+	}
+`;
 export const MENU_ITEMS: Array<TMenuItem> = [
-	// { title: "DASHBOARD" },
 	{ title: "TRADE", route: ROUTES.TRADE },
-	// { title: "EARN" },
 	{ title: "FAUCET", route: ROUTES.FAUCET },
-	// { title: "DOCS" },
+	{ title: "DOCS", link: "https://docs.sprk.fi" },
 	{ title: "GITHUB", link: "https://github.com/compolabs/spark" },
-	// {title: "MORE", route: ROUTES.ROOT},
 ];
 
 const SettingsButton = styled(Button)`
 	width: 32px;
 	height: 32px;
-	padding: 0;
-`;
+	border-radius: 32px;
+	padding: 0 !important;
 
+	path {
+		fill: ${({ theme }) => theme.colors.iconSecondary};
+	}
+
+	:active {
+		path {
+			fill: ${({ theme }) => theme.colors.iconPrimary};
+		}
+	}
+
+	:disabled {
+		path {
+			fill: ${({ theme }) => theme.colors.iconDisabled};
+		}
+	}
+`;
+//todo add dropdown
 const Header: React.FC<IProps> = observer(() => {
 	const { accountStore } = useStores();
 	const location = useLocation();
@@ -98,51 +91,47 @@ const Header: React.FC<IProps> = observer(() => {
 					<Logo />
 				</a>
 				<Divider />
-				<DesktopRow>
+				<TabContainer>
 					{MENU_ITEMS.map(({ title, link, route }, key) => {
 						if (link == null && route == null)
 							return (
-								<Text type={TEXT_TYPES.BODY_LARGE} key={key}>
+								<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
 									{title}
-								</Text>
+								</Tab>
 							);
 						else if (route != null)
 							return (
 								<Link to={route} key={key}>
-									<MenuItem active={isRoutesEquals(route, location.pathname)}>{title}</MenuItem>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key} active={isRoutesEquals(route, location.pathname)}>
+										{title}
+									</Tab>
 								</Link>
 							);
 						else if (link != null)
 							return (
 								<a rel="noopener noreferrer" target="_blank" href={link} key={key}>
-									<MenuItem key={key}>{title}</MenuItem>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
+										{title}
+									</Tab>
 								</a>
 							);
 						else return null;
 					})}
-				</DesktopRow>
+				</TabContainer>
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<DesktopRow>
-					<SizedBox width={10} />
-					<SettingsButton outline disabled>
+					{/*<SizedBox width={10} />*/}
+					<SettingsButton disabled>
 						<GearIcon />
 					</SettingsButton>
-					<SizedBox width={10} />
-					<Button style={{ height: 32 }} outline fitContent disabled>
-						DEPOSIT/WITHDRAW
-					</Button>
-					<SizedBox width={10} />
-					<Button style={{ height: 32 }} outline fitContent disabled>
-						BRIDGE
-					</Button>
 					<SizedBox width={10} />
 				</DesktopRow>
 				{accountStore.address != null ? (
 					<ConnectedWallet />
 				) : (
 					<Button
-						primary
+						green
 						fitContent
 						onClick={() =>
 							accountStore.fuel == null ? window.open("https://wallet.fuel.network/docs/install/") : navigate(ROUTES.TRADE)

@@ -202,6 +202,7 @@ class TradeScreenVm {
 
 	createOrder = async (action: OrderAction) => {
 		const { accountStore } = this.rootStore;
+		await accountStore.checkConnectionWithWallet();
 		if (accountStore.address == null) return;
 		const wallet = await accountStore.getWallet();
 		if (wallet == null) return;
@@ -258,6 +259,7 @@ class TradeScreenVm {
 	cancelOrder = async (id: string) => {
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null) return;
+		await accountStore.checkConnectionWithWallet();
 		const wallet = await accountStore.getWallet();
 		if (wallet == null) return;
 		const limitOrdersContract = SpotMarketAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
@@ -314,6 +316,7 @@ class TradeScreenVm {
 		const { accountStore, ordersStore } = this.rootStore;
 		if (ordersStore.spreadPercent == null) return;
 		if (accountStore.address == null) return;
+		await accountStore.checkConnectionWithWallet();
 		const wallet = accountStore.walletToRead;
 		if (wallet == null) return;
 		const get_price = OracleAbi__factory.connect(CONTRACT_ADDRESSES.priceOracle, wallet).functions.get_price;

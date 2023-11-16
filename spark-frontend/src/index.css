@@ -20,6 +20,13 @@ code {
 }
 
 @font-face {
+    font-family: "JetBrains Mono";
+    src: local("JetBrains Mono"),
+    url(assets/fonts/JetBrainsMono-Regular.ttf) format("truetype");
+    font-weight: 400;
+}
+
+@font-face {
     font-family: "Space Grotesk";
     src: local("Space Grotesk"),
     url(assets/fonts/SpaceGrotesk-Medium.ttf) format("truetype");
@@ -33,20 +40,6 @@ code {
     font-weight: 400;
 }
 
-@font-face {
-    font-family: "Syne";
-    src: local("Syne"),
-    url(assets/fonts/Syne-Medium.ttf) format("truetype");
-    font-weight: 500;
-}
-
-@font-face {
-    font-family: "Syne";
-    src: local("Syne"),
-    url(assets/fonts/Syne-SemiBold.ttf) format("truetype");
-    font-weight: 600;
-}
-
 :root {
     --toastify-color-light: #FFFFFD;
     --toastify-color-dark: #050505;
@@ -54,5 +47,5 @@ code {
     --toastify-color-success: #00FF98;
     --toastify-color-warning: #FF6F06;
     --toastify-color-error: #FD0A53;
-    --toastify-font-family: Syne, sans-serif;
+    --toastify-font-family: JetBrains Mono, sans-serif;
 }

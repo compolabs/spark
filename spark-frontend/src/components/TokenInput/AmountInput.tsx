@@ -1,16 +1,16 @@
 import React from "react";
 import styled from "@emotion/styled";
-import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
-const Root = styled.input<{ small?: boolean }>`
-	${TEXT_TYPES_MAP[TEXT_TYPES.NUMBER_MEDIUM]}
-	caret-color: ${({ theme }) => theme.colors.white};
+const Root = styled.input<{
+	small?: boolean;
+}>`
+	caret-color: ${({ theme }) => theme.colors.textPrimary};
 	border: none;
 	background: transparent;
 	outline: none;
 	width: 100%;
 
-	color: ${({ theme }) => theme.colors.white};
+	color: ${({ theme }) => theme.colors.textPrimary};
 
 	::-webkit-outer-spin-button,
 	::-webkit-inner-spin-button {
@@ -23,11 +23,13 @@ const Root = styled.input<{ small?: boolean }>`
 	}
 
 	::placeholder {
-		color: ${({ theme }) => theme.colors.gray1};
+		color: ${({ theme }) => theme.colors.textSecondary};
 	}
 `;
 
-type TProps = React.InputHTMLAttributes<HTMLInputElement> & { small?: boolean };
+type TProps = React.InputHTMLAttributes<HTMLInputElement> & {
+	small?: boolean;
+};
 
 const AmountInput = React.forwardRef<HTMLInputElement, TProps>(({ onWheel, ...props }, ref) => (
 	<Root

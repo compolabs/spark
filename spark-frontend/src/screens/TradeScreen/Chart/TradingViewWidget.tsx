@@ -7,10 +7,12 @@ let tvScriptLoadingPromise: Promise<any>;
 const Root = styled.div`
 	height: 100%;
 	width: 100%;
+	overflow: hidden;
 
 	& > div {
-		height: 100%;
-		width: 100%;
+		margin: -2px 0 0 -2px;
+		height: calc(100% + 4px);
+		width: calc(100% + 4px);
 	}
 `;
 
@@ -49,8 +51,8 @@ export default function TradingViewWidget() {
 					style: "1",
 					locale: "en",
 					enable_publishing: false,
-					backgroundColor: theme.colors.gray5,
-					gridColor: theme.colors.gray3,
+					backgroundColor: theme.colors.bgPrimary,
+					gridColor: theme.colors.borderSecondary,
 					hide_top_toolbar: true,
 					hide_legend: true,
 					save_image: false,
@@ -58,7 +60,7 @@ export default function TradingViewWidget() {
 				});
 			}
 		}
-	}, [theme.colors.gray3, theme.colors.gray5]);
+	}, [theme]);
 
 	return (
 		<Root className="tradingview-widget-container">

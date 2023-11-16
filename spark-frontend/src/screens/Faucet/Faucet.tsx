@@ -19,6 +19,7 @@ const Root = styled.div`
 	margin-bottom: 24px;
 	margin-top: 40px;
 	text-align: left;
+
 	@media (min-width: 880px) {
 		margin-top: 56px;
 	}
@@ -31,7 +32,9 @@ const FaucetImpl: React.FC<IProps> = () => {
 			{() => {
 				return (
 					<Root>
-						<Text type={TEXT_TYPES.H1}>Faucet for Fuel Network</Text>
+						<Text type={TEXT_TYPES.H} primary>
+							Faucet for Fuel Network
+						</Text>
 						<SizedBox height={16} />
 						{vm.faucetTokens.length === 0 ? <Skeleton height={70} style={{ margin: 4 }} count={5} /> : <TokensFaucetTable />}
 					</Root>

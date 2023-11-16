@@ -10,27 +10,27 @@ const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 	box-sizing: border-box;
-	padding: 16px 0;
+	padding: 12px 0;
 	flex: 2;
 	max-width: 280px;
 	height: 100%;
 	border-radius: 10px;
-	background: ${({ theme }) => theme.colors.gray4};
+	background: ${({ theme }) => theme.colors.bgSecondary};
 `;
 
 const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 	const [isOrderbook, setIsOrderbook] = useState(true);
 	return (
 		<Root>
-			<ButtonGroup style={{ padding: "0 16px" }}>
-				<Button outline={!isOrderbook} onClick={() => setIsOrderbook(true)}>
+			<ButtonGroup style={{ padding: "0 12px" }}>
+				<Button active onClick={() => setIsOrderbook(true)}>
 					Orderbook
 				</Button>
-				<Button disabled outline={isOrderbook} onClick={() => setIsOrderbook(false)}>
+				<Button disabled onClick={() => setIsOrderbook(false)}>
 					Trades
 				</Button>
 			</ButtonGroup>
-			<SizedBox height={16} />
+			<SizedBox height={8} />
 			{isOrderbook ? <OrderBook /> : null}
 		</Root>
 	);

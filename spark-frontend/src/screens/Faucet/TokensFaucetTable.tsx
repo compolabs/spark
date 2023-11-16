@@ -1,100 +1,113 @@
-import React, { useMemo, useState } from "react";
+import React from "react";
 import { useStores } from "@stores";
-import { Column, Row } from "@components/Flex";
-import SizedBox from "@components/SizedBox";
-import Text from "@components/Text";
+import { Row } from "@components/Flex";
+import { TEXT_TYPES } from "@components/Text";
 import Button from "@components/Button";
 import { FAUCET_URL, TOKENS_BY_SYMBOL } from "@src/constants";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
 import { observer } from "mobx-react-lite";
-import Table from "@components/Table";
 import { useNavigate } from "react-router-dom";
+import styled from "@emotion/styled";
+import { TableBody, TableRow, TableText, TableTitle } from "@screens/TradeScreen/BottomTablesInterface";
+import Chip from "@components/Chip";
 
 interface IProps {}
 
-const TokensFaucetTable: React.FC<IProps> = () => {
-	const { accountStore, settingsStore } = useStores();
+const Root = styled.div`
+	background: ${({ theme }) => theme.colors.bgSecondary};
+	display: flex;
+	width: 100%;
+	flex-direction: column;
+	box-sizing: border-box;
+	border: 1px solid ${({ theme }) => theme.colors.bgSecondary};
+	flex: 1;
+	overflow: hidden;
+	border-radius: 10px;
+	overflow-x: auto;
+	max-width: 100%;
+
+	& > * {
+		min-width: 580px;
+	}
+`;
+
+const StyledTableRow = styled(TableRow)`
+	height: 48px;
+`;
+
+const TokensFaucetTable: React.FC<IProps> = observer(() => {
+	const { accountStore } = useStores();
 	const vm = useFaucetVM();
 	const navigate = useNavigate();
-	const [tokens, setTokens] = useState<any>([]);
 	const ethBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.ETH);
-	useMemo(() => {
-		setTokens(
-			vm.faucetTokens.map((t) => ({
-				asset: (
-					<Row>
-						<SizedBox width={16} />
-						<Text style={{ whiteSpace: "nowrap" }}>{t.name}</Text>
+	return (
+		<Root>
+			<StyledTableRow>
+				<TableTitle>Asset</TableTitle>
+				<TableTitle>Mint amount</TableTitle>
+				<TableTitle>My balance</TableTitle>
+				<TableTitle>
+					<Row justifyContent="flex-end">
+						<Button style={{ width: 120 }}>Mint all</Button>
 					</Row>
-				),
-				amount: (
-					<Column crossAxisSize="max">
-						<Text style={{ whiteSpace: "nowrap" }}>{`${t.mintAmount.toFormat()} ${t.symbol}`}</Text>
-					</Column>
-				),
-				balance: (
-					<Column crossAxisSize="max">
-						<Text style={{ whiteSpace: "nowrap" }}>{`${t.formatBalance?.toFormat(2)} ${t.symbol}`}</Text>
-					</Column>
-				),
-				btn: (() => {
-					if (!accountStore.isLoggedIn && t.symbol !== "ETH")
-						return (
-							<Button primary onClick={() => navigate("/")}>
-								Connect wallet
-							</Button>
-						);
-					if (!vm.initialized)
-						return (
-							<Button primary disabled>
-								Loading...
-							</Button>
-						);
-					if (ethBalance?.eq(0) && t.symbol !== "ETH" ) return <Button disabled primary>Mint</Button>;
-					return (
-						<Button
-							primary
-							disabled={vm.loading || !vm.initialized}
-							onClick={() => {
-								if (t.symbol === "ETH") {
-									window.open(
-										accountStore.address == null ? FAUCET_URL : `${FAUCET_URL}/?address=${accountStore.address}`,
-										"blank",
+				</TableTitle>
+			</StyledTableRow>
+			<TableBody>
+				{vm.faucetTokens.map((token) => (
+					<StyledTableRow key={token.assetId}>
+						<TableText primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+							{token.name}
+						</TableText>
+						<TableText primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+							{token.mintAmount.toFormat()} &nbsp;<Chip>{token.symbol}</Chip>
+						</TableText>
+						<TableText primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+							{token.formatBalance?.toFormat(2)} &nbsp;<Chip>{token.symbol}</Chip>
+						</TableText>
+						<Row justifyContent="flex-end" style={{ flex: 1 }}>
+							{(() => {
+								if (!accountStore.isLoggedIn && token.symbol !== "ETH")
+									return (
+										<Button style={{ width: 120 }} green onClick={() => navigate("/")}>
+											Connect wallet
+										</Button>
 									);
-								} else {
-									vm.mint(t.assetId);
-								}
-							}}
-						>
-							{vm.loading && vm.actionTokenAssetId === t.assetId ? "Loading..." : "Mint"}
-						</Button>
-					);
-				})(),
-			})),
-		);
-		/* eslint-disable */
-	}, [accountStore.address, accountStore.isLoggedIn, settingsStore, vm.loading, ethBalance]);
-	const columns = React.useMemo(
-		() => [
-			{
-				Header: "Asset",
-				accessor: "asset",
-			},
-			{
-				Header: "Mint amount",
-				accessor: "amount",
-			},
-			{
-				Header: "My balance",
-				accessor: "balance",
-			},
-			{
-				Header: " ",
-				accessor: "btn",
-			},
-		],
-		[],
+								if (!vm.initialized)
+									return (
+										<Button green disabled>
+											Loading...
+										</Button>
+									);
+								if (ethBalance?.eq(0) && token.symbol !== "ETH")
+									return (
+										<Button green disabled>
+											Mint
+										</Button>
+									);
+								return (
+									<Button
+										style={{ width: 120 }}
+										disabled={vm.loading || !vm.initialized}
+										onClick={() => {
+											if (token.symbol === "ETH") {
+												window.open(
+													accountStore.address == null ? FAUCET_URL : `${FAUCET_URL}/?address=${accountStore.address}`,
+													"blank",
+												);
+											} else {
+												vm.mint(token.assetId);
+											}
+										}}
+									>
+										{vm.loading && vm.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
+									</Button>
+								);
+							})()}
+						</Row>
+					</StyledTableRow>
+				))}
+			</TableBody>
+		</Root>
 	);
-	return <Table columns={columns} data={tokens} />;
-};
-export default observer(TokensFaucetTable);
+});
+export default TokensFaucetTable;

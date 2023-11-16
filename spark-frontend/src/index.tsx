@@ -7,7 +7,7 @@ import { autorun } from "mobx";
 import { HashRouter as Router } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import ThemeWrapper from "@src/themes/ThemeProvider";
-import GlobalStyles from "@src/themes/GlobalStyles";
+// import GlobalStyles from "@src/themes/GlobalStyles";
 // css
 import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
@@ -44,7 +44,7 @@ root.render(
 				pauseOnHover
 				theme="dark"
 			/>
-			<GlobalStyles />
+			{/*<GlobalStyles />*/}
 		</ThemeWrapper>
 	</storesContext.Provider>,
 	// </React.StrictMode>,

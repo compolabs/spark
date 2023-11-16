@@ -1,19 +1,19 @@
 import React from "react";
 import styled from "@emotion/styled";
 import { Column } from "@components/Flex";
-import { Route, Routes } from "react-router-dom";
 import { observer } from "mobx-react";
-import TradeScreen from "@screens/TradeScreen";
 import Header from "@components/Header";
-import { ROUTES } from "./constants";
-import Referral from "@screens/Referral/Referral";
+import { Route, Routes } from "react-router-dom";
+import { ROUTES } from "@src/constants";
+import Referral from "@screens/Referral";
+import TradeScreen from "@screens/TradeScreen";
 import Faucet from "@screens/Faucet";
 
 const Root = styled(Column)`
 	width: 100%;
 	//min-width: 1080px;
 	align-items: center;
-	background: ${({ theme }) => theme.colors.gray5};
+	background: ${({ theme }) => theme.colors.bgPrimary};
 	height: 100vh;
 	max-height: 100vh;
 `;

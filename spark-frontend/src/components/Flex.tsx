@@ -30,7 +30,7 @@ export const DesktopRow = styled(Row)`
 	align-items: center;
 	width: fit-content;
 	display: none;
-	@media (min-width: 1080px) {
+	@media (min-width: 880px) {
 		display: flex;
 	}
 `;

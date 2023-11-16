@@ -33,7 +33,9 @@ const ConnectWalletInterface: React.FC<IProps> = observer(() => {
 
 	return (
 		<>
-			<Text type={TEXT_TYPES.H1}>Connect wallet</Text>
+			<Text type={TEXT_TYPES.H} primary>
+				Connect wallet
+			</Text>
 			<SizedBox height={40} />
 			{wallets.map(({ name, active, type }) => (
 				<Button

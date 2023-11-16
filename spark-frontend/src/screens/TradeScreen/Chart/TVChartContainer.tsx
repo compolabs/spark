@@ -50,13 +50,13 @@ const TVChartContainer = () => {
 		autosize: true,
 		studiesOverrides: {},
 		overrides: {
-			"paneProperties.background": theme.colors.gray5,
+			"paneProperties.background": theme.colors.bgSecondary,
 			"paneProperties.backgroundType": "solid",
-			"scalesProperties.lineColor": theme.colors.gray3,
-			"scalesProperties.textColor": theme.colors.gray2,
+			// "scalesProperties.lineColor": theme.colors.gray3,
+			"scalesProperties.textColor": theme.colors.bgSecondary,
 			"paneProperties.legendProperties.showSeriesOHLC": false,
-			"mainSeriesProperties.candleStyle.upColor": theme.colors.green,
-			"mainSeriesProperties.candleStyle.downColor": theme.colors.red,
+			"mainSeriesProperties.candleStyle.upColor": theme.colors.greenLight,
+			"mainSeriesProperties.candleStyle.downColor": theme.colors.redLight,
 		},
 		custom_css_url: "src/screens/Trade/Chart/tw-styles.css",
 	};
