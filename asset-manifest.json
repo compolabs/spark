@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.7a3ed446.css",
-    "main.js": "/static/js/main.811c46da.js",
+    "main.js": "/static/js/main.f05ef521.js",
     "static/media/referralBackground.png": "/static/media/referralBackground.2fcee11610c18fe3410c.png",
     "static/media/JetBrainsMono-Regular.ttf": "/static/media/JetBrainsMono-Regular.93b40005892466035ab0.ttf",
     "static/media/JetBrainsMono-Medium.ttf": "/static/media/JetBrainsMono-Medium.2504f21abf8bf1f0613a.ttf",
     "static/media/SpaceGrotesk-Medium.ttf": "/static/media/SpaceGrotesk-Medium.d188dfade7a12bbb16c1.ttf",
     "static/media/SpaceGrotesk-Regular.ttf": "/static/media/SpaceGrotesk-Regular.3683ead52440efaeba4d.ttf",
     "static/media/uni.svg": "/static/media/uni.a33fad7be203fd92982c0aab645c0bab.svg",
-    "static/media/logo.svg": "/static/media/logo.32ab030320f51d30b5a6fbc8cf1597ca.svg",
+    "static/media/logo.svg": "/static/media/logo.63b02591e6b76c7f9734b5e19bf35fe1.svg",
     "static/media/usdc.svg": "/static/media/usdc.294855a32a0c99a77bc9974bc654a978.svg",
     "static/media/health.svg": "/static/media/health.1e873908aebb422161ccf2c1976d65f2.svg",
     "static/media/gear.svg": "/static/media/gear.7efcaa86b4c9dcbc83a8657db835f2ae.svg",
@@ -22,10 +22,10 @@
     "static/media/sellOrderBookIcon.svg": "/static/media/sellOrderBookIcon.55b86901e97baaa56972664d36387260.svg",
     "static/media/arrowUp.svg": "/static/media/arrowUp.4da4b05b67cc78ed25b30434d3ba92a7.svg",
     "main.7a3ed446.css.map": "/static/css/main.7a3ed446.css.map",
-    "main.811c46da.js.map": "/static/js/main.811c46da.js.map"
+    "main.f05ef521.js.map": "/static/js/main.f05ef521.js.map"
   },
   "entrypoints": [
     "static/css/main.7a3ed446.css",
-    "static/js/main.811c46da.js"
+    "static/js/main.f05ef521.js"
   ]
 }
