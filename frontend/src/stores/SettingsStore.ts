@@ -13,6 +13,9 @@ class SettingsStore {
 
 	walletModalOpened: boolean = false;
 	setWalletModalOpened = (s: boolean) => (this.walletModalOpened = s);
+
+	marketSelectionOpened: boolean = false;
+	setMarketSelectionOpened = (s: boolean) => (this.marketSelectionOpened = s);
 }
 
 export default SettingsStore;

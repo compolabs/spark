@@ -2,10 +2,8 @@ import styled from "@emotion/styled";
 import React, { useState } from "react";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import { Column, Row } from "@src/components/Flex";
-import CreateOrderInterface from "@screens/TradeScreen/CreateOrderInterface";
 import Chart from "@screens/TradeScreen/Chart";
 import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
-import OrderbookAndTradesInterface from "@screens/TradeScreen/OrderbookAndTradesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
 import { TradeScreenVMProvider } from "@screens/TradeScreen/TradeScreenVm";
 import SizedBox from "@components/SizedBox";
@@ -16,7 +14,9 @@ import { observer } from "mobx-react";
 import useWindowSize from "@src/hooks/useWindowSize";
 import Button from "@components/Button";
 import Dialog from "@components/Dialog";
-import OrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/OrderBook";
+import LeftBlock from "src/screens/TradeScreen/OrderbookAndTradesInterface/LeftBlock.tsx";
+import OrderBook from "./OrderbookAndTradesInterface/OrderBook";
+import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/OrderbookAndTradesInterface";
 
 interface IProps {}
 
@@ -50,7 +50,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 			<MarketStatisticsBar />
 			<SizedBox height={4} />
 			<Row mainAxisSize="stretch" crossAxisSize="max">
-				<CreateOrderInterface />
+				<LeftBlock />
 				<SizedBox width={4} />
 				<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
 					<Chart />
@@ -78,7 +78,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 			<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>
 				<MobileCreateOrderDialogContainer>
 					<OrderBook mobileMode />
-					<CreateOrderInterface style={{ maxWidth: "100%", height: "100%" }} />
+					<LeftBlock style={{ maxWidth: "100%", height: "100%" }} />
 				</MobileCreateOrderDialogContainer>
 			</Dialog>
 		</Root>

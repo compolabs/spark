@@ -9,8 +9,10 @@ import Button from "@components/Button";
 import dayjs from "dayjs";
 import axios from "axios";
 import BN from "@src/utils/BN";
+import arrow from "@src/assets/icons/arrowUp.svg";
 import { observer } from "mobx-react";
 import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -25,7 +27,10 @@ const Root = styled.div`
 	flex-shrink: 0;
 `;
 
-const MarketSelect = styled.div`
+const MarketSelect = styled.div<{
+	focused?: boolean;
+	disabled?: boolean;
+}>`
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -34,6 +39,18 @@ const MarketSelect = styled.div`
 	flex: 2;
 	max-width: 280px;
 	height: 100%;
+
+	.menu-arrow {
+		cursor: pointer;
+		transition: 0.4s;
+		transform: ${({ focused }) => (focused ? "rotate(-180deg)" : "rotate(0deg)")};
+	}
+
+	:hover {
+		.menu-arrow {
+			transform: ${({ focused, disabled }) => (focused ? "rotate(-180)" : disabled ? "rotate(0deg)" : "rotate(-90deg)")};
+		}
+	}
 `;
 
 const MarketStatistics = styled.div`
@@ -64,6 +81,7 @@ const PriceRow = styled(Row)`
 `;
 
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
+	const { settingsStore } = useStores();
 	const vm = useTradeScreenVM();
 	const theme = useTheme();
 	let [state, setState] = useState<IState>({});
@@ -98,17 +116,23 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 				}
 			});
 	}, []);
+	//todo сделать onVisibleChange: setFocused для MarketSelect
 	return (
 		<Root>
-			<MarketSelect>
+			<MarketSelect
+				focused={settingsStore.marketSelectionOpened}
+				onClick={() => settingsStore.setMarketSelectionOpened(true)}
+			>
 				<Row alignItems="center">
-					<img style={{ width: 24, height: 24 }} src={TOKENS_BY_SYMBOL.UNI.logo} alt="btc" />
-					<img style={{ width: 24, height: 24, marginLeft: -8 }} src={TOKENS_BY_SYMBOL.USDC.logo} alt="btc" />
+					<img style={{ width: 24, height: 24 }} src={vm.token0.logo} alt="token0" />
+					<img style={{ width: 24, height: 24, marginLeft: -8 }} src={vm.token1.logo} alt="token1" />
 					<SizedBox width={8} />
 					<Text type={TEXT_TYPES.H} primary>
-						UNI-USDC
+						{`${vm.token0.symbol}-${vm.token1.symbol}`}
 					</Text>
 				</Row>
+				<SizedBox width={10} />
+				<img style={{ width: 24, height: 24, marginLeft: -8 }} src={arrow} alt="arrow" className="menu-arrow" />
 				{/*<h4 style={{ transform: "rotate(90deg)" }}>{">"}</h4>*/}
 			</MarketSelect>
 			<MarketStatistics>
@@ -148,7 +172,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 							<Text type={TEXT_TYPES.BODY} primary>
 								{state.volumeAsset1?.toFormat(2) ?? "-"}
 							</Text>
-						</Column>{" "}
+						</Column>
 						<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />
 						<Column>
 							<Text type={TEXT_TYPES.SUPPORTING}>Volume 24h (UNI)</Text>
