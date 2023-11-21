@@ -46,6 +46,7 @@ const Root = styled.div`
 const MobileOrderBookContainer = styled.div`
 	background: ${({ theme }) => theme.colors.bgSecondary};
 	border-radius: 10px;
+	height: 100%;
 `;
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {

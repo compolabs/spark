@@ -89,25 +89,25 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 				</Button>
 			</ButtonGroup>
 			<SizedBox height={16} />
-			<Row>
-				<Column crossAxisSize="max">
+			<Column crossAxisSize="max">
+				<Row>
 					<Select label="Order type" options={orderTypes} selected={orderTypes[1].key} onSelect={() => null} />
-					<SizedBox height={2} />
-					<Row alignItems="center">
-						<StyledInfoIcon />
-						<Text disabled type={TEXT_TYPES.SUPPORTING}>
-							About order type
-						</Text>
-					</Row>
-				</Column>
-				<SizedBox width={8} />
-				<TokenInput
-					decimals={vm.token1.decimals}
-					amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
-					setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
-					label="Market price"
-				/>
-			</Row>
+					<SizedBox width={8} />
+					<TokenInput
+						decimals={vm.token1.decimals}
+						amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
+						setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
+						label="Market price"
+					/>
+				</Row>
+				<SizedBox height={2} />
+				<Row alignItems="center">
+					<StyledInfoIcon />
+					<Text disabled type={TEXT_TYPES.SUPPORTING} nowrap>
+						About order type
+					</Text>
+				</Row>
+			</Column>
 			<SizedBox height={2} />
 			<Row alignItems="flex-end">
 				<TokenInput
@@ -144,9 +144,9 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 				</Row>
 			</Row>
 			{/*<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>*/}
-			<SizedBox height={28} />
+			<SizedBox height={16} />
 			<Slider min={0} max={100} value={percent} percent={percent} onChange={(v) => setPercent(v as number)} step={1} />
-			<SizedBox height={28} />
+			<SizedBox height={16} />
 			<Accordion transition transitionTimeout={400}>
 				<AccordionItem
 					defaultChecked

@@ -6,8 +6,8 @@ import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import { Column, Row } from "@src/components/Flex";
-import Text, { TEXT_TYPES } from "@components/Text";
-import { css, useTheme } from "@emotion/react";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { useTheme } from "@emotion/react";
 import useEventListener from "@src/utils/useEventListener";
 import hexToRgba from "@src/utils/hexToRgb";
 import Select from "@components/Select";
@@ -21,6 +21,17 @@ interface IProps extends HTMLAttributes<HTMLDivElement> {}
 const Root = styled(Column)`
 	grid-area: orderbook;
 	width: 100%;
+	height: 100%;
+
+	.desktopOnly {
+		display: none;
+	}
+
+	@media (min-width: 880px) {
+		.desktopOnly {
+			display: block;
+		}
+	}
 `;
 
 const SettingsContainder = styled(Row)`
@@ -51,27 +62,16 @@ const SettingIcon = styled.img<{ selected?: boolean }>`
 	}
 `;
 
-const desktopOnlyTotalValueStyle = css`
-	.desktopOnly {
-		display: none;
-	}
-
-	@media (min-width: 880px) {
-		& > .desktopOnly {
-			display: block;
-		}
-	}
-`;
-
 const OrderBookHeader = styled.div<{}>`
 	width: 100%;
 	box-sizing: border-box;
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	padding: 0 12px;
+	padding: 0 8px;
 	text-align: center;
 
 	@media (min-width: 880px) {
+		padding: 0 12px;
 		grid-template-columns: repeat(3, 1fr);
 	}
 
@@ -82,8 +82,6 @@ const OrderBookHeader = styled.div<{}>`
 	& > :last-of-type {
 		text-align: end;
 	}
-
-	${desktopOnlyTotalValueStyle}
 `;
 const OrderRow = styled(Row)<{
 	type: "buy" | "sell";
@@ -140,8 +138,6 @@ const OrderRow = styled(Row)<{
 		text-align: left;
 		z-index: 1;
 	}
-
-	${desktopOnlyTotalValueStyle}
 `;
 const Container = styled.div<{
 	fitContent?: boolean;
@@ -149,7 +145,7 @@ const Container = styled.div<{
 }>`
 	display: flex;
 	flex-direction: column;
-	justify-content: center;
+	align-items: center;
 	width: 100%;
 	${({ fitContent }) => !fitContent && "height: 100%;"};
 	${({ reverse }) => reverse && "flex-direction: column-reverse;"};
@@ -157,10 +153,38 @@ const Container = styled.div<{
 `;
 
 const SpreadRow = styled(Row)`
-	padding-left: 12px;
+	padding-left: 8px;
+	box-sizing: border-box;
 	height: 24px;
 	background: ${({ theme }) => theme.colors.bgPrimary};
 	align-items: center;
+
+	& > * {
+		margin-right: 8px;
+	}
+
+	& > :last-child {
+		margin-right: 0;
+	}
+
+	.spreadValue {
+		${TEXT_TYPES_MAP[TEXT_TYPES.H]};
+	}
+
+	@media (min-width: 880px) {
+		padding-left: 12px;
+		& > * {
+			margin-right: 12px;
+		}
+
+		& > :last-child {
+			margin-right: 0;
+		}
+
+		.spreadValue {
+			${TEXT_TYPES_MAP[TEXT_TYPES.BODY]};
+		}
+	}
 `;
 
 const DECIMAL_OPTIONS = [2, 4, 5, 6];
@@ -210,16 +234,9 @@ const OrderBook: React.FC<IProps> = observer(() => {
 	const totalBuy = buyOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
 	const totalSell = sellOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
 
-	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
-		return (
-			<Root alignItems="center" justifyContent="center" mainAxisSize="stretch">
-				<Text type={TEXT_TYPES.SUPPORTING}>No orders yet</Text>
-			</Root>
-		);
-
 	return (
 		<Root>
-			<SettingsContainder>
+			<SettingsContainder className="desktopOnly">
 				<Select
 					options={DECIMAL_OPTIONS.map((v, index) => ({
 						title: `${v} decimals`,
@@ -247,86 +264,94 @@ const OrderBook: React.FC<IProps> = observer(() => {
 				<Text type={TEXT_TYPES.SUPPORTING}>Price {vm.token1.symbol}</Text>
 			</OrderBookHeader>
 			<SizedBox height={8} />
-			<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
-				{orderFilter === 0 && (
-					<Plug length={sellOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - sellOrders.length : 0} />
-				)}
-				{orderFilter === 1 && (
-					<Plug length={sellOrders.length < +amountOfOrders ? +amountOfOrders - 1 - sellOrders.length : 0} />
-				)}
+			{ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0 ? (
+				<Row alignItems="center" justifyContent="center" mainAxisSize="stretch" crossAxisSize="max">
+					<Text type={TEXT_TYPES.SUPPORTING}>No orders yet</Text>
+				</Row>
+			) : (
+				<Container fitContent={orderFilter === 1 || orderFilter === 2} reverse={orderFilter === 1}>
+					{orderFilter === 0 && (
+						<Plug length={sellOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - sellOrders.length : 0} />
+					)}
+					{orderFilter === 1 && (
+						<Plug length={sellOrders.length < +amountOfOrders ? +amountOfOrders - 1 - sellOrders.length : 0} />
+					)}
 
-				{orderFilter !== 2 &&
-					sellOrders.map((o, index) => (
-						<OrderRow
-							type="sell"
-							fulfillPercent={+new BN(o.fullFillPercent).toFormat(2)}
-							volumePercent={o.amountLeft.div(totalSell).times(100).toNumber()}
-							key={index + "negative"}
-							onClick={() => {
-								const price = BN.parseUnits(o.price, vm.token1.decimals);
-								vm.setIsSell(false);
-								vm.setBuyPrice(price, true);
-								// vm.setSellAmpount(new BN(o.amount), true);
-								vm.setSellPrice(BN.ZERO, true);
-								vm.setSellAmount(BN.ZERO, true);
-								vm.setSellTotal(BN.ZERO, true);
-							}}
-						>
-							<span className="progress-bar" />
-							<span className="volume-bar" />
-							<Text primary>{o.amountLeftStr}</Text>
-							<Text primary className="desktopOnly">
-								{o.totalLeftStr}
+					{orderFilter !== 2 &&
+						sellOrders.map((o, index) => (
+							<OrderRow
+								type="sell"
+								fulfillPercent={+new BN(o.fullFillPercent).toFormat(2)}
+								volumePercent={o.amountLeft.div(totalSell).times(100).toNumber()}
+								key={index + "negative"}
+								onClick={() => {
+									const price = BN.parseUnits(o.price, vm.token1.decimals);
+									vm.setIsSell(false);
+									vm.setBuyPrice(price, true);
+									// vm.setSellAmpount(new BN(o.amount), true);
+									vm.setSellPrice(BN.ZERO, true);
+									vm.setSellAmount(BN.ZERO, true);
+									vm.setSellTotal(BN.ZERO, true);
+								}}
+							>
+								<span className="progress-bar" />
+								<span className="volume-bar" />
+								<Text primary>{o.amountLeftStr}</Text>
+								<Text primary className="desktopOnly">
+									{o.totalLeftStr}
+								</Text>
+								<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
+							</OrderRow>
+						))}
+
+					{orderFilter === 0 && (
+						<SpreadRow>
+							<Text className="desktopOnly" type={TEXT_TYPES.SUPPORTING}>
+								SPREAD
 							</Text>
-							<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
-						</OrderRow>
-					))}
-
-				{orderFilter === 0 && (
-					<SpreadRow>
-						<Text type={TEXT_TYPES.SUPPORTING}>SPREAD</Text>
-						<SizedBox width={12} />
-						<Text primary>{ordersStore.spreadPrice}</Text>
-						<SizedBox width={12} />
-						<Text color={+ordersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>
-							{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
-						</Text>
-					</SpreadRow>
-				)}
-
-				{orderFilter !== 1 &&
-					buyOrders.map((o, index) => (
-						<OrderRow
-							onClick={() => {
-								const price = BN.parseUnits(o.price, vm.token1.decimals);
-								vm.setIsSell(true);
-								vm.setSellPrice(price, true);
-								vm.setBuyPrice(BN.ZERO, true);
-								vm.setBuyAmount(BN.ZERO, true);
-								vm.setBuyTotal(BN.ZERO, true);
-							}}
-							fulfillPercent={+new BN(o.fullFillPercent).toFormat(0)}
-							volumePercent={o.amountLeft.div(totalBuy).times(100).toNumber()}
-							type="buy"
-							key={index + "positive"}
-						>
-							<span className="progress-bar" />
-							<span className="volume-bar" />
-							<Text primary>{o.totalLeftStr}</Text>
-							<Text primary className="desktopOnly">
-								{o.amountLeftStr}
+							<Text primary className="spreadValue">
+								{ordersStore.spreadPrice}
 							</Text>
-							<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
-						</OrderRow>
-					))}
+							<Text color={+ordersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>
+								{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
+							</Text>
+						</SpreadRow>
+					)}
 
-				{orderFilter === 2 && (
-					<Plug length={buyOrders.length < +amountOfOrders ? +amountOfOrders - 1 - buyOrders.length : 0} />
-				)}
-				{orderFilter === 0 && (
-					<Plug length={buyOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - buyOrders.length : 0} />
-				)}
-			</Container>
+					{orderFilter !== 1 &&
+						buyOrders.map((o, index) => (
+							<OrderRow
+								onClick={() => {
+									const price = BN.parseUnits(o.price, vm.token1.decimals);
+									vm.setIsSell(true);
+									vm.setSellPrice(price, true);
+									vm.setBuyPrice(BN.ZERO, true);
+									vm.setBuyAmount(BN.ZERO, true);
+									vm.setBuyTotal(BN.ZERO, true);
+								}}
+								fulfillPercent={+new BN(o.fullFillPercent).toFormat(0)}
+								volumePercent={o.amountLeft.div(totalBuy).times(100).toNumber()}
+								type="buy"
+								key={index + "positive"}
+							>
+								<span className="progress-bar" />
+								<span className="volume-bar" />
+								<Text primary>{o.totalLeftStr}</Text>
+								<Text primary className="desktopOnly">
+									{o.amountLeftStr}
+								</Text>
+								<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
+							</OrderRow>
+						))}
+
+					{orderFilter === 2 && (
+						<Plug length={buyOrders.length < +amountOfOrders ? +amountOfOrders - 1 - buyOrders.length : 0} />
+					)}
+					{orderFilter === 0 && (
+						<Plug length={buyOrders.length < +oneSizeOrders ? +oneSizeOrders - 1 - buyOrders.length : 0} />
+					)}
+				</Container>
+			)}
 		</Root>
 	);
 });
@@ -338,7 +363,6 @@ const PlugRow = styled(Row)`
 	height: 16px;
 	padding: 0 12px;
 	box-sizing: border-box;
-	${desktopOnlyTotalValueStyle}
 `;
 
 const Plug: React.FC<{
