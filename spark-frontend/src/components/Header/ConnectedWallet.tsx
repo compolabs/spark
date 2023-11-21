@@ -19,6 +19,7 @@ interface IProps {}
 const Root = styled(Button)<{
 	focused?: boolean;
 }>`
+	height: 32px;
 	background: transparent;
 	padding: 0 8px;
 	color: ${({ theme }) => theme.colors.textPrimary};

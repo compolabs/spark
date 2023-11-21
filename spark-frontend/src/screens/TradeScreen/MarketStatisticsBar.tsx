@@ -18,11 +18,14 @@ const Root = styled.div`
 	display: flex;
 	align-items: center;
 	box-sizing: border-box;
-	height: 50px;
+	height: 40px;
 	width: 100%;
 	background: ${({ theme }) => theme.colors.bgSecondary};
 	border-radius: 10px;
 	flex-shrink: 0;
+	@media (min-width: 880px) {
+		height: 48px;
+	}
 `;
 
 const MarketSelect = styled.div`
@@ -31,19 +34,26 @@ const MarketSelect = styled.div`
 	justify-content: space-between;
 	padding: 0 12px;
 	box-sizing: border-box;
-	flex: 2;
 	max-width: 280px;
 	height: 100%;
+
+	@media (min-width: 880px) {
+		flex: 2;
+	}
 `;
 
 const MarketStatistics = styled.div`
-	display: flex;
+	display: none;
 	align-items: center;
 	justify-content: space-between;
 	padding: 0 8px;
 	flex: 7;
 	box-sizing: border-box;
 	width: 100%;
+
+	@media (min-width: 880px) {
+		display: flex;
+	}
 `;
 
 interface IState {
@@ -54,14 +64,6 @@ interface IState {
 	volumeAsset0?: BN;
 	volumeAsset1?: BN;
 }
-
-const PriceRow = styled(Row)`
-	align-items: center;
-	justify-content: flex-end;
-	@media (min-width: 880px) {
-		justify-content: flex-start;
-	}
-`;
 
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	const vm = useTradeScreenVM();
@@ -112,7 +114,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 				{/*<h4 style={{ transform: "rotate(90deg)" }}>{">"}</h4>*/}
 			</MarketSelect>
 			<MarketStatistics>
-				<PriceRow alignItems="center">
+				<Row alignItems="center">
 					<Column alignItems="flex-end">
 						<Text
 							type={TEXT_TYPES.BODY}
@@ -124,46 +126,42 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 							{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
 						</Text>
 					</Column>
-					<DesktopRow>
-						<SizedBox width={1} height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} />
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>24h High</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.high?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
-							</Text>
-						</Column>
-						<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />{" "}
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>24h Low</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.low?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
-							</Text>
-						</Column>
-						<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>Volume 24h (USDC)</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.volumeAsset1?.toFormat(2) ?? "-"}
-							</Text>
-						</Column>{" "}
-						<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>Volume 24h (UNI)</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.volumeAsset0?.toFormat(2) ?? "-"}
-							</Text>
-						</Column>
-					</DesktopRow>
-				</PriceRow>
-				<DesktopRow>
-					<Button text fitContent>
-						SEE ALL MARKET DETAILS
-					</Button>
-				</DesktopRow>
+					<SizedBox width={1} height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} />
+					<Column>
+						<Text type={TEXT_TYPES.SUPPORTING}>24h High</Text>
+						<SizedBox height={4} />
+						<Text type={TEXT_TYPES.BODY} primary>
+							{state.high?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
+						</Text>
+					</Column>
+					<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />{" "}
+					<Column>
+						<Text type={TEXT_TYPES.SUPPORTING}>24h Low</Text>
+						<SizedBox height={4} />
+						<Text type={TEXT_TYPES.BODY} primary>
+							{state.low?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
+						</Text>
+					</Column>
+					<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />
+					<Column>
+						<Text type={TEXT_TYPES.SUPPORTING}>Volume 24h (USDC)</Text>
+						<SizedBox height={4} />
+						<Text type={TEXT_TYPES.BODY} primary>
+							{state.volumeAsset1?.toFormat(2) ?? "-"}
+						</Text>
+					</Column>{" "}
+					<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />
+					<Column>
+						<Text type={TEXT_TYPES.SUPPORTING}>Volume 24h (UNI)</Text>
+						<SizedBox height={4} />
+						<Text type={TEXT_TYPES.BODY} primary>
+							{state.volumeAsset0?.toFormat(2) ?? "-"}
+						</Text>
+					</Column>
+				</Row>
+				<Button text fitContent>
+					SEE ALL MARKET DETAILS
+				</Button>
 			</MarketStatistics>
 		</Root>
 	);

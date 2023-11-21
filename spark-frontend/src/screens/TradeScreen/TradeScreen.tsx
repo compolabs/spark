@@ -27,23 +27,31 @@ const Root = styled.div`
 	height: 100%;
 	flex: 1;
 	box-sizing: border-box;
-	padding: 0 12px;
+	padding: 0 4px;
+	@media (min-width: 880px) {
+		padding: 0 12px;
+	}
 `;
 
-const MobileCreateOrderDialogContainer = styled(Column)`
-	width: 100%;
+// const MobileCreateOrderDialogContainer = styled(Column)`
+// 	width: 100%;
+//
+// 	& > * {
+// 		width: 100%;
+// 		flex: 1;
+// 		height: 100%;
+// 	}
+// `;
 
-	& > * {
-		width: 100%;
-		flex: 1;
-		height: 100%;
-	}
+const MobileOrderBookContainer = styled.div`
+	background: ${({ theme }) => theme.colors.bgSecondary};
+	border-radius: 10px;
 `;
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	const { referralStore } = useStores();
 	const width = useWindowSize().width;
-	const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
+	// const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
 	if (!referralStore.access) return <Navigate to={ROUTES.REFERRAL} />;
 	return width && width >= 880 ? (
 		<Root>
@@ -65,22 +73,29 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	) : (
 		<Root>
 			<MarketStatisticsBar />
-			<SizedBox height={4} />
-			<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
-				<Chart />
-				<BottomTablesInterface />
-			</Column>
-			<SizedBox height={16} />
-			<Button green onClick={() => setCreateOrderDialogOpen(true)}>
-				Create order
-			</Button>
-			<StatusBar />
-			<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>
-				<MobileCreateOrderDialogContainer>
-					<OrderBook mobileMode />
-					<CreateOrderInterface style={{ maxWidth: "100%", height: "100%" }} />
-				</MobileCreateOrderDialogContainer>
-			</Dialog>
+			<SizedBox height={8} />
+			<Row>
+				<MobileOrderBookContainer>
+					<OrderBook />
+				</MobileOrderBookContainer>
+				<SizedBox width={8} />
+				<CreateOrderInterface />
+			</Row>
+			{/*<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>*/}
+			{/*	<Chart />*/}
+			{/*	<BottomTablesInterface />*/}
+			{/*</Column>*/}
+			{/*<SizedBox height={16} />*/}
+			{/*<Button green onClick={() => setCreateOrderDialogOpen(true)}>*/}
+			{/*	Create order*/}
+			{/*</Button>*/}
+			{/*<StatusBar/>*/}
+			{/*<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>*/}
+			{/*	<MobileCreateOrderDialogContainer>*/}
+			{/*		<OrderBook mobileMode />*/}
+			{/*		<CreateOrderInterface style={{ maxWidth: "100%", height: "100%" }} />*/}
+			{/*	</MobileCreateOrderDialogContainer>*/}
+			{/*</Dialog>*/}
 		</Root>
 	);
 });

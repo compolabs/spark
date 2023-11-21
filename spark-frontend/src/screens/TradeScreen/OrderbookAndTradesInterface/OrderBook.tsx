@@ -7,17 +7,16 @@ import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import { Column, Row } from "@src/components/Flex";
 import Text, { TEXT_TYPES } from "@components/Text";
-import { useTheme } from "@emotion/react";
+import { css, useTheme } from "@emotion/react";
 import useEventListener from "@src/utils/useEventListener";
 import hexToRgba from "@src/utils/hexToRgb";
 import Select from "@components/Select";
 import sell from "@src/assets/icons/sellOrderBookIcon.svg";
 import buy from "@src/assets/icons/buyOrderBookIcon.svg";
 import sellAndBuy from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
+import useWindowSize from "@src/hooks/useWindowSize";
 
-interface IProps extends HTMLAttributes<HTMLDivElement> {
-	mobileMode?: boolean;
-}
+interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
 const Root = styled(Column)`
 	grid-area: orderbook;
@@ -52,13 +51,29 @@ const SettingIcon = styled.img<{ selected?: boolean }>`
 	}
 `;
 
+const desktopOnlyTotalValueStyle = css`
+	.desktopOnly {
+		display: none;
+	}
+
+	@media (min-width: 880px) {
+		& > .desktopOnly {
+			display: block;
+		}
+	}
+`;
+
 const OrderBookHeader = styled.div<{}>`
 	width: 100%;
 	box-sizing: border-box;
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(2, 1fr);
 	padding: 0 12px;
 	text-align: center;
+
+	@media (min-width: 880px) {
+		grid-template-columns: repeat(3, 1fr);
+	}
 
 	& > * {
 		text-align: start;
@@ -67,6 +82,8 @@ const OrderBookHeader = styled.div<{}>`
 	& > :last-of-type {
 		text-align: end;
 	}
+
+	${desktopOnlyTotalValueStyle}
 `;
 const OrderRow = styled(Row)<{
 	type: "buy" | "sell";
@@ -123,6 +140,8 @@ const OrderRow = styled(Row)<{
 		text-align: left;
 		z-index: 1;
 	}
+
+	${desktopOnlyTotalValueStyle}
 `;
 const Container = styled.div<{
 	fitContent?: boolean;
@@ -146,21 +165,24 @@ const SpreadRow = styled(Row)`
 
 const DECIMAL_OPTIONS = [2, 4, 5, 6];
 
-const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
+const OrderBook: React.FC<IProps> = observer(() => {
 	const vm = useTradeScreenVM();
 	const { ordersStore } = useStores();
+	const { width: windowWidth } = useWindowSize();
 	const theme = useTheme();
 	const [decimalKey, setDecimalKey] = useState("0");
 	const [orderFilter, setOrderFilter] = useState(0);
-	const [amountOfOrders, setAmountOfOrders] = useState(0);
+	const [amountOfOrders, setAmountOfOrders] = useState(20);
 	const oneSizeOrders = +new BN(amountOfOrders).div(2).toFixed(0) - 1;
 
 	// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 16 + 24); //220
 	// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 32 + 8 + 16 + 24); //260
-	const calcSize = () => setAmountOfOrders(+new BN(window.innerHeight - 260).div(17).toFixed(0));
+	const calcSize = () => {
+		windowWidth != null && windowWidth > 880 && setAmountOfOrders(+new BN(window.innerHeight - 260).div(17).toFixed(0));
+	};
 
-	useEffect(calcSize, [mobileMode]);
-	const handleResize = useCallback(calcSize, []);
+	useEffect(calcSize, [windowWidth]);
+	const handleResize = useCallback(calcSize, [windowWidth]);
 
 	useEventListener("resize", handleResize);
 
@@ -219,7 +241,9 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 			<SizedBox height={8} />
 			<OrderBookHeader>
 				<Text type={TEXT_TYPES.SUPPORTING}>Amount {vm.token0.symbol}</Text>
-				<Text type={TEXT_TYPES.SUPPORTING}>Total {vm.token1.symbol}</Text>
+				<Text type={TEXT_TYPES.SUPPORTING} className="desktopOnly">
+					Total {vm.token1.symbol}
+				</Text>
 				<Text type={TEXT_TYPES.SUPPORTING}>Price {vm.token1.symbol}</Text>
 			</OrderBookHeader>
 			<SizedBox height={8} />
@@ -251,7 +275,9 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 							<span className="progress-bar" />
 							<span className="volume-bar" />
 							<Text primary>{o.amountLeftStr}</Text>
-							<Text primary>{o.totalLeftStr}</Text>
+							<Text primary className="desktopOnly">
+								{o.totalLeftStr}
+							</Text>
 							<Text color={theme.colors.redLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
 						</OrderRow>
 					))}
@@ -287,7 +313,9 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 							<span className="progress-bar" />
 							<span className="volume-bar" />
 							<Text primary>{o.totalLeftStr}</Text>
-							<Text primary>{o.amountLeftStr}</Text>
+							<Text primary className="desktopOnly">
+								{o.amountLeftStr}
+							</Text>
 							<Text color={theme.colors.greenLight}>{new BN(o.price).toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
 						</OrderRow>
 					))}
@@ -310,6 +338,7 @@ const PlugRow = styled(Row)`
 	height: 16px;
 	padding: 0 12px;
 	box-sizing: border-box;
+	${desktopOnlyTotalValueStyle}
 `;
 
 const Plug: React.FC<{
@@ -319,7 +348,7 @@ const Plug: React.FC<{
 		{Array.from({ length }).map((_, index) => (
 			<PlugRow key={index + "positive-plug"}>
 				<Text>-</Text>
-				<Text>-</Text>
+				<Text className="desktopOnly">-</Text>
 				<Text>-</Text>
 			</PlugRow>
 		))}

@@ -21,13 +21,26 @@ const Root = styled.div`
 	align-items: center;
 	justify-content: space-between;
 	width: 100%;
-	height: 48px;
+	height: 40px;
 	padding: 0 12px;
 	box-sizing: border-box;
 	flex-shrink: 0;
+	margin-bottom: 8px;
+
+	.logo {
+		height: 40px;
+	}
 
 	* {
 		text-decoration: none;
+	}
+
+	@media (min-width: 880px) {
+		margin-bottom: 4px;
+		height: 48px;
+		.logo {
+			height: 48px;
+		}
 	}
 `;
 
@@ -87,8 +100,8 @@ const Header: React.FC<IProps> = observer(() => {
 	return (
 		<Root>
 			<Row alignItems="center">
-				<a rel="noreferrer noopener" href="/">
-					<Logo />
+				<a rel="noreferrer noopener" href="/" style={{ lineHeight: 0 }}>
+					<Logo className="logo" />
 				</a>
 				<Divider />
 				<TabContainer>

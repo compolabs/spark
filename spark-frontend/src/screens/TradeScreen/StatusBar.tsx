@@ -7,7 +7,7 @@ import Text, { TEXT_TYPES } from "@components/Text";
 import { DesktopRow, Row } from "@components/Flex";
 import Chip from "@components/Chip";
 
-interface IProps {}
+interface IProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 const Root = styled.div`
 	display: flex;
@@ -35,10 +35,10 @@ const Divider = styled.div`
 	margin: 0 8px;
 `;
 
-const StatusBar: React.FC<IProps> = observer(() => {
+const StatusBar: React.FC<IProps> = observer((props) => {
 	const { accountStore } = useStores();
 	return (
-		<Root>
+		<Root {...props}>
 			<Row alignItems="center" mainAxisSize="fit-content">
 				<Indicator error={accountStore.provider == null} />
 				<SizedBox width={8} />
