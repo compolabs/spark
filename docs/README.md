@@ -1,20 +1,24 @@
----
-description: What is Spark project and how can you use it?
----
+# ✨ Welcome
 
-# Introduction
+<figure><img src=".gitbook/assets/1 (1).png" alt=""><figcaption></figcaption></figure>
 
-Spark is a fully **on-chain central limit order book** (CLOB) that provides exceptional control to liquidity providers and is designed to be agnostic to any particular asset. It is built on [Fuel network](https://fuel.network/). When integrated into protocols, Spark provides the advantages of **consolidated** **liquidity** and top-of-the-line **trading infrastructure**. Additionally, market makers benefit from the increased trading volume that results from this consolidated liquidity.\
-\
-Spark provides a comprehensive suite of DeFi infrastructure tools designed to form a predicate-driven, fully on-chain central limit order book, matching engine, API set, and SDKs operating on the [Fuel.network. ](http://fuel.network/)With a focus on scalability and seamless integration, Spark enables protocols to access a decentralized liquidity hub, fostering capital efficiency and deep liquidity throughout the ecosystem.
+## What is Spark?
 
-Spark operates using an order book model, allowing users to trade various cryptocurrencies in a secure and transparent manner and enabling peer-to-peer trading of cryptocurrencies with high transaction throughput and low fees.
+Spark V1 is a cross-margin oracle-based perpetual order book built on [Fuel Network](https://www.fuel.network/). V1 design is made for optimum user experience and safety, as well as to give us a launchpad for future innovations.&#x20;
 
-### Project Goals:
+Spark V1 will rely on the active participation of market-makers for its success, and future iterations of our protocol will include various mechanisms to enhance the user trading experience.
 
-* Provide a decentralized, transparent, and secure platform to minimize time to market for Ethrereum Defi developers.
-* Bring new types of products to the Ethereum Defi ecosystem.
-* Provide algorithmic traders with a set of tooling for automated strategies.
-* Build an efficient platform for market makers and liquidity providers.
 
-\
+
+Key features of **Spark V1**:
+
+* A highly performant order book for longing/shorting Perpetual Contracts with up to 2000 TPS
+* Cross-margin, partial liquidations, and funding rates
+* An advanced risk engine and insurance fund will ensure that the protocol incurs no bad debt
+* SDKs and APIs for non-custodial interaction with our order book
+* Users will be able to gain up to 50x leverage (depending on how much margin they have)
+
+Spark V1 solely accepts USDC as collateral and requires active market makers in order to reduce spread.
+
+This means that on Mainnet, we will foster active participation from market makers. Read more in our Market Makers incentivization program.
+

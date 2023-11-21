@@ -1,36 +1,62 @@
 # Table of contents
 
-## ⚡ Welcome
+* [✨ Welcome](README.md)
 
-* [Introduction](README.md)
-* [Team](welcome/team.md)
-* [Why Fuel](welcome/why-fuel.md)
-* [Roadmap](welcome/roadmap.md)
-* [Fees + economy](welcome/fees-+-economy.md)
+## 🖥 Spark DEX
 
-## 🎯 Get started
+* [🌅 Getting started](spark-dex/getting-started/README.md)
+  * [💫 Basics](spark-dex/getting-started/basics.md)
+  * [💰 Wallet Setup](spark-dex/getting-started/wallet-setup/README.md)
+    * [⚡ Fuel Wallet](spark-dex/getting-started/wallet-setup/fuel-wallet.md)
+    * [☄ Fuelet Wallet](spark-dex/getting-started/wallet-setup/fuelet-wallet.md)
+    * [🦊 Metamask](spark-dex/getting-started/wallet-setup/metamask.md)
+  * [Deposit Assets using Faucet](spark-dex/getting-started/deposit-assets-using-faucet.md)
+  * [⛽ Why Fuel](spark-dex/getting-started/why-fuel.md)
+  * [Order Types](spark-dex/getting-started/order-types.md)
+  * [Referral Links](spark-dex/getting-started/referral-links.md)
+* [Spot Margin Trading](spark-dex/spot-margin-trading/README.md)
+  * [What is Spot Trading?](spark-dex/spot-margin-trading/what-is-spot-trading.md)
+  * [FAQ](spark-dex/spot-margin-trading/faq.md)
+* [📈 Perpetual Futures](spark-dex/perpetual-futures/README.md)
+  * [What are Perps?](spark-dex/perpetual-futures/what-are-perps.md)
+  * [How to Trade Perps?](spark-dex/perpetual-futures/how-to-trade-perps.md)
+  * [Collateral Deposit](spark-dex/perpetual-futures/collateral-deposit.md)
+  * [P\&L](spark-dex/perpetual-futures/p-and-l.md)
+  * [Fees](spark-dex/perpetual-futures/fees.md)
+  * [Risk Parameters](spark-dex/perpetual-futures/risk-parameters.md)
+  * [Funding Rates](spark-dex/perpetual-futures/funding-rates.md)
+  * [Oracles](spark-dex/perpetual-futures/oracles.md)
+  * [Liquidations](spark-dex/perpetual-futures/liquidations.md)
+  * [Insurance Fund](spark-dex/perpetual-futures/insurance-fund.md)
+* [🧙♂ Market Makers](spark-dex/market-makers/README.md)
+  * [Market Making on Spark](spark-dex/market-makers/market-making-on-spark.md)
+  * [MM Incentivisation program](spark-dex/market-makers/mm-incentivisation-program.md)
+  * [Maker Rebate Fees](spark-dex/market-makers/maker-rebate-fees.md)
+* [🌊 Liquidity provision](spark-dex/liquidity-provision.md)
 
-* [Create wallet](get-started/create-wallet.md)
-* [Top up balance](get-started/top-up-balance.md)
-* [Start Trading on Spark](get-started/start-trading-on-spark.md)
+## 📖 Spark Order Book
 
-## 🌴 Developers
+* [⛩ Introduction](spark-order-book/introduction.md)
 
-* [Predicate-based order book](developers/predicate-based-order-book/README.md)
-  * [Predicate + Proxy](developers/predicate-based-order-book/predicate-+-proxy.md)
-  * [Trading View Datafeed](developers/predicate-based-order-book/trading-view-datafeed.md)
-  * [Data Service](developers/predicate-based-order-book/data-service.md)
-  * [Matcher engine](developers/predicate-based-order-book/matcher-engine.md)
-  * [Frontend](developers/predicate-based-order-book/frontend.md)
-* [⚠️ \[deprecated\] How to run Spark on the local node](developers/deprecated-how-to-run-spark-on-the-local-node.md)
-* [⚠️ \[deprecated\] Smart contract-based order book](developers/deprecated-smart-contract-based-order-book/README.md)
-  * [Spark Limit Orders Smart Contract](developers/deprecated-smart-contract-based-order-book/spark-limit-orders-smart-contract.md)
-  * [Orders Matching Engine](developers/deprecated-smart-contract-based-order-book/orders-matching-engine.md)
-  * [Frontend](developers/deprecated-smart-contract-based-order-book/frontend.md)
+## 🏗 Build on Spark
 
-## Links
+* [📓 SDK Docs](build-on-spark/sdk-docs.md)
+* [🤖 Trading Bots](build-on-spark/trading-bots.md)
+* [🤹♂ MM Bots](build-on-spark/mm-bots.md)
+* [🧞 Keeper Bots](build-on-spark/keeper-bots.md)
+* [☔ Liquidation](build-on-spark/liquidation.md)
 
-* [Web App](http://app.allspark.gg/)
-* [Twitter](https://twitter.com/Allsparkgg)
-* [Discord](https://discord.gg/XVwF4BdZW3)
-* [Github](https://github.com/sway-gang/sway-network)
+## 🛡 Security
+
+* [🔬 Audits](security/audits.md)
+
+## Legal
+
+* [Terms](legal/terms.md)
+* [Privacy](legal/privacy.md)
+
+***
+
+* [Web App](https://app.sprk.fi/)
+* [Twitter](https://twitter.com/Sprkfi)
+* [Discord](https://discord.gg/QQb85KCcd5)
