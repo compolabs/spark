@@ -3,7 +3,7 @@ import tokenLogos from "./tokenLogos";
 
 export const ROUTES = {
 	REFERRAL: "/",
-	TRADE: "/trade",
+	TRADE: "/:marketId",
 	FAUCET: "/faucet",
 };
 

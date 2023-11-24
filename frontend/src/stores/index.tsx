@@ -7,7 +7,7 @@ import NotificationStore from "./NotificationStore";
 import OrdersStore from "./OrdersStore";
 import ReferralStore from "./ReferralStore";
 import OracleStore from "./OracleStore";
-import MarketStore from "./MarketStore";
+import MarketsStore from "./MarketsStore";
 
 export {
 	RootStore,
@@ -16,7 +16,7 @@ export {
 	NotificationStore,
 	OrdersStore,
 	ReferralStore,
-	MarketStore,
+	MarketsStore,
 	OracleStore,
 	storesContext,
 	useStores,

@@ -8,15 +8,16 @@ import StatusBar from "@screens/TradeScreen/StatusBar";
 import { TradeScreenVMProvider } from "@screens/TradeScreen/TradeScreenVm";
 import SizedBox from "@components/SizedBox";
 import { useStores } from "@stores";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { ROUTES } from "@src/constants";
 import { observer } from "mobx-react";
 import useWindowSize from "@src/hooks/useWindowSize";
 import Button from "@components/Button";
 import Dialog from "@components/Dialog";
-import LeftBlock from "src/screens/TradeScreen/OrderbookAndTradesInterface/LeftBlock.tsx";
+import LeftBlock from "src/screens/TradeScreen/LeftBlock.tsx";
 import OrderBook from "./OrderbookAndTradesInterface/OrderBook";
 import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/OrderbookAndTradesInterface";
+import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 
 interface IProps {}
 
@@ -86,10 +87,20 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 });
 
 const TradeScreen: React.FC<IProps> = () => {
+	const { marketsStore } = useStores();
+	const { marketId } = useParams<{ marketId: string }>();
+	const defaultMarket = marketsStore.spotMarkets[0].symbol;
+	const navigate = useNavigate();
+	if (marketId == null)
+		navigate({
+			pathname: `${ROUTES.TRADE}/${defaultMarket}`,
+		});
 	return (
-		<TradeScreenVMProvider>
-			<TradeScreenImpl />
-		</TradeScreenVMProvider>
+		<PerpTradeVMProvider marketSymbol={marketId ?? ""}>
+			<TradeScreenVMProvider marketSymbol={marketId ?? ""}>
+				<TradeScreenImpl />
+			</TradeScreenVMProvider>
+		</PerpTradeVMProvider>
 	);
 };
 export default TradeScreen;

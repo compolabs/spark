@@ -18,6 +18,7 @@ import { Accordion } from "@szhsin/react-accordion";
 interface IProps extends ComponentProps<any> {}
 
 const Root = styled.div`
+	padding: 12px;
 `;
 
 const MaxButton = styled(Button)`
@@ -46,7 +47,7 @@ const orderTypes = [
 	{ title: "Take Profit Limit", key: "takeprofitlimit", disabled: true },
 ];
 
-const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
+const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore } = useStores();
 	const vm = useTradeScreenVM();
 	const [percent, _setPercent] = useState(0);
@@ -191,4 +192,4 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 		</Root>
 	);
 });
-export default CreateOrderInterface;
+export default CreateOrderSpot;

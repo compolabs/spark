@@ -11,11 +11,12 @@ const ctx = React.createContext<TradeScreenVm | null>(null);
 
 interface IProps {
 	children: React.ReactNode;
+	marketSymbol: string;
 }
 
-export const TradeScreenVMProvider: React.FC<IProps> = ({ children }) => {
+export const TradeScreenVMProvider: React.FC<IProps> = ({ children, marketSymbol }) => {
 	const rootStore = useStores();
-	const store = useMemo(() => new TradeScreenVm(rootStore), [rootStore]);
+	const store = useMemo(() => new TradeScreenVm(rootStore, marketSymbol), [rootStore, marketSymbol]);
 	return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
@@ -24,10 +25,18 @@ type OrderAction = "buy" | "sell";
 export const useTradeScreenVM = () => useVM(ctx);
 
 class TradeScreenVm {
+	public marketSymbol: string;
 	public rootStore: RootStore;
 
-	constructor(rootStore: RootStore) {
+	constructor(rootStore: RootStore, marketSymbol: string) {
+		this.marketSymbol = marketSymbol;
 		this.rootStore = rootStore;
+		const market = this.rootStore.marketsStore.markets.find(
+			({ symbol, type }) => symbol === marketSymbol && type === "spot",
+		);
+		if (market == null) return;
+		this.setAssetId0(market?.token0.assetId);
+		this.setAssetId1(market?.token1.assetId);
 		makeAutoObservable(this);
 		this.getLatestTrades().then();
 		reaction(
@@ -59,9 +68,6 @@ class TradeScreenVm {
 
 	public assetId1: string = TOKENS_BY_SYMBOL.USDC.assetId;
 	public setAssetId1 = (assetId: string) => (this.assetId1 = assetId);
-
-	// rejectUpdateStatePromise?: () => void;
-	// setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 
 	setMarketPrice = () => {
 		const { orderbook } = this.rootStore.ordersStore;
