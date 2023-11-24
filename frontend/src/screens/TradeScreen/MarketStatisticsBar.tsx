@@ -116,12 +116,11 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 				}
 			});
 	}, []);
-	//todo сделать onVisibleChange: setFocused для MarketSelect
 	return (
 		<Root>
 			<MarketSelect
 				focused={settingsStore.marketSelectionOpened}
-				onClick={() => settingsStore.setMarketSelectionOpened(true)}
+				style={settingsStore.marketSelectionOpened ? { background: "#1B1B1B" } : {}}
 			>
 				<Row alignItems="center">
 					<img style={{ width: 24, height: 24 }} src={vm.token0.logo} alt="token0" />
@@ -132,7 +131,13 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 					</Text>
 				</Row>
 				<SizedBox width={10} />
-				<img style={{ width: 24, height: 24, marginLeft: -8 }} src={arrow} alt="arrow" className="menu-arrow" />
+				<img
+					onClick={() => !settingsStore.marketSelectionOpened && settingsStore.setMarketSelectionOpened(true)}
+					style={{ width: 24, height: 24, marginLeft: -8 }}
+					src={arrow}
+					alt="arrow"
+					className="menu-arrow"
+				/>
 				{/*<h4 style={{ transform: "rotate(90deg)" }}>{">"}</h4>*/}
 			</MarketSelect>
 			<MarketStatistics>

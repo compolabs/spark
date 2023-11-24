@@ -16,6 +16,9 @@ class SettingsStore {
 
 	marketSelectionOpened: boolean = false;
 	setMarketSelectionOpened = (s: boolean) => (this.marketSelectionOpened = s);
+
+	isCurrentMarketPerp: boolean = false;
+	setCurrentMarketPerp = (s: boolean) => (this.isCurrentMarketPerp = s);
 }
 
 export default SettingsStore;

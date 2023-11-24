@@ -35,7 +35,7 @@ const perpMarketsConfig = [
 	{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYMBOL.USDC, leverage: 10 },
 ].map((v) => ({
 	...v,
-	symbol: `${v.token1.symbol}-PERP`,
+	symbol: `${v.token0.symbol}-PERP`,
 	type: "perp",
 	price: new BN(10000),
 	change24: new BN(10000),
@@ -44,12 +44,12 @@ const perpMarketsConfig = [
 class MarketsStore {
 	public rootStore: RootStore;
 
-	markets = [...spotMarketsConfig, ...perpMarketsConfig]
+	markets = [...spotMarketsConfig, ...perpMarketsConfig];
 
-	spotMarkets: IMarket[]  = [];
+	spotMarkets: IMarket[] = [];
 	private setSpotMarkets = (v: IMarket[]) => (this.spotMarkets = v);
 
-	perpMarkets: IMarket[]  = [];
+	perpMarkets: IMarket[] = [];
 	private setPerpMarkets = (v: IMarket[]) => (this.perpMarkets = v);
 
 	favMarkets: string[] = [];
@@ -80,6 +80,10 @@ class MarketsStore {
 		const index = this.favMarkets.indexOf(marketId);
 		index !== -1 && this.favMarkets.splice(index, 1);
 	};
+
+	get defaultMarketSymbol() {
+		return this.spotMarkets[0].symbol;
+	}
 }
 
 export default MarketsStore;

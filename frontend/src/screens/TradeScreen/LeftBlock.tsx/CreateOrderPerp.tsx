@@ -49,22 +49,14 @@ const orderTypes = [
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore } = useStores();
 	const vm = usePerpTradeVM();
-	console.log(vm.isShort);
 
 	return (
 		<Root {...rest}>
 			<ButtonGroup>
-				<Button
-					// active={!vm.isShort}
-					active={false}
-					onClick={() => vm.setIsShort(false)}
-				>
+				<Button active={!vm.isShort} onClick={() => vm.setIsShort(false)}>
 					LONG
 				</Button>
-				<Button
-					// active={vm.isShort}
-					active={true}
-					onClick={() => vm.setIsShort(true)}>
+				<Button active={vm.isShort} onClick={() => vm.setIsShort(true)}>
 					SHORT
 				</Button>
 			</ButtonGroup>
@@ -84,7 +76,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				<TokenInput
 					decimals={vm.token1.decimals}
 					amount={vm.isShort ? vm.shortPrice : vm.longPrice}
-					setAmount={(v) => (vm.isShort ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
+					setAmount={(v) => (vm.isShort ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
 					label="Market price"
 				/>
 			</Row>
@@ -94,7 +86,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					assetId={vm.token0.assetId}
 					decimals={vm.token0.decimals}
 					amount={vm.isShort ? vm.shortAmount : vm.longAmount}
-					setAmount={(v) => (vm.isShort ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
+					setAmount={(v) => (vm.isShort ? vm.setShortAmount(v, true) : vm.setLongAmount(v, true))}
 					// error={vm.isShort ? vm.shortAmountError : undefined}
 					// errorMessage="Insufficient amount"
 					label="Order size"
@@ -107,7 +99,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 						assetId={vm.token1.assetId}
 						decimals={vm.token1.decimals}
 						amount={vm.isShort ? vm.shortTotal : vm.longTotal}
-						setAmount={(v) => (vm.isShort ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
+						setAmount={(v) => (vm.isShort ? vm.setShortTotal(v, true) : vm.setLongTotal(v, true))}
 						// errorMessage="Insufficient amount"
 						// error={vm.isShort ? undefined : vm.longTotalError}
 					/>

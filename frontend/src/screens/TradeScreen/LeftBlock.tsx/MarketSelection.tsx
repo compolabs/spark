@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import Button, { ButtonGroup } from "@components/Button";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
@@ -10,6 +10,8 @@ import Divider from "@components/Divider";
 import { useStores } from "@stores";
 import star from "@src/assets/icons/star.svg";
 import yellowStar from "@src/assets/icons/yellowStar.svg";
+import { useNavigate } from "react-router-dom";
+import useOnClickOutside from "@src/hooks/useOnClickOutside";
 
 interface IProps {}
 
@@ -30,8 +32,9 @@ const Market = styled.div`
 	border-bottom: 1px solid ${({ theme }) => theme.colors.borderSecondary};
 	box-sizing: border-box;
 	cursor: pointer;
-	:hover{
-	 background: ${({ theme }) => theme.colors.borderSecondary};
+
+	:hover {
+		background: ${({ theme }) => theme.colors.borderSecondary};
 	}
 `;
 const Icon = styled.img`
@@ -47,22 +50,20 @@ const Leverage = styled.div`
 	border: 1px solid ${({ theme }) => theme.colors.borderAccent};
 `;
 const MarketSelection: React.FC<IProps> = observer(() => {
-	const { marketsStore } = useStores();
-	const [isSpotMarket, setSpotMarket] = useState(true);
+	const { marketsStore, settingsStore } = useStores();
 	const [searchValue, setSearchValue] = useState<string>("");
-
+	const navigate = useNavigate();
+	const ref = useRef(null);
+	const [isSpotMarket, setSpotMarket] = useState(!settingsStore.isCurrentMarketPerp);
 	const markets = isSpotMarket ? marketsStore.spotMarkets : marketsStore.perpMarkets;
 	const filteredMarkets = markets.filter(({ token0, token1 }) =>
 		searchValue
 			? [token0.symbol, token1.symbol].map((v) => v.toLowerCase()).some((v) => v.includes(searchValue.toLowerCase()))
 			: true,
 	);
-	// const addToFav = (t0: string, t1: string, type: string) => {
-	// 	marketsStore.favMarkets
-	// };
-	// const removeFromFav = (t0: string, t1: string, type: string) => {};
+	useOnClickOutside(ref, () => settingsStore.setMarketSelectionOpened(false));
 	return (
-		<Root>
+		<Root ref={ref}>
 			<Top>
 				<ButtonGroup>
 					<Button active={isSpotMarket} onClick={() => setSpotMarket(true)}>
@@ -90,12 +91,18 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 					</Row>
 				</>
 			) : (
-				filteredMarkets.map(({ token0, token1, leverage, price, change24, type }, index) => {
+				filteredMarkets.map(({ token0, token1, leverage, price, change24, type, symbol }, index) => {
 					const marketId = `${token0.symbol}-${token1.symbol}-${type}`;
 					const addedToFav = marketsStore.favMarkets.includes(marketId);
 					return (
-						<Market key={token0.symbol + token1.symbol + index}>
-							<Row alignItems="center" >
+						<Market
+							key={token0.symbol + token1.symbol + index}
+							onClick={() => {
+								settingsStore.setMarketSelectionOpened(false);
+								navigate(`/${symbol}`);
+							}}
+						>
+							<Row alignItems="center">
 								<Column mainAxisSize="stretch">
 									<Icon
 										src={addedToFav ? yellowStar : star}
@@ -107,10 +114,12 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 									<Icon src={token0.logo} alt="logo" />
 								</Column>
 								<SizedBox width={4} />
-								<Column  mainAxisSize="stretch">
+								<Column mainAxisSize="stretch">
 									{leverage != null ? <Leverage>{`${leverage}x`}</Leverage> : <></>}
 									<SizedBox height={4} />
-									<Text type={TEXT_TYPES.H} color="primary">{`${token0.symbol}-${token1.symbol}`}</Text>
+									<Text type={TEXT_TYPES.H} color="primary">
+										{symbol}
+									</Text>
 								</Column>
 							</Row>
 							<Column alignItems="end">
