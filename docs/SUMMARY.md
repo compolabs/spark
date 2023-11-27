@@ -32,6 +32,7 @@
   * [Market Making on Spark](spark-dex/market-makers/market-making-on-spark.md)
   * [MM Incentivisation program](spark-dex/market-makers/mm-incentivisation-program.md)
   * [Maker Rebate Fees](spark-dex/market-makers/maker-rebate-fees.md)
+  * [Token Market Making Proposal](spark-dex/market-makers/token-market-making-proposal.md)
 * [🌊 Liquidity provision](spark-dex/liquidity-provision.md)
 
 ## 📖 Spark Order Book
