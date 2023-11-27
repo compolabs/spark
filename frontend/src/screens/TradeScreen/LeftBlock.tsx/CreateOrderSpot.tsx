@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Column, Row } from "@src/components/Flex";
+import { Column, Row } from "@components/Flex";
 import React, { ComponentProps, useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
@@ -18,15 +18,7 @@ import { Accordion } from "@szhsin/react-accordion";
 interface IProps extends ComponentProps<any> {}
 
 const Root = styled.div`
-	display: flex;
-	flex-direction: column;
-	box-sizing: border-box;
 	padding: 12px;
-	flex: 2;
-	max-width: 280px;
-	height: 100%;
-	border-radius: 10px;
-	background: ${({ theme }) => theme.colors.bgSecondary};
 `;
 
 const MaxButton = styled(Button)`
@@ -55,7 +47,7 @@ const orderTypes = [
 	{ title: "Take Profit Limit", key: "takeprofitlimit", disabled: true },
 ];
 
-const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
+const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore } = useStores();
 	const vm = useTradeScreenVM();
 	const [percent, _setPercent] = useState(0);
@@ -200,4 +192,4 @@ const CreateOrderInterface: React.FC<IProps> = observer(({ ...rest }) => {
 		</Root>
 	);
 });
-export default CreateOrderInterface;
+export default CreateOrderSpot;

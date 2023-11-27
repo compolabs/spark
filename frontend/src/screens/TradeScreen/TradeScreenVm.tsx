@@ -28,14 +28,25 @@ class TradeScreenVm {
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
+		this.updateMarket();
 		makeAutoObservable(this);
 		this.getLatestTrades().then();
 		reaction(
-			() => [this.assetId0, this.assetId1],
-			() => this.getLatestTrades(),
+			() => this.rootStore.tradeStore.marketSymbol,
+			() => {
+				this.updateMarket();
+				this.getLatestTrades();
+			},
 		);
 		when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
 	}
+
+	updateMarket = () => {
+		const market = this.rootStore.tradeStore.market;
+		if (market == null || market.type === "perp") return;
+		this.setAssetId0(market?.token0.assetId);
+		this.setAssetId1(market?.token1.assetId);
+	};
 
 	public loading: boolean = false;
 	private setLoading = (l: boolean) => (this.loading = l);
@@ -60,9 +71,6 @@ class TradeScreenVm {
 	public assetId1: string = TOKENS_BY_SYMBOL.USDC.assetId;
 	public setAssetId1 = (assetId: string) => (this.assetId1 = assetId);
 
-	// rejectUpdateStatePromise?: () => void;
-	// setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
-
 	setMarketPrice = () => {
 		const { orderbook } = this.rootStore.ordersStore;
 		const buy = orderbook.buy.sort((a, b) => (a.price > b.price ? -1 : 1));
@@ -85,9 +93,6 @@ class TradeScreenVm {
 	get token1() {
 		return TOKENS_BY_ASSET_ID[this.assetId1];
 	}
-
-	searchValue = "";
-	setSearchValue = (v: string) => (this.searchValue = v);
 
 	buyPrice: BN = BN.ZERO;
 	setBuyPrice = (price: BN, sync?: boolean) => {

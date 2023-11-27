@@ -50,7 +50,7 @@ const TabContainer = styled(DesktopRow)`
 	}
 `;
 export const MENU_ITEMS: Array<TMenuItem> = [
-	{ title: "TRADE", route: ROUTES.TRADE },
+	{ title: "TRADE", route: ROUTES.ROOT },
 	{ title: "FAUCET", route: ROUTES.FAUCET },
 	{ title: "DOCS", link: "https://docs.sprk.fi" },
 	{ title: "GITHUB", link: "https://github.com/compolabs/spark" },

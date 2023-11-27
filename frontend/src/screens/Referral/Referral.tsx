@@ -9,7 +9,6 @@ import ConnectWalletInterface from "@screens/Referral/ConnectWalletInterface";
 import ReferralInterface from "@screens/Referral/ReferralInterface";
 import { observer } from "mobx-react";
 import { Navigate } from "react-router-dom";
-import { ROUTES } from "@src/constants";
 
 interface IProps {}
 
@@ -59,8 +58,8 @@ export const StyledLink = styled.a`
 }
 `;
 const Referral: React.FC<IProps> = observer(() => {
-	const { accountStore, referralStore } = useStores();
-	if (referralStore.access) return <Navigate to={ROUTES.TRADE} />;
+	const { accountStore, referralStore, tradeStore } = useStores();
+	if (referralStore.access) return <Navigate to={`/${tradeStore.defaultMarketSymbol}`} />;
 	return (
 		<Root>
 			<Image />

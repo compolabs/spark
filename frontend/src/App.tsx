@@ -11,7 +11,6 @@ import Faucet from "@screens/Faucet";
 
 const Root = styled(Column)`
 	width: 100%;
-	//min-width: 1080px;
 	align-items: center;
 	background: ${({ theme }) => theme.colors.bgPrimary};
 	height: 100vh;
@@ -23,10 +22,10 @@ const App: React.FC = observer(() => {
 		<Root>
 			<Header />
 			<Routes>
-				<Route path={ROUTES.REFERRAL} element={<Referral />} />
+				<Route path={ROUTES.ROOT} element={<Referral />} />
 				<Route path={ROUTES.TRADE} element={<TradeScreen />} />
 				<Route path={ROUTES.FAUCET} element={<Faucet />} />
-				{/*<Route path="*" element={<Redirect/>} />*/}
+				{/*<Route path="*" element={<>not found</>} />*/}
 			</Routes>
 		</Root>
 	);

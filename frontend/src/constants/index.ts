@@ -2,8 +2,8 @@ import tokens from "./tokens.json";
 import tokenLogos from "./tokenLogos";
 
 export const ROUTES = {
-	REFERRAL: "/",
-	TRADE: "/trade",
+	ROOT: "/",
+	TRADE: "/:marketId",
 	FAUCET: "/faucet",
 };
 

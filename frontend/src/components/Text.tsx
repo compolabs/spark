@@ -77,7 +77,7 @@ export const TEXT_TYPES_MAP = {
 
 const Text = styled.div<IProps>`
 	white-space: ${({ nowrap }) => (nowrap ? "nowrap" : "normal")};
-	${({ nowrap, primary, secondary, disabled, theme, color }) =>
+	${({  primary, secondary, disabled, theme, color }) =>
 		(() => {
 			switch (true) {
 				case primary:
