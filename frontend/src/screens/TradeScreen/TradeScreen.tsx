@@ -87,21 +87,20 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 });
 
 const TradeScreen: React.FC<IProps> = () => {
-	const { marketsStore, settingsStore } = useStores();
+	const { tradeStore, settingsStore } = useStores();
 	const { marketId } = useParams<{ marketId: string }>();
-	const market = marketsStore.markets.find(({ symbol }) => symbol === marketId);
+	const market = tradeStore.marketsConfig[marketId ?? ""];
 	const navigate = useNavigate();
 	if (market == null) {
 		navigate({
-			pathname: `${ROUTES.TRADE}/${marketsStore.defaultMarketSymbol}`,
+			pathname: `${ROUTES.TRADE}/${tradeStore.defaultMarketSymbol}`,
 		});
 	} else {
-		const isPerp = market.symbol.toLowerCase().includes("-perp");
-		settingsStore.setCurrentMarketPerp(isPerp);
+		tradeStore.setMarketSymbol(market.symbol);
 	}
 	return (
-		<PerpTradeVMProvider marketSymbol={marketId ?? ""}>
-			<TradeScreenVMProvider marketSymbol={marketId ?? ""}>
+		<PerpTradeVMProvider>
+			<TradeScreenVMProvider>
 				<TradeScreenImpl />
 			</TradeScreenVMProvider>
 		</PerpTradeVMProvider>

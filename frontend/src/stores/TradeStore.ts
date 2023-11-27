@@ -18,7 +18,7 @@ interface IFavMarket {
 	type: string;
 }
 
-export interface ISerializedMarketsStore {
+export interface ISerializedTradeStore {
 	favMarkets: string | null;
 }
 
@@ -41,10 +41,21 @@ const perpMarketsConfig = [
 	change24: new BN(10000),
 }));
 
-class MarketsStore {
+class TradeStore {
 	public rootStore: RootStore;
 
-	markets = [...spotMarketsConfig, ...perpMarketsConfig];
+	marketSymbol: string | null = null;
+	setMarketSymbol = (v: string) => (this.marketSymbol = v);
+
+	// marketsConfig = [...spotMarketsConfig, ...perpMarketsConfig];
+	// marketsConfig = [...spotMarketsConfig, ...perpMarketsConfig];
+	marketsConfig: Record<string, IMarket> = [...spotMarketsConfig, ...perpMarketsConfig].reduce(
+		(acc, item) => {
+			acc[item.symbol] = item;
+			return acc;
+		},
+		{} as Record<string, IMarket>,
+	);
 
 	spotMarkets: IMarket[] = [];
 	private setSpotMarkets = (v: IMarket[]) => (this.spotMarkets = v);
@@ -55,7 +66,7 @@ class MarketsStore {
 	favMarkets: string[] = [];
 	private setFavMarkets = (v: string[]) => (this.favMarkets = v);
 
-	constructor(rootStore: RootStore, initState?: ISerializedMarketsStore) {
+	constructor(rootStore: RootStore, initState?: ISerializedTradeStore) {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
@@ -67,7 +78,7 @@ class MarketsStore {
 		}
 	}
 
-	serialize = (): ISerializedMarketsStore => ({
+	serialize = (): ISerializedTradeStore => ({
 		favMarkets: this.favMarkets.join(","),
 	});
 	addToFav = (marketId: string) => {
@@ -84,6 +95,18 @@ class MarketsStore {
 	get defaultMarketSymbol() {
 		return this.spotMarkets[0].symbol;
 	}
+
+	get market() {
+		return this.marketSymbol == null ? null : this.marketsConfig[this.marketSymbol];
+	}
+
+
+	get isMarketPerp() {
+		return this.marketSymbol == null ? false : this.marketsConfig[this.marketSymbol].type === "perp";
+	}
+
+	marketSelectionOpened: boolean = false;
+	setMarketSelectionOpened = (s: boolean) => (this.marketSelectionOpened = s);
 }
 
-export default MarketsStore;
+export default TradeStore;

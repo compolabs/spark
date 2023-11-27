@@ -9,12 +9,11 @@ const ctx = React.createContext<PerpTradeVm | null>(null);
 
 interface IProps {
 	children: React.ReactNode;
-	marketSymbol: string;
 }
 
-export const PerpTradeVMProvider: React.FC<IProps> = ({ children, marketSymbol }) => {
+export const PerpTradeVMProvider: React.FC<IProps> = ({ children }) => {
 	const rootStore = useStores();
-	const store = useMemo(() => new PerpTradeVm(rootStore, marketSymbol), [rootStore, marketSymbol]);
+	const store = useMemo(() => new PerpTradeVm(rootStore), [rootStore]);
 	return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
@@ -23,19 +22,17 @@ type OrderAction = "long" | "short";
 export const usePerpTradeVM = () => useVM(ctx);
 
 class PerpTradeVm {
-	public marketSymbol: string;
 	public rootStore: RootStore;
 
-	constructor(rootStore: RootStore, marketSymbol: string) {
-		this.marketSymbol = marketSymbol;
+	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
-		const market = this.rootStore.marketsStore.markets.find(
-			({ symbol, type }) => symbol === marketSymbol && type === "spot",
-		);
-		if (market == null) return;
-		this.setAssetId0(market?.token0.assetId);
-		this.setAssetId1(market?.token1.assetId);
-		makeAutoObservable(this);
+		// const market = this.rootStore.tradeStore.markets.find(
+		// 	({ symbol, type }) => symbol === marketSymbol && type === "spot",
+		// );
+		// if (market == null) return;
+		// this.setAssetId0(market?.token0.assetId);
+		// this.setAssetId1(market?.token1.assetId);
+		// makeAutoObservable(this);
 	}
 
 	public loading: boolean = false;

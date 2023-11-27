@@ -50,18 +50,18 @@ const Leverage = styled.div`
 	border: 1px solid ${({ theme }) => theme.colors.borderAccent};
 `;
 const MarketSelection: React.FC<IProps> = observer(() => {
-	const { marketsStore, settingsStore } = useStores();
+	const { tradeStore } = useStores();
 	const [searchValue, setSearchValue] = useState<string>("");
 	const navigate = useNavigate();
 	const ref = useRef(null);
-	const [isSpotMarket, setSpotMarket] = useState(!settingsStore.isCurrentMarketPerp);
-	const markets = isSpotMarket ? marketsStore.spotMarkets : marketsStore.perpMarkets;
+	const [isSpotMarket, setSpotMarket] = useState(!tradeStore.isMarketPerp);
+	const markets = isSpotMarket ? tradeStore.spotMarkets : tradeStore.perpMarkets;
 	const filteredMarkets = markets.filter(({ token0, token1 }) =>
 		searchValue
 			? [token0.symbol, token1.symbol].map((v) => v.toLowerCase()).some((v) => v.includes(searchValue.toLowerCase()))
 			: true,
 	);
-	useOnClickOutside(ref, () => settingsStore.setMarketSelectionOpened(false));
+	useOnClickOutside(ref, () => tradeStore.setMarketSelectionOpened(false));
 	return (
 		<Root ref={ref}>
 			<Top>
@@ -93,28 +93,31 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			) : (
 				filteredMarkets.map(({ token0, token1, leverage, price, change24, type, symbol }, index) => {
 					const marketId = `${token0.symbol}-${token1.symbol}-${type}`;
-					const addedToFav = marketsStore.favMarkets.includes(marketId);
+					const addedToFav = tradeStore.favMarkets.includes(marketId);
 					return (
-						<Market
-							key={token0.symbol + token1.symbol + index}
-							onClick={() => {
-								settingsStore.setMarketSelectionOpened(false);
-								navigate(`/${symbol}`);
-							}}
-						>
+						<Market key={token0.symbol + token1.symbol + index}>
 							<Row alignItems="center">
 								<Column mainAxisSize="stretch">
 									<Icon
 										src={addedToFav ? yellowStar : star}
 										alt="star"
 										style={{ cursor: "pointer" }}
-										onClick={() => (addedToFav ? marketsStore.removeFromFav(marketId) : marketsStore.addToFav(marketId))}
+										onClick={() => (addedToFav ? tradeStore.removeFromFav(marketId) : tradeStore.addToFav(marketId))}
 									/>
 									<SizedBox height={4} />
-									<Icon src={token0.logo} alt="logo" />
+									<Row>
+										<Icon src={token0.logo} alt="logo" />
+										<Icon src={token1.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
+									</Row>
 								</Column>
 								<SizedBox width={4} />
-								<Column mainAxisSize="stretch">
+								<Column
+									mainAxisSize="stretch"
+									onClick={() => {
+										tradeStore.setMarketSelectionOpened(false);
+										navigate(`/${symbol}`);
+									}}
+								>
 									{leverage != null ? <Leverage>{`${leverage}x`}</Leverage> : <></>}
 									<SizedBox height={4} />
 									<Text type={TEXT_TYPES.H} color="primary">

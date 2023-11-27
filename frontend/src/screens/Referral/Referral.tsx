@@ -59,8 +59,8 @@ export const StyledLink = styled.a`
 }
 `;
 const Referral: React.FC<IProps> = observer(() => {
-	const { accountStore, referralStore, marketsStore } = useStores();
-	if (referralStore.access) return <Navigate to={`/${marketsStore.defaultMarketSymbol}`} />;
+	const { accountStore, referralStore, tradeStore } = useStores();
+	if (referralStore.access) return <Navigate to={`/${tradeStore.defaultMarketSymbol}`} />;
 	return (
 		<Root>
 			<Image />

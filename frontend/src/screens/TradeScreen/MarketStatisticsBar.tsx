@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { Column, DesktopRow, Row } from "@src/components/Flex";
 import React, { useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
 import Button from "@components/Button";
@@ -25,6 +24,9 @@ const Root = styled.div`
 	background: ${({ theme }) => theme.colors.bgSecondary};
 	border-radius: 10px;
 	flex-shrink: 0;
+`;
+const Icon = styled.img`
+	border-radius: 50%;
 `;
 
 const MarketSelect = styled.div<{
@@ -80,11 +82,47 @@ const PriceRow = styled(Row)`
 	}
 `;
 
+interface IPerpMarketState {
+	price: BN;
+	priceChange?: BN;
+	indexPrice: BN;
+	fundingRate: BN;
+	avgFunding: BN;
+	openInterest: BN;
+	dailyVolume: BN;
+}
+
+interface ISpotMarketState {
+	price: BN;
+	priceChange: BN;
+	indexPrice?: BN;
+	dailyVolume?: BN;
+	dailyHigh: BN;
+	dailyLow: BN;
+	volumeAsset1: BN;
+	volumeAsset0: BN;
+}
+
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
-	const { settingsStore } = useStores();
+	const { tradeStore } = useStores();
 	const vm = useTradeScreenVM();
 	const theme = useTheme();
-	let [state, setState] = useState<IState>({});
+	const [perpStats, setPerpStats] = useState<IPerpMarketState | null>(null);
+	const perpStatsArr = [
+		{ title: "Index price", value: "" },
+		{ title: "Funding rate", value: "" },
+		{ title: "Avg funding", value: "" },
+		{ title: "Open interest", value: "" },
+		{ title: "24h volume", value: "" },
+	];
+	const [spotStats, setSpotStats] = useState<ISpotMarketState | null>(null);
+	const spotStatsArr = [
+		{ title: "Index price", value: "" },
+		{ title: "24h volume", value: "" },
+		{ title: "24h High", value: "" },
+		{ title: "24h Low", value: "" },
+	];
+	// const [state, setState] = useState<IState>({});
 	useEffect(() => {
 		const to = dayjs().unix();
 		const from = to - 60 * 60 * 24 * 2;
@@ -94,21 +132,21 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			.then((res) => res.data)
 			.then((data) => {
 				if (data.t[1] != null && data.t[0] != null) {
-					setState({
+					setSpotStats({
 						price: new BN(data.c[1]),
 						priceChange: data.c[0] === 0 ? BN.ZERO : new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
-						high: new BN(data.h[1] ?? BN.ZERO),
-						low: new BN(data.l[1] ?? BN.ZERO),
+						dailyHigh: new BN(data.h[1] ?? BN.ZERO),
+						dailyLow: new BN(data.l[1] ?? BN.ZERO),
 						//fixme
 						volumeAsset1: BN.formatUnits(data.v[1] * data.c[1], 9), //data.c[1] = price of USDC
 						volumeAsset0: BN.formatUnits(data.v[1] * 1, 9), //1 = price of USDC
 					});
 				} else if (data.h[0] != null && data.h[1] == null) {
-					setState({
+					setSpotStats({
 						price: new BN(data.c[0]),
-						// priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
-						high: new BN(data.h[0]),
-						low: new BN(data.l[0]),
+						priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
+						dailyHigh: new BN(data.h[0]),
+						dailyLow: new BN(data.l[0]),
 						//fixme
 						volumeAsset1: BN.formatUnits(data.v[0] * data.c[0], 9), //data.c[1] = price of USDC
 						volumeAsset0: BN.formatUnits(data.v[0] * 1, 9), //1 = price of USDC
@@ -119,73 +157,54 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	return (
 		<Root>
 			<MarketSelect
-				focused={settingsStore.marketSelectionOpened}
-				style={settingsStore.marketSelectionOpened ? { background: "#1B1B1B" } : {}}
+				focused={tradeStore.marketSelectionOpened}
+				style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B" } : {}}
 			>
 				<Row alignItems="center">
-					<img style={{ width: 24, height: 24 }} src={vm.token0.logo} alt="token0" />
-					<img style={{ width: 24, height: 24, marginLeft: -8 }} src={vm.token1.logo} alt="token1" />
+					<Icon style={{ width: 24, height: 24 }} src={tradeStore.market?.token0.logo} alt="token0" />
+					<Icon style={{ width: 24, height: 24, marginLeft: -8 }} src={tradeStore.market?.token1.logo} alt="token1" />
 					<SizedBox width={8} />
 					<Text type={TEXT_TYPES.H} primary>
-						{`${vm.token0.symbol}-${vm.token1.symbol}`}
+						{tradeStore.market?.symbol}
 					</Text>
 				</Row>
 				<SizedBox width={10} />
 				<img
-					onClick={() => !settingsStore.marketSelectionOpened && settingsStore.setMarketSelectionOpened(true)}
+					onClick={() => !tradeStore.marketSelectionOpened && tradeStore.setMarketSelectionOpened(true)}
 					style={{ width: 24, height: 24, marginLeft: -8 }}
 					src={arrow}
 					alt="arrow"
 					className="menu-arrow"
 				/>
-				{/*<h4 style={{ transform: "rotate(90deg)" }}>{">"}</h4>*/}
 			</MarketSelect>
 			<MarketStatistics>
 				<PriceRow alignItems="center">
 					<Column alignItems="flex-end">
 						<Text
 							type={TEXT_TYPES.BODY}
-							style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}
+							// style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}
 						>
-							{state.priceChange?.toFormat(2) ?? "-"}%
+							{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}%
 						</Text>
 						<Text type={TEXT_TYPES.H} primary>
-							{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
+							{tradeStore.isMarketPerp ? perpStats?.price.toFormat(2) : spotStats?.price.toFormat(4)}{" "}
+							{tradeStore.market?.token1.symbol}
+							{/*{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}*/}
 						</Text>
 					</Column>
 					<DesktopRow>
-						<SizedBox width={1} height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} />
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>24h High</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.high?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
-							</Text>
-						</Column>
-						<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />{" "}
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>24h Low</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.low?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}
-							</Text>
-						</Column>
-						<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>Volume 24h (USDC)</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.volumeAsset1?.toFormat(2) ?? "-"}
-							</Text>
-						</Column>
-						<SizedBox width={1} height={32} style={{ background: theme.colors.bgSecondary, margin: "0 8px" }} />
-						<Column>
-							<Text type={TEXT_TYPES.SUPPORTING}>Volume 24h (UNI)</Text>
-							<SizedBox height={4} />
-							<Text type={TEXT_TYPES.BODY} primary>
-								{state.volumeAsset0?.toFormat(2) ?? "-"}
-							</Text>
-						</Column>
+						{(tradeStore.isMarketPerp ? perpStatsArr : spotStatsArr).map(({ title, value }) => (
+							<>
+								<SizedBox width={1} height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} />
+								<Column>
+									<Text type={TEXT_TYPES.SUPPORTING}>{title}</Text>
+									<SizedBox height={4} />
+									<Text type={TEXT_TYPES.BODY} primary>
+										0.00
+									</Text>
+								</Column>
+							</>
+						))}
 					</DesktopRow>
 				</PriceRow>
 				<DesktopRow>

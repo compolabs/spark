@@ -11,12 +11,11 @@ const ctx = React.createContext<TradeScreenVm | null>(null);
 
 interface IProps {
 	children: React.ReactNode;
-	marketSymbol: string;
 }
 
-export const TradeScreenVMProvider: React.FC<IProps> = ({ children, marketSymbol }) => {
+export const TradeScreenVMProvider: React.FC<IProps> = ({ children}) => {
 	const rootStore = useStores();
-	const store = useMemo(() => new TradeScreenVm(rootStore, marketSymbol), [rootStore, marketSymbol]);
+	const store = useMemo(() => new TradeScreenVm(rootStore), [rootStore]);
 	return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
@@ -25,18 +24,16 @@ type OrderAction = "buy" | "sell";
 export const useTradeScreenVM = () => useVM(ctx);
 
 class TradeScreenVm {
-	public marketSymbol: string;
 	public rootStore: RootStore;
 
-	constructor(rootStore: RootStore, marketSymbol: string) {
-		this.marketSymbol = marketSymbol;
+	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
-		const market = this.rootStore.marketsStore.markets.find(
-			({ symbol, type }) => symbol === marketSymbol && type === "spot",
-		);
-		if (market == null) return;
-		this.setAssetId0(market?.token0.assetId);
-		this.setAssetId1(market?.token1.assetId);
+		// const market = this.rootStore.tradeStore.markets.find(
+		// 	({ symbol, type }) => symbol === marketSymbol && type === "spot",
+		// );
+		// if (market == null) return;
+		// this.setAssetId0(market?.token0.assetId);
+		// this.setAssetId1(market?.token1.assetId);
 		makeAutoObservable(this);
 		this.getLatestTrades().then();
 		reaction(

@@ -20,12 +20,12 @@ const Root = styled.div`
 `;
 
 const LeftBlock: React.FC<IProps> = observer(({ ...rest }) => {
-	const { settingsStore } = useStores();
+	const { tradeStore } = useStores();
 	return (
 		<Root {...rest}>
-			{settingsStore.marketSelectionOpened ? (
+			{tradeStore.marketSelectionOpened ? (
 				<MarketSelection />
-			) : settingsStore.isCurrentMarketPerp ? (
+			) : tradeStore.isMarketPerp ? (
 				<CreateOrderPerp />
 			) : (
 				<CreateOrderSpot />
