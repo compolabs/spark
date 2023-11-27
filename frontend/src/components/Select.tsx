@@ -44,22 +44,22 @@ export const Option = styled.div<{
 }>`
 	width: 100%;
 	display: flex;
-	cursor: ${({ disabled }) => (!disabled ? "pointer" : "not-allowed")};
+	cursor: ${({disabled}) => (!disabled ? "pointer" : "not-allowed")};
 	align-items: center;
-	background: ${({ active, theme }) => (active ? theme.colors.borderPrimary : "transparent")};
-	color: ${({ disabled, theme }) => (disabled ? theme.colors.textDisabled : theme.colors.textPrimary)};
+	background: ${({active, theme}) => (active ? theme.colors.borderPrimary : "transparent")};
+	color: ${({disabled, theme}) => (disabled ? theme.colors.textDisabled : theme.colors.textPrimary)};
 	padding: 8px 10px;
 	box-sizing: border-box;
 	white-space: nowrap;
 	transition: 0.4s;
 
 	:hover {
-		background: ${({ theme, active, disabled }) =>
+		background: ${({theme, active, disabled}) =>
 			active ? theme.colors.borderPrimary : disabled ? "transparent" : theme.colors.borderSecondary};
 	}
 
 	:active {
-		background: ${({ theme, disabled }) => (!disabled ? theme.colors.borderPrimary : "transparent")};
+		background: ${({theme, disabled}) => (!disabled ? theme.colors.borderPrimary : "transparent")};
 	}
 
 	${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON_SECONDARY]};
