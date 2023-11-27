@@ -2,9 +2,7 @@
 
 **Description**
 
-**Spark Points Earning Program**
-
-_Introduction:_ The Spark Points program is designed to reward liquidity providers and traders on the [Spark.fi](http://spark.fi) protocol. Participants earn Spark Points based on their contributions to the order book, promoting liquidity, and actively engaging in trades. These points can be redeemed for various benefits within the [Spark.fi](http://spark.fi) ecosystem.
+**Sprk Points Earning Program Introduction:** The Sprk Points program is designed to reward liquidity providers and traders on the Sprk.fi protocol. Participants earn Sprk Points based on their contributions to the order book, promoting liquidity, and actively engaging in trades. These points can be redeemed for various benefits within the Sprk.fi ecosystem.
 
 #### **Liquidity Provision Program:**
 
@@ -82,6 +80,6 @@ _**FAQs:**_
 3. **How can Spark Points be redeemed?**
    * Users can exchange Spark Points for Spark Tokens, which can be redeemed for project tokens, trading fee discounts, or access to exclusive features.
 4. **What determines the weighting factor for assets?**
-   * The weighting factor is predetermined based on the asset's importance and demand within the [Spark.fi](http://spark.fi) ecosystem.
+   * The weighting factor is predetermined based on the asset's importance and demand within the Sprk.fi ecosystem.
 5. **How frequently are Spark Points updated?**
-   * Spark Points are updated in real-time, reflecting users' contributions and activities on the [Spark.fi](http://spark.fi) platform.
+   * Spark Points are updated in real-time, reflecting users' contributions and activities on the Sprk.fi platform.
