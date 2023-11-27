@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React, { useState } from "react";
+import React from "react";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import { Column, Row } from "@src/components/Flex";
 import Chart from "@screens/TradeScreen/Chart";
@@ -88,13 +88,14 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 });
 
 const TradeScreen: React.FC<IProps> = () => {
-	const { tradeStore, settingsStore } = useStores();
+	const { tradeStore } = useStores();
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
 	const navigate = useNavigate();
+	console.log("market == null", market == null);
 	if (market == null) {
 		navigate({
-			pathname: `${ROUTES.TRADE}/${tradeStore.defaultMarketSymbol}`,
+			pathname: `/${tradeStore.defaultMarketSymbol}`,
 		});
 	} else {
 		tradeStore.setMarketSymbol(market.symbol);

@@ -80,7 +80,7 @@ const SettingsButton = styled(Button)`
 `;
 //todo add dropdown
 const Header: React.FC<IProps> = observer(() => {
-	const { accountStore, tradeStore } = useStores();
+	const { accountStore } = useStores();
 	const location = useLocation();
 	const navigate = useNavigate();
 

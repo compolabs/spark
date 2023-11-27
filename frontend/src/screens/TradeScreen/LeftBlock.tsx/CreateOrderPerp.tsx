@@ -7,17 +7,28 @@ import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import { useStores } from "@stores";
 import AccordionItem from "@components/AccordionItem";
 import BN from "@src/utils/BN";
 import { Accordion } from "@szhsin/react-accordion";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
+import Slider from "@components/Slider";
 
 interface IProps extends ComponentProps<any> {}
 
 const Root = styled.div`
 	padding: 12px;
+`;
+const Chip = styled.div`
+	padding: 8px 10px;
+	color: ${({ theme }) => theme.colors.textSecondary};
+	${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
+	border-radius: 4px;
+	border: 1px solid ${({ theme }) => theme.colors.borderSecondary};
+	background: ${({ theme }) => theme.colors.bgPrimary};
+	box-sizing: border-box;
+	margin-left: 8px;
+	cursor: pointer;
 `;
 
 const MaxButton = styled(Button)`
@@ -29,17 +40,9 @@ const MaxButton = styled(Button)`
 	${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]};
 `;
 
-const StyledInfoIcon = styled(InfoIcon)`
-	margin-right: 2px;
-
-	path {
-		fill: ${({ theme }) => theme.colors.textDisabled};
-	}
-`;
-
 const orderTypes = [
-	{ title: "Market", key: "market", disabled: true },
 	{ title: "Stop Market", key: "stopmarket", disabled: true },
+	{ title: "Market", key: "market", disabled: true },
 	{ title: "Limit", key: "limit" },
 	{ title: "Stop Limit", key: "stoplimit", disabled: true },
 	{ title: "Take Profit", key: "takeprofit", disabled: true },
@@ -50,6 +53,13 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore } = useStores();
 	const vm = usePerpTradeVM();
 	const [short, setShort] = useState(false);
+	const [leverage, setLeverage] = useState(0);
+
+	const orderDetails = [
+		{ title: "Max buy", value: "0.00" },
+		{ title: "Est. fee", value: "0.00" },
+		{ title: "Total amount", value: "0.00" },
+	];
 
 	return (
 		<Root {...rest}>
@@ -66,12 +76,6 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				<Column crossAxisSize="max">
 					<Select label="Order type" options={orderTypes} selected={orderTypes[1].key} onSelect={() => null} />
 					<SizedBox height={2} />
-					<Row alignItems="center">
-						<StyledInfoIcon />
-						<Text disabled type={TEXT_TYPES.SUPPORTING}>
-							About order type
-						</Text>
-					</Row>
 				</Column>
 				<SizedBox width={8} />
 				<TokenInput
@@ -112,12 +116,46 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					<Text type={TEXT_TYPES.SUPPORTING}>&nbsp;{short ? vm.token0.symbol : vm.token1.symbol}</Text>
 				</Row>
 			</Row>
-			{/*<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>*/}
-			<SizedBox height={28} />
-			{/*<Slider min={0} max={100} value={percent} percent={percent} onChange={(v) => setPercent(v as number)} step={1} />*/}
-			<SizedBox height={28} />
+			<SizedBox height={8} />
 			<Accordion transition transitionTimeout={400}>
 				<AccordionItem
+					defaultChecked
+					header={
+						<Row justifyContent="space-between" mainAxisSize="stretch" alignItems="center">
+							<Text nowrap primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+								Leverage
+							</Text>
+							<Row justifyContent="flex-end" alignItems="center">
+								<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.longAmount, vm.token0.decimals).toFormat(2)}x</Text>
+							</Row>
+						</Row>
+					}
+					initialEntered
+				>
+					<Slider
+						min={0}
+						max={100}
+						value={leverage}
+						percent={leverage}
+						onChange={(v) => setLeverage(v as number)}
+						step={1}
+					/>
+					<SizedBox height={8} />
+					<Row>
+						<TokenInput
+							decimals={vm.token1.decimals}
+							amount={short ? vm.shortPrice : vm.longPrice}
+							setAmount={(v) => (short ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
+						/>
+						{[5, 10, 20].map((v) => (
+							<Chip>{v}x</Chip>
+						))}
+					</Row>
+				</AccordionItem>
+			</Accordion>
+			<Accordion transition transitionTimeout={400}>
+				<AccordionItem
+					style={{ borderTop: "none" }}
 					defaultChecked
 					header={
 						<Row justifyContent="space-between" mainAxisSize="stretch" alignItems="center">
@@ -132,29 +170,17 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					}
 					initialEntered
 				>
-					<Row alignItems="center" justifyContent="space-between">
-						<Text nowrap>Max long</Text>
-						<Row justifyContent="flex-end" alignItems="center">
-							<Text primary>{BN.formatUnits(short ? vm.shortTotal : vm.longTotal, vm.token1.decimals).toFormat(2)}</Text>
-							<Text>&nbsp;{vm.token1.symbol}</Text>
-						</Row>
-					</Row>
-					<SizedBox height={8} />
-					<Row alignItems="center" justifyContent="space-between">
-						<Text nowrap>Matcher Fee</Text>
-						<Row justifyContent="flex-end" alignItems="center">
-							<Text primary>0.000001</Text>
-							<Text>&nbsp;ETH</Text>
-						</Row>
-					</Row>
-					<SizedBox height={8} />
-					<Row alignItems="center" justifyContent="space-between">
-						<Text nowrap>Total amount</Text>
-						<Row justifyContent="flex-end" alignItems="center">
-							<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.shortAmount, vm.token0.decimals).toFormat(2)}</Text>
-							<Text>&nbsp;{vm.token0.symbol}</Text>
-						</Row>
-					</Row>
+					{orderDetails.map(({ title, value }) => (
+						<>
+							<Row alignItems="center" justifyContent="space-between">
+								<Text nowrap>{title}</Text>
+								<Row justifyContent="flex-end" alignItems="center">
+									<Text primary>{value}</Text>
+								</Row>
+							</Row>
+							<SizedBox height={8} />
+						</>
+					))}
 				</AccordionItem>
 			</Accordion>
 			<SizedBox height={16} />
@@ -164,7 +190,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				disabled={vm.loading ? true : short ? !vm.canSell : !vm.canShort}
 				onClick={() => vm.createOrder(short ? "short" : "long")}
 			>
-				{vm.loading ? "Loading..." : short ? `Sell ${vm.token0.symbol}` : `Buy ${vm.token0.symbol}`}
+				{vm.loading ? "Loading..." : short ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
 			</Button>
 		</Root>
 	);

@@ -10,7 +10,6 @@ import axios from "axios";
 import BN from "@src/utils/BN";
 import arrow from "@src/assets/icons/arrowUp.svg";
 import { observer } from "mobx-react";
-import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -65,15 +64,6 @@ const MarketStatistics = styled.div`
 	width: 100%;
 `;
 
-interface IState {
-	price?: BN;
-	priceChange?: BN;
-	high?: BN;
-	low?: BN;
-	volumeAsset0?: BN;
-	volumeAsset1?: BN;
-}
-
 const PriceRow = styled(Row)`
 	align-items: center;
 	justify-content: flex-end;
@@ -105,7 +95,6 @@ interface ISpotMarketState {
 
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	const { tradeStore } = useStores();
-	const vm = useTradeScreenVM();
 	const theme = useTheme();
 	const [perpStats, setPerpStats] = useState<IPerpMarketState | null>(null);
 	const perpStatsArr = [
@@ -122,7 +111,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		{ title: "24h High", value: "" },
 		{ title: "24h Low", value: "" },
 	];
-	// const [state, setState] = useState<IState>({});
+	//todo implement logic for perp stats
 	useEffect(() => {
 		const to = dayjs().unix();
 		const from = to - 60 * 60 * 24 * 2;
@@ -158,7 +147,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		<Root>
 			<MarketSelect
 				focused={tradeStore.marketSelectionOpened}
-				style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B" } : {}}
+				style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B", borderRadius: "10px 0 0 10px" } : {}}
 			>
 				<Row alignItems="center">
 					<Icon style={{ width: 24, height: 24 }} src={tradeStore.market?.token0.logo} alt="token0" />

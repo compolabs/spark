@@ -83,7 +83,7 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			</Row>
 			<SizedBox height={12} />
 			<Divider />
-			{filteredMarkets.length == 0 ? (
+			{filteredMarkets.length === 0 ? (
 				<>
 					<SizedBox height={16} />
 					<Row justifyContent="center">
@@ -125,7 +125,13 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 									</Text>
 								</Column>
 							</Row>
-							<Column alignItems="end">
+							<Column
+								alignItems="end"
+								onClick={() => {
+									tradeStore.setMarketSelectionOpened(false);
+									navigate(`/${symbol}`);
+								}}
+							>
 								<Text style={{ textAlign: "right" }} nowrap>
 									0.02%
 								</Text>

@@ -13,22 +13,17 @@ export interface IMarket {
 	symbol: string;
 }
 
-interface IFavMarket {
-	symbol: string;
-	type: string;
-}
-
+// interface IFavMarket {
+// 	symbol: string;
+// 	type: string;
+// }
+//todo implement service for getting markets stats
+//todo implement service file for getting data from indexer
 export interface ISerializedTradeStore {
 	favMarkets: string | null;
 }
 
-const spotMarketsConfig = [
-	{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYMBOL.USDC },
-	{
-		token0: TOKENS_BY_SYMBOL.BTC,
-		token1: TOKENS_BY_SYMBOL.ETH,
-	},
-].map((v) => ({
+const spotMarketsConfig = [{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYMBOL.USDC }].map((v) => ({
 	...v,
 	symbol: `${v.token0.symbol}-${v.token1.symbol}`,
 	type: "spot",
