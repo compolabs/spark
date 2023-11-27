@@ -28,6 +28,7 @@ export const CONTRACT_ADDRESSES = {
 	spotMarket: "0x9cf9ccbf69b30530ccb62c927ed4bad12a22815a8f9e2c3a5b14f644a43889f6",
 	tokenFactory: "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a",
 	referral: "0xe06f9223c5be21e37b76c073d50dab19c997c4b37d9246ffe9b4de930b8fee73",
+	vault: "0x676d63ae4fc58e4db95e0451be96b076a14232f4e29cde3607d4cc9300690b93",
 };
 
 export interface IToken {
@@ -39,8 +40,3 @@ export interface IToken {
 	priceFeed: string;
 }
 
-export interface IContractsConfig {
-	priceOracle: string;
-	market: string;
-	tokenFactory: string;
-}

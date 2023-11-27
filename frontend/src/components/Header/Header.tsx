@@ -8,11 +8,11 @@ import Button from "@components/Button";
 import { ROUTES } from "@src/constants";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import SizedBox from "@components/SizedBox";
-import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
 import { DesktopRow, Row } from "@components/Flex";
 import ConnectedWallet from "@components/Header/ConnectedWallet";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import Tab from "@components/Tab";
+import DepositWithdrawModal from "@screens/TradeScreen/DepositWithdrawModal";
 
 interface IProps {}
 
@@ -57,10 +57,11 @@ export const MENU_ITEMS: Array<TMenuItem> = [
 ];
 
 const SettingsButton = styled(Button)`
-	width: 32px;
-	height: 32px;
+	//width: 32px;
+	//height: 32px;
 	border-radius: 32px;
-	padding: 0 !important;
+	//padding: 0 !important;
+	padding: 2px 4px;
 
 	path {
 		fill: ${({ theme }) => theme.colors.iconSecondary};
@@ -80,7 +81,7 @@ const SettingsButton = styled(Button)`
 `;
 //todo add dropdown
 const Header: React.FC<IProps> = observer(() => {
-	const { accountStore } = useStores();
+	const { accountStore, settingsStore } = useStores();
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -121,9 +122,13 @@ const Header: React.FC<IProps> = observer(() => {
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<DesktopRow>
-					{/*<SizedBox width={10} />*/}
-					<SettingsButton disabled>
-						<GearIcon />
+					<SettingsButton
+						onClick={() => {
+							console.log("Deposit/Withdraw");
+							settingsStore.setDepositModal(true);
+						}}
+					>
+						Deposit/Withdraw
 					</SettingsButton>
 					<SizedBox width={10} />
 				</DesktopRow>
@@ -141,6 +146,13 @@ const Header: React.FC<IProps> = observer(() => {
 					</Button>
 				)}
 			</Row>
+			<DepositWithdrawModal
+				visible={settingsStore.depositModalOpened}
+				onClose={() => {
+					console.log("close");
+					settingsStore.setDepositModal(false);
+				}}
+			/>
 		</Root>
 	);
 });

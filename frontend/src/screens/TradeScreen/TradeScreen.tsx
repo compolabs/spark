@@ -5,7 +5,6 @@ import { Column, Row } from "@src/components/Flex";
 import Chart from "@screens/TradeScreen/Chart";
 import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
-import { TradeScreenVMProvider } from "@screens/TradeScreen/TradeScreenVm";
 import SizedBox from "@components/SizedBox";
 import { useStores } from "@stores";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
@@ -16,6 +15,7 @@ import LeftBlock from "src/screens/TradeScreen/LeftBlock.tsx";
 import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/OrderbookAndTradesInterface";
 import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 import Text, { TEXT_TYPES } from "@components/Text";
+import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
 
 interface IProps {}
 
@@ -42,7 +42,7 @@ const Root = styled.div`
 // `;
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
-	const { referralStore } = useStores();
+	const { referralStore, settingsStore } = useStores();
 	const width = useWindowSize().width;
 	// const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
 	if (!referralStore.access) return <Navigate to={ROUTES.ROOT} />;
@@ -101,9 +101,9 @@ const TradeScreen: React.FC<IProps> = () => {
 	}
 	return (
 		<PerpTradeVMProvider>
-			<TradeScreenVMProvider>
+			<SpotTradeVMProvider>
 				<TradeScreenImpl />
-			</TradeScreenVMProvider>
+			</SpotTradeVMProvider>
 		</PerpTradeVMProvider>
 	);
 };

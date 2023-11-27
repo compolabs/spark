@@ -25,7 +25,7 @@ const App: React.FC = observer(() => {
 				<Route path={ROUTES.ROOT} element={<Referral />} />
 				<Route path={ROUTES.TRADE} element={<TradeScreen />} />
 				<Route path={ROUTES.FAUCET} element={<Faucet />} />
-				{/*<Route path="*" element={<>not found</>} />*/}
+				{/*<Route path="*" element={<>not found</>} w/>*/}
 			</Routes>
 		</Root>
 	);

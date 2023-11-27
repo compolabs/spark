@@ -4,18 +4,18 @@ import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { OracleAbi__factory, SpotMarketAbi__factory } from "@src/contracts";
+import { SpotMarketAbi__factory } from "@src/contracts";
 import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
 
-const ctx = React.createContext<TradeScreenVm | null>(null);
+const ctx = React.createContext<SpotTradeVm | null>(null);
 
 interface IProps {
 	children: React.ReactNode;
 }
 
-export const TradeScreenVMProvider: React.FC<IProps> = ({ children }) => {
+export const SpotTradeVMProvider: React.FC<IProps> = ({ children }) => {
 	const rootStore = useStores();
-	const store = useMemo(() => new TradeScreenVm(rootStore), [rootStore]);
+	const store = useMemo(() => new SpotTradeVm(rootStore), [rootStore]);
 	return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
@@ -23,7 +23,7 @@ type OrderAction = "buy" | "sell";
 
 export const useTradeScreenVM = () => useVM(ctx);
 
-class TradeScreenVm {
+class SpotTradeVm {
 	public rootStore: RootStore;
 
 	constructor(rootStore: RootStore) {
@@ -316,34 +316,34 @@ class TradeScreenVm {
 			type: "error",
 		});
 	};
-
-	setupMarketMakingAlgorithm = async () => {
-		const { accountStore, ordersStore } = this.rootStore;
-		if (ordersStore.spreadPercent == null) return;
-		if (accountStore.address == null) return;
-		await accountStore.checkConnectionWithWallet();
-		const wallet = accountStore.walletToRead;
-		if (wallet == null) return;
-		const get_price = OracleAbi__factory.connect(CONTRACT_ADDRESSES.priceOracle, wallet).functions.get_price;
-		const price0 = await get_price(this.assetId0)
-			.simulate()
-			.then(({ value }) => value.price);
-		const price1 = await get_price(this.assetId1)
-			.simulate()
-			.then(({ value }) => value.price);
-		const price = price0.div(price1);
-
-		const { buy, sell } = ordersStore.orderbook;
-		const sellAmount = buy.reduce((acc, order) => (price.lte(order.price) ? acc.plus(order.totalLeft) : acc), BN.ZERO);
-		const buyAmount = sell.reduce((acc, order) => (price.gte(order.price) ? acc.plus(order.amountLeft) : acc), BN.ZERO);
-		if (sellAmount > BN.ZERO && sellAmount > buyAmount) {
-			this.setIsSell(true);
-			this.setSellAmount(sellAmount);
-			this.setSellPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
-		} else if (buyAmount > BN.ZERO && buyAmount > sellAmount) {
-			this.setIsSell(false);
-			this.setBuyAmount(buyAmount);
-			this.setBuyPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
-		}
-	};
 }
+
+//setupMarketMakingAlgorithm = async () => {
+// 		const { accountStore, ordersStore } = this.rootStore;
+// 		if (ordersStore.spreadPercent == null) return;
+// 		if (accountStore.address == null) return;
+// 		await accountStore.checkConnectionWithWallet();
+// 		const wallet = accountStore.walletToRead;
+// 		if (wallet == null) return;
+// 		const get_price = OracleAbi__factory.connect(CONTRACT_ADDRESSES.priceOracle, wallet).functions.get_price;
+// 		const price0 = await get_price(this.assetId0)
+// 			.simulate()
+// 			.then(({ value }) => value.price);
+// 		const price1 = await get_price(this.assetId1)
+// 			.simulate()
+// 			.then(({ value }) => value.price);
+// 		const price = price0.div(price1);
+//
+// 		const { buy, sell } = ordersStore.orderbook;
+// 		const sellAmount = buy.reduce((acc, order) => (price.lte(order.price) ? acc.plus(order.totalLeft) : acc), BN.ZERO);
+// 		const buyAmount = sell.reduce((acc, order) => (price.gte(order.price) ? acc.plus(order.amountLeft) : acc), BN.ZERO);
+// 		if (sellAmount > BN.ZERO && sellAmount > buyAmount) {
+// 			this.setIsSell(true);
+// 			this.setSellAmount(sellAmount);
+// 			this.setSellPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
+// 		} else if (buyAmount > BN.ZERO && buyAmount > sellAmount) {
+// 			this.setIsSell(false);
+// 			this.setBuyAmount(buyAmount);
+// 			this.setBuyPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
+// 		}
+// 	};

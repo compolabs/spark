@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as React from "react";
 import { ChartingLibraryWidgetOptions, LanguageCode, ResolutionString, widget } from "@src/charting_library";
 import { observer } from "mobx-react-lite";
-import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
+import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
 import { useTheme } from "@emotion/react";
 

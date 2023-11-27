@@ -3,7 +3,7 @@ import { Column, Row } from "@src/components/Flex";
 import React from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
+import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import dayjs from "dayjs";
 import { useTheme } from "@emotion/react";

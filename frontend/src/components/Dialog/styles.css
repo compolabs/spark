@@ -1,6 +1,7 @@
 
 .rc-dialog-mask {
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(5, 5, 5, 0.50);
+    backdrop-filter: blur(5px);
 }
 
 .rc-dialog-wrap {
@@ -26,8 +27,8 @@
 }
 
 .rc-dialog-content {
-    background: #050505;
-    border-radius: 8px;
+    border-radius: 10px;
+    background: #141414;
     /*overflow: hidden;*/
     min-height: 286px;
     padding: 0;

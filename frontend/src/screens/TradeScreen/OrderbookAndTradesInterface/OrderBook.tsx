@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import React, { HTMLAttributes, useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import SizedBox from "@components/SizedBox";
-import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
+import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import { Column, Row } from "@src/components/Flex";
