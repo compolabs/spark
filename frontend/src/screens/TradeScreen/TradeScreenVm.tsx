@@ -13,7 +13,7 @@ interface IProps {
 	children: React.ReactNode;
 }
 
-export const TradeScreenVMProvider: React.FC<IProps> = ({ children}) => {
+export const TradeScreenVMProvider: React.FC<IProps> = ({ children }) => {
 	const rootStore = useStores();
 	const store = useMemo(() => new TradeScreenVm(rootStore), [rootStore]);
 	return <ctx.Provider value={store}>{children}</ctx.Provider>;
@@ -28,20 +28,25 @@ class TradeScreenVm {
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
-		// const market = this.rootStore.tradeStore.markets.find(
-		// 	({ symbol, type }) => symbol === marketSymbol && type === "spot",
-		// );
-		// if (market == null) return;
-		// this.setAssetId0(market?.token0.assetId);
-		// this.setAssetId1(market?.token1.assetId);
+		this.updateMarket();
 		makeAutoObservable(this);
 		this.getLatestTrades().then();
 		reaction(
-			() => [this.assetId0, this.assetId1],
-			() => this.getLatestTrades(),
+			() => this.rootStore.tradeStore.marketSymbol,
+			() => {
+				this.updateMarket();
+				this.getLatestTrades();
+			},
 		);
 		when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
 	}
+
+	updateMarket = () => {
+		const market = this.rootStore.tradeStore.market;
+		if (market == null || market.type === "perp") return;
+		this.setAssetId0(market?.token0.assetId);
+		this.setAssetId1(market?.token1.assetId);
+	};
 
 	public loading: boolean = false;
 	private setLoading = (l: boolean) => (this.loading = l);
@@ -88,9 +93,6 @@ class TradeScreenVm {
 	get token1() {
 		return TOKENS_BY_ASSET_ID[this.assetId1];
 	}
-
-	searchValue = "";
-	setSearchValue = (v: string) => (this.searchValue = v);
 
 	buyPrice: BN = BN.ZERO;
 	setBuyPrice = (price: BN, sync?: boolean) => {

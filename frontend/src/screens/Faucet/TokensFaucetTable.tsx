@@ -20,7 +20,6 @@ const Root = styled.div`
 	flex-direction: column;
 	box-sizing: border-box;
 	border: 1px solid ${({ theme }) => theme.colors.bgSecondary};
-	flex: 1;
 	overflow: hidden;
 	border-radius: 10px;
 	overflow-x: auto;

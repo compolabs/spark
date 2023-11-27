@@ -45,7 +45,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	const { referralStore } = useStores();
 	const width = useWindowSize().width;
 	// const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
-	if (!referralStore.access) return <Navigate to={ROUTES.REFERRAL} />;
+	if (!referralStore.access) return <Navigate to={ROUTES.ROOT} />;
 	return width && width >= 880 ? (
 		<Root>
 			<MarketStatisticsBar />

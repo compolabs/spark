@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Column, Row } from "@components/Flex";
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import TokenInput from "@components/TokenInput";
@@ -49,14 +49,15 @@ const orderTypes = [
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore } = useStores();
 	const vm = usePerpTradeVM();
+	const [short, setShort] = useState(false);
 
 	return (
 		<Root {...rest}>
 			<ButtonGroup>
-				<Button active={!vm.isShort} onClick={() => vm.setIsShort(false)}>
+				<Button active={!short} onClick={() => setShort(false)}>
 					LONG
 				</Button>
-				<Button active={vm.isShort} onClick={() => vm.setIsShort(true)}>
+				<Button active={short} onClick={() => setShort(true)}>
 					SHORT
 				</Button>
 			</ButtonGroup>
@@ -75,8 +76,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				<SizedBox width={8} />
 				<TokenInput
 					decimals={vm.token1.decimals}
-					amount={vm.isShort ? vm.shortPrice : vm.longPrice}
-					setAmount={(v) => (vm.isShort ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
+					amount={short ? vm.shortPrice : vm.longPrice}
+					setAmount={(v) => (short ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
 					label="Market price"
 				/>
 			</Row>
@@ -85,10 +86,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				<TokenInput
 					assetId={vm.token0.assetId}
 					decimals={vm.token0.decimals}
-					amount={vm.isShort ? vm.shortAmount : vm.longAmount}
-					setAmount={(v) => (vm.isShort ? vm.setShortAmount(v, true) : vm.setLongAmount(v, true))}
-					// error={vm.isShort ? vm.shortAmountError : undefined}
-					// errorMessage="Insufficient amount"
+					amount={short ? vm.shortAmount : vm.longAmount}
+					setAmount={(v) => (short ? vm.setShortAmount(v, true) : vm.setLongAmount(v, true))}
 					label="Order size"
 				/>
 				<SizedBox width={8} />
@@ -98,10 +97,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					<TokenInput
 						assetId={vm.token1.assetId}
 						decimals={vm.token1.decimals}
-						amount={vm.isShort ? vm.shortTotal : vm.longTotal}
-						setAmount={(v) => (vm.isShort ? vm.setShortTotal(v, true) : vm.setLongTotal(v, true))}
-						// errorMessage="Insufficient amount"
-						// error={vm.isShort ? undefined : vm.longTotalError}
+						amount={short ? vm.shortTotal : vm.longTotal}
+						setAmount={(v) => (short ? vm.setShortTotal(v, true) : vm.setLongTotal(v, true))}
 					/>
 				</Column>
 			</Row>
@@ -110,9 +107,9 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				<Text type={TEXT_TYPES.SUPPORTING}>Available</Text>
 				<Row alignItems="center" mainAxisSize="fit-content">
 					<Text primary type={TEXT_TYPES.BODY}>
-						{accountStore.findBalanceByAssetId(vm.isShort ? vm.assetId0 : vm.assetId1)?.formatBalance ?? "-"}
+						{accountStore.findBalanceByAssetId(short ? vm.assetId0 : vm.assetId1)?.formatBalance ?? "-"}
 					</Text>
-					<Text type={TEXT_TYPES.SUPPORTING}>&nbsp;{vm.isShort ? vm.token0.symbol : vm.token1.symbol}</Text>
+					<Text type={TEXT_TYPES.SUPPORTING}>&nbsp;{short ? vm.token0.symbol : vm.token1.symbol}</Text>
 				</Row>
 			</Row>
 			{/*<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>*/}
@@ -128,9 +125,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 								Order Details
 							</Text>
 							<Row justifyContent="flex-end" alignItems="center">
-								<Text primary>
-									{BN.formatUnits(vm.isShort ? vm.shortAmount : vm.longAmount, vm.token0.decimals).toFormat(2)}
-								</Text>
+								<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.longAmount, vm.token0.decimals).toFormat(2)}</Text>
 								<Text>&nbsp;{vm.token0.symbol}</Text>
 							</Row>
 						</Row>
@@ -140,7 +135,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					<Row alignItems="center" justifyContent="space-between">
 						<Text nowrap>Max long</Text>
 						<Row justifyContent="flex-end" alignItems="center">
-							<Text primary>{BN.formatUnits(vm.isShort ? vm.shortTotal : vm.longTotal, vm.token1.decimals).toFormat(2)}</Text>
+							<Text primary>{BN.formatUnits(short ? vm.shortTotal : vm.longTotal, vm.token1.decimals).toFormat(2)}</Text>
 							<Text>&nbsp;{vm.token1.symbol}</Text>
 						</Row>
 					</Row>
@@ -156,9 +151,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					<Row alignItems="center" justifyContent="space-between">
 						<Text nowrap>Total amount</Text>
 						<Row justifyContent="flex-end" alignItems="center">
-							<Text primary>
-								{BN.formatUnits(vm.isShort ? vm.shortAmount : vm.shortAmount, vm.token0.decimals).toFormat(2)}
-							</Text>
+							<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.shortAmount, vm.token0.decimals).toFormat(2)}</Text>
 							<Text>&nbsp;{vm.token0.symbol}</Text>
 						</Row>
 					</Row>
@@ -166,12 +159,12 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 			</Accordion>
 			<SizedBox height={16} />
 			<Button
-				green={!vm.isShort}
-				red={vm.isShort}
-				disabled={vm.loading ? true : vm.isShort ? !vm.canSell : !vm.canShort}
-				onClick={() => vm.createOrder(vm.isShort ? "short" : "long")}
+				green={!short}
+				red={short}
+				disabled={vm.loading ? true : short ? !vm.canSell : !vm.canShort}
+				onClick={() => vm.createOrder(short ? "short" : "long")}
 			>
-				{vm.loading ? "Loading..." : vm.isShort ? `Sell ${vm.token0.symbol}` : `Buy ${vm.token0.symbol}`}
+				{vm.loading ? "Loading..." : short ? `Sell ${vm.token0.symbol}` : `Buy ${vm.token0.symbol}`}
 			</Button>
 		</Root>
 	);

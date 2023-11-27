@@ -22,7 +22,13 @@ export interface ISerializedTradeStore {
 	favMarkets: string | null;
 }
 
-const spotMarketsConfig = [{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYMBOL.USDC }].map((v) => ({
+const spotMarketsConfig = [
+	{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYMBOL.USDC },
+	{
+		token0: TOKENS_BY_SYMBOL.BTC,
+		token1: TOKENS_BY_SYMBOL.ETH,
+	},
+].map((v) => ({
 	...v,
 	symbol: `${v.token0.symbol}-${v.token1.symbol}`,
 	type: "spot",
@@ -47,8 +53,6 @@ class TradeStore {
 	marketSymbol: string | null = null;
 	setMarketSymbol = (v: string) => (this.marketSymbol = v);
 
-	// marketsConfig = [...spotMarketsConfig, ...perpMarketsConfig];
-	// marketsConfig = [...spotMarketsConfig, ...perpMarketsConfig];
 	marketsConfig: Record<string, IMarket> = [...spotMarketsConfig, ...perpMarketsConfig].reduce(
 		(acc, item) => {
 			acc[item.symbol] = item;
@@ -99,7 +103,6 @@ class TradeStore {
 	get market() {
 		return this.marketSymbol == null ? null : this.marketsConfig[this.marketSymbol];
 	}
-
 
 	get isMarketPerp() {
 		return this.marketSymbol == null ? false : this.marketsConfig[this.marketSymbol].type === "perp";

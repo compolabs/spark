@@ -23,10 +23,8 @@ const App: React.FC = observer(() => {
 		<Root>
 			<Header />
 			<Routes>
-				<Route path={ROUTES.REFERRAL} element={<Referral />} />
+				<Route path={ROUTES.ROOT} element={<Referral />} />
 				<Route path={ROUTES.TRADE} element={<TradeScreen />} />
-				{/*<Route path={ROUTES.TRADE} element={<TradeScreen />} />*/}
-				{/*<Route path={ROUTES.TRADE_MARKET} element={<TradeScreen />} />*/}
 				<Route path={ROUTES.FAUCET} element={<Faucet />} />
 				{/*<Route path="*" element={<Redirect/>} />*/}
 			</Routes>

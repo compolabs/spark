@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable } from "mobx";
+import { reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
@@ -26,20 +26,22 @@ class PerpTradeVm {
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
-		// const market = this.rootStore.tradeStore.markets.find(
-		// 	({ symbol, type }) => symbol === marketSymbol && type === "spot",
-		// );
-		// if (market == null) return;
-		// this.setAssetId0(market?.token0.assetId);
-		// this.setAssetId1(market?.token1.assetId);
-		// makeAutoObservable(this);
+		this.updateMarket();
+		reaction(
+			() => [this.rootStore.tradeStore.marketSymbol],
+			() => this.updateMarket(),
+		);
 	}
+
+	updateMarket = () => {
+		const market = this.rootStore.tradeStore.market;
+		if (market == null || market.type === "spot") return;
+		this.setAssetId0(market?.token0.assetId);
+		this.setAssetId1(market?.token1.assetId);
+	};
 
 	public loading: boolean = false;
 	private setLoading = (l: boolean) => (this.loading = l);
-
-	public isShort = false;
-	public setIsShort = (v: boolean) => (this.isShort = v);
 
 	public assetId0: string = TOKENS_BY_SYMBOL.UNI.assetId;
 	public setAssetId0 = (assetId: string) => (this.assetId0 = assetId);
