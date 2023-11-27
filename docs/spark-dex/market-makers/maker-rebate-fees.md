@@ -8,5 +8,5 @@ Please be aware that the current incentive program is subject to potential revis
 
 | Taker | Maker Fee (flat Maker Fee regardless of Taker Fee) |
 | ----- | -------------------------------------------------- |
-| AMM   | 0bps                                               |
+| AMM   | -0.2 bps (paid in Fuel token)                      |
 | User  | 0.2bps                                             |
