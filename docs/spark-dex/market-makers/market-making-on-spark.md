@@ -1,55 +1,63 @@
 # Market Making on Spark
 
-## Introduction
+**Market Maker Rewards Program:**
 
-Our platform offers the opportunity for any user to engage as a Market Maker. Market Makers play a pivotal role in providing liquidity through two distinct methods:
+**1. Maker Rebates:**
 
-### Just-in-Time Liquidity
+* **Description:** By placing limit orders and contributing liquidity to the order book, you qualify for maker rebates.
+* **Rebate Calculation:** 0.02% of the trading volume.
+* **Reward:** Earned in Spark Points, convertible to Fuel tokens at a rate of 300 Spark Point to 1 Fuel token.
 
-Market Makers can actively participate in the Just-in-Time (JIT) auction, allowing them to supply liquidity precisely when Taker flow is initiated. This unique capability affords Market Makers the advantage of seeing retail flow five seconds before it impacts the broader market. To delve deeper into the Just-in-Time Liquidity system, please explore Just-In-Time (JIT) Auctions.
+**2. Liquidity Mining Program:**
 
-### Decentralized Orderbook
+* **Description:** Participate in our liquidity mining program to receive additional rewards based on your liquidity provision.
+* **Reward Calculation:** Earn Spark Points using the formula: LP\_Spark\_Points = Liquidity Provided \* Days \* LP\_Weight
+* **Conversion Rate:** 300 Spark Point = 1 Fuel token.
+* **Example:** If you provide $1,000 in liquidity for 30 days with an LP\_Weight of 0.001, you earn 300 Spark Points, equivalent to 1 Fuel tokens.
 
-Market Makers also have the option to contribute liquidity to Spark's decentralized order book by quoting through the user interface or programmatically utilizing the SDK Documentation.
+**3. VIP Market Maker Program:**
 
-* **Providing liquidity via the UI**: Placing 'Post-Only' limit orders via Spark's user interface qualifies the order as a maker order. Such orders are not executed against the Automated Market Maker (AMM) or through the JIT. Instead, they remain in the decentralized order book until a suitable taker comes along. The 'POST' flag is activated in this case.
+* **Description:** For top-tier market makers contributing significant liquidity, unlock exclusive benefits through our VIP program.
+* **VIP Benefits:**
+  * Personalized fee structures.
+  * Priority access to new features and trading pairs.
+  * Dedicated support from the sprk.fi team.
+  * Enhanced Fuel token rewards for increased engagement.
 
-### Just-In-Time (JIT) Auctions
+**4. Volume-Based Fee Discounts:**
 
-#### Introduction
+* **Description:** The more you trade, the greater your fee discounts. Maximize your profitability through our tiered fee structure.
+*   **Volume Tiers and Fee Discounts:**
 
-The JIT Auction serves as a supplementary liquidity mechanism, empowering Market Makers (MMs) to offer 'Just-in-Time' liquidity. When a user (Taker) submits a market order, it automatically triggers an individualized Dutch Auction with specific start and end prices, along with a predefined duration. The auction framework compels MMs to compete in delivering the user's order at a price that either matches or surpasses the existing auction price. If no MM intervenes within the initial window (approximately 5 seconds), the user's order can be executed via Spark's AMM.
+    | Volume Tier | Trading Volume (USDC)                     | Fee Discount | Fuel Token Bonus |
+    | ----------- | ----------------------------------------- | ------------ | ---------------- |
+    | 1           | Up to 100,000 USDC within 30 days         | Standard Fee | -                |
+    | 2           | 100,001 - 500,000 USDC within 30 days     | 10%          | 100 Fuel tokens  |
+    | 3           | 500,001 - 1,000,000 USDC within 30 days   | 20%          | 250 Fuel tokens  |
+    | 4           | 1,000,001 - 5,000,000 USDC within 30 days | 30%          | 500 Fuel tokens  |
 
-#### Auction Price Bands
+**Standard Fees:**
 
-To enhance on-chain computational efficiency for Market Makers, the default start and end prices within the auction are determined based on the oracle price and Spark AMM prices. Similar to a traditional Dutch auction, the price transition occurs from the best price for the Taker to the worst price for the Taker (and conversely, from worst to best for the Maker).
+| Fee Type | Maker Fee | Taker Fee                          |
+| -------- | --------- | ---------------------------------- |
+| Standard | 0%        | 1 bps for stables and Fuel tokens  |
+| Standard | 0%        | 2 bps for BTC and ETH,             |
+| Standard | 0%        | 3 bps for all other tokens         |
 
-This process can be envisioned as a 'price band,' where the upper end of the band represents the maximum price the Taker is willing to pay. At the start of the JIT auction (t=0), the price at which the MM can fulfill the user's order is the furthest from the maximum price. As the auction nears its conclusion (t=5), the price approaches the maximum price.
+**VIP Market Maker Fees:**
 
-#### The Auction Lifecycle
+| Fee Type | Maker Fee  | Taker Fee  |
+| -------- | ---------- | ---------- |
+| VIP      | Customized | Customized |
 
-1. The user submits a market taker order.
-2. The taker order is broadcasted to Spark's Keeper Network, which meticulously tracks all user orders.
-3. The taker order initially proceeds through a Just-In-Time auction where Market Makers (MMs) have the opportunity to participate in a high-frequency Dutch auction to fulfill the user's orders.
-4. JIT auction prices typically commence at the Oracle price, and Makers can submit bids to fulfill the desired position.
-5. In the event that no Market Makers engage in the JIT auction, or if there is any remaining order size, the order is directed to Spark’s AMM, offering an additional source of virtual liquidity.
+**Rebate Calculation Formula:** $$Rebate=0.02%×Trading VolumeRebate=0.05%×Trading Volume$$
 
-#### Auction Pricing
+**Volume SLA (USDC) within 30 days:**
 
-For a market buy order:
+* Tier 1: Up to 100,000 USDC&#x20;
+* Tier 2: 100,001 - 500,000 USDC&#x20;
+* Tier 3: 500,001 - 1,000,000 USDC&#x20;
+* Tier 4: 1,000,001 - 5,000,000 USDC&#x20;
+* Tier 5: 5,000,001 - 10,000,000 USDC&#x20;
 
-* The auction initiates at the oracle price.
-* The auction concludes at the AMM's ask price.
-
-For a market sell order:
-
-* The auction starts at the oracle price.
-* The auction ends at the AMM's bid price.
-
-#### How It Differs from an RFQ System
-
-Unlike an RFQ system where the Maker is responsible for submitting their own prices, the auction prices are predetermined based on Spark’s AMM curves, which are founded on Spark's inventory-adjusted spreads as discussed in Spark AMM. The price of the auction is determined on-chain and is deterministic based on the auction's timing. In contrast, in an RFQ system, the Maker has the flexibility to submit their own price at any moment. As the 5-second auction progresses, the price becomes less favorable for Takers and more advantageous for Makers. Consequently, Market Makers must strive to maintain competitiveness to provide price improvements to traders.
-
-In an RFQ system, users receive quotes from Makers and can choose whether to accept them or not. In contrast, in a JIT auction, the prices are already pre-determined by Spark’s bid/ask curve, offering users price improvements over Spark’s AMM pricing.
-
-For more information on the Just-in-Time Liquidity system, check out Just-In-Time (JIT) Auctions
+**Note:** All rewards are provided in Fuel tokens. Fuel tokens can be redeemed for trading fee discounts, access to exclusive features, or exchanged for other project tokens on the sprk.fi platform. This comprehensive rewards program ensures that market makers on sprk.fi are not only compensated for their contributions but also have the flexibility to redeem their Fuel tokens for a variety of benefits tailored to their preferences.
