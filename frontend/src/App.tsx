@@ -5,9 +5,9 @@ import { observer } from "mobx-react";
 import Header from "@components/Header";
 import { Route, Routes } from "react-router-dom";
 import { ROUTES } from "@src/constants";
-import Referral from "@screens/Referral";
 import TradeScreen from "@screens/TradeScreen";
 import Faucet from "@screens/Faucet";
+import ConnectWallet from "@screens/ConnectWallet";
 
 const Root = styled(Column)`
 	width: 100%;
@@ -22,10 +22,10 @@ const App: React.FC = observer(() => {
 		<Root>
 			<Header />
 			<Routes>
-				<Route path={ROUTES.ROOT} element={<Referral />} />
+				<Route path={ROUTES.CONNECT} element={<ConnectWallet />} />
 				<Route path={ROUTES.TRADE} element={<TradeScreen />} />
+				<Route path={ROUTES.ROOT} element={<TradeScreen />} />
 				<Route path={ROUTES.FAUCET} element={<Faucet />} />
-				{/*<Route path="*" element={<>not found</>} w/>*/}
 			</Routes>
 		</Root>
 	);

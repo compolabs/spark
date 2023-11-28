@@ -135,23 +135,14 @@ const Header: React.FC<IProps> = observer(() => {
 				{accountStore.address != null ? (
 					<ConnectedWallet />
 				) : (
-					<Button
-						green
-						fitContent
-						onClick={() =>
-							accountStore.fuel == null ? window.open("https://wallet.fuel.network/docs/install/") : navigate(ROUTES.TRADE)
-						}
-					>
+					<Button green fitContent onClick={() => navigate(ROUTES.CONNECT)}>
 						Connect wallet
 					</Button>
 				)}
 			</Row>
 			<DepositWithdrawModal
 				visible={settingsStore.depositModalOpened}
-				onClose={() => {
-					console.log("close");
-					settingsStore.setDepositModal(false);
-				}}
+				onClose={() => settingsStore.setDepositModal(false)}
 			/>
 		</Root>
 	);

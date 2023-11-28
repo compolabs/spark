@@ -5,7 +5,6 @@ import AccountStore from "./AccountStore";
 import SettingsStore from "./SettingsStore";
 import NotificationStore from "./NotificationStore";
 import OrdersStore from "./OrdersStore";
-import ReferralStore from "./ReferralStore";
 import OracleStore from "./OracleStore";
 import TradeStore from "./TradeStore";
 
@@ -15,7 +14,6 @@ export {
 	AccountStore,
 	NotificationStore,
 	OrdersStore,
-	ReferralStore,
 	TradeStore,
 	OracleStore,
 	storesContext,

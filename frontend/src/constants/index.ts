@@ -3,6 +3,7 @@ import tokenLogos from "./tokenLogos";
 
 export const ROUTES = {
 	ROOT: "/",
+	CONNECT: "/connect",
 	TRADE: "/:marketId",
 	FAUCET: "/faucet",
 };

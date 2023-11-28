@@ -7,8 +7,7 @@ import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
 import SizedBox from "@components/SizedBox";
 import { useStores } from "@stores";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { ROUTES } from "@src/constants";
+import { useNavigate, useParams } from "react-router-dom";
 import { observer } from "mobx-react";
 import useWindowSize from "@src/hooks/useWindowSize";
 import LeftBlock from "src/screens/TradeScreen/LeftBlock.tsx";
@@ -42,10 +41,8 @@ const Root = styled.div`
 // `;
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
-	const { referralStore, settingsStore } = useStores();
 	const width = useWindowSize().width;
 	// const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
-	if (!referralStore.access) return <Navigate to={ROUTES.ROOT} />;
 	return width && width >= 880 ? (
 		<Root>
 			<MarketStatisticsBar />
@@ -92,6 +89,7 @@ const TradeScreen: React.FC<IProps> = () => {
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
 	const navigate = useNavigate();
+	console.log("market", market)
 	if (market == null) {
 		navigate({
 			pathname: `/${tradeStore.defaultMarketSymbol}`,
