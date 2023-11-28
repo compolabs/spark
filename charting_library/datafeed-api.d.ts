@@ -545,10 +545,10 @@ export interface LibrarySymbolInfo {
 	 *         : symbol.supported_resolutions(resolution);
 	 * ```
 	 *
-	 * In case of absence of `supported_resolutions` in a symbol info all DWM resolutions will be available. Intraday resolutions will be available if `has_intraday` is `true`.
+	 * In case of the absence of `supported_resolutions` in a symbol info, all DWM resolutions will be available. Intraday resolutions will be available if `has_intraday` is `true`.
 	 * Supported resolutions affect available timeframes too. The timeframe will not be available if it requires the resolution that is not supported.
 	 */
-	supported_resolutions: ResolutionString[];
+	supported_resolutions?: ResolutionString[];
 	/**
 	 * Array of resolutions (in minutes) supported directly by the data feed. Each such resolution may be passed to, and should be implemented by, `getBars`. The default of [] means that the data feed supports aggregating by any number of minutes.
 	 *
