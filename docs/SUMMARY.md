@@ -30,7 +30,7 @@
   * [Insurance Fund](spark-dex/perpetual-futures/insurance-fund.md)
 * [🧙♂ Market Makers](spark-dex/market-makers/README.md)
   * [Market Making on Spark](spark-dex/market-makers/market-making-on-spark.md)
-    * [Spark Points Earning Program](spark-dex/market-makers/market-making-on-spark/spark-points-earning-program.md)
+  * [Spark Points Earning Program](spark-dex/market-makers/spark-points-earning-program.md)
   * [Token Market Making Proposal](spark-dex/market-makers/token-market-making-proposal.md)
   * [Arbitrage opportunity](spark-dex/market-makers/arbitrage-opportunity.md)
 * [🌊 Liquidity provision](spark-dex/liquidity-provision.md)
