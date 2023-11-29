@@ -93,7 +93,7 @@ const ConnectWallet: React.FC<IProps> = observer(() => {
 							style={{ marginBottom: 16 }}
 							onClick={() => {
 								active && type && accountStore.login(type);
-								navigate(ROUTES.TRADE);
+								navigate(`/${tradeStore.defaultMarketSymbol}`);
 							}}
 							disabled={!active}
 						>
