@@ -29,8 +29,30 @@ export const CONTRACT_ADDRESSES = {
 	spotMarket: "0x9cf9ccbf69b30530ccb62c927ed4bad12a22815a8f9e2c3a5b14f644a43889f6",
 	tokenFactory: "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a",
 	referral: "0xe06f9223c5be21e37b76c073d50dab19c997c4b37d9246ffe9b4de930b8fee73",
-	vault: "0x676d63ae4fc58e4db95e0451be96b076a14232f4e29cde3607d4cc9300690b93",
+	accountBalance : "0x52b6cd88c7ce50c3b58650de9be6dd2406f7a4d4fb35f70568d766581fd3b3bd",
+	clearingHouse : "0x7efc0b1051f3162357a84b9ba83ae12a6544f2541e95cfc44a000bfd421132a7",
+	insuranceFund : "0x4e56c69c726d1daed6504d112ef3f72a43e948713f675e577a62690ad3e0abce",
+	perpMarket : "0x03779723bd446f4985db2ca360707b8a513b0436e5bf3c8cd991ebdb1026de61",
+	vault : "0xf15858671e39d7547fd45a20bc84bd5c12e61670195fa4bb020a1e4ac7bfe885",
 };
+
+// proxy = 0xb5f82e4611824d940ee98d7754f979ee502f8f3ecbd1450637e59ff0a70d6592
+// proxy = "fuel1khuzu3s3sfxegrhf34m4f7teaegzlre7e0g52p3huk0lpfcdvkfq8rq5qc"
+//
+// account_balance = 0x52b6cd88c7ce50c3b58650de9be6dd2406f7a4d4fb35f70568d766581fd3b3bd
+// account_balance = "fuel122mvmzx8eegv8dvx2r0fhekaysr00fx5lv6lwptg6an9s87nkw7sm2wkkl"
+//
+// clearing_house = 0x7efc0b1051f3162357a84b9ba83ae12a6544f2541e95cfc44a000bfd421132a7
+// clearing_house = "fuel10m7qkyz37vtzx4agfwd6swhp9fj5fuj5r62ul3z2qq9l6ss3x2nsc4h9up"
+//
+// insurance_fund = 0x4e56c69c726d1daed6504d112ef3f72a43e948713f675e577a62690ad3e0abce
+// insurance_fund = "fuel1fetvd8rjd5w6a4jsf5gjaulh9fp7jjr38an4u4m6vf5s45lq408qygptc4"
+//
+// perp_market = 0x03779723bd446f4985db2ca360707b8a513b0436e5bf3c8cd991ebdb1026de61
+// perp_market = "fuel1qdmewgaag3h5npwm9j3kqurm3fgnkppkuklnerxej84akypxmesseuv6gh"
+//
+// vault = 0xf15858671e39d7547fd45a20bc84bd5c12e61670195fa4bb020a1e4ac7bfe885
+// vault = "fuel179v9sec788t4gl75tgstep9atsfwv9nsr906fwczpg0y43alazzs57ucp2"
 
 export interface IToken {
 	logo: string;

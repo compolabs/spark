@@ -17,8 +17,8 @@ class OrdersStore {
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
-		this.sync().then(() => this.setInitialized(true));
-		setInterval(this.sync, 5000);
+		// this.sync().then(() => this.setInitialized(true));
+		// setInterval(this.sync, 5000);
 		reaction(() => this.rootStore.accountStore.address, this.sync);
 	}
 

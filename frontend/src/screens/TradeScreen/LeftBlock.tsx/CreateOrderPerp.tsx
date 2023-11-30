@@ -50,7 +50,7 @@ const orderTypes = [
 ];
 
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
-	const { accountStore } = useStores();
+	const { accountStore, tradeStore } = useStores();
 	const vm = usePerpTradeVM();
 	const [short, setShort] = useState(false);
 	const [leverage, setLeverage] = useState(0);
@@ -192,6 +192,14 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 			>
 				{vm.loading ? "Loading..." : short ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
 			</Button>
+			<SizedBox height={16} />
+			<Button green={!short} red={short} onClick={() => tradeStore.deposit(new BN(5000))}>
+				Deposit USDC
+			</Button>
+			<SizedBox height={16} />
+			<Button onClick={() => tradeStore.openOrder()}>Open order</Button>
+			<SizedBox height={16} />
+			<Button onClick={() => tradeStore.withdraw()}>Withdraw</Button>
 		</Root>
 	);
 });

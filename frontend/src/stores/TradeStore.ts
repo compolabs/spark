@@ -2,7 +2,8 @@ import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
 import { CONTRACT_ADDRESSES, IToken, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { VaultAbi__factory } from "@src/contracts";
+import { ClearingHouseAbi__factory, VaultAbi__factory } from "@src/contracts";
+import { log } from "fuels/dist/cli/utils/logger";
 
 export interface IMarket {
 	token0: IToken;
@@ -109,7 +110,9 @@ class TradeStore {
 	setMarketSelectionOpened = (s: boolean) => (this.marketSelectionOpened = s);
 
 	deposit = async (amount: BN) => {
-		const { accountStore, notificationStore } = this.rootStore;
+		const { accountStore } = this.rootStore;
+		const amountDep = BN.parseUnits(5, TOKENS_BY_SYMBOL.USDC.decimals);
+		await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
 			const vault = CONTRACT_ADDRESSES.vault;
@@ -120,10 +123,11 @@ class TradeStore {
 			const { transactionResult } = await vaultContract.functions
 				.deposit_collateral()
 				.callParams({
-					forward: { amount: amount.toString(), assetId: TOKENS_BY_SYMBOL.USDC.assetId },
+					forward: { amount: amountDep.toString(), assetId: TOKENS_BY_SYMBOL.USDC.assetId },
 				})
 				.txParams({ gasPrice: 1 })
 				.call();
+			console.log("transactionResult", transactionResult);
 			if (transactionResult != null) {
 				this.notifyThatActionIsSuccessful(`You have successfully deposited USDC`);
 			}
@@ -136,22 +140,55 @@ class TradeStore {
 			this._setLoading(false);
 		}
 	};
-	withdraw = async (amount: BN) => {
+	openOrder = async () => {
+		const { accountStore, oracleStore } = this.rootStore;
+		await accountStore.checkConnectionWithWallet();
+		try {
+			this._setLoading(true);
+			const ch = CONTRACT_ADDRESSES.clearingHouse;
+			const wallet = await accountStore.getWallet();
+			if (wallet == null) return;
+			const clearingHouse = ClearingHouseAbi__factory.connect(ch, wallet);
+
+			const btcToken = TOKENS_BY_SYMBOL.BTC;
+			const baseToken = { value: btcToken.assetId };
+			//todo what is baseSize?
+			const btcPrice = BN.parseUnits(TOKENS_BY_SYMBOL.USDC.decimals, 28000).toString();
+			const baseSize = { value: btcPrice, negative: false };
+			//todo how much of eth for pyth do i need to add?
+			if (oracleStore.updateData == null) return;
+
+			// const v = Address.fromAddressOrString(priceUpdate).toBytes();
+			// const m = base64ToArrayBuffer(priceUpdate);
+			const { transactionResult } = await clearingHouse.functions
+				.open_order(baseToken, baseSize, btcPrice, oracleStore.updateData)
+				.txParams({ gasPrice: 1 })
+				.call();
+			console.log("transactionResult", transactionResult);
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this._setLoading(false);
+		}
+	};
+	withdraw = async () => {
 		//todo check if user has enought of USDC
-		const { accountStore, notificationStore } = this.rootStore;
+		const { accountStore, oracleStore } = this.rootStore;
+		await accountStore.checkConnectionWithWallet();
+		const amount = BN.parseUnits(5, TOKENS_BY_SYMBOL.USDC.decimals);
 		try {
 			this._setLoading(true);
 			const vault = CONTRACT_ADDRESSES.vault;
 			const wallet = await accountStore.getWallet();
 			if (wallet == null) return;
 			const vaultContract = VaultAbi__factory.connect(vault, wallet);
-			const userAddress = wallet.address.toB256();
 			//todo make request to pyth
-			const priceUpdateData = {} as any;
+			const btcToken = TOKENS_BY_SYMBOL.BTC;
+			if (oracleStore.updateData == null) return;
+			console.log(oracleStore.updateData);
 
 			const { transactionResult } = await vaultContract.functions
-				//amount and update_data
-				.withdraw_collateral(amount.toString(), priceUpdateData)
+				.withdraw_collateral(amount.toString(), oracleStore.updateData)
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
@@ -159,9 +196,7 @@ class TradeStore {
 			}
 			await this.rootStore.accountStore.updateAccountBalances();
 		} catch (e) {
-			const errorText = e?.toString();
-			console.log(errorText);
-			this.notifyError(errorText ?? "", { type: "error" });
+			console.log(e);
 		} finally {
 			this._setLoading(false);
 		}

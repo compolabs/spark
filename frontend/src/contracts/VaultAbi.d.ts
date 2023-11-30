@@ -23,8 +23,6 @@ import type {
 
 import type { Enum, Vec } from "./common";
 
-export enum AccessErrorInput { CannotReinitialized = 'CannotReinitialized', NotOwner = 'NotOwner' };
-export enum AccessErrorOutput { CannotReinitialized = 'CannotReinitialized', NotOwner = 'NotOwner' };
 export enum ErrorInput { TradingIsPaused = 'TradingIsPaused', InvalidAsset = 'InvalidAsset', AccessDenied = 'AccessDenied', NotEnoughFreeCollateral = 'NotEnoughFreeCollateral', OnlyClearingHouse = 'OnlyClearingHouse', InvalidPythFeePayment = 'InvalidPythFeePayment' };
 export enum ErrorOutput { TradingIsPaused = 'TradingIsPaused', InvalidAsset = 'InvalidAsset', AccessDenied = 'AccessDenied', NotEnoughFreeCollateral = 'NotEnoughFreeCollateral', OnlyClearingHouse = 'OnlyClearingHouse', InvalidPythFeePayment = 'InvalidPythFeePayment' };
 export enum PauseErrorInput { Paused = 'Paused', NotPaused = 'NotPaused' };
@@ -42,6 +40,7 @@ export type RawBytesInput = { ptr: BigNumberish, cap: BigNumberish };
 export type RawBytesOutput = { ptr: BN, cap: BN };
 
 export type VaultAbiConfigurables = {
+  OWNER: AddressInput;
   PROXY_ADDRESS: AddressInput;
   SETTLEMENT_TOKEN: AssetIdInput;
 };

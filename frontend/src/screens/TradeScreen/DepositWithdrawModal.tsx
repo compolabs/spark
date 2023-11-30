@@ -33,7 +33,7 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 	const usdcBalanceFormat = BN.formatUnits(usdcBalance, TOKENS_BY_SYMBOL.USDC.decimals);
 	const freeCollateralFormat = BN.formatUnits(tradeStore.freeCollateral ?? 0, TOKENS_BY_SYMBOL.USDC.decimals);
 	return (
-		<Dialog {...rest} style={{ maxWidth: 362 }}>
+		<Dialog {...rest} style={{ maxWidth: 390 }} >
 			<Column crossAxisSize="max" style={{ maxHeight: 360 }}>
 				<Root>
 					<ButtonGroup style={{ padding: "0 12px" }}>
@@ -65,7 +65,7 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 						</Row>
 					</Row>
 					<SizedBox height={52} />
-					<Button onClick={() => (isWithdraw ? tradeStore.withdraw(withdrawAmount) : tradeStore.deposit(depositAmount))}>
+					<Button onClick={() => (isWithdraw ? tradeStore.withdraw() : tradeStore.deposit(depositAmount))}>
 						{isWithdraw ? "Withdraw" : "Deposit"}
 					</Button>
 				</Root>
