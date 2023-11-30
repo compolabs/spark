@@ -84,7 +84,6 @@ const Header: React.FC<IProps> = observer(() => {
 	const { accountStore, settingsStore } = useStores();
 	const location = useLocation();
 	const navigate = useNavigate();
-
 	return (
 		<Root>
 			<Row alignItems="center">

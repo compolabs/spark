@@ -4,8 +4,9 @@ import { makeAutoObservable } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
-import { TokenFactoryAbi__factory } from "@src/contracts";
+import { TokenAbi__factory, TokenFactoryAbi__factory } from "@src/contracts";
 import { hashMessage } from "fuels";
+import { AddressInput } from "@src/contracts/TokenAbi";
 
 const ctx = React.createContext<FaucetVM | null>(null);
 
@@ -23,11 +24,11 @@ export const useFaucetVM = () => useVM(ctx);
 
 const faucetAmounts: Record<string, number> = {
 	ETH: 0.5,
-	UNI: 50,
 	USDC: 300,
-	LINK: 50,
 	BTC: 0.01,
-	COMP: 5,
+	// UNI: 50,
+	// LINK: 50,
+	// COMP: 5,
 };
 const availableToMint = ["ETH", "UNI", "USDC"];
 
@@ -50,7 +51,10 @@ class FaucetVM {
 	get faucetTokens() {
 		const { accountStore } = this.rootStore;
 		if (accountStore.assetBalances == null) return [];
-		return TOKENS_LIST.filter((t) => t.symbol !== "SWAY").map((v) => {
+		//todo return spot tokens too
+
+		// return TOKENS_LIST.filter((t) => t.symbol !== "SWAY").map((v) => {
+		return [TOKENS_BY_SYMBOL.ETH, TOKENS_BY_SYMBOL.USDC, TOKENS_BY_SYMBOL.BTC].map((v) => {
 			const balance = accountStore.findBalanceByAssetId(v.assetId);
 			const mintAmount = new BN(faucetAmounts[v.symbol] ?? 0);
 			const formatBalance = BN.formatUnits(balance?.balance ?? BN.ZERO, v.decimals);
@@ -73,16 +77,16 @@ class FaucetVM {
 			this.setActionTokenAssetId(assetId);
 			const tokenFactory = CONTRACT_ADDRESSES.tokenFactory;
 			const wallet = await accountStore.getWallet();
-			if (wallet == null) return;
-			const tokenFactoryContract = TokenFactoryAbi__factory.connect(tokenFactory, wallet);
+			if (wallet == null || accountStore.addressInput == null) return;
+			const tokenFactoryContract = TokenAbi__factory.connect(tokenFactory, wallet);
 
 			const token = TOKENS_BY_ASSET_ID[assetId];
 			const amount = BN.parseUnits(faucetAmounts[token.symbol], token.decimals);
 			const hash = hashMessage(token.symbol);
-			const userAddress = wallet.address.toB256();
+			const identity = { Address: accountStore.addressInput };
 
 			const { transactionResult } = await tokenFactoryContract.functions
-				.mint({ value: userAddress }, hash, amount.toString())
+				.mint(identity, hash, amount.toString())
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {

@@ -8,7 +8,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-end;
-
     display: flex;
 }
 
@@ -22,34 +21,31 @@
 .rc-dialog {
     margin: 0;
     width: 100%;
-    max-width: 880px;
+    max-width: 390px;
+    background: #141414;
+    border-radius: 10px;
     /*width: calc(100% - 32px);*/
 }
 
 .rc-dialog-content {
     border-radius: 10px;
     background: #141414;
-    /*overflow: hidden;*/
-    min-height: 286px;
-    padding: 0;
+    /*min-height: 286px;*/
+    /*padding: 0;*/
 }
 
 
 .rc-dialog-body {
+    padding: 0;
     box-sizing: border-box;
-    padding: 48px 0;
 }
 
-.rc-dialog-title {
-    font-family: Roboto, sans-serif;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 24px;
+.rc-dialog-header {
+    padding: 20px 12px;
+    background: #141414;
     color: #FFFFFF;
-
+    border: none;
 }
-
 
 .rc-dialog-close {
     opacity: 1;
@@ -57,7 +53,7 @@
     right: 8px;
     width: 40px;
     height: 40px;
-    padding: 0;
+    display: none;
 }
 
 @media (min-width: 400px) {

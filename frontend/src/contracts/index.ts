@@ -19,6 +19,7 @@ export type { AccountBalanceAbi } from './AccountBalanceAbi';
 export type { ClearingHouseAbi } from './ClearingHouseAbi';
 export type { InsuranceFundAbi } from './InsuranceFundAbi';
 export type { PerpMarketAbi } from './PerpMarketAbi';
+export type { TokenAbi } from './TokenAbi';
 
 export { SpotMarketAbi__factory } from './factories/SpotMarketAbi__factory';
 export { TokenFactoryAbi__factory } from './factories/TokenFactoryAbi__factory';
@@ -30,3 +31,4 @@ export { AccountBalanceAbi__factory } from './factories/AccountBalanceAbi__facto
 export { ClearingHouseAbi__factory } from './factories/ClearingHouseAbi__factory';
 export { InsuranceFundAbi__factory } from './factories/InsuranceFundAbi__factory';
 export { PerpMarketAbi__factory } from './factories/PerpMarketAbi__factory';
+export { TokenAbi__factory } from './factories/TokenAbi__factory';

@@ -27,8 +27,7 @@ export const INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabili
 export const CONTRACT_ADDRESSES = {
 	priceOracle: "0x633fad7666495c53daa41cc329b78a554f215af4b826671ee576f2a30096999d",
 	spotMarket: "0x9cf9ccbf69b30530ccb62c927ed4bad12a22815a8f9e2c3a5b14f644a43889f6",
-	tokenFactory: "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a",
-	referral: "0xe06f9223c5be21e37b76c073d50dab19c997c4b37d9246ffe9b4de930b8fee73",
+	tokenFactory: "0xa18cef5ffcdd7a1f8d83cd4bc42c6651c93e0299a8f42672f47fd74723839b7f",
 	accountBalance : "0x52b6cd88c7ce50c3b58650de9be6dd2406f7a4d4fb35f70568d766581fd3b3bd",
 	clearingHouse : "0x7efc0b1051f3162357a84b9ba83ae12a6544f2541e95cfc44a000bfd421132a7",
 	insuranceFund : "0x4e56c69c726d1daed6504d112ef3f72a43e948713f675e577a62690ad3e0abce",

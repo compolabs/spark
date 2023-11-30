@@ -12,6 +12,8 @@ import BN from "@src/utils/BN";
 import { TOKENS_BY_SYMBOL } from "@src/constants";
 import MaxButton from "@src/components/MaxButton";
 import Text, { TEXT_TYPES } from "@components/Text";
+import arrow from "@src/assets/icons/arrowUp.svg";
+import Select from "@components/Select";
 
 export interface IProps extends IDialogPropTypes {}
 
@@ -24,52 +26,67 @@ const Root = styled.div`
 	width: 100%;
 	padding: 12px;
 `;
+
+const tokens = [{ title: "USDC", key: "usdc" }];
 const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 	const { tradeStore, accountStore } = useStores();
-	const [isWithdraw, setIsWithdraw] = useState(true);
+	const [isDeposit, setIsDeposit] = useState(true);
 	const [depositAmount, setDepositAmount] = useState(BN.ZERO);
 	const [withdrawAmount, setWithdrawAmount] = useState(BN.ZERO);
 	const usdcBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.USDC) ?? BN.ZERO;
 	const usdcBalanceFormat = BN.formatUnits(usdcBalance, TOKENS_BY_SYMBOL.USDC.decimals);
 	const freeCollateralFormat = BN.formatUnits(tradeStore.freeCollateral ?? 0, TOKENS_BY_SYMBOL.USDC.decimals);
 	return (
-		<Dialog {...rest} style={{ maxWidth: 390 }} >
-			<Column crossAxisSize="max" style={{ maxHeight: 360 }}>
-				<Root>
-					<ButtonGroup style={{ padding: "0 12px" }}>
-						<Button active={isWithdraw} onClick={() => setIsWithdraw(true)}>
-							Withdraw
-						</Button>
-						<Button active={!isWithdraw} onClick={() => setIsWithdraw(false)}>
-							Deposit
-						</Button>
-					</ButtonGroup>
-					<SizedBox height={12} />
+		<Dialog
+			{...rest}
+			title={
+				<Row>
+					<img src={arrow} alt="arrow-back" style={{ cursor: "pointer", rotate: "90deg" }} />
+					<SizedBox width={10} />
+					<Text type={TEXT_TYPES.H} color="primary">
+						Deposit / Withdraw
+					</Text>
+				</Row>
+			}
+		>
+			<Root>
+				<ButtonGroup>
+					<Button active={isDeposit} onClick={() => setIsDeposit(true)}>
+						Deposit
+					</Button>
+					<Button active={!isDeposit} onClick={() => setIsDeposit(false)}>
+						Withdraw
+					</Button>
+				</ButtonGroup>
+				<SizedBox height={12} />
+				<Row>
+					<Select label="Asset" options={tokens} onSelect={() => {}} />
+					<SizedBox width={8} />
 					<TokenInput
 						decimals={TOKENS_BY_SYMBOL.USDC.decimals}
-						amount={isWithdraw ? withdrawAmount : depositAmount}
-						setAmount={(v) => (isWithdraw ? setWithdrawAmount(v) : setDepositAmount(v))}
+						amount={isDeposit ? withdrawAmount : depositAmount}
+						setAmount={(v) => (isDeposit ? setWithdrawAmount(v) : setDepositAmount(v))}
 						label="Amount"
 					/>
-					<SizedBox height={4} />
-					<Row alignItems="center" justifyContent="space-between">
-						<Text type={TEXT_TYPES.SUPPORTING}>{isWithdraw ? "Available to withdraw" : "Wallet balance"}</Text>
-						<Row alignItems="center" mainAxisSize="fit-content">
-							<Text type={TEXT_TYPES.SUPPORTING}>
-								{isWithdraw ? `${freeCollateralFormat.toFormat(2)} USDC` : `${usdcBalanceFormat.toFormat(2)} USDC`}
-							</Text>
-							<SizedBox width={4} />
-							<MaxButton fitContent onClick={() => (isWithdraw ? {} : setDepositAmount(usdcBalance))}>
-								MAX
-							</MaxButton>
-						</Row>
+				</Row>
+				<SizedBox height={4} />
+				<Row alignItems="center" justifyContent="space-between">
+					<Text type={TEXT_TYPES.SUPPORTING}>{isDeposit ? "Wallet balance" : "Available to withdraw"}</Text>
+					<Row alignItems="center" mainAxisSize="fit-content">
+						<Text type={TEXT_TYPES.SUPPORTING}>
+							{isDeposit ? `${usdcBalanceFormat.toFormat(2)} USDC` : `${freeCollateralFormat.toFormat(2)} USDC`}
+						</Text>
+						<SizedBox width={4} />
+						<MaxButton fitContent onClick={() => (isDeposit ? setDepositAmount(usdcBalance) : {})}>
+							MAX
+						</MaxButton>
 					</Row>
-					<SizedBox height={52} />
-					<Button onClick={() => (isWithdraw ? tradeStore.withdraw() : tradeStore.deposit(depositAmount))}>
-						{isWithdraw ? "Withdraw" : "Deposit"}
-					</Button>
-				</Root>
-			</Column>
+				</Row>
+				<SizedBox height={52} />
+				<Button onClick={() => (!isDeposit ? tradeStore.withdraw() : tradeStore.deposit(depositAmount))}>
+					{isDeposit ? "Withdraw" : "Deposit"}
+				</Button>
+			</Root>
 		</Dialog>
 	);
 };

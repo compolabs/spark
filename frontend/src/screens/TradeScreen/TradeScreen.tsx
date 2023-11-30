@@ -89,7 +89,6 @@ const TradeScreen: React.FC<IProps> = () => {
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
 	const navigate = useNavigate();
-	console.log("market", market)
 	if (market == null) {
 		navigate({
 			pathname: `/${tradeStore.defaultMarketSymbol}`,

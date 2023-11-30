@@ -3,7 +3,6 @@ import RootStore from "@stores/RootStore";
 import { CONTRACT_ADDRESSES, IToken, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { ClearingHouseAbi__factory, VaultAbi__factory } from "@src/contracts";
-import { log } from "fuels/dist/cli/utils/logger";
 
 export interface IMarket {
 	token0: IToken;
@@ -111,7 +110,6 @@ class TradeStore {
 
 	deposit = async (amount: BN) => {
 		const { accountStore } = this.rootStore;
-		const amountDep = BN.parseUnits(5, TOKENS_BY_SYMBOL.USDC.decimals);
 		await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
@@ -123,11 +121,10 @@ class TradeStore {
 			const { transactionResult } = await vaultContract.functions
 				.deposit_collateral()
 				.callParams({
-					forward: { amount: amountDep.toString(), assetId: TOKENS_BY_SYMBOL.USDC.assetId },
+					forward: { amount: amount.toString(), assetId: TOKENS_BY_SYMBOL.USDC.assetId },
 				})
 				.txParams({ gasPrice: 1 })
 				.call();
-			console.log("transactionResult", transactionResult);
 			if (transactionResult != null) {
 				this.notifyThatActionIsSuccessful(`You have successfully deposited USDC`);
 			}
@@ -183,10 +180,7 @@ class TradeStore {
 			if (wallet == null) return;
 			const vaultContract = VaultAbi__factory.connect(vault, wallet);
 			//todo make request to pyth
-			const btcToken = TOKENS_BY_SYMBOL.BTC;
 			if (oracleStore.updateData == null) return;
-			console.log(oracleStore.updateData);
-
 			const { transactionResult } = await vaultContract.functions
 				.withdraw_collateral(amount.toString(), oracleStore.updateData)
 				.txParams({ gasPrice: 1 })
