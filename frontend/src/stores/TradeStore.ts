@@ -7,6 +7,7 @@ import {
 	ClearingHouseAbi__factory,
 	InsuranceFundAbi__factory,
 	ProxyAbi__factory,
+	PythContractAbi__factory,
 	VaultAbi,
 	VaultAbi__factory,
 } from "@src/contracts";
@@ -199,10 +200,10 @@ class TradeStore {
 					forward: { amount: fee, assetId: TOKENS_BY_SYMBOL.ETH.assetId },
 				})
 				.addContracts([
+					contracts?.pythContractAbi,
 					contracts?.accountBalanceAbi,
 					contracts?.proxyAbi,
 					contracts?.clearingHouseAbi,
-					contracts?.insuranceFundAbi,
 				])
 				.txParams({ gasPrice: 1 })
 				.call();
@@ -283,12 +284,14 @@ class TradeStore {
 		const clearingHouseAbi = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
 		const accountBalanceAbi = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
 		const insuranceFundAbi = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
+		const pythContractAbi = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
 		return {
 			vaultAbi,
 			proxyAbi,
 			clearingHouseAbi,
 			accountBalanceAbi,
 			insuranceFundAbi,
+			pythContractAbi,
 		};
 	}
 }
