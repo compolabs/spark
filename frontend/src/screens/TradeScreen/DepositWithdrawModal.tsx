@@ -95,7 +95,7 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 					onClick={() => (isDeposit ? tradeStore.deposit(depositAmount) : tradeStore.withdraw(withdrawAmount))}
 					disabled={!(isDeposit ? canDeposit : canWithdraw)}
 				>
-					{isDeposit ? "Deposit" : "Withdraw"}
+					{tradeStore.loading ? "Loading..." : isDeposit ? "Deposit" : "Withdraw"}
 				</Button>
 			</Root>
 		</Dialog>

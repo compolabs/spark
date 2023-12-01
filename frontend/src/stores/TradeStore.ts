@@ -186,9 +186,10 @@ class TradeStore {
 		await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
+			const contracts = this.contractsToRead;
 			const vault = CONTRACT_ADDRESSES.vault;
 			const wallet = await accountStore.getWallet();
-			if (wallet == null) return;
+			if (wallet == null || contracts == null) return;
 			const vaultContract = VaultAbi__factory.connect(vault, wallet);
 			const fee = await oracleStore.getPythFee();
 			if (oracleStore.updateData == null || fee == null) return;
@@ -197,9 +198,16 @@ class TradeStore {
 				.callParams({
 					forward: { amount: fee, assetId: TOKENS_BY_SYMBOL.ETH.assetId },
 				})
+				.addContracts([
+					contracts?.accountBalanceAbi,
+					contracts?.proxyAbi,
+					contracts?.clearingHouseAbi,
+					contracts?.insuranceFundAbi,
+				])
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
+				console.log("transactionResult", transactionResult);
 				this.notifyThatActionIsSuccessful(`You have successfully deposited USDC`);
 			}
 			await this.rootStore.accountStore.updateAccountBalances();
