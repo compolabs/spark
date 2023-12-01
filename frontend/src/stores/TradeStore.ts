@@ -1,8 +1,17 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import RootStore from "@stores/RootStore";
 import { CONTRACT_ADDRESSES, IToken, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { ClearingHouseAbi__factory, VaultAbi__factory } from "@src/contracts";
+import {
+	AccountBalanceAbi__factory,
+	ClearingHouseAbi__factory,
+	InsuranceFundAbi__factory,
+	ProxyAbi__factory,
+	VaultAbi,
+	VaultAbi__factory,
+} from "@src/contracts";
+import { AddressInput } from "@src/contracts/VaultAbi";
+import accountStore from "@stores/AccountStore";
 
 export interface IMarket {
 	token0: IToken;
@@ -47,6 +56,9 @@ class TradeStore {
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
 		this.setPerpMarkets(perpMarketsConfig);
+		reaction(() => this.rootStore.accountStore.walletToRead, this.updateState);
+		// this.updateState();
+		setInterval(this.updateState, 20 * 1000);
 
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
@@ -67,6 +79,8 @@ class TradeStore {
 		},
 		{} as Record<string, IMarket>,
 	);
+	initialized: boolean = false;
+	private setInitialized = (l: boolean) => (this.initialized = l);
 	loading: boolean = false;
 	private _setLoading = (l: boolean) => (this.loading = l);
 
@@ -117,7 +131,6 @@ class TradeStore {
 			const wallet = await accountStore.getWallet();
 			if (wallet == null) return;
 			const vaultContract = VaultAbi__factory.connect(vault, wallet);
-
 			const { transactionResult } = await vaultContract.functions
 				.deposit_collateral()
 				.callParams({
@@ -168,21 +181,22 @@ class TradeStore {
 			this._setLoading(false);
 		}
 	};
-	withdraw = async () => {
-		//todo check if user has enought of USDC
+	withdraw = async (amount: BN) => {
 		const { accountStore, oracleStore } = this.rootStore;
 		await accountStore.checkConnectionWithWallet();
-		const amount = BN.parseUnits(5, TOKENS_BY_SYMBOL.USDC.decimals);
 		try {
 			this._setLoading(true);
 			const vault = CONTRACT_ADDRESSES.vault;
 			const wallet = await accountStore.getWallet();
 			if (wallet == null) return;
 			const vaultContract = VaultAbi__factory.connect(vault, wallet);
-			//todo make request to pyth
-			if (oracleStore.updateData == null) return;
+			const fee = await oracleStore.getPythFee();
+			if (oracleStore.updateData == null || fee == null) return;
 			const { transactionResult } = await vaultContract.functions
 				.withdraw_collateral(amount.toString(), oracleStore.updateData)
+				.callParams({
+					forward: { amount: fee, assetId: TOKENS_BY_SYMBOL.ETH.assetId },
+				})
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
@@ -196,10 +210,6 @@ class TradeStore {
 		}
 	};
 
-	/////////////get values
-	getFreeCollateral = async () => {
-		this.setFreeCollateral(BN.ZERO);
-	};
 	notifyThatActionIsSuccessful = (title: string, txId?: string) => {
 		this.rootStore.notificationStore.toast(title, {
 			type: "success",
@@ -211,6 +221,68 @@ class TradeStore {
 			type: "error",
 		});
 	};
+
+	rejectUpdateStatePromise?: () => void;
+	setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
+	updateState = async () => {
+		const { accountStore } = this.rootStore;
+		if (accountStore.address == null || accountStore.addressInput == null) return;
+		const wallet = accountStore.walletToRead;
+		if (wallet == null) return;
+		const vault = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+		if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
+
+		const promise = new Promise((resolve, reject) => {
+			this.rejectUpdateStatePromise = reject;
+			resolve(Promise.all([this.updateFreeCollateral(vault)]));
+		});
+
+		promise
+			.catch((v) => console.error(v))
+			.finally(() => {
+				this.setInitialized(true);
+				this.setRejectUpdateStatePromise(undefined);
+			});
+	};
+
+	updateFreeCollateral = async (vault: VaultAbi) => {
+		const addressInput = this.rootStore.accountStore.addressInput;
+		if (addressInput == null) return;
+
+		const contracts = this.contractsToRead;
+		if (contracts == null) return;
+		const result = await vault.functions
+			.get_free_collateral(addressInput)
+			.addContracts([
+				contracts?.accountBalanceAbi,
+				contracts?.proxyAbi,
+				contracts?.clearingHouseAbi,
+				contracts?.insuranceFundAbi,
+			])
+			.simulate();
+
+		if (result.value != null) {
+			this.setFreeCollateral(new BN(result.value.value.toString()));
+		}
+	};
+
+	get contractsToRead() {
+		const { accountStore } = this.rootStore;
+		const wallet = accountStore.walletToRead;
+		if (wallet == null) return null;
+		const vaultAbi = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+		const proxyAbi = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
+		const clearingHouseAbi = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
+		const accountBalanceAbi = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
+		const insuranceFundAbi = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
+		return {
+			vaultAbi,
+			proxyAbi,
+			clearingHouseAbi,
+			accountBalanceAbi,
+			insuranceFundAbi,
+		};
+	}
 }
 
 export default TradeStore;

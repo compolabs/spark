@@ -20,7 +20,9 @@ export type { ClearingHouseAbi } from './ClearingHouseAbi';
 export type { InsuranceFundAbi } from './InsuranceFundAbi';
 export type { PerpMarketAbi } from './PerpMarketAbi';
 export type { TokenAbi } from './TokenAbi';
+export type { PythContractAbi } from './PythContractAbi';
 
+export { PythContractAbi__factory } from './factories/PythContractAbi__factory';
 export { SpotMarketAbi__factory } from './factories/SpotMarketAbi__factory';
 export { TokenFactoryAbi__factory } from './factories/TokenFactoryAbi__factory';
 export { OracleAbi__factory } from './factories/OracleAbi__factory';

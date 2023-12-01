@@ -36,12 +36,15 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 	const usdcBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.USDC) ?? BN.ZERO;
 	const usdcBalanceFormat = BN.formatUnits(usdcBalance, TOKENS_BY_SYMBOL.USDC.decimals);
 	const freeCollateralFormat = BN.formatUnits(tradeStore.freeCollateral ?? 0, TOKENS_BY_SYMBOL.USDC.decimals);
+	const canDeposit = depositAmount.gt(0) && depositAmount.lte(usdcBalance);
+	const canWithdraw = withdrawAmount.gt(0) && tradeStore.freeCollateral?.lte(withdrawAmount);
+
 	return (
 		<Dialog
 			{...rest}
 			title={
 				<Row>
-					<img src={arrow} alt="arrow-back" style={{ cursor: "pointer", rotate: "90deg" }} />
+					<img src={arrow} alt="arrow-back" style={{ cursor: "pointer", rotate: "90deg" }} onClick={rest?.onClose} />
 					<SizedBox width={10} />
 					<Text type={TEXT_TYPES.H} color="primary">
 						Deposit / Withdraw
@@ -64,8 +67,8 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 					<SizedBox width={8} />
 					<TokenInput
 						decimals={TOKENS_BY_SYMBOL.USDC.decimals}
-						amount={isDeposit ? withdrawAmount : depositAmount}
-						setAmount={(v) => (isDeposit ? setWithdrawAmount(v) : setDepositAmount(v))}
+						amount={isDeposit ? depositAmount : withdrawAmount}
+						setAmount={(v) => (isDeposit ? setDepositAmount(v) : setWithdrawAmount(v))}
 						label="Amount"
 					/>
 				</Row>
@@ -77,14 +80,22 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 							{isDeposit ? `${usdcBalanceFormat.toFormat(2)} USDC` : `${freeCollateralFormat.toFormat(2)} USDC`}
 						</Text>
 						<SizedBox width={4} />
-						<MaxButton fitContent onClick={() => (isDeposit ? setDepositAmount(usdcBalance) : {})}>
+						<MaxButton
+							fitContent
+							onClick={() =>
+								isDeposit ? setDepositAmount(usdcBalance) : setWithdrawAmount(tradeStore.freeCollateral ?? BN.ZERO)
+							}
+						>
 							MAX
 						</MaxButton>
 					</Row>
 				</Row>
 				<SizedBox height={52} />
-				<Button onClick={() => (!isDeposit ? tradeStore.withdraw() : tradeStore.deposit(depositAmount))}>
-					{isDeposit ? "Withdraw" : "Deposit"}
+				<Button
+					onClick={() => (isDeposit ? tradeStore.deposit(depositAmount) : tradeStore.withdraw(withdrawAmount))}
+					disabled={!(isDeposit ? canDeposit : canWithdraw)}
+				>
+					{isDeposit ? "Deposit" : "Withdraw"}
 				</Button>
 			</Root>
 		</Dialog>

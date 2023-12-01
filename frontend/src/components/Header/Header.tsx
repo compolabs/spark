@@ -121,14 +121,7 @@ const Header: React.FC<IProps> = observer(() => {
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<DesktopRow>
-					<SettingsButton
-						onClick={() => {
-							console.log("Deposit/Withdraw");
-							settingsStore.setDepositModal(true);
-						}}
-					>
-						Deposit/Withdraw
-					</SettingsButton>
+					<SettingsButton onClick={() => settingsStore.setDepositModal(true)}>Deposit/Withdraw</SettingsButton>
 					<SizedBox width={10} />
 				</DesktopRow>
 				{accountStore.address != null ? (

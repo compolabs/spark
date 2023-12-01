@@ -198,8 +198,6 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 			</Button>
 			<SizedBox height={16} />
 			<Button onClick={() => tradeStore.openOrder()}>Open order</Button>
-			<SizedBox height={16} />
-			<Button onClick={() => tradeStore.withdraw()}>Withdraw</Button>
 		</Root>
 	);
 });

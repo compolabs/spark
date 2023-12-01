@@ -1,9 +1,10 @@
 import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
 import { EvmPriceServiceConnection, Price, PriceFeed } from "@pythnetwork/pyth-evm-js";
-import { TOKENS_LIST } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_LIST } from "@src/constants";
 import { arrayify, Bytes } from "fuels";
 import { Vec } from "@src/contracts/common";
+import { PythContractAbi__factory } from "@src/contracts";
 
 class OracleStore {
 	public rootStore: RootStore;
@@ -16,6 +17,9 @@ class OracleStore {
 
 	updateData: Vec<Bytes> | null = null;
 	private setUpdateData = (v: Vec<Bytes>) => (this.updateData = v);
+
+	feePrice: number = 0;
+	private setFeePrice = (v: number) => (this.feePrice = v);
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
@@ -45,6 +49,14 @@ class OracleStore {
 			const price = priceFeed.getPriceUnchecked();
 			this.setPrices((prev: any) => ({ ...prev, [priceFeed.id]: price }));
 		});
+	};
+	getPythFee = async () => {
+		const { accountStore } = this.rootStore;
+		const wallet = await accountStore.getWallet();
+		if (wallet == null || this.updateData == null) return;
+		const pythContractAbi = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
+		const fee = await pythContractAbi.functions.update_fee(this.updateData).simulate();
+		return fee.value.toString() ?? "0";
 	};
 }
 
