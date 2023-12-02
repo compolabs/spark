@@ -92,25 +92,25 @@ const Header: React.FC<IProps> = observer(() => {
 				</a>
 				<Divider />
 				<TabContainer>
-					{MENU_ITEMS.map(({ title, link, route }, key) => {
+					{MENU_ITEMS.map(({ title, link, route }) => {
 						if (link == null && route == null)
 							return (
-								<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
+								<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={title}>
 									{title}
 								</Tab>
 							);
 						else if (route != null)
 							return (
-								<Link to={route} key={key}>
-									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key} active={isRoutesEquals(route, location.pathname)}>
+								<Link to={route} key={title}>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={title} active={isRoutesEquals(route, location.pathname)}>
 										{title}
 									</Tab>
 								</Link>
 							);
 						else if (link != null)
 							return (
-								<a rel="noopener noreferrer" target="_blank" href={link} key={key}>
-									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
+								<a rel="noopener noreferrer" target="_blank" href={link} key={title}>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={title}>
 										{title}
 									</Tab>
 								</a>

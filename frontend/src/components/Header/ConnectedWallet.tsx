@@ -109,7 +109,7 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
 					{actions.map(
 						({ title, action, active, icon }) =>
 							active && (
-								<ActionRow onClick={action}>
+								<ActionRow onClick={action} key={title}>
 									<Icon src={icon} alt="ETH" />
 									<SizedBox width={8} />
 									<Text type={TEXT_TYPES.BUTTON_SECONDARY}>{title}</Text>

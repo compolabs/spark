@@ -11,8 +11,6 @@ import {
 	VaultAbi,
 	VaultAbi__factory,
 } from "@src/contracts";
-import { AddressInput } from "@src/contracts/VaultAbi";
-import accountStore from "@stores/AccountStore";
 
 export interface IMarket {
 	token0: IToken;
@@ -140,44 +138,14 @@ class TradeStore {
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
-				this.notifyThatActionIsSuccessful(`You have successfully deposited USDC`);
+				const formattedAmount = BN.formatUnits(amount, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
+				this.notifyThatActionIsSuccessful(`You have successfully deposited ${formattedAmount} USDC`);
 			}
 			await this.rootStore.accountStore.updateAccountBalances();
 		} catch (e) {
 			const errorText = e?.toString();
 			console.log(errorText);
 			this.notifyError(errorText ?? "", { type: "error" });
-		} finally {
-			this._setLoading(false);
-		}
-	};
-	openOrder = async () => {
-		const { accountStore, oracleStore } = this.rootStore;
-		await accountStore.checkConnectionWithWallet();
-		try {
-			this._setLoading(true);
-			const ch = CONTRACT_ADDRESSES.clearingHouse;
-			const wallet = await accountStore.getWallet();
-			if (wallet == null) return;
-			const clearingHouse = ClearingHouseAbi__factory.connect(ch, wallet);
-
-			const btcToken = TOKENS_BY_SYMBOL.BTC;
-			const baseToken = { value: btcToken.assetId };
-			//todo what is baseSize?
-			const btcPrice = BN.parseUnits(TOKENS_BY_SYMBOL.USDC.decimals, 28000).toString();
-			const baseSize = { value: btcPrice, negative: false };
-			//todo how much of eth for pyth do i need to add?
-			if (oracleStore.updateData == null) return;
-
-			// const v = Address.fromAddressOrString(priceUpdate).toBytes();
-			// const m = base64ToArrayBuffer(priceUpdate);
-			const { transactionResult } = await clearingHouse.functions
-				.open_order(baseToken, baseSize, btcPrice, oracleStore.updateData)
-				.txParams({ gasPrice: 1 })
-				.call();
-			console.log("transactionResult", transactionResult);
-		} catch (e) {
-			console.log(e);
 		} finally {
 			this._setLoading(false);
 		}
@@ -208,12 +176,13 @@ class TradeStore {
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
-				console.log("transactionResult", transactionResult);
-				this.notifyThatActionIsSuccessful(`You have successfully deposited USDC`);
+				const formattedAmount = BN.formatUnits(amount, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
+				this.notifyThatActionIsSuccessful(`You have successfully ${formattedAmount}withdrawn USDC`);
 			}
 			await this.rootStore.accountStore.updateAccountBalances();
 		} catch (e) {
 			console.log(e);
+			this.notifyError("Error", e?.toString());
 		} finally {
 			this._setLoading(false);
 		}

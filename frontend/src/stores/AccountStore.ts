@@ -169,6 +169,7 @@ class AccountStore {
 		const wallet = Wallet.fromPrivateKey(seed, this.provider);
 		this.setAddress(wallet.address.toAddress());
 		this.rootStore.notificationStore.toast("You can copy your seed in account section", { type: "info" });
+		this.rootStore.notificationStore.toast("Go to faucet page to mint tokens", { type: "warning" });
 	};
 
 	get isLoggedIn() {

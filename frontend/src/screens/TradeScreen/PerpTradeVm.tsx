@@ -2,8 +2,9 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
-import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
+import { ClearingHouseAbi, ClearingHouseAbi__factory, VaultAbi, VaultAbi__factory } from "@src/contracts";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -19,10 +20,18 @@ export const PerpTradeVMProvider: React.FC<IProps> = ({ children }) => {
 
 type OrderAction = "long" | "short";
 
+//get_max_abs_position_size вернет значение в графу order size,
+// ордер value посчитайте на фронте умножив на цену которую указал пользователь
 export const usePerpTradeVM = () => useVM(ctx);
 
 class PerpTradeVm {
 	public rootStore: RootStore;
+
+	initialized: boolean = false;
+	private setInitialized = (l: boolean) => (this.initialized = l);
+
+	rejectUpdateStatePromise?: () => void;
+	setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
@@ -33,21 +42,64 @@ class PerpTradeVm {
 		);
 	}
 
-	updateMarket = () => {
-		const market = this.rootStore.tradeStore.market;
+	updateMarket = async () => {
+		const { tradeStore, accountStore } = this.rootStore;
+		const market = tradeStore.market;
 		if (market == null || market.type === "spot") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
+		const wallet = await accountStore.getWallet();
+		if (wallet == null) return;
+		const clearingHouse = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+		if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
+
+		const promise = new Promise((resolve, reject) => {
+			this.rejectUpdateStatePromise = reject;
+			resolve(Promise.all([this.updateMaxValueForMarket(clearingHouse)]));
+		});
+
+		promise
+			.catch((v) => console.error(v))
+			.finally(() => {
+				this.setInitialized(true);
+				this.setRejectUpdateStatePromise(undefined);
+			});
+	};
+	updateMaxValueForMarket = async (clearingHouse: ClearingHouseAbi) => {
+		console.log("updateMaxValueForMarket")
+		const { tradeStore } = this.rootStore;
+		const addressInput = this.rootStore.accountStore.addressInput;
+		// const baseAsset = { value: tradeStore.market?.token0.assetId ?? "" };
+		const baseAsset = { value: TOKENS_BY_SYMBOL.USDC.assetId };
+		console.log("addressInput", addressInput)
+		console.log("baseAsset", baseAsset)
+		if (addressInput == null || baseAsset == null) return;
+		// const contracts = tradeStore.contractsToRead;
+		// if (contracts == null) return;
+
+		const result = await clearingHouse.functions
+			.get_max_abs_position_size(addressInput, baseAsset)
+			// .addContracts([
+			// 	contracts?.accountBalanceAbi,
+			// 	contracts?.proxyAbi,
+			// 	contracts?.clearingHouseAbi,
+			// 	contracts?.insuranceFundAbi,
+			// ])
+			.simulate();
+		console.log("result", result)
+		if (result.value != null) {
+			console.log("get_max_abs_position_size", result.value);
+		}
 	};
 
-	public loading: boolean = false;
-	private setLoading = (l: boolean) => (this.loading = l);
+	loading: boolean = false;
+	setLoading = (l: boolean) => (this.loading = l);
 
-	public assetId0: string = TOKENS_BY_SYMBOL.UNI.assetId;
-	public setAssetId0 = (assetId: string) => (this.assetId0 = assetId);
+	assetId0: string = TOKENS_BY_SYMBOL.UNI.assetId;
+	setAssetId0 = (assetId: string) => (this.assetId0 = assetId);
 
-	public assetId1: string = TOKENS_BY_SYMBOL.USDC.assetId;
-	public setAssetId1 = (assetId: string) => (this.assetId1 = assetId);
+	assetId1: string = TOKENS_BY_SYMBOL.USDC.assetId;
+	setAssetId1 = (assetId: string) => (this.assetId1 = assetId);
 
 	get token0() {
 		return TOKENS_BY_ASSET_ID[this.assetId0];
@@ -56,6 +108,38 @@ class PerpTradeVm {
 	get token1() {
 		return TOKENS_BY_ASSET_ID[this.assetId1];
 	}
+
+	openOrder = async () => {
+		const { accountStore, oracleStore } = this.rootStore;
+		await accountStore.checkConnectionWithWallet();
+		try {
+			this.setLoading(true);
+			const ch = CONTRACT_ADDRESSES.clearingHouse;
+			const wallet = await accountStore.getWallet();
+			if (wallet == null) return;
+			const clearingHouse = ClearingHouseAbi__factory.connect(ch, wallet);
+
+			const btcToken = TOKENS_BY_SYMBOL.BTC;
+			const baseToken = { value: btcToken.assetId };
+			//todo what is baseSize?
+			const btcPrice = BN.parseUnits(TOKENS_BY_SYMBOL.USDC.decimals, 28000).toString();
+			const baseSize = { value: btcPrice, negative: false };
+			//todo how much of eth for pyth do i need to add?
+			if (oracleStore.updateData == null) return;
+
+			// const v = Address.fromAddressOrString(priceUpdate).toBytes();
+			// const m = base64ToArrayBuffer(priceUpdate);
+			const { transactionResult } = await clearingHouse.functions
+				.open_order(baseToken, baseSize, btcPrice, oracleStore.updateData)
+				.txParams({ gasPrice: 1 })
+				.call();
+			console.log("transactionResult", transactionResult);
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this.setLoading(false);
+		}
+	};
 
 	longPrice: BN = BN.ZERO;
 	setLongPrice = (price: BN, sync?: boolean) => {

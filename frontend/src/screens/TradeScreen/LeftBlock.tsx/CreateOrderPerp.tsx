@@ -60,7 +60,6 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 		{ title: "Est. fee", value: "0.00" },
 		{ title: "Total amount", value: "0.00" },
 	];
-
 	return (
 		<Root {...rest}>
 			<ButtonGroup>
@@ -148,7 +147,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 							setAmount={(v) => (short ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
 						/>
 						{[5, 10, 20].map((v) => (
-							<Chip>{v}x</Chip>
+							<Chip key={"chip" + v}>{v}x</Chip>
 						))}
 					</Row>
 				</AccordionItem>
@@ -170,16 +169,13 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					}
 					initialEntered
 				>
-					{orderDetails.map(({ title, value }) => (
-						<>
-							<Row alignItems="center" justifyContent="space-between">
-								<Text nowrap>{title}</Text>
-								<Row justifyContent="flex-end" alignItems="center">
-									<Text primary>{value}</Text>
-								</Row>
+					{orderDetails.map(({ title, value }, index) => (
+						<Row alignItems="center" justifyContent="space-between" key={title + index} style={{ marginBottom: 8 }}>
+							<Text nowrap>{title}</Text>
+							<Row justifyContent="flex-end" alignItems="center">
+								<Text primary>{value}</Text>
 							</Row>
-							<SizedBox height={8} />
-						</>
+						</Row>
 					))}
 				</AccordionItem>
 			</Accordion>
@@ -192,12 +188,6 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 			>
 				{vm.loading ? "Loading..." : short ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
 			</Button>
-			<SizedBox height={16} />
-			<Button green={!short} red={short} onClick={() => tradeStore.deposit(new BN(5000))}>
-				Deposit USDC
-			</Button>
-			<SizedBox height={16} />
-			<Button onClick={() => tradeStore.openOrder()}>Open order</Button>
 		</Root>
 	);
 });

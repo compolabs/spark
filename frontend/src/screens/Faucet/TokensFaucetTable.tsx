@@ -75,12 +75,7 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 											Loading...
 										</Button>
 									);
-								if (ethBalance?.eq(0) && token.symbol !== "ETH")
-									return (
-										<Button green disabled>
-											Mint
-										</Button>
-									);
+								if (ethBalance?.eq(0) && token.symbol !== "ETH") return <Button disabled>Mint</Button>;
 								return (
 									<Button
 										style={{ width: 120 }}

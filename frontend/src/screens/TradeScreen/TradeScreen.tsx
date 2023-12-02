@@ -51,8 +51,8 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<LeftBlock />
 				<SizedBox width={4} />
 				<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
-					<Chart />
-					<BottomTablesInterface />
+					{/*<Chart />*/}
+					{/*<BottomTablesInterface />*/}
 				</Column>
 				<SizedBox width={4} />
 				<OrderbookAndTradesInterface />

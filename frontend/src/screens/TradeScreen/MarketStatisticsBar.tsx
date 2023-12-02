@@ -183,7 +183,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 					</Column>
 					<DesktopRow>
 						{(tradeStore.isMarketPerp ? perpStatsArr : spotStatsArr).map(({ title, value }) => (
-							<>
+							<React.Fragment key={title}>
 								<SizedBox width={1} height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} />
 								<Column>
 									<Text type={TEXT_TYPES.SUPPORTING}>{title}</Text>
@@ -192,10 +192,11 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 										0.00
 									</Text>
 								</Column>
-							</>
+							</React.Fragment>
 						))}
 					</DesktopRow>
 				</PriceRow>
+				r
 				<DesktopRow>
 					<Button text fitContent>
 						SEE ALL MARKET DETAILS
