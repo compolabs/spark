@@ -4,7 +4,7 @@ import { reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { ClearingHouseAbi, ClearingHouseAbi__factory, VaultAbi, VaultAbi__factory } from "@src/contracts";
+import { ClearingHouseAbi, ClearingHouseAbi__factory } from "@src/contracts";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -32,6 +32,9 @@ class PerpTradeVm {
 
 	rejectUpdateStatePromise?: () => void;
 	setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
+
+	maxAbsPositionSize?: BN | null = null;
+	setMaxAbsPositionSize = (v: BN | null) => (this.maxAbsPositionSize = v);
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
@@ -66,27 +69,23 @@ class PerpTradeVm {
 			});
 	};
 	updateMaxValueForMarket = async (clearingHouse: ClearingHouseAbi) => {
-		console.log("updateMaxValueForMarket")
-		const { tradeStore } = this.rootStore;
-		const addressInput = this.rootStore.accountStore.addressInput;
-		// const baseAsset = { value: tradeStore.market?.token0.assetId ?? "" };
-		const baseAsset = { value: TOKENS_BY_SYMBOL.USDC.assetId };
-		console.log("addressInput", addressInput)
-		console.log("baseAsset", baseAsset)
-		if (addressInput == null || baseAsset == null) return;
-		// const contracts = tradeStore.contractsToRead;
-		// if (contracts == null) return;
+		const { tradeStore, accountStore } = this.rootStore;
+		const addressInput = accountStore.addressInput;
+		const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
+		const contracts = tradeStore.contractsToRead;
+		if (addressInput == null || contracts == null) return;
 
+		console.log(addressInput, baseAsset)
 		const result = await clearingHouse.functions
 			.get_max_abs_position_size(addressInput, baseAsset)
-			// .addContracts([
-			// 	contracts?.accountBalanceAbi,
-			// 	contracts?.proxyAbi,
-			// 	contracts?.clearingHouseAbi,
-			// 	contracts?.insuranceFundAbi,
-			// ])
+			.addContracts([
+				contracts?.accountBalanceAbi,
+				contracts?.proxyAbi,
+				contracts?.clearingHouseAbi,
+				contracts?.vaultAbi,
+				contracts?.insuranceFundAbi,
+			])
 			.simulate();
-		console.log("result", result)
 		if (result.value != null) {
 			console.log("get_max_abs_position_size", result.value);
 		}
