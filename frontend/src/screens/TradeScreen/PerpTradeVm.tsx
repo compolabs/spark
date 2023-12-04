@@ -5,6 +5,7 @@ import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { ClearingHouseAbi, ClearingHouseAbi__factory, PerpMarketAbi, PerpMarketAbi__factory } from "@src/contracts";
+import { log } from "fuels/dist/cli/utils/logger";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -59,8 +60,8 @@ class PerpTradeVm {
 			this.rejectUpdateStatePromise = reject;
 			resolve(
 				Promise.all([
-					// this.updateMaxValueForMarket(clearingHouse),
-					this.calcMaxPositionSize(clearingHouse, perpMarketAbi),
+					this.updateMaxValueForMarket(clearingHouse),
+					// this.calcMaxPositionSize(clearingHouse, perpMarketAbi),
 				]),
 			);
 		});
@@ -72,26 +73,28 @@ class PerpTradeVm {
 				this.setRejectUpdateStatePromise(undefined);
 			});
 	};
+	//todo display market in tab header
 	updateMaxValueForMarket = async (clearingHouse: ClearingHouseAbi) => {
 		console.log("setMaxAbsPositionSize");
-		// this.setMaxAbsPositionSize({ long: new BN(71428571), short: new BN(71428571) });
-		// const { tradeStore, accountStore } = this.rootStore;
-		// const addressInput = accountStore.addressInput;
-		// // const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
-		// const contracts = tradeStore.contractsToRead;
-		// if (addressInput == null || contracts == null) return;
+		this.setMaxAbsPositionSize({ long: new BN(71428571), short: new BN(71428571) });
+		const { tradeStore, accountStore } = this.rootStore;
+		const addressInput = accountStore.addressInput;
+		const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
+		const contracts = tradeStore.contractsToRead;
+		if (addressInput == null || contracts == null) return;
 
-		// console.log(addressInput, baseAsset);
-		// const result = await clearingHouse.functions
-		// 	.get_max_abs_position_size(addressInput, baseAsset)
-		// 	.addContracts([
-		// 		contracts?.accountBalanceAbi,
-		// 		contracts?.proxyAbi,
-		// 		contracts?.clearingHouseAbi,
-		// 		contracts?.vaultAbi,
-		// 		contracts?.insuranceFundAbi,
-		// 	])
-		// 	.simulate();
+		console.log(addressInput, baseAsset);
+		const result = await clearingHouse.functions
+			.get_max_abs_position_size(addressInput, baseAsset)
+			.addContracts([
+				contracts?.accountBalanceAbi,
+				contracts?.proxyAbi,
+				contracts?.clearingHouseAbi,
+				contracts?.vaultAbi,
+				contracts?.insuranceFundAbi,
+			])
+			.simulate();
+		console.log("result", result.value);
 		// if (result.value != null) {
 		// }
 	};
@@ -108,6 +111,7 @@ class PerpTradeVm {
 			contracts?.insuranceFundAbi,
 		];
 		// let res = await perpMarket.functions.get_mark_price(baseAsset).simulate();
+		console.log("get_market");
 		let res = await clearingHouse.functions.get_market(baseAsset).simulate();
 		console.log("get_mark_price", res);
 
@@ -188,10 +192,15 @@ class PerpTradeVm {
 	setIsShort = (v: boolean) => (this.isShort = v);
 
 	//btc
+	//get_max_abs_position_size вернет значение в графу order size,
+	//ордер value посчитайте на фронте умножив на цену которую указал пользователь
 	orderSize: BN = BN.ZERO;
 	setOrderSize = (v: BN, sync?: boolean) => {
 		// todo v.gt()
-		this.orderSize = v;
+		const max = this.maxAbsPositionSize?.long ?? BN.ZERO;
+		if (max.eq(0)) return;
+		console.log("max", max.toString(), v.toString())
+		v.gt(max) ? (this.orderSize = max) : (this.orderSize = v);
 		if (this.price.gt(0) && sync) {
 			const size = BN.formatUnits(v, this.token0.decimals);
 			const price = BN.formatUnits(this.price, this.token1.decimals);
@@ -211,12 +220,16 @@ class PerpTradeVm {
 
 	price: BN = new BN(BN.parseUnits(27000, this.token1.decimals));
 	setPrice = (v: BN, sync?: boolean) => {
+		console.log("setPrice");
 		this.price = v;
 		if (this.orderValue.gt(0) && sync) {
+			console.log("setOrderSize in setPrice");
 			const value = BN.formatUnits(this.orderValue, this.token1.decimals);
 			const price = BN.formatUnits(v, this.token1.decimals);
-			const size = BN.parseUnits(value.div(price), this.token0.decimals);
+			const size = BN.parseUnits(price.div(value), this.token0.decimals);
+			console.log("old size", this.orderSize.toString());
 			this.setOrderSize(size);
+			console.log("size", size.toString());
 		}
 	};
 

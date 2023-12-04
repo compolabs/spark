@@ -55,10 +55,10 @@ class TradeStore {
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
 		this.setPerpMarkets(perpMarketsConfig);
-		reaction(() => this.rootStore.accountStore.walletToRead, this.updateState);
+		// reaction(() => this.rootStore.accountStore.walletToRead, this.updateState);
 		// this.updateState();
-		setInterval(this.updateState, 20 * 1000);
-
+		// setInterval(this.updateState, 20 * 1000);
+		//
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
 			this.setFavMarkets(markets.split(","));

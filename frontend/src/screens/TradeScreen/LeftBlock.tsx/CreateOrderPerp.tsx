@@ -133,8 +133,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 						step={1}
 					/>
 					<SizedBox height={8} />
-					<Row>
-						<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={vm.setPrice} />
+					<Row alignItems="center" justifyContent="flex-end">
+						{/*<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={vm.setPrice} />*/}
 						{[5, 10, 20].map((v) => (
 							<Chip key={"chip" + v}>{v}x</Chip>
 						))}
