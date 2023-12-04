@@ -9,10 +9,10 @@ import Select from "@components/Select";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useStores } from "@stores";
 import AccordionItem from "@components/AccordionItem";
-import BN from "@src/utils/BN";
 import { Accordion } from "@szhsin/react-accordion";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import Slider from "@components/Slider";
+import BN from "@src/utils/BN";
 
 interface IProps extends ComponentProps<any> {}
 
@@ -42,8 +42,8 @@ const MaxButton = styled(Button)`
 
 const orderTypes = [
 	{ title: "Stop Market", key: "stopmarket", disabled: true },
-	{ title: "Market", key: "market", disabled: true },
 	{ title: "Limit", key: "limit" },
+	{ title: "Market", key: "market", disabled: true },
 	{ title: "Stop Limit", key: "stoplimit", disabled: true },
 	{ title: "Take Profit", key: "takeprofit", disabled: true },
 	{ title: "Take Profit Limit", key: "takeprofitlimit", disabled: true },
@@ -52,8 +52,14 @@ const orderTypes = [
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore, tradeStore } = useStores();
 	const vm = usePerpTradeVM();
-	const [short, setShort] = useState(false);
-	const [leverage, setLeverage] = useState(0);
+	const [leverage, _setLeverage] = useState(0);
+	const setLeverage = (v: number) => {
+		_setLeverage(v);
+		const max = vm.maxAbsPositionSize?.long ?? BN.ZERO;
+		//todo проверить почему не работает с BN
+		const value = (max.toNumber() * v) / 100;
+		vm.setOrderSize(new BN(value), true);
+	};
 
 	const orderDetails = [
 		{ title: "Max buy", value: "0.00" },
@@ -63,10 +69,10 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	return (
 		<Root {...rest}>
 			<ButtonGroup>
-				<Button active={!short} onClick={() => setShort(false)}>
+				<Button active={!vm.isShort} onClick={() => vm.setIsShort(false)}>
 					LONG
 				</Button>
-				<Button active={short} onClick={() => setShort(true)}>
+				<Button active={vm.isShort} onClick={() => vm.setIsShort(true)}>
 					SHORT
 				</Button>
 			</ButtonGroup>
@@ -77,43 +83,30 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					<SizedBox height={2} />
 				</Column>
 				<SizedBox width={8} />
-				<TokenInput
-					decimals={vm.token1.decimals}
-					amount={short ? vm.shortPrice : vm.longPrice}
-					setAmount={(v) => (short ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
-					label="Market price"
-				/>
+				<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={(v) => vm.setPrice(v, true)} label="Price" />
 			</Row>
 			<SizedBox height={2} />
 			<Row alignItems="flex-end">
 				<TokenInput
 					assetId={vm.token0.assetId}
 					decimals={vm.token0.decimals}
-					amount={short ? vm.shortAmount : vm.longAmount}
-					setAmount={(v) => (short ? vm.setShortAmount(v, true) : vm.setLongAmount(v, true))}
+					amount={vm.orderSize}
+					setAmount={vm.setOrderSize}
 					label="Order size"
 				/>
 				<SizedBox width={8} />
 				<Column crossAxisSize="max" alignItems="flex-end">
-					<MaxButton fitContent>MAX</MaxButton>
+					<MaxButton fitContent onClick={() => vm.onMaxClick()}>
+						MAX
+					</MaxButton>
 					<SizedBox height={4} />
 					<TokenInput
 						assetId={vm.token1.assetId}
 						decimals={vm.token1.decimals}
-						amount={short ? vm.shortTotal : vm.longTotal}
-						setAmount={(v) => (short ? vm.setShortTotal(v, true) : vm.setLongTotal(v, true))}
+						amount={vm.orderValue}
+						setAmount={vm.setOrderValue}
 					/>
 				</Column>
-			</Row>
-			<SizedBox height={4} />
-			<Row alignItems="center" justifyContent="space-between">
-				<Text type={TEXT_TYPES.SUPPORTING}>Available</Text>
-				<Row alignItems="center" mainAxisSize="fit-content">
-					<Text primary type={TEXT_TYPES.BODY}>
-						{accountStore.findBalanceByAssetId(short ? vm.assetId0 : vm.assetId1)?.formatBalance ?? "-"}
-					</Text>
-					<Text type={TEXT_TYPES.SUPPORTING}>&nbsp;{short ? vm.token0.symbol : vm.token1.symbol}</Text>
-				</Row>
 			</Row>
 			<SizedBox height={8} />
 			<Accordion transition transitionTimeout={400}>
@@ -125,7 +118,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 								Leverage
 							</Text>
 							<Row justifyContent="flex-end" alignItems="center">
-								<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.longAmount, vm.token0.decimals).toFormat(2)}x</Text>
+								<Text primary>{vm.leverageSize}x</Text>
 							</Row>
 						</Row>
 					}
@@ -141,11 +134,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					/>
 					<SizedBox height={8} />
 					<Row>
-						<TokenInput
-							decimals={vm.token1.decimals}
-							amount={short ? vm.shortPrice : vm.longPrice}
-							setAmount={(v) => (short ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
-						/>
+						<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={vm.setPrice} />
 						{[5, 10, 20].map((v) => (
 							<Chip key={"chip" + v}>{v}x</Chip>
 						))}
@@ -161,10 +150,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 							<Text nowrap primary type={TEXT_TYPES.BUTTON_SECONDARY}>
 								Order Details
 							</Text>
-							<Row justifyContent="flex-end" alignItems="center">
-								<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.longAmount, vm.token0.decimals).toFormat(2)}</Text>
-								<Text>&nbsp;{vm.token0.symbol}</Text>
-							</Row>
+							<Row justifyContent="flex-end" alignItems="center"></Row>
 						</Row>
 					}
 					initialEntered
@@ -181,12 +167,12 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 			</Accordion>
 			<SizedBox height={16} />
 			<Button
-				green={!short}
-				red={short}
-				disabled={vm.loading ? true : short ? !vm.canSell : !vm.canShort}
-				onClick={() => vm.createOrder(short ? "short" : "long")}
+				green={!vm.isShort}
+				red={vm.isShort}
+				// disabled={vm.loading ? true : vm.isShort ? !vm.canSell : !vm.canShort}
+				onClick={() => vm.createOrder(vm.isShort ? "short" : "long")}
 			>
-				{vm.loading ? "Loading..." : short ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
+				{vm.loading ? "Loading..." : vm.isShort ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
 			</Button>
 		</Root>
 	);

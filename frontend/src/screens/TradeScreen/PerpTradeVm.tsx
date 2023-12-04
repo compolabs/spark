@@ -4,7 +4,7 @@ import { reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { ClearingHouseAbi, ClearingHouseAbi__factory } from "@src/contracts";
+import { ClearingHouseAbi, ClearingHouseAbi__factory, PerpMarketAbi, PerpMarketAbi__factory } from "@src/contracts";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -20,8 +20,6 @@ export const PerpTradeVMProvider: React.FC<IProps> = ({ children }) => {
 
 type OrderAction = "long" | "short";
 
-//get_max_abs_position_size вернет значение в графу order size,
-// ордер value посчитайте на фронте умножив на цену которую указал пользователь
 export const usePerpTradeVM = () => useVM(ctx);
 
 class PerpTradeVm {
@@ -33,8 +31,8 @@ class PerpTradeVm {
 	rejectUpdateStatePromise?: () => void;
 	setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 
-	maxAbsPositionSize?: BN | null = null;
-	setMaxAbsPositionSize = (v: BN | null) => (this.maxAbsPositionSize = v);
+	maxAbsPositionSize?: { long: BN; short: BN } | null = { long: new BN(71428571), short: new BN(71428571) };
+	setMaxAbsPositionSize = (v: { long: BN; short: BN } | null) => (this.maxAbsPositionSize = v);
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
@@ -54,11 +52,17 @@ class PerpTradeVm {
 		const wallet = await accountStore.getWallet();
 		if (wallet == null) return;
 		const clearingHouse = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+		const perpMarketAbi = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
 		if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
 
 		const promise = new Promise((resolve, reject) => {
 			this.rejectUpdateStatePromise = reject;
-			resolve(Promise.all([this.updateMaxValueForMarket(clearingHouse)]));
+			resolve(
+				Promise.all([
+					// this.updateMaxValueForMarket(clearingHouse),
+					this.calcMaxPositionSize(clearingHouse, perpMarketAbi),
+				]),
+			);
 		});
 
 		promise
@@ -69,26 +73,66 @@ class PerpTradeVm {
 			});
 	};
 	updateMaxValueForMarket = async (clearingHouse: ClearingHouseAbi) => {
+		console.log("setMaxAbsPositionSize");
+		// this.setMaxAbsPositionSize({ long: new BN(71428571), short: new BN(71428571) });
+		// const { tradeStore, accountStore } = this.rootStore;
+		// const addressInput = accountStore.addressInput;
+		// // const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
+		// const contracts = tradeStore.contractsToRead;
+		// if (addressInput == null || contracts == null) return;
+
+		// console.log(addressInput, baseAsset);
+		// const result = await clearingHouse.functions
+		// 	.get_max_abs_position_size(addressInput, baseAsset)
+		// 	.addContracts([
+		// 		contracts?.accountBalanceAbi,
+		// 		contracts?.proxyAbi,
+		// 		contracts?.clearingHouseAbi,
+		// 		contracts?.vaultAbi,
+		// 		contracts?.insuranceFundAbi,
+		// 	])
+		// 	.simulate();
+		// if (result.value != null) {
+		// }
+	};
+	calcMaxPositionSize = async (clearingHouse: ClearingHouseAbi, perpMarket: PerpMarketAbi) => {
 		const { tradeStore, accountStore } = this.rootStore;
 		const addressInput = accountStore.addressInput;
 		const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
 		const contracts = tradeStore.contractsToRead;
-		if (addressInput == null || contracts == null) return;
+		const contractToAdd = [
+			contracts?.accountBalanceAbi,
+			contracts?.proxyAbi,
+			contracts?.clearingHouseAbi,
+			contracts?.vaultAbi,
+			contracts?.insuranceFundAbi,
+		];
+		// let res = await perpMarket.functions.get_mark_price(baseAsset).simulate();
+		let res = await clearingHouse.functions.get_market(baseAsset).simulate();
+		console.log("get_mark_price", res);
 
-		console.log(addressInput, baseAsset)
-		const result = await clearingHouse.functions
-			.get_max_abs_position_size(addressInput, baseAsset)
-			.addContracts([
-				contracts?.accountBalanceAbi,
-				contracts?.proxyAbi,
-				contracts?.clearingHouseAbi,
-				contracts?.vaultAbi,
-				contracts?.insuranceFundAbi,
-			])
-			.simulate();
-		if (result.value != null) {
-			console.log("get_max_abs_position_size", result.value);
-		}
+		// const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
+		const scale = 10 ** 8;
+		// const markPrice =
+		// let scale = 10.pow(market.decimal.as_u64());
+		// let mark_price = perp_market_contract.get_mark_price(market.asset_id);
+		//
+		// let max_position_value = vault_contract.get_free_collateral(trader).mul_div(HUNDRED_PERCENT, market.im_ratio);
+		//
+		// let current_position_size = account_balance_contract.get_taker_position_size(trader, base_asset);
+		//
+		//
+		// let max_position_size = max_position_value.mul_div(scale, mark_price).value;
+		//
+		// let mut result =(0,0);
+		// if current_position_size > I64::new(){
+		// 	result = (2 * current_position_size.value + max_position_size, max_position_size);
+		//
+		// } else{
+		// 	result = (max_position_size, 2 * current_position_size.value + max_position_size);
+		// }
+		// log(result);
+		// return result;
 	};
 
 	loading: boolean = false;
@@ -140,104 +184,64 @@ class PerpTradeVm {
 		}
 	};
 
-	longPrice: BN = BN.ZERO;
-	setLongPrice = (price: BN, sync?: boolean) => {
-		this.longPrice = price;
-		if (price.eq(0)) this.setLongTotal(BN.ZERO);
-		if (this.longAmount.gt(0) && price.gt(0) && sync) {
-			const v1 = BN.formatUnits(price, this.token1.decimals);
-			const v2 = BN.formatUnits(this.longAmount, this.token0.decimals);
-			this.setLongTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
+	isShort: boolean = false;
+	setIsShort = (v: boolean) => (this.isShort = v);
+
+	//btc
+	orderSize: BN = BN.ZERO;
+	setOrderSize = (v: BN, sync?: boolean) => {
+		// todo v.gt()
+		this.orderSize = v;
+		if (this.price.gt(0) && sync) {
+			const size = BN.formatUnits(v, this.token0.decimals);
+			const price = BN.formatUnits(this.price, this.token1.decimals);
+			const value = BN.parseUnits(size.times(price), this.token1.decimals);
+			this.setOrderValue(value);
 		}
 	};
 
-	longAmount: BN = BN.ZERO;
-	setLongAmount = (amount: BN, sync?: boolean) => {
-		this.longAmount = amount;
-		if (this.longPrice.gt(0) && amount.gt(0) && sync) {
-			const v1 = BN.formatUnits(this.longPrice, this.token1.decimals);
-			const v2 = BN.formatUnits(amount, this.token0.decimals);
-			const total = BN.parseUnits(v2.times(v1), this.token1.decimals);
-			this.setLongTotal(total);
-			const balance = this.rootStore.accountStore.getBalance(this.token1);
-			if (balance == null) return;
-			const percent = total.times(100).div(balance);
-			this.setLongPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
+	//usdc
+	orderValue: BN = BN.ZERO;
+	setOrderValue = (v: BN, sync?: boolean) => {
+		this.orderValue = v;
+		if (this.price.gt(0) && sync) {
+			// this.setOrderSize(value);
 		}
 	};
 
-	longPercent: BN = new BN(0);
-	setLongPercent = (value: number | number[]) => (this.longPercent = new BN(value.toString()));
-
-	longTotal: BN = BN.ZERO;
-	setLongTotal = (total: BN, sync?: boolean) => {
-		this.longTotal = total;
-		if (this.longPrice.gt(0) && sync) {
-			const v1 = BN.formatUnits(this.longPrice, this.token1.decimals);
-			const v2 = BN.formatUnits(total, this.token1.decimals);
-			this.setLongAmount(BN.parseUnits(v2.div(v1), this.token0.decimals));
-			//todo add
-			const balance = this.rootStore.accountStore.getBalance(this.token1);
-			if (balance == null) return;
-			const percent = total.times(100).div(balance);
-			this.setLongPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
+	price: BN = new BN(BN.parseUnits(27000, this.token1.decimals));
+	setPrice = (v: BN, sync?: boolean) => {
+		this.price = v;
+		if (this.orderValue.gt(0) && sync) {
+			const value = BN.formatUnits(this.orderValue, this.token1.decimals);
+			const price = BN.formatUnits(v, this.token1.decimals);
+			const size = BN.parseUnits(value.div(price), this.token0.decimals);
+			this.setOrderSize(size);
 		}
 	};
 
-	shortPrice: BN = BN.ZERO;
-	setShortPrice = (price: BN, sync?: boolean) => {
-		this.shortPrice = price;
-		if (price.eq(0)) this.setShortTotal(BN.ZERO);
-		if (this.shortAmount.gt(0) && price.gt(0) && sync) {
-			const v1 = BN.formatUnits(price, this.token1.decimals);
-			const v2 = BN.formatUnits(this.shortAmount, this.token0.decimals);
-			this.setShortTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
-		}
-	};
+	leverage: BN = BN.ZERO;
+	setLeverage = (v: BN) => (this.leverage = v);
 
-	shortAmount: BN = BN.ZERO;
-	setShortAmount = (amount: BN, sync?: boolean) => {
-		this.shortAmount = amount;
-		if (amount.eq(0)) this.setShortTotal(BN.ZERO);
-		if (this.shortPrice.gt(0) && amount.gt(0) && sync) {
-			const v1 = BN.formatUnits(this.shortPrice, this.token1.decimals);
-			const v2 = BN.formatUnits(amount, this.token0.decimals);
-			this.setShortTotal(BN.parseUnits(v2.times(v1), this.token1.decimals));
-			const balance = this.rootStore.accountStore.getBalance(this.token0);
-			if (balance == null) return;
-			const percent = amount.times(100).div(balance);
-			this.setShortPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
-		}
-	};
-	shortPercent: BN = new BN(0);
-	setShortPercent = (value: number | number[]) => (this.shortPercent = new BN(value.toString()));
+	get leverageSize() {
+		// order_size*order_price/get_free_collateral
+		const { tradeStore } = this.rootStore;
+		const size = BN.formatUnits(this.orderSize, this.token0.decimals);
+		const price = BN.formatUnits(this.price, this.token1.decimals);
+		const freeColl = BN.formatUnits(tradeStore.freeCollateral ?? 0, this.token0.decimals);
+		const value = size.times(price.div(freeColl)).div(100).toFormat(2);
+		return value;
+	}
 
-	shortTotal: BN = BN.ZERO;
-	setShortTotal = (total: BN, sync?: boolean) => {
-		this.shortTotal = total;
-		if (this.shortPrice.gt(0) && sync) {
-			const v1 = BN.formatUnits(this.shortPrice, this.token1.decimals);
-			const v2 = BN.formatUnits(total, this.token1.decimals);
-			const amount = BN.parseUnits(v2.div(v1), this.token0.decimals);
-			this.setShortAmount(amount);
-			const balance = this.rootStore.accountStore.getBalance(this.token0);
-			if (balance == null) return;
-			const percent = amount.times(100).div(balance);
-			this.setShortPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
-		}
+	onMaxClick = () => {
+		const size = this.maxAbsPositionSize?.long ?? BN.ZERO;
+		const val = BN.formatUnits(size, this.token0.decimals);
+		const price = BN.formatUnits(this.price, this.token1.decimals);
+		const value = BN.parseUnits(val.times(price), this.token1.decimals);
+		this.setOrderSize(size);
+		this.setOrderValue(value);
+		//todo update leverage
 	};
 
 	createOrder = async (action: OrderAction) => {};
-
-	get canSell() {
-		return (
-			this.rootStore.accountStore.isLoggedIn && this.longAmount.gt(0) && this.longPrice.gt(0) && this.longTotal.gt(0)
-		);
-	}
-
-	get canShort() {
-		return (
-			this.rootStore.accountStore.isLoggedIn && this.shortAmount.gt(0) && this.shortPrice.gt(0) && this.shortTotal.gt(0)
-		);
-	}
 }

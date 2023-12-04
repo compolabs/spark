@@ -68,6 +68,10 @@ class TradeStore {
 	freeCollateral: BN | null = null;
 	setFreeCollateral = (v: BN | null) => (this.freeCollateral = v);
 
+	get formattedFreeCollateral() {
+		return BN.formatUnits(this.freeCollateral ?? 0, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
+	}
+
 	marketSymbol: string | null = null;
 	setMarketSymbol = (v: string) => (this.marketSymbol = v);
 
