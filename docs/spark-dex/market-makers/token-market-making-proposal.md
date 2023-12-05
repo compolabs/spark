@@ -24,9 +24,9 @@ _Call Option Strike Price: VWAP - maker\_market\_share_
 **Call Option Details**
 
 * Expiry date at the end of the 1-year contract Term.
-* Strike price is VWAP7 - maker\_market\_share.
-* VWAP7 is the volume-weighted average price of all USD spot trades on Binance in the first 7 days of the Term.
-* Example: If VWAP7 = 1.3 and maker\_market\_share = 10.520%, the strike price would be 1.16324.
+* Strike price is VWAP - maker\_market\_share.
+* VWAP is the volume-weighted average price of all USD spot trades on Binance in the first 7 days of the Term.
+* Example: If VWAP = 1.3 and maker\_market\_share = 10.520%, the strike price would be 1.16324.
 * The Market Maker returns $5 million or $5,816,200 USD (or stable coin equivalent).
 * Higher maker\_market\_share compensates for potential trading losses, driving the Market Maker toward the optimum maker\_market\_share that maximizes the call option upside.
 
