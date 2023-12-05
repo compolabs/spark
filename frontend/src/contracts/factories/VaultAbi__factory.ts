@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.0
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -288,15 +288,15 @@ const _abi = {
       },
       "attributes": [
         {
+          "name": "payable",
+          "arguments": []
+        },
+        {
           "name": "storage",
           "arguments": [
             "read",
             "write"
           ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
         }
       ]
     },
@@ -429,30 +429,6 @@ const _abi = {
     {
       "inputs": [
         {
-          "name": "trader",
-          "type": 9,
-          "typeArguments": null
-        }
-      ],
-      "name": "settle_bad_debt",
-      "output": {
-        "name": "",
-        "type": 0,
-        "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
-    },
-    {
-      "inputs": [
-        {
           "name": "price_update_data",
           "type": 15,
           "typeArguments": [
@@ -511,15 +487,15 @@ const _abi = {
       },
       "attributes": [
         {
+          "name": "payable",
+          "arguments": []
+        },
+        {
           "name": "storage",
           "arguments": [
             "read",
             "write"
           ]
-        },
-        {
-          "name": "payable",
-          "arguments": []
         }
       ]
     }
@@ -601,7 +577,7 @@ const _abi = {
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 4,
+        "type": 6,
         "typeArguments": []
       }
     },
@@ -609,7 +585,7 @@ const _abi = {
       "logId": 10,
       "loggedType": {
         "name": "",
-        "type": 6,
+        "type": 5,
         "typeArguments": []
       }
     },
@@ -617,7 +593,7 @@ const _abi = {
       "logId": 11,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 4,
         "typeArguments": []
       }
     },
@@ -633,7 +609,7 @@ const _abi = {
       "logId": 13,
       "loggedType": {
         "name": "",
-        "type": 4,
+        "type": 6,
         "typeArguments": []
       }
     },
@@ -641,7 +617,7 @@ const _abi = {
       "logId": 14,
       "loggedType": {
         "name": "",
-        "type": 6,
+        "type": 5,
         "typeArguments": []
       }
     },
@@ -649,20 +625,12 @@ const _abi = {
       "logId": 15,
       "loggedType": {
         "name": "",
-        "type": 5,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 16,
-      "loggedType": {
-        "name": "",
         "type": 4,
         "typeArguments": []
       }
     },
     {
-      "logId": 17,
+      "logId": 16,
       "loggedType": {
         "name": "",
         "type": 4,
@@ -679,7 +647,7 @@ const _abi = {
         "type": 9,
         "typeArguments": []
       },
-      "offset": 75480
+      "offset": 66212
     },
     {
       "name": "PROXY_ADDRESS",
@@ -688,7 +656,7 @@ const _abi = {
         "type": 9,
         "typeArguments": []
       },
-      "offset": 75728
+      "offset": 66460
     },
     {
       "name": "SETTLEMENT_TOKEN",
@@ -697,7 +665,7 @@ const _abi = {
         "type": 10,
         "typeArguments": []
       },
-      "offset": 75664
+      "offset": 66396
     }
   ]
 };

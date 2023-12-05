@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.0
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -43,6 +43,7 @@ export type InsuranceFundAbiConfigurables = {
 
 interface InsuranceFundAbiInterface extends Interface {
   functions: {
+    deposit: FunctionFragment;
     distribute_fee: FunctionFragment;
     get_insurance_fund_capacity: FunctionFragment;
     repay: FunctionFragment;
@@ -50,12 +51,14 @@ interface InsuranceFundAbiInterface extends Interface {
     set_surplus_beneficiary: FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: 'deposit', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'distribute_fee', values: [Vec<Bytes>]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_insurance_fund_capacity', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'repay', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'set_distribution_threshold', values: [BigNumberish]): Uint8Array;
   encodeFunctionData(functionFragment: 'set_surplus_beneficiary', values: [AddressInput]): Uint8Array;
 
+  decodeFunctionData(functionFragment: 'deposit', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'distribute_fee', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_insurance_fund_capacity', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'repay', data: BytesLike): DecodedValue;
@@ -66,6 +69,7 @@ interface InsuranceFundAbiInterface extends Interface {
 export class InsuranceFundAbi extends Contract {
   interface: InsuranceFundAbiInterface;
   functions: {
+    deposit: InvokeFunction<[], void>;
     distribute_fee: InvokeFunction<[price_update_data: Vec<Bytes>], BN>;
     get_insurance_fund_capacity: InvokeFunction<[], I64Output>;
     repay: InvokeFunction<[], void>;

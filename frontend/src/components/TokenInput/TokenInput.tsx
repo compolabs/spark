@@ -106,6 +106,7 @@ const TokenInput: React.FC<IProps> = (props) => {
 								props.onBlur && props.onBlur(e);
 								setFocused(false);
 							}}
+							disabled={props.disabled}
 							ref={ref}
 						/>
 					)}

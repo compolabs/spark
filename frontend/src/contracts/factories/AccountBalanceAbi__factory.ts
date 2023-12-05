@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.0
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -244,35 +244,6 @@ const _abi = {
     }
   ],
   "functions": [
-    {
-      "inputs": [
-        {
-          "name": "trader",
-          "type": 11,
-          "typeArguments": null
-        },
-        {
-          "name": "base_token",
-          "type": 12,
-          "typeArguments": null
-        }
-      ],
-      "name": "deregister_base_token",
-      "output": {
-        "name": "",
-        "type": 0,
-        "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
-    },
     {
       "inputs": [
         {
@@ -579,22 +550,12 @@ const _abi = {
           "name": "base_token",
           "type": 12,
           "typeArguments": null
-        },
-        {
-          "name": "base",
-          "type": 13,
-          "typeArguments": null
-        },
-        {
-          "name": "quote",
-          "type": 13,
-          "typeArguments": null
         }
       ],
-      "name": "modify_taker_balance",
+      "name": "register_base_token",
       "output": {
         "name": "",
-        "type": 1,
+        "type": 0,
         "typeArguments": null
       },
       "attributes": [
@@ -613,14 +574,9 @@ const _abi = {
           "name": "trader",
           "type": 11,
           "typeArguments": null
-        },
-        {
-          "name": "base_token",
-          "type": 12,
-          "typeArguments": null
         }
       ],
-      "name": "register_base_token",
+      "name": "settle_bad_debt",
       "output": {
         "name": "",
         "type": 0,
@@ -746,40 +702,6 @@ const _abi = {
           "typeArguments": null
         },
         {
-          "name": "amount",
-          "type": 13,
-          "typeArguments": null
-        }
-      ],
-      "name": "settle_quote_to_owed_realized_pnl",
-      "output": {
-        "name": "",
-        "type": 0,
-        "typeArguments": null
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read",
-            "write"
-          ]
-        }
-      ]
-    },
-    {
-      "inputs": [
-        {
-          "name": "trader",
-          "type": 11,
-          "typeArguments": null
-        },
-        {
-          "name": "base_token",
-          "type": 12,
-          "typeArguments": null
-        },
-        {
           "name": "last_tw_premium_growth_global",
           "type": 13,
           "typeArguments": null
@@ -807,16 +729,16 @@ const _abi = {
       "logId": 0,
       "loggedType": {
         "name": "",
-        "type": 5,
-        "typeArguments": []
+        "type": 8,
+        "typeArguments": null
       }
     },
     {
       "logId": 1,
       "loggedType": {
         "name": "",
-        "type": 8,
-        "typeArguments": null
+        "type": 5,
+        "typeArguments": []
       }
     },
     {
@@ -839,7 +761,7 @@ const _abi = {
       "logId": 4,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 5,
         "typeArguments": []
       }
     },
@@ -847,7 +769,7 @@ const _abi = {
       "logId": 5,
       "loggedType": {
         "name": "",
-        "type": 5,
+        "type": 10,
         "typeArguments": []
       }
     },
@@ -863,60 +785,12 @@ const _abi = {
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 10,
+        "type": 5,
         "typeArguments": []
       }
     },
     {
       "logId": 8,
-      "loggedType": {
-        "name": "",
-        "type": 10,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 9,
-      "loggedType": {
-        "name": "",
-        "type": 5,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 10,
-      "loggedType": {
-        "name": "",
-        "type": 5,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 11,
-      "loggedType": {
-        "name": "",
-        "type": 5,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 12,
-      "loggedType": {
-        "name": "",
-        "type": 10,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 13,
-      "loggedType": {
-        "name": "",
-        "type": 5,
-        "typeArguments": []
-      }
-    },
-    {
-      "logId": 14,
       "loggedType": {
         "name": "",
         "type": 10,
@@ -933,7 +807,7 @@ const _abi = {
         "type": 16,
         "typeArguments": null
       },
-      "offset": 109156
+      "offset": 199536
     },
     {
       "name": "PROXY_ADDRESS",
@@ -942,7 +816,7 @@ const _abi = {
         "type": 11,
         "typeArguments": []
       },
-      "offset": 109052
+      "offset": 199496
     }
   ]
 };

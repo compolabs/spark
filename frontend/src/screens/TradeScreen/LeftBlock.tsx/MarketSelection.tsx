@@ -12,6 +12,8 @@ import star from "@src/assets/icons/star.svg";
 import yellowStar from "@src/assets/icons/yellowStar.svg";
 import { useNavigate } from "react-router-dom";
 import useOnClickOutside from "@src/hooks/useOnClickOutside";
+import oracleStore from "@stores/OracleStore";
+import {TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL} from "@src/constants";
 
 interface IProps {}
 
@@ -50,7 +52,7 @@ const Leverage = styled.div`
 	border: 1px solid ${({ theme }) => theme.colors.borderAccent};
 `;
 const MarketSelection: React.FC<IProps> = observer(() => {
-	const { tradeStore } = useStores();
+	const { tradeStore, oracleStore } = useStores();
 	const [searchValue, setSearchValue] = useState<string>("");
 	const navigate = useNavigate();
 	const ref = useRef(null);
@@ -132,9 +134,9 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 									navigate(`/${symbol}`);
 								}}
 							>
-								<Text style={{ textAlign: "right" }} nowrap>
-									0.02%
-								</Text>
+								{/*<Text style={{ textAlign: "right" }} nowrap>*/}
+								{/*	0.02%*/}
+								{/*</Text>*/}
 								<Text type={TEXT_TYPES.H} nowrap color="primary">
 									$ 1,789.00
 								</Text>

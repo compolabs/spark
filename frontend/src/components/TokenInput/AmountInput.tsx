@@ -12,6 +12,10 @@ const Root = styled.input<{
 
 	color: ${({ theme }) => theme.colors.textPrimary};
 
+	:disabled {
+		color: ${({ theme }) => theme.colors.textSecondary};
+	}
+
 	::-webkit-outer-spin-button,
 	::-webkit-inner-spin-button {
 		-webkit-appearance: none;

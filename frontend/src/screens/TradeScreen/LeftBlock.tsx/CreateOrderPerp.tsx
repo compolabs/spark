@@ -12,6 +12,7 @@ import { Accordion } from "@szhsin/react-accordion";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import Slider from "@components/Slider";
 import BN from "@src/utils/BN";
+import tradeStore from "@stores/TradeStore";
 
 interface IProps extends ComponentProps<any> {}
 
@@ -56,7 +57,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	const orderDetails = [
 		{ title: "Order Size", value: vm.formattedOrderSize },
 		{ title: "Est. fee", value: "0.00" },
-		{ title: "Total amount", value: "0.00" },
+		{ title: "Total amount", value: vm.formattedOrderValue },
 	];
 	return (
 		<Root {...rest}>
@@ -183,6 +184,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 			>
 				{vm.loading ? "Loading..." : vm.isShort ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
 			</Button>
+			<SizedBox height={16} />
+			<Button onClick={vm.getData}>Call get abs</Button>
 		</Root>
 	);
 });

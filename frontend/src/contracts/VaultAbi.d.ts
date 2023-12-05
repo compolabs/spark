@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.0
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -55,7 +55,6 @@ interface VaultAbiInterface extends Interface {
     pause_trading: FunctionFragment;
     remove_admin: FunctionFragment;
     resume_trading: FunctionFragment;
-    settle_bad_debt: FunctionFragment;
     withdraw_all: FunctionFragment;
     withdraw_collateral: FunctionFragment;
   };
@@ -68,7 +67,6 @@ interface VaultAbiInterface extends Interface {
   encodeFunctionData(functionFragment: 'pause_trading', values: []): Uint8Array;
   encodeFunctionData(functionFragment: 'remove_admin', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'resume_trading', values: []): Uint8Array;
-  encodeFunctionData(functionFragment: 'settle_bad_debt', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'withdraw_all', values: [Vec<Bytes>]): Uint8Array;
   encodeFunctionData(functionFragment: 'withdraw_collateral', values: [BigNumberish, Vec<Bytes>]): Uint8Array;
 
@@ -80,7 +78,6 @@ interface VaultAbiInterface extends Interface {
   decodeFunctionData(functionFragment: 'pause_trading', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'remove_admin', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'resume_trading', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'settle_bad_debt', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'withdraw_all', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'withdraw_collateral', data: BytesLike): DecodedValue;
 }
@@ -96,7 +93,6 @@ export class VaultAbi extends Contract {
     pause_trading: InvokeFunction<[], void>;
     remove_admin: InvokeFunction<[address: AddressInput], void>;
     resume_trading: InvokeFunction<[], void>;
-    settle_bad_debt: InvokeFunction<[trader: AddressInput], void>;
     withdraw_all: InvokeFunction<[price_update_data: Vec<Bytes>], BN>;
     withdraw_collateral: InvokeFunction<[amount: BigNumberish, price_update_data: Vec<Bytes>], void>;
   };

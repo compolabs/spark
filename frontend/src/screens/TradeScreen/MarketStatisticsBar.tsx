@@ -94,9 +94,10 @@ interface ISpotMarketState {
 }
 
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
-	const { tradeStore } = useStores();
+	const { tradeStore, oracleStore } = useStores();
 	const theme = useTheme();
 	const [perpStats, setPerpStats] = useState<IPerpMarketState | null>(null);
+	const currentToken = tradeStore.market?.token0.priceFeed;
 	const perpStatsArr = [
 		{ title: "Index price", value: "" },
 		{ title: "Funding rate", value: "" },
@@ -196,7 +197,6 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 						))}
 					</DesktopRow>
 				</PriceRow>
-				r
 				<DesktopRow>
 					<Button text fitContent>
 						SEE ALL MARKET DETAILS

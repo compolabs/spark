@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.0
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -30,8 +30,8 @@ export type AccountBalanceOutput = { taker_position_size: I64Output, taker_open_
 export type AccountBalanceChangeEventInput = { trader: AddressInput, token: AssetIdInput, account_balance: AccountBalanceInput };
 export type AccountBalanceChangeEventOutput = { trader: AddressOutput, token: AssetIdOutput, account_balance: AccountBalanceOutput };
 export type AddressInput = { value: string };
-export type AssetIdInput = { value: string };
 export type AddressOutput = AddressInput;
+export type AssetIdInput = { value: string };
 export type AssetIdOutput = AssetIdInput;
 export type I64Input = { value: BigNumberish, negative: boolean };
 export type I64Output = { value: BN, negative: boolean };
@@ -43,7 +43,6 @@ export type AccountBalanceAbiConfigurables = {
 
 interface AccountBalanceAbiInterface extends Interface {
   functions: {
-    deregister_base_token: FunctionFragment;
     get_account_balance: FunctionFragment;
     get_base_tokens: FunctionFragment;
     get_liquidatable_position_size: FunctionFragment;
@@ -55,16 +54,14 @@ interface AccountBalanceAbiInterface extends Interface {
     get_total_abs_position_value: FunctionFragment;
     get_total_position_value: FunctionFragment;
     modify_owed_realized_pnl: FunctionFragment;
-    modify_taker_balance: FunctionFragment;
     register_base_token: FunctionFragment;
+    settle_bad_debt: FunctionFragment;
     settle_balance_and_deregister: FunctionFragment;
     settle_owed_realized_pnl: FunctionFragment;
     settle_position_in_closed_market: FunctionFragment;
-    settle_quote_to_owed_realized_pnl: FunctionFragment;
     update_tw_premium_growth_global: FunctionFragment;
   };
 
-  encodeFunctionData(functionFragment: 'deregister_base_token', values: [AddressInput, AssetIdInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_account_balance', values: [AddressInput, AssetIdInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_base_tokens', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_liquidatable_position_size', values: [AddressInput, AssetIdInput, I64Input]): Uint8Array;
@@ -76,15 +73,13 @@ interface AccountBalanceAbiInterface extends Interface {
   encodeFunctionData(functionFragment: 'get_total_abs_position_value', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_total_position_value', values: [AddressInput, AssetIdInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'modify_owed_realized_pnl', values: [AddressInput, I64Input]): Uint8Array;
-  encodeFunctionData(functionFragment: 'modify_taker_balance', values: [AddressInput, AssetIdInput, I64Input, I64Input]): Uint8Array;
   encodeFunctionData(functionFragment: 'register_base_token', values: [AddressInput, AssetIdInput]): Uint8Array;
+  encodeFunctionData(functionFragment: 'settle_bad_debt', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'settle_balance_and_deregister', values: [AddressInput, AssetIdInput, I64Input, I64Input, I64Input]): Uint8Array;
   encodeFunctionData(functionFragment: 'settle_owed_realized_pnl', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'settle_position_in_closed_market', values: [AddressInput, AssetIdInput]): Uint8Array;
-  encodeFunctionData(functionFragment: 'settle_quote_to_owed_realized_pnl', values: [AddressInput, AssetIdInput, I64Input]): Uint8Array;
   encodeFunctionData(functionFragment: 'update_tw_premium_growth_global', values: [AddressInput, AssetIdInput, I64Input]): Uint8Array;
 
-  decodeFunctionData(functionFragment: 'deregister_base_token', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_account_balance', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_base_tokens', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_liquidatable_position_size', data: BytesLike): DecodedValue;
@@ -96,19 +91,17 @@ interface AccountBalanceAbiInterface extends Interface {
   decodeFunctionData(functionFragment: 'get_total_abs_position_value', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_total_position_value', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'modify_owed_realized_pnl', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'modify_taker_balance', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'register_base_token', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'settle_bad_debt', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'settle_balance_and_deregister', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'settle_owed_realized_pnl', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'settle_position_in_closed_market', data: BytesLike): DecodedValue;
-  decodeFunctionData(functionFragment: 'settle_quote_to_owed_realized_pnl', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'update_tw_premium_growth_global', data: BytesLike): DecodedValue;
 }
 
 export class AccountBalanceAbi extends Contract {
   interface: AccountBalanceAbiInterface;
   functions: {
-    deregister_base_token: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput], void>;
     get_account_balance: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput], AccountBalanceOutput>;
     get_base_tokens: InvokeFunction<[trader: AddressInput], Vec<AssetIdOutput>>;
     get_liquidatable_position_size: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, account_value: I64Input], I64Output>;
@@ -120,12 +113,11 @@ export class AccountBalanceAbi extends Contract {
     get_total_abs_position_value: InvokeFunction<[trader: AddressInput], BN>;
     get_total_position_value: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput], I64Output>;
     modify_owed_realized_pnl: InvokeFunction<[trader: AddressInput, amount: I64Input], void>;
-    modify_taker_balance: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, base: I64Input, quote: I64Input], [I64Output, I64Output]>;
     register_base_token: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput], void>;
+    settle_bad_debt: InvokeFunction<[trader: AddressInput], void>;
     settle_balance_and_deregister: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, taker_base: I64Input, taker_quote: I64Input, realized_pnl: I64Input], void>;
     settle_owed_realized_pnl: InvokeFunction<[trader: AddressInput], I64Output>;
     settle_position_in_closed_market: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput], [I64Output, I64Output, I64Output, BN]>;
-    settle_quote_to_owed_realized_pnl: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, amount: I64Input], void>;
     update_tw_premium_growth_global: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, last_tw_premium_growth_global: I64Input], void>;
   };
 }

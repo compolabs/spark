@@ -24,19 +24,19 @@ export const FAUCET_URL = "https://faucet-beta-4.fuel.network";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 export const INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabilitylabs/spark_indexer";
+
 export const CONTRACT_ADDRESSES = {
 	priceOracle: "0x633fad7666495c53daa41cc329b78a554f215af4b826671ee576f2a30096999d",
 	spotMarket: "0x9cf9ccbf69b30530ccb62c927ed4bad12a22815a8f9e2c3a5b14f644a43889f6",
 	tokenFactory: "0xa18cef5ffcdd7a1f8d83cd4bc42c6651c93e0299a8f42672f47fd74723839b7f",
-	proxy : "0xbcad46ea09bfc75a68346c11bfbb66714b8b7d735d1d0fd7c1f838768406e594",
-	accountBalance : "0xec13e0346f85bfb140c5b6ad3683788e7b28e37f82fd3e8d82f677d2a5a1904a",
-	clearingHouse : "0xc29013d8917fed3ece90d65e0ba538283ad95c16e5a86a146d0f20fe1ff6712f",
-	insuranceFund : "0x2b1c55128e89206a371e570afa57e39423b8607f6a65b7c9a73d404a9d08792d",
-	perpMarket : "0x485a91e8ee2f4be344e50e6e3c78b4a5bcc25c699eeef986834ee7166fddca9e",
-	vault : "0x19648521ebca1d73e8bf703c29e13dd4d25ad3b992f5fa866df415b290069012",
-	pyth : "0xc618e8adccedb6ed28c91312405666b2e753d9aa78622f801895fd550d77ff86",
+	pyth: "0xc618e8adccedb6ed28c91312405666b2e753d9aa78622f801895fd550d77ff86",
+	proxy: "0x01ed7ab35c98c6611d5969b0e1d874c7bb42dd21378834f553410d9d527ba089",
+	accountBalance: "0xe1f03592db550772279f4ebefbd5217de7a51fc2e97eeaecf2da743c2cd079fe",
+	clearingHouse: "0x07811220c5b2e69c525d7a876c7a20a941584ee8243eb41082e93ed76d1a72dd",
+	insuranceFund: "0xe2aa4ba61b734b75c6ff4549544bbba9129dc2b0c22b71145e854040d19fee5f",
+	perpMarket: "0xd45d21374e7b8f7ecdc19e1261b7b5da3610bc14944315af6cc117215c637ae5",
+	vault: "0x401a7b5ee25b9dadc9fc971a132966e7c4cf13945f9af482adebffd39f778b12",
 };
-
 
 export interface IToken {
 	logo: string;
@@ -46,4 +46,3 @@ export interface IToken {
 	decimals: number;
 	priceFeed: string;
 }
-

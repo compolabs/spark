@@ -22,8 +22,8 @@ class OracleStore {
 	private setFeePrice = (v: number) => (this.feePrice = v);
 
 	constructor(rootStore: RootStore) {
-		this.rootStore = rootStore;
 		makeAutoObservable(this);
+		this.rootStore = rootStore;
 		this.initAndGetPythPrices();
 	}
 
@@ -58,6 +58,11 @@ class OracleStore {
 		const fee = await pythContractAbi.functions.update_fee(this.updateData).simulate();
 		return fee.value.toString() ?? "0";
 	};
+
+	// get initialized() {
+	// 	const {}= this.rootStore.tradeStore;
+	// 	return this.accountStore.provider != null;
+	// }
 }
 
 export default OracleStore;

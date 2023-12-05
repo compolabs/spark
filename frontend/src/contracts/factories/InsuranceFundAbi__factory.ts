@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.0
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -196,6 +196,21 @@ const _abi = {
   ],
   "functions": [
     {
+      "inputs": [],
+      "name": "deposit",
+      "output": {
+        "name": "",
+        "type": 0,
+        "typeArguments": null
+      },
+      "attributes": [
+        {
+          "name": "payable",
+          "arguments": []
+        }
+      ]
+    },
+    {
       "inputs": [
         {
           "name": "price_update_data",
@@ -358,7 +373,7 @@ const _abi = {
         "type": 1,
         "typeArguments": null
       },
-      "offset": 9044
+      "offset": 9380
     },
     {
       "name": "USDC_ADDRESS",
@@ -367,7 +382,7 @@ const _abi = {
         "type": 1,
         "typeArguments": null
       },
-      "offset": 8924
+      "offset": 9268
     },
     {
       "name": "PROXY_ADDRESS",
@@ -376,7 +391,7 @@ const _abi = {
         "type": 8,
         "typeArguments": []
       },
-      "offset": 8828
+      "offset": 9172
     }
   ]
 };

@@ -32,7 +32,6 @@ export default class RootStore {
 	get initialized() {
 		return this.accountStore.provider != null;
 	}
-
 	serialize = (): ISerializedRootStore => ({
 		accountStore: this.accountStore.serialize(),
 		tradeStore: this.tradeStore.serialize(),

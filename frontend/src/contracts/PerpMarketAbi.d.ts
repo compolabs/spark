@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.0
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -23,8 +23,6 @@ import type {
 
 import type { Option, Enum, Vec } from "./common";
 
-export enum AccessErrorInput { CannotReinitialized = 'CannotReinitialized', NotOwner = 'NotOwner' };
-export enum AccessErrorOutput { CannotReinitialized = 'CannotReinitialized', NotOwner = 'NotOwner' };
 export enum ErrorInput { AccessDenied = 'AccessDenied', FreeCollateralMoreThanZero = 'FreeCollateralMoreThanZero', InvalidPythFeePayment = 'InvalidPythFeePayment', NoOrdersFound = 'NoOrdersFound', NoMarketFound = 'NoMarketFound', OrdersCantBeMatched = 'OrdersCantBeMatched', NoMarketPriceForMarket = 'NoMarketPriceForMarket' };
 export enum ErrorOutput { AccessDenied = 'AccessDenied', FreeCollateralMoreThanZero = 'FreeCollateralMoreThanZero', InvalidPythFeePayment = 'InvalidPythFeePayment', NoOrdersFound = 'NoOrdersFound', NoMarketFound = 'NoMarketFound', OrdersCantBeMatched = 'OrdersCantBeMatched', NoMarketPriceForMarket = 'NoMarketPriceForMarket' };
 
@@ -36,14 +34,21 @@ export type I64Input = { value: BigNumberish, negative: boolean };
 export type I64Output = { value: BN, negative: boolean };
 export type MarketPriceChangeEventInput = { price: BigNumberish, token: AssetIdInput };
 export type MarketPriceChangeEventOutput = { price: BN, token: AssetIdOutput };
+export type MatchEventInput = { order_sell: OrderChangeEventInput, order_buy: OrderChangeEventInput, trade: TradeEventInput };
+export type MatchEventOutput = { order_sell: OrderChangeEventOutput, order_buy: OrderChangeEventOutput, trade: TradeEventOutput };
 export type OrderInput = { id: string, trader: AddressInput, base_token: AssetIdInput, base_size: I64Input, order_price: BigNumberish };
 export type OrderOutput = { id: string, trader: AddressOutput, base_token: AssetIdOutput, base_size: I64Output, order_price: BN };
+export type OrderChangeEventInput = { id: string, order: Option<OrderInput> };
+export type OrderChangeEventOutput = { id: string, order: Option<OrderOutput> };
 export type RawBytesInput = { ptr: BigNumberish, cap: BigNumberish };
 export type RawBytesOutput = { ptr: BN, cap: BN };
+export type TradeEventInput = { trade_amount: BigNumberish, trade_value: BigNumberish, token: AssetIdInput, price: BigNumberish, matcher: AddressInput };
+export type TradeEventOutput = { trade_amount: BN, trade_value: BN, token: AssetIdOutput, price: BN, matcher: AddressOutput };
 export type TwapInput = { base_token: AssetIdInput, span: BigNumberish, current_twap: BigNumberish, last_update: BigNumberish };
 export type TwapOutput = { base_token: AssetIdOutput, span: BN, current_twap: BN, last_update: BN };
 
 export type PerpMarketAbiConfigurables = {
+  OWNER: AddressInput;
   PROXY_ADDRESS: AddressInput;
   DUST: BigNumberish;
   DEBUG_STEP: Option;
@@ -115,7 +120,7 @@ export class PerpMarketAbi extends Contract {
     get_twaps: InvokeFunction<[base_token: AssetIdInput], [Option<TwapOutput>, Option<TwapOutput>]>;
     has_active_orders: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput], boolean>;
     match_orders: InvokeFunction<[order_sell_id: string, order_buy_id: string, price_update_data: Vec<Bytes>], void>;
-    open_order: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, base_size: I64Input, order_price: BigNumberish], string>;
+    open_order: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, base_size: I64Input, order_price: BigNumberish], void>;
     remove_all_orders: InvokeFunction<[], void>;
     remove_order: InvokeFunction<[order_id: string], void>;
     remove_uncollaterised_orders: InvokeFunction<[trader: AddressInput], void>;

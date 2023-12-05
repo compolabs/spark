@@ -5,7 +5,6 @@ import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { ClearingHouseAbi, ClearingHouseAbi__factory, PerpMarketAbi, PerpMarketAbi__factory } from "@src/contracts";
-import tradeStore from "@stores/TradeStore";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -117,7 +116,7 @@ class PerpTradeVm {
 		console.log("get_mark_price", res);
 
 		// const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
-		const scale = 10 ** 8;
+		// const scale = 10 ** 8;
 		// const markPrice =
 		// let scale = 10.pow(market.decimal.as_u64());
 		// let mark_price = perp_market_contract.get_mark_price(market.asset_id);
@@ -194,11 +193,8 @@ class PerpTradeVm {
 
 	orderSize: BN = BN.ZERO;
 	setOrderSize = (v: BN, sync?: boolean) => {
-		// todo v.gt()
-		const max = this.maxAbsPositionSize?.long ?? BN.ZERO;
-		const one = BN.formatUnits(max, this.token0.decimals);
-		const two = BN.formatUnits(v, this.token0.decimals);
-		if (max.eq(0)) return;
+		const max = this.maxPositionSize;
+		if (max == null) return;
 		v.gte(max) ? (this.orderSize = max) : (this.orderSize = v);
 		if (this.price.gt(0) && sync) {
 			const size = BN.formatUnits(v, this.token0.decimals);
@@ -223,6 +219,10 @@ class PerpTradeVm {
 		}
 	};
 
+	get formattedOrderValue() {
+		return BN.formatUnits(this.orderValue, this.token1.decimals).toFormat(2);
+	}
+
 	price: BN = new BN(BN.parseUnits(27000, this.token1.decimals));
 	setPrice = (v: BN, sync?: boolean) => {
 		this.price = v;
@@ -243,30 +243,54 @@ class PerpTradeVm {
 	}
 
 	get leveragePercent() {
-		return this.orderSize
-			.times(100)
-			.div(this.maxAbsPositionSize?.long ?? 0)
-			.toNumber();
+		return this.orderSize.times(100).div(this.maxPositionSize).toNumber();
 	}
 
 	onLeverageClick = (leverage: number) => {
-		//leverage = order_size * order_price/get_free_collateral
-		//order_size = (leverage * price ) / coll
-
 		const { tradeStore } = this.rootStore;
 		const collateral = BN.formatUnits(tradeStore.freeCollateral ?? 0, this.token1.decimals);
-		const price = BN.formatUnits(this.price, this.token1.decimals);
-		const size = BN.parseUnits(price.times(leverage).div(collateral).div(100));
-		this.setOrderSize(size, true);
+		const value = BN.parseUnits(collateral.times(leverage).times(100), this.token1.decimals);
+		this.setOrderValue(value, true);
 	};
 	onMaxClick = () => {
 		const price = BN.formatUnits(this.price, this.token1.decimals);
-		const size = this.maxAbsPositionSize?.long ?? BN.ZERO;
-		const val = BN.formatUnits(size, this.token0.decimals);
+		const val = BN.formatUnits(this.maxPositionSize, this.token0.decimals);
 		const value = BN.parseUnits(val.times(price), this.token1.decimals);
-		this.setOrderSize(size, true);
+		this.setOrderSize(this.maxPositionSize, true);
 		this.setOrderValue(value);
 	};
 
-	createOrder = async (action: OrderAction) => {};
+	createOrder = async (action: OrderAction) => {
+		// const clearingHouse = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
+	};
+	getData = async () => {
+		const { tradeStore, accountStore } = this.rootStore;
+		const addressInput = accountStore.addressInput;
+		const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
+		const contracts = tradeStore.contractsToRead;
+		if (addressInput == null || contracts == null) return;
+		console.log(addressInput, baseAsset);
+
+		const wallet = await accountStore.getWallet();
+		if (wallet == null) return;
+		const clearingHouse = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
+
+		const result = await clearingHouse.functions
+			.get_max_abs_position_size(addressInput, baseAsset)
+			.addContracts([
+				contracts?.accountBalanceAbi,
+				contracts?.proxyAbi,
+				contracts?.clearingHouseAbi,
+				contracts?.vaultAbi,
+				contracts?.insuranceFundAbi,
+			])
+			// .txParams({ gasPrice: 1 })
+			.simulate();
+		console.log("result", result);
+	};
+
+	get maxPositionSize() {
+		const max = this.isShort ? this.maxAbsPositionSize?.short : this.maxAbsPositionSize?.long;
+		return max == null ? BN.ZERO : max;
+	}
 }
