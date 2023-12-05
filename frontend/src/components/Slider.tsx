@@ -4,9 +4,12 @@ import React from "react";
 import styled from "@emotion/styled";
 import { Row } from "@components/Flex";
 import "rc-slider/assets/index.css";
+import { BN } from "fuels";
 
 interface IProps {
 	percent?: number;
+	symbol?: string;
+	fixSize?: number;
 }
 
 const Dot = styled.div`
@@ -98,7 +101,10 @@ const StyledSlider = styled(RCSlider)<IProps>`
 		}
 
 		&::after {
-			content: "${({ percent }) => `${percent !== 0 ? "<" : ""} ${percent?.toFixed(0)}% ${percent !== 100 ? ">" : " "} `}";
+			content: "${({ percent, symbol, fixSize }) =>
+				`${percent !== 0 ? "<" : ""} ${percent?.toFixed(fixSize == null || percent == 0 ? 0 : fixSize)}${symbol ?? "%"} ${
+					percent !== 100 ? ">" : " "
+				} `}";
 			height: 20px;
 			position: absolute;
 			top: 2px;

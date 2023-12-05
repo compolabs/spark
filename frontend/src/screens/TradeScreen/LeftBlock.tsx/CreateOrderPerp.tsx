@@ -7,7 +7,6 @@ import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import { useStores } from "@stores";
 import AccordionItem from "@components/AccordionItem";
 import { Accordion } from "@szhsin/react-accordion";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
@@ -41,28 +40,21 @@ const MaxButton = styled(Button)`
 `;
 
 const orderTypes = [
-	{ title: "Stop Market", key: "stopmarket", disabled: true },
 	{ title: "Limit", key: "limit" },
-	{ title: "Market", key: "market", disabled: true },
-	{ title: "Stop Limit", key: "stoplimit", disabled: true },
-	{ title: "Take Profit", key: "takeprofit", disabled: true },
-	{ title: "Take Profit Limit", key: "takeprofitlimit", disabled: true },
+	{ title: "Market", key: "market" },
 ];
 
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
-	const { accountStore, tradeStore } = useStores();
+	const [orderTypeIndex, setOrderTypeIndex] = useState(0);
 	const vm = usePerpTradeVM();
-	const [leverage, _setLeverage] = useState(0);
-	const setLeverage = (v: number) => {
-		_setLeverage(v);
+	const onChangePercent = (percent: number) => {
 		const max = vm.maxAbsPositionSize?.long ?? BN.ZERO;
-		//todo проверить почему не работает с BN
-		const value = (max.toNumber() * v) / 100;
+		const value = (max.toNumber() * percent) / 100;
 		vm.setOrderSize(new BN(value), true);
 	};
 
 	const orderDetails = [
-		{ title: "Max buy", value: "0.00" },
+		{ title: "Order Size", value: vm.formattedOrderSize },
 		{ title: "Est. fee", value: "0.00" },
 		{ title: "Total amount", value: "0.00" },
 	];
@@ -79,11 +71,22 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 			<SizedBox height={16} />
 			<Row>
 				<Column crossAxisSize="max">
-					<Select label="Order type" options={orderTypes} selected={orderTypes[1].key} onSelect={() => null} />
+					<Select
+						label="Order type"
+						options={orderTypes}
+						selected={orderTypes[orderTypeIndex].key}
+						onSelect={(_, index) => setOrderTypeIndex(index)}
+					/>
 					<SizedBox height={2} />
 				</Column>
 				<SizedBox width={8} />
-				<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={(v) => vm.setPrice(v, true)} label="Price" />
+				<TokenInput
+					disabled={orderTypeIndex === 1}
+					decimals={vm.token1.decimals}
+					amount={vm.price}
+					setAmount={(v) => vm.setPrice(v, true)}
+					label={orderTypeIndex === 0 ? "Price" : "Market price"}
+				/>
 			</Row>
 			<SizedBox height={2} />
 			<Row alignItems="flex-end">
@@ -92,6 +95,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					decimals={vm.token0.decimals}
 					amount={vm.orderSize}
 					setAmount={vm.setOrderSize}
+					max={vm.maxAbsPositionSize?.long}
 					label="Order size"
 				/>
 				<SizedBox width={8} />
@@ -118,7 +122,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 								Leverage
 							</Text>
 							<Row justifyContent="flex-end" alignItems="center">
-								<Text primary>{vm.leverageSize}x</Text>
+								<Text primary>{vm.leverageSize.toFormat(2)}x</Text>
+								{/*<Text primary>{vm.leverage.toFormat(2)}x</Text>*/}
 							</Row>
 						</Row>
 					}
@@ -127,16 +132,20 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					<Slider
 						min={0}
 						max={100}
-						value={leverage}
-						percent={leverage}
-						onChange={(v) => setLeverage(v as number)}
+						symbol="x"
+						fixSize={2}
+						percent={vm.leverageSize.toNumber()}
+						value={vm.leveragePercent}
+						onChange={(v) => onChangePercent(v as number)}
 						step={1}
 					/>
 					<SizedBox height={8} />
 					<Row alignItems="center" justifyContent="flex-end">
 						{/*<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={vm.setPrice} />*/}
 						{[5, 10, 20].map((v) => (
-							<Chip key={"chip" + v}>{v}x</Chip>
+							<Chip key={"chip" + v} onClick={() => vm.onLeverageClick(v)}>
+								{v}x
+							</Chip>
 						))}
 					</Row>
 				</AccordionItem>

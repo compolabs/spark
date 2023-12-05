@@ -14,6 +14,7 @@ interface IProps {
 	assetId?: string;
 	decimals: number;
 	label?: string;
+	max?: BN;
 	amount: BN;
 	setAmount?: (amount: BN) => void;
 	errorMessage?: string;
@@ -115,6 +116,7 @@ const TokenInput: React.FC<IProps> = (props) => {
 					placeholder="0.00"
 					readOnly={!props.setAmount}
 					disabled={props.disabled}
+					max={props.max?.toString()}
 				/>
 				{props.assetId && <Chip>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Chip>}
 			</InputContainer>

@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { reaction } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { ClearingHouseAbi, ClearingHouseAbi__factory, PerpMarketAbi, PerpMarketAbi__factory } from "@src/contracts";
-import { log } from "fuels/dist/cli/utils/logger";
+import tradeStore from "@stores/TradeStore";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -38,6 +38,7 @@ class PerpTradeVm {
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		this.updateMarket();
+		makeAutoObservable(this);
 		reaction(
 			() => [this.rootStore.tradeStore.marketSymbol],
 			() => this.updateMarket(),
@@ -77,24 +78,24 @@ class PerpTradeVm {
 	updateMaxValueForMarket = async (clearingHouse: ClearingHouseAbi) => {
 		console.log("setMaxAbsPositionSize");
 		this.setMaxAbsPositionSize({ long: new BN(71428571), short: new BN(71428571) });
-		const { tradeStore, accountStore } = this.rootStore;
-		const addressInput = accountStore.addressInput;
-		const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
-		const contracts = tradeStore.contractsToRead;
-		if (addressInput == null || contracts == null) return;
-
-		console.log(addressInput, baseAsset);
-		const result = await clearingHouse.functions
-			.get_max_abs_position_size(addressInput, baseAsset)
-			.addContracts([
-				contracts?.accountBalanceAbi,
-				contracts?.proxyAbi,
-				contracts?.clearingHouseAbi,
-				contracts?.vaultAbi,
-				contracts?.insuranceFundAbi,
-			])
-			.simulate();
-		console.log("result", result.value);
+		// const { tradeStore, accountStore } = this.rootStore;
+		// const addressInput = accountStore.addressInput;
+		// const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
+		// const contracts = tradeStore.contractsToRead;
+		// if (addressInput == null || contracts == null) return;
+		//
+		// console.log(addressInput, baseAsset);
+		// const result = await clearingHouse.functions
+		// 	.get_max_abs_position_size(addressInput, baseAsset)
+		// 	.addContracts([
+		// 		contracts?.accountBalanceAbi,
+		// 		contracts?.proxyAbi,
+		// 		contracts?.clearingHouseAbi,
+		// 		contracts?.vaultAbi,
+		// 		contracts?.insuranceFundAbi,
+		// 	])
+		// 	.simulate();
+		// console.log("result", result.value);
 		// if (result.value != null) {
 		// }
 	};
@@ -191,16 +192,14 @@ class PerpTradeVm {
 	isShort: boolean = false;
 	setIsShort = (v: boolean) => (this.isShort = v);
 
-	//btc
-	//get_max_abs_position_size вернет значение в графу order size,
-	//ордер value посчитайте на фронте умножив на цену которую указал пользователь
 	orderSize: BN = BN.ZERO;
 	setOrderSize = (v: BN, sync?: boolean) => {
 		// todo v.gt()
 		const max = this.maxAbsPositionSize?.long ?? BN.ZERO;
+		const one = BN.formatUnits(max, this.token0.decimals);
+		const two = BN.formatUnits(v, this.token0.decimals);
 		if (max.eq(0)) return;
-		console.log("max", max.toString(), v.toString())
-		v.gt(max) ? (this.orderSize = max) : (this.orderSize = v);
+		v.gte(max) ? (this.orderSize = max) : (this.orderSize = v);
 		if (this.price.gt(0) && sync) {
 			const size = BN.formatUnits(v, this.token0.decimals);
 			const price = BN.formatUnits(this.price, this.token1.decimals);
@@ -209,51 +208,64 @@ class PerpTradeVm {
 		}
 	};
 
-	//usdc
+	get formattedOrderSize() {
+		return BN.formatUnits(this.orderSize, this.token0.decimals).toFormat(2);
+	}
+
 	orderValue: BN = BN.ZERO;
 	setOrderValue = (v: BN, sync?: boolean) => {
 		this.orderValue = v;
 		if (this.price.gt(0) && sync) {
-			// this.setOrderSize(value);
+			const value = BN.formatUnits(v, this.token1.decimals);
+			const price = BN.formatUnits(this.price, this.token1.decimals);
+			const size = BN.parseUnits(value.div(price), this.token0.decimals);
+			this.setOrderSize(size);
 		}
 	};
 
 	price: BN = new BN(BN.parseUnits(27000, this.token1.decimals));
 	setPrice = (v: BN, sync?: boolean) => {
-		console.log("setPrice");
 		this.price = v;
 		if (this.orderValue.gt(0) && sync) {
-			console.log("setOrderSize in setPrice");
 			const value = BN.formatUnits(this.orderValue, this.token1.decimals);
 			const price = BN.formatUnits(v, this.token1.decimals);
 			const size = BN.parseUnits(price.div(value), this.token0.decimals);
-			console.log("old size", this.orderSize.toString());
 			this.setOrderSize(size);
-			console.log("size", size.toString());
 		}
 	};
 
-	leverage: BN = BN.ZERO;
-	setLeverage = (v: BN) => (this.leverage = v);
-
 	get leverageSize() {
-		// order_size*order_price/get_free_collateral
 		const { tradeStore } = this.rootStore;
 		const size = BN.formatUnits(this.orderSize, this.token0.decimals);
 		const price = BN.formatUnits(this.price, this.token1.decimals);
 		const freeColl = BN.formatUnits(tradeStore.freeCollateral ?? 0, this.token0.decimals);
-		const value = size.times(price.div(freeColl)).div(100).toFormat(2);
-		return value;
+		return size.times(price.div(freeColl)).div(100);
 	}
 
+	get leveragePercent() {
+		return this.orderSize
+			.times(100)
+			.div(this.maxAbsPositionSize?.long ?? 0)
+			.toNumber();
+	}
+
+	onLeverageClick = (leverage: number) => {
+		//leverage = order_size * order_price/get_free_collateral
+		//order_size = (leverage * price ) / coll
+
+		const { tradeStore } = this.rootStore;
+		const collateral = BN.formatUnits(tradeStore.freeCollateral ?? 0, this.token1.decimals);
+		const price = BN.formatUnits(this.price, this.token1.decimals);
+		const size = BN.parseUnits(price.times(leverage).div(collateral).div(100));
+		this.setOrderSize(size, true);
+	};
 	onMaxClick = () => {
+		const price = BN.formatUnits(this.price, this.token1.decimals);
 		const size = this.maxAbsPositionSize?.long ?? BN.ZERO;
 		const val = BN.formatUnits(size, this.token0.decimals);
-		const price = BN.formatUnits(this.price, this.token1.decimals);
 		const value = BN.parseUnits(val.times(price), this.token1.decimals);
-		this.setOrderSize(size);
+		this.setOrderSize(size, true);
 		this.setOrderValue(value);
-		//todo update leverage
 	};
 
 	createOrder = async (action: OrderAction) => {};

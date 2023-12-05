@@ -65,7 +65,8 @@ class TradeStore {
 		}
 	}
 
-	freeCollateral: BN | null = null;
+	// freeCollateral: BN | null = null;
+	freeCollateral: BN | null = BN.parseUnits(300, TOKENS_BY_SYMBOL.USDC.decimals);
 	setFreeCollateral = (v: BN | null) => (this.freeCollateral = v);
 
 	get formattedFreeCollateral() {
