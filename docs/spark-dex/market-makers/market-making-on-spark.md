@@ -5,15 +5,15 @@
 **1. Maker Rebates:**
 
 * **Description:** By placing limit orders and contributing liquidity to the order book, you qualify for maker rebates.
-* **Rebate Calculation:** 0.02% of the trading volume.
-* **Reward:** Earned in Spark Points, convertible to Fuel tokens at a rate of 300 Spark Point to 1 Fuel token.
+* **Rebate Calculation:** 0.01%-0.02% of the maker trading volume.
+* **Reward:** Earned in Spark Points, convertible to Fuel tokens at a rate of 30 Spark Point to 1 Fuel token.
 
 **2. Liquidity Mining Program:**
 
 * **Description:** Participate in our liquidity mining program to receive additional rewards based on your liquidity provision.
 * **Reward Calculation:** Earn Spark Points using the formula: LP\_Spark\_Points = Liquidity Provided \* Days \* LP\_Weight
-* **Conversion Rate:** 300 Spark Point = 1 Fuel token.
-* **Example:** If you provide $1,000 in liquidity for 30 days with an LP\_Weight of 0.001, you earn 300 Spark Points, equivalent to 1 Fuel tokens.
+* **Conversion Rate:** 30 Spark Point = 1 Fuel token.
+* **Example:** If you provide $1,000 in liquidity for 30 days with an LP\_Weight of 0.001, you earn 30 Spark Points, equivalent to 1 Fuel tokens.
 
 **3. VIP Market Maker Program:**
 
