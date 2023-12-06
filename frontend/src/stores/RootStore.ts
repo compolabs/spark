@@ -23,9 +23,9 @@ export default class RootStore {
 		this.accountStore = new AccountStore(this, initState?.accountStore);
 		this.settingsStore = new SettingsStore(this);
 		this.notificationStore = new NotificationStore(this);
+		this.oracleStore = new OracleStore(this);
 		this.ordersStore = new OrdersStore(this);
 		this.tradeStore = new TradeStore(this, initState?.tradeStore);
-		this.oracleStore = new OracleStore(this);
 		makeAutoObservable(this);
 	}
 

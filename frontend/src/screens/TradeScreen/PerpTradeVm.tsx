@@ -2,36 +2,13 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
-import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import {
-	AccountBalanceAbi,
-	AccountBalanceAbi__factory,
-	ClearingHouseAbi,
-	ClearingHouseAbi__factory,
-	InsuranceFundAbi,
-	InsuranceFundAbi__factory,
-	PerpMarketAbi,
-	PerpMarketAbi__factory,
-	ProxyAbi,
-	ProxyAbi__factory,
-	VaultAbi,
-	VaultAbi__factory,
-} from "@src/contracts";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
 interface IProps {
 	children: React.ReactNode;
-}
-
-interface ContractConfig {
-	proxyContract: ProxyAbi;
-	accountBalanceContract: AccountBalanceAbi;
-	clearingHouseContract: ClearingHouseAbi;
-	insuranceFundContract: InsuranceFundAbi;
-	perpMarketContract: PerpMarketAbi;
-	vaultMarketContract: VaultAbi;
 }
 
 export const PerpTradeVMProvider: React.FC<IProps> = ({ children }) => {
@@ -50,11 +27,8 @@ class PerpTradeVm {
 	initialized: boolean = false;
 	private setInitialized = (l: boolean) => (this.initialized = l);
 
-	contracts: ContractConfig | null = null;
-	private setContract = (c: ContractConfig | null) => (this.contracts = c);
-
-	rejectUpdateStatePromise?: () => void;
-	setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
+	// rejectUpdateStatePromise?: () => void;
+	// setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 
 	maxAbsPositionSize?: { long: BN; short: BN } | null = null;
 	setMaxAbsPositionSize = (v: { long: BN; short: BN } | null) => (this.maxAbsPositionSize = v);
@@ -69,57 +43,43 @@ class PerpTradeVm {
 		);
 	}
 
-	initContracts = async () => {
-		const { accountStore } = this.rootStore;
-		const wallet = await accountStore.getWallet();
-		if (wallet == null) return;
-		const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
-		const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
-		const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
-		const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
-		const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
-		const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-		this.setContract({
-			proxyContract,
-			accountBalanceContract,
-			clearingHouseContract,
-			insuranceFundContract,
-			perpMarketContract,
-			vaultMarketContract,
-		});
-	};
 	updateMarket = async () => {
+		console.log("updateMarket in perp rtade vm ");
 		const { tradeStore, accountStore } = this.rootStore;
 		const market = tradeStore.market;
 		if (market == null || market.type === "spot") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
+		// if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
 
-		await this.initContracts();
-		const promise = new Promise((resolve, reject) => {
-			this.rejectUpdateStatePromise = reject;
-			resolve(
-				Promise.all([
-					this.updateMaxValueForMarket(),
-					// this.calcMaxPositionSize(clearingHouse, perpMarketAbi),
-				]),
-			);
-		});
+		// const promise = new Promise((resolve, reject) => {
+		// 	this.rejectUpdateStatePromise = reject;
+		// 	resolve(
+		// 		Promise.all([
+		// 			this.updateMaxValueForMarket(),
+		// 			// this.calcMaxPositionSize(clearingHouse, perpMarketAbi),
+		// 		]),
+		// 	);
+		// });
 
-		promise
-			.catch((v) => console.error(v))
-			.finally(() => {
-				this.setInitialized(true);
-				this.setRejectUpdateStatePromise(undefined);
-			});
+		// promise
+		// 	.catch((v) => console.error(v))
+		// 	.finally(() => {
+		// 		this.setInitialized(true);
+		// 		this.setRejectUpdateStatePromise(undefined);
+		// 	});
+
+		await this.updateMaxValueForMarket();
+		this.setInitialized(true);
 	};
 	updateMaxValueForMarket = async () => {
-		const addressInput = this.rootStore.accountStore.addressInput;
+		const { accountStore, tradeStore } = this.rootStore;
+		const addressInput = accountStore.addressInput;
 		const baseAsset = { value: this.token0.assetId };
 		if (addressInput == null) return;
-		const result = await this.contracts?.clearingHouseContract.functions
+		const result = await tradeStore.contracts?.clearingHouseContract.functions
 			.get_max_abs_position_size(addressInput, baseAsset)
-			.addContracts(Object.values(this.contracts))
+			.addContracts(tradeStore.contractsArray)
 			.simulate();
 		if (result?.value != null) {
 			const value = result.value;
@@ -146,9 +106,14 @@ class PerpTradeVm {
 	}
 
 	openOrder = async () => {
-		const { accountStore, oracleStore } = this.rootStore;
+		const { accountStore, oracleStore, tradeStore } = this.rootStore;
 		if (oracleStore.updateData == null) return;
 		await accountStore.checkConnectionWithWallet();
+		const contract = tradeStore.contracts;
+		if (contract == null) {
+			console.log("contract == null");
+			return;
+		}
 		try {
 			this.setLoading(true);
 			const fee = await oracleStore.getPythFee();
@@ -156,9 +121,16 @@ class PerpTradeVm {
 			const baseAsset = { value: this.token0.assetId };
 			const price = this.price.toFixed(0).toString();
 			const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
-			await this.contracts?.clearingHouseContract.functions
+			await tradeStore.contracts?.clearingHouseContract.functions
 				.open_order(baseAsset, size, price, oracleStore.updateData)
-				.addContracts(Object.values(this.contracts))
+				.addContracts([
+					contract.clearingHouseContract,
+					contract.proxyContract,
+					contract.perpMarketContract,
+					contract.vaultMarketContract,
+					contract.accountBalanceContract,
+					contract.pythContract,
+				])
 				.callParams({ forward: { amount: fee ?? "", assetId: TOKENS_BY_SYMBOL.ETH.assetId } })
 				.txParams({ gasPrice: 1 })
 				.call();
@@ -204,7 +176,7 @@ class PerpTradeVm {
 		return BN.formatUnits(this.orderValue, this.token1.decimals).toFormat(2);
 	}
 
-	price: BN = new BN(BN.parseUnits(27000, this.token1.decimals));
+	price: BN = BN.ZERO;
 	setPrice = (v: BN, sync?: boolean) => {
 		this.price = v;
 		if (this.orderValue.gt(0) && sync) {

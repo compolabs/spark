@@ -97,9 +97,8 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	const { tradeStore, oracleStore } = useStores();
 	const theme = useTheme();
 	const [perpStats, setPerpStats] = useState<IPerpMarketState | null>(null);
-	const currentToken = tradeStore.market?.token0.priceFeed;
 	const perpStatsArr = [
-		{ title: "Index price", value: "" },
+		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 8).toFormat(2) },
 		{ title: "Funding rate", value: "" },
 		{ title: "Avg funding", value: "" },
 		{ title: "Open interest", value: "" },
@@ -107,12 +106,11 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	];
 	const [spotStats, setSpotStats] = useState<ISpotMarketState | null>(null);
 	const spotStatsArr = [
-		{ title: "Index price", value: "" },
+		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 8).toFormat(2) },
 		{ title: "24h volume", value: "" },
 		{ title: "24h High", value: "" },
 		{ title: "24h Low", value: "" },
 	];
-	//todo implement logic for perp stats
 	useEffect(() => {
 		const to = dayjs().unix();
 		const from = to - 60 * 60 * 24 * 2;
@@ -190,7 +188,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 									<Text type={TEXT_TYPES.SUPPORTING}>{title}</Text>
 									<SizedBox height={4} />
 									<Text type={TEXT_TYPES.BODY} primary>
-										0.00
+										{value}
 									</Text>
 								</Column>
 							</React.Fragment>

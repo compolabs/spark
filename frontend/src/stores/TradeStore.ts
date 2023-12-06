@@ -3,14 +3,23 @@ import RootStore from "@stores/RootStore";
 import { CONTRACT_ADDRESSES, IToken, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import {
+	AccountBalanceAbi,
 	AccountBalanceAbi__factory,
+	ClearingHouseAbi,
 	ClearingHouseAbi__factory,
+	InsuranceFundAbi,
 	InsuranceFundAbi__factory,
+	PerpMarketAbi,
+	PerpMarketAbi__factory,
+	ProxyAbi,
 	ProxyAbi__factory,
+	PythContractAbi,
 	PythContractAbi__factory,
 	VaultAbi,
 	VaultAbi__factory,
 } from "@src/contracts";
+import { log } from "fuels/dist/cli/utils/logger";
+import { LOGIN_TYPE } from "@stores/AccountStore";
 
 export interface IMarket {
 	token0: IToken;
@@ -20,6 +29,16 @@ export interface IMarket {
 	price?: BN;
 	change24?: BN;
 	symbol: string;
+}
+
+interface ContractConfig {
+	proxyContract: ProxyAbi;
+	accountBalanceContract: AccountBalanceAbi;
+	clearingHouseContract: ClearingHouseAbi;
+	insuranceFundContract: InsuranceFundAbi;
+	perpMarketContract: PerpMarketAbi;
+	vaultMarketContract: VaultAbi;
+	pythContract: PythContractAbi;
 }
 
 //todo implement service for getting markets stats
@@ -55,18 +74,46 @@ class TradeStore {
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
 		this.setPerpMarkets(perpMarketsConfig);
-		// reaction(() => this.rootStore.accountStore.walletToRead, this.updateState);
-		// this.updateState();
-		// setInterval(this.updateState, 20 * 1000);
-		//
+		this.initContracts();
+		reaction(() => this.contracts != null, this.updateState);
+		// setInterval(this.updateState, 30 * 1000);
+
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
 			this.setFavMarkets(markets.split(","));
 		}
 	}
 
-	// freeCollateral: BN | null = null;
-	freeCollateral: BN | null = BN.parseUnits(300, TOKENS_BY_SYMBOL.USDC.decimals);
+	contracts: ContractConfig | null = null;
+	private setContract = (c: ContractConfig | null) => (this.contracts = c);
+
+	get contractsArray() {
+		return this.contracts == null ? [] : Object.values(this.contracts);
+	}
+
+	initContracts = async () => {
+		const { accountStore } = this.rootStore;
+		const wallet = await accountStore.getWallet();
+		if (wallet == null) return;
+		const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
+		const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
+		const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
+		const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
+		const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
+		const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+		const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
+		this.setContract({
+			proxyContract,
+			accountBalanceContract,
+			clearingHouseContract,
+			insuranceFundContract,
+			perpMarketContract,
+			vaultMarketContract,
+			pythContract,
+		});
+	};
+
+	freeCollateral: BN | null = null;
 	setFreeCollateral = (v: BN | null) => (this.freeCollateral = v);
 
 	get formattedFreeCollateral() {
@@ -173,16 +220,16 @@ class TradeStore {
 					forward: { amount: fee, assetId: TOKENS_BY_SYMBOL.ETH.assetId },
 				})
 				.addContracts([
-					contracts?.pythContractAbi,
-					contracts?.accountBalanceAbi,
-					contracts?.proxyAbi,
-					contracts?.clearingHouseAbi,
+					contracts.pythContractAbi,
+					contracts.accountBalanceAbi,
+					contracts.proxyAbi,
+					contracts.clearingHouseAbi,
 				])
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
 				const formattedAmount = BN.formatUnits(amount, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
-				this.notifyThatActionIsSuccessful(`You have successfully ${formattedAmount}withdrawn USDC`);
+				this.notifyThatActionIsSuccessful(`You have successfully ${formattedAmount} withdrawn USDC`);
 			}
 			await this.rootStore.accountStore.updateAccountBalances();
 		} catch (e) {
@@ -205,48 +252,56 @@ class TradeStore {
 		});
 	};
 
-	rejectUpdateStatePromise?: () => void;
-	setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
+	// rejectUpdateStatePromise?: () => void;
+	// setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 	updateState = async () => {
+		console.log("updateState in tradestore");
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null || accountStore.addressInput == null) return;
-		const wallet = accountStore.walletToRead;
-		if (wallet == null) return;
-		const vault = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-		if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
-
-		const promise = new Promise((resolve, reject) => {
-			this.rejectUpdateStatePromise = reject;
-			resolve(Promise.all([this.updateFreeCollateral(vault)]));
-		});
-
-		promise
-			.catch((v) => console.error(v))
-			.finally(() => {
-				this.setInitialized(true);
-				this.setRejectUpdateStatePromise(undefined);
-			});
+		const contracts = this.contracts;
+		if (contracts == null) return;
+		// if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
+		// const promise = new Promise((resolve, reject) => {
+		// 	this.rejectUpdateStatePromise = reject;
+		// 	resolve(
+		// 		Promise.all([
+		// 			this.updateFreeCollateral(contracts?.vaultMarketContract),
+		// 			// this.updatePositions(contracts.clearingHouseContract),
+		// 		]),
+		// 	);
+		// });
+		//
+		// promise
+		// 	.catch((v) => console.error(v))
+		// 	.finally(() => {
+		// 		this.setInitialized(true);
+		// 		this.setRejectUpdateStatePromise(undefined);
+		// 	});
+		await this.updateFreeCollateral(contracts?.vaultMarketContract);
+		this.setInitialized(true);
 	};
 
 	updateFreeCollateral = async (vault: VaultAbi) => {
+		console.log("updateFreeCollateral");
 		const addressInput = this.rootStore.accountStore.addressInput;
 		if (addressInput == null) return;
 
-		const contracts = this.contractsToRead;
-		if (contracts == null) return;
-		const result = await vault.functions
-			.get_free_collateral(addressInput)
-			.addContracts([
-				contracts?.accountBalanceAbi,
-				contracts?.proxyAbi,
-				contracts?.clearingHouseAbi,
-				contracts?.insuranceFundAbi,
-			])
-			.simulate();
+		const result = await vault.functions.get_free_collateral(addressInput).addContracts(this.contractsArray).simulate();
 
 		if (result.value != null) {
+			console.log("free coll", result.value.value.toString());
 			this.setFreeCollateral(new BN(result.value.value.toString()));
 		}
+	};
+	updatePositions = async (clearingHouseAbi: ClearingHouseAbi) => {
+		// const addressInput = this.rootStore.accountStore.addressInput;
+		// if (addressInput == null) return;
+		//
+		// const result = await clearingHouseAbi.functions.get_t(addressInput).addContracts(this.contractsArray).simulate();
+		//
+		// if (result.value != null) {
+		// 	this.setFreeCollateral(new BN(result.value.value.toString()));
+		// }
 	};
 
 	get contractsToRead() {
