@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect } from "react";
 import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import { Observer } from "mobx-react-lite";
@@ -27,6 +27,9 @@ const Root = styled.div`
 
 const FaucetImpl: React.FC<IProps> = () => {
 	const vm = useFaucetVM();
+	useEffect(() => {
+		document.title = `Spark | Faucet`;
+	}, []);
 	return (
 		<Observer>
 			{() => {

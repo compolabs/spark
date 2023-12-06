@@ -255,7 +255,6 @@ class TradeStore {
 	// rejectUpdateStatePromise?: () => void;
 	// setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 	updateState = async () => {
-		console.log("updateState in tradestore");
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null || accountStore.addressInput == null) return;
 		const contracts = this.contracts;
@@ -282,14 +281,10 @@ class TradeStore {
 	};
 
 	updateFreeCollateral = async (vault: VaultAbi) => {
-		console.log("updateFreeCollateral");
 		const addressInput = this.rootStore.accountStore.addressInput;
 		if (addressInput == null) return;
-
 		const result = await vault.functions.get_free_collateral(addressInput).addContracts(this.contractsArray).simulate();
-
 		if (result.value != null) {
-			console.log("free coll", result.value.value.toString());
 			this.setFreeCollateral(new BN(result.value.value.toString()));
 		}
 	};

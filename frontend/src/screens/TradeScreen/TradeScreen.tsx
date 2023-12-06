@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect } from "react";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import { Column, Row } from "@src/components/Flex";
 import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
@@ -41,7 +41,10 @@ const Root = styled.div`
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	const width = useWindowSize().width;
-	// const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
+	const { tradeStore } = useStores();
+	useEffect(() => {
+		document.title = `Spark | ${tradeStore.marketSymbol}`;
+	}, [tradeStore.marketSymbol]);
 	return width && width >= 880 ? (
 		<Root>
 			<MarketStatisticsBar />
@@ -89,8 +92,9 @@ const TradeScreen: React.FC<IProps> = () => {
 	const market = tradeStore.marketsConfig[marketId ?? ""];
 	const navigate = useNavigate();
 	if (market == null) {
+		tradeStore.setMarketSymbol(tradeStore.defaultMarketSymbol);
 		navigate({
-			pathname: `/${tradeStore.defaultMarketSymbol}`,
+			pathname: `/#/${tradeStore.defaultMarketSymbol}`,
 		});
 	} else {
 		tradeStore.setMarketSymbol(market.symbol);

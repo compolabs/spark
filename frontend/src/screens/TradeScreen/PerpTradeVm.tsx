@@ -44,7 +44,6 @@ class PerpTradeVm {
 	}
 
 	updateMarket = async () => {
-		console.log("updateMarket in perp rtade vm ");
 		const { tradeStore, accountStore } = this.rootStore;
 		const market = tradeStore.market;
 		if (market == null || market.type === "spot") return;
@@ -110,10 +109,7 @@ class PerpTradeVm {
 		if (oracleStore.updateData == null) return;
 		await accountStore.checkConnectionWithWallet();
 		const contract = tradeStore.contracts;
-		if (contract == null) {
-			console.log("contract == null");
-			return;
-		}
+		if (contract == null) return;
 		try {
 			this.setLoading(true);
 			const fee = await oracleStore.getPythFee();
