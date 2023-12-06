@@ -4,12 +4,34 @@ import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { ClearingHouseAbi, ClearingHouseAbi__factory, PerpMarketAbi, PerpMarketAbi__factory } from "@src/contracts";
+import {
+	AccountBalanceAbi,
+	AccountBalanceAbi__factory,
+	ClearingHouseAbi,
+	ClearingHouseAbi__factory,
+	InsuranceFundAbi,
+	InsuranceFundAbi__factory,
+	PerpMarketAbi,
+	PerpMarketAbi__factory,
+	ProxyAbi,
+	ProxyAbi__factory,
+	VaultAbi,
+	VaultAbi__factory,
+} from "@src/contracts";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
 interface IProps {
 	children: React.ReactNode;
+}
+
+interface ContractConfig {
+	proxyContract: ProxyAbi;
+	accountBalanceContract: AccountBalanceAbi;
+	clearingHouseContract: ClearingHouseAbi;
+	insuranceFundContract: InsuranceFundAbi;
+	perpMarketContract: PerpMarketAbi;
+	vaultMarketContract: VaultAbi;
 }
 
 export const PerpTradeVMProvider: React.FC<IProps> = ({ children }) => {
@@ -28,10 +50,13 @@ class PerpTradeVm {
 	initialized: boolean = false;
 	private setInitialized = (l: boolean) => (this.initialized = l);
 
+	contracts: ContractConfig | null = null;
+	private setContract = (c: ContractConfig | null) => (this.contracts = c);
+
 	rejectUpdateStatePromise?: () => void;
 	setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
 
-	maxAbsPositionSize?: { long: BN; short: BN } | null = { long: new BN(71428571), short: new BN(71428571) };
+	maxAbsPositionSize?: { long: BN; short: BN } | null = null;
 	setMaxAbsPositionSize = (v: { long: BN; short: BN } | null) => (this.maxAbsPositionSize = v);
 
 	constructor(rootStore: RootStore) {
@@ -44,23 +69,38 @@ class PerpTradeVm {
 		);
 	}
 
+	initContracts = async () => {
+		const { accountStore } = this.rootStore;
+		const wallet = await accountStore.getWallet();
+		if (wallet == null) return;
+		const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
+		const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
+		const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
+		const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
+		const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
+		const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+		this.setContract({
+			proxyContract,
+			accountBalanceContract,
+			clearingHouseContract,
+			insuranceFundContract,
+			perpMarketContract,
+			vaultMarketContract,
+		});
+	};
 	updateMarket = async () => {
 		const { tradeStore, accountStore } = this.rootStore;
 		const market = tradeStore.market;
 		if (market == null || market.type === "spot") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
-		const wallet = await accountStore.getWallet();
-		if (wallet == null) return;
-		const clearingHouse = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-		const perpMarketAbi = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-		if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
 
+		await this.initContracts();
 		const promise = new Promise((resolve, reject) => {
 			this.rejectUpdateStatePromise = reject;
 			resolve(
 				Promise.all([
-					this.updateMaxValueForMarket(clearingHouse),
+					this.updateMaxValueForMarket(),
 					// this.calcMaxPositionSize(clearingHouse, perpMarketAbi),
 				]),
 			);
@@ -73,72 +113,21 @@ class PerpTradeVm {
 				this.setRejectUpdateStatePromise(undefined);
 			});
 	};
-	//todo display market in tab header
-	updateMaxValueForMarket = async (clearingHouse: ClearingHouseAbi) => {
-		console.log("setMaxAbsPositionSize");
-		this.setMaxAbsPositionSize({ long: new BN(71428571), short: new BN(71428571) });
-		// const { tradeStore, accountStore } = this.rootStore;
-		// const addressInput = accountStore.addressInput;
-		// const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
-		// const contracts = tradeStore.contractsToRead;
-		// if (addressInput == null || contracts == null) return;
-		//
-		// console.log(addressInput, baseAsset);
-		// const result = await clearingHouse.functions
-		// 	.get_max_abs_position_size(addressInput, baseAsset)
-		// 	.addContracts([
-		// 		contracts?.accountBalanceAbi,
-		// 		contracts?.proxyAbi,
-		// 		contracts?.clearingHouseAbi,
-		// 		contracts?.vaultAbi,
-		// 		contracts?.insuranceFundAbi,
-		// 	])
-		// 	.simulate();
-		// console.log("result", result.value);
-		// if (result.value != null) {
-		// }
+	updateMaxValueForMarket = async () => {
+		const addressInput = this.rootStore.accountStore.addressInput;
+		const baseAsset = { value: this.token0.assetId };
+		if (addressInput == null) return;
+		const result = await this.contracts?.clearingHouseContract.functions
+			.get_max_abs_position_size(addressInput, baseAsset)
+			.addContracts(Object.values(this.contracts))
+			.simulate();
+		if (result?.value != null) {
+			const value = result.value;
+			const short = new BN(value[0].toString());
+			const long = new BN(value[1].toString());
+			this.setMaxAbsPositionSize({ long, short });
+		}
 	};
-	calcMaxPositionSize = async (clearingHouse: ClearingHouseAbi, perpMarket: PerpMarketAbi) => {
-		const { tradeStore, accountStore } = this.rootStore;
-		const addressInput = accountStore.addressInput;
-		const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
-		const contracts = tradeStore.contractsToRead;
-		const contractToAdd = [
-			contracts?.accountBalanceAbi,
-			contracts?.proxyAbi,
-			contracts?.clearingHouseAbi,
-			contracts?.vaultAbi,
-			contracts?.insuranceFundAbi,
-		];
-		// let res = await perpMarket.functions.get_mark_price(baseAsset).simulate();
-		console.log("get_market");
-		let res = await clearingHouse.functions.get_market(baseAsset).simulate();
-		console.log("get_mark_price", res);
-
-		// const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
-		// const scale = 10 ** 8;
-		// const markPrice =
-		// let scale = 10.pow(market.decimal.as_u64());
-		// let mark_price = perp_market_contract.get_mark_price(market.asset_id);
-		//
-		// let max_position_value = vault_contract.get_free_collateral(trader).mul_div(HUNDRED_PERCENT, market.im_ratio);
-		//
-		// let current_position_size = account_balance_contract.get_taker_position_size(trader, base_asset);
-		//
-		//
-		// let max_position_size = max_position_value.mul_div(scale, mark_price).value;
-		//
-		// let mut result =(0,0);
-		// if current_position_size > I64::new(){
-		// 	result = (2 * current_position_size.value + max_position_size, max_position_size);
-		//
-		// } else{
-		// 	result = (max_position_size, 2 * current_position_size.value + max_position_size);
-		// }
-		// log(result);
-		// return result;
-	};
-
 	loading: boolean = false;
 	setLoading = (l: boolean) => (this.loading = l);
 
@@ -158,29 +147,21 @@ class PerpTradeVm {
 
 	openOrder = async () => {
 		const { accountStore, oracleStore } = this.rootStore;
+		if (oracleStore.updateData == null) return;
 		await accountStore.checkConnectionWithWallet();
 		try {
 			this.setLoading(true);
-			const ch = CONTRACT_ADDRESSES.clearingHouse;
-			const wallet = await accountStore.getWallet();
-			if (wallet == null) return;
-			const clearingHouse = ClearingHouseAbi__factory.connect(ch, wallet);
-
-			const btcToken = TOKENS_BY_SYMBOL.BTC;
-			const baseToken = { value: btcToken.assetId };
-			//todo what is baseSize?
-			const btcPrice = BN.parseUnits(TOKENS_BY_SYMBOL.USDC.decimals, 28000).toString();
-			const baseSize = { value: btcPrice, negative: false };
-			//todo how much of eth for pyth do i need to add?
-			if (oracleStore.updateData == null) return;
-
-			// const v = Address.fromAddressOrString(priceUpdate).toBytes();
-			// const m = base64ToArrayBuffer(priceUpdate);
-			const { transactionResult } = await clearingHouse.functions
-				.open_order(baseToken, baseSize, btcPrice, oracleStore.updateData)
+			const fee = await oracleStore.getPythFee();
+			if (fee == null) return;
+			const baseAsset = { value: this.token0.assetId };
+			const price = this.price.toString();
+			const size = { value: this.orderSize.toString(), negative: this.isShort };
+			const result = await this.contracts?.clearingHouseContract.functions
+				.open_order(baseAsset, size, price, oracleStore.updateData)
+				.addContracts(Object.values(this.contracts))
+				.callParams({ forward: { amount: fee ?? "", assetId: TOKENS_BY_SYMBOL.ETH.assetId } })
 				.txParams({ gasPrice: 1 })
 				.call();
-			console.log("transactionResult", transactionResult);
 		} catch (e) {
 			console.log(e);
 		} finally {
@@ -258,35 +239,6 @@ class PerpTradeVm {
 		const value = BN.parseUnits(val.times(price), this.token1.decimals);
 		this.setOrderSize(this.maxPositionSize, true);
 		this.setOrderValue(value);
-	};
-
-	createOrder = async (action: OrderAction) => {
-		// const clearingHouse = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
-	};
-	getData = async () => {
-		const { tradeStore, accountStore } = this.rootStore;
-		const addressInput = accountStore.addressInput;
-		const baseAsset = { value: TOKENS_BY_SYMBOL.BTC.assetId };
-		const contracts = tradeStore.contractsToRead;
-		if (addressInput == null || contracts == null) return;
-		console.log(addressInput, baseAsset);
-
-		const wallet = await accountStore.getWallet();
-		if (wallet == null) return;
-		const clearingHouse = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
-
-		const result = await clearingHouse.functions
-			.get_max_abs_position_size(addressInput, baseAsset)
-			.addContracts([
-				contracts?.accountBalanceAbi,
-				contracts?.proxyAbi,
-				contracts?.clearingHouseAbi,
-				contracts?.vaultAbi,
-				contracts?.insuranceFundAbi,
-			])
-			// .txParams({ gasPrice: 1 })
-			.simulate();
-		console.log("result", result);
 	};
 
 	get maxPositionSize() {

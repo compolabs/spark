@@ -53,10 +53,10 @@ class OracleStore {
 	getPythFee = async () => {
 		const { accountStore } = this.rootStore;
 		const wallet = await accountStore.getWallet();
-		if (wallet == null || this.updateData == null) return;
+		if (wallet == null || this.updateData == null) return null;
 		const pythContractAbi = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
 		const fee = await pythContractAbi.functions.update_fee(this.updateData).simulate();
-		return fee.value.toString() ?? "0";
+		return fee.value.toNumber() ?? 3;
 	};
 
 	// get initialized() {

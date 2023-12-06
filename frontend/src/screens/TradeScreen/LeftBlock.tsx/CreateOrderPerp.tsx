@@ -140,15 +140,15 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 						onChange={(v) => onChangePercent(v as number)}
 						step={1}
 					/>
-					<SizedBox height={8} />
-					<Row alignItems="center" justifyContent="flex-end">
-						{/*<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={vm.setPrice} />*/}
-						{[5, 10, 20].map((v) => (
-							<Chip key={"chip" + v} onClick={() => vm.onLeverageClick(v)}>
-								{v}x
-							</Chip>
-						))}
-					</Row>
+					{/*<SizedBox height={8} />*/}
+					{/*<Row alignItems="center" justifyContent="flex-end">*/}
+					{/*	/!*<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={vm.setPrice} />*!/*/}
+					{/*	{[5, 10, 20].map((v) => (*/}
+					{/*		<Chip key={"chip" + v} onClick={() => vm.onLeverageClick(v)}>*/}
+					{/*			{v}x*/}
+					{/*		</Chip>*/}
+					{/*	))}*/}
+					{/*</Row>*/}
 				</AccordionItem>
 			</Accordion>
 			<Accordion transition transitionTimeout={400}>
@@ -176,16 +176,13 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				</AccordionItem>
 			</Accordion>
 			<SizedBox height={16} />
-			<Button
-				green={!vm.isShort}
-				red={vm.isShort}
-				// disabled={vm.loading ? true : vm.isShort ? !vm.canSell : !vm.canShort}
-				onClick={() => vm.createOrder(vm.isShort ? "short" : "long")}
-			>
-				{vm.loading ? "Loading..." : vm.isShort ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
+			<Button disabled={vm.loading || !vm.initialized} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>
+				{vm.loading || !vm.initialized
+					? "Loading..."
+					: vm.isShort
+					? `Short ${vm.token0.symbol}`
+					: `Long ${vm.token0.symbol}`}
 			</Button>
-			<SizedBox height={16} />
-			<Button onClick={vm.getData}>Call get abs</Button>
 		</Root>
 	);
 });

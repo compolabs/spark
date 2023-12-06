@@ -15,6 +15,7 @@ import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/Orderbook
 import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
+import { Mnemonic } from "fuels";
 
 interface IProps {}
 
@@ -85,7 +86,9 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 });
 
 const TradeScreen: React.FC<IProps> = () => {
-	const { tradeStore } = useStores();
+	const { tradeStore, accountStore } = useStores();
+	const seed = Mnemonic.mnemonicToSeed(accountStore.seed ?? "");
+	console.log(seed);
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
 	const navigate = useNavigate();
