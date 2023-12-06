@@ -154,9 +154,9 @@ class PerpTradeVm {
 			const fee = await oracleStore.getPythFee();
 			if (fee == null) return;
 			const baseAsset = { value: this.token0.assetId };
-			const price = this.price.toString();
-			const size = { value: this.orderSize.toString(), negative: this.isShort };
-			const result = await this.contracts?.clearingHouseContract.functions
+			const price = this.price.toFixed(0).toString();
+			const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
+			await this.contracts?.clearingHouseContract.functions
 				.open_order(baseAsset, size, price, oracleStore.updateData)
 				.addContracts(Object.values(this.contracts))
 				.callParams({ forward: { amount: fee ?? "", assetId: TOKENS_BY_SYMBOL.ETH.assetId } })

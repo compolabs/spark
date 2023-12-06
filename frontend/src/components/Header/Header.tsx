@@ -121,8 +121,12 @@ const Header: React.FC<IProps> = observer(() => {
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<DesktopRow>
-					<SettingsButton onClick={() => settingsStore.setDepositModal(true)}>Deposit/Withdraw</SettingsButton>
-					<SizedBox width={10} />
+					{accountStore.address != null && (
+						<>
+							<SettingsButton onClick={() => settingsStore.setDepositModal(true)}>Deposit/Withdraw</SettingsButton>
+							<SizedBox width={10} />
+						</>
+					)}
 				</DesktopRow>
 				{accountStore.address != null ? (
 					<ConnectedWallet />

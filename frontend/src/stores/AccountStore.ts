@@ -177,18 +177,21 @@ class AccountStore {
 	}
 
 	getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
+		const provider = await Provider.create(NODE_URL);
 		if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
 			if (this.seed == null) return null;
 			const seed = Mnemonic.mnemonicToSeed(this.seed);
-			const provider = await Provider.create(NODE_URL);
 			return Wallet.fromPrivateKey(seed, provider);
 		}
 		if (this.address == null || this.fuel == null) return null;
-		return this.fuel.getWallet(this.address);
+		return Wallet.fromAddress(this.address, provider);
+		// await this.checkConnectionWithWallet();
+		// return this.fuel.getWallet(this.address);
 	};
 
 	checkConnectionWithWallet = async () => {
 		if (this.loginType == null || this.loginType === LOGIN_TYPE.GENERATE_SEED) return;
+		if (this.fuel == null) return;
 		const isConnected = await this.fuel.isConnected();
 		if (!isConnected) await this.loginWithWallet(this.loginType);
 	};

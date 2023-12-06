@@ -24,7 +24,7 @@ export const useFaucetVM = () => useVM(ctx);
 
 const faucetAmounts: Record<string, number> = {
 	ETH: 0.5,
-	USDC: 300,
+	USDC: 3000,
 	BTC: 0.01,
 	// UNI: 50,
 	// LINK: 50,

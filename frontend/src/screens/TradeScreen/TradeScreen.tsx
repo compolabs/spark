@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import React from "react";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import { Column, Row } from "@src/components/Flex";
-import Chart from "@screens/TradeScreen/Chart";
 import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
 import SizedBox from "@components/SizedBox";
@@ -15,7 +14,6 @@ import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/Orderbook
 import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
-import { Mnemonic } from "fuels";
 
 interface IProps {}
 
@@ -87,8 +85,6 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 
 const TradeScreen: React.FC<IProps> = () => {
 	const { tradeStore, accountStore } = useStores();
-	const seed = Mnemonic.mnemonicToSeed(accountStore.seed ?? "");
-	console.log(seed);
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
 	const navigate = useNavigate();
