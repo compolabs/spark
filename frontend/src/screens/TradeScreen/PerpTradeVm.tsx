@@ -49,25 +49,6 @@ class PerpTradeVm {
 		if (market == null || market.type === "spot") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
-		// if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
-
-		// const promise = new Promise((resolve, reject) => {
-		// 	this.rejectUpdateStatePromise = reject;
-		// 	resolve(
-		// 		Promise.all([
-		// 			this.updateMaxValueForMarket(),
-		// 			// this.calcMaxPositionSize(clearingHouse, perpMarketAbi),
-		// 		]),
-		// 	);
-		// });
-
-		// promise
-		// 	.catch((v) => console.error(v))
-		// 	.finally(() => {
-		// 		this.setInitialized(true);
-		// 		this.setRejectUpdateStatePromise(undefined);
-		// 	});
-
 		await this.updateMaxValueForMarket();
 		this.setInitialized(true);
 	};

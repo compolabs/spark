@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Dialog from "@components/Dialog";
 import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
 import { observer } from "mobx-react-lite";
-import { Column, Row } from "@components/Flex";
+import { Row } from "@components/Flex";
 import { useStores } from "@stores";
 import styled from "@emotion/styled";
 import Button, { ButtonGroup } from "@components/Button";

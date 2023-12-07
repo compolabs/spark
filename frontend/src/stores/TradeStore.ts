@@ -267,16 +267,6 @@ class TradeStore {
 			this.setFreeCollateral(new BN(result.value.value.toString()));
 		}
 	};
-	updatePositions = async (clearingHouseAbi: ClearingHouseAbi) => {
-		// const addressInput = this.rootStore.accountStore.addressInput;
-		// if (addressInput == null) return;
-		//
-		// const result = await clearingHouseAbi.functions.get_t(addressInput).addContracts(this.contractsArray).simulate();
-		//
-		// if (result.value != null) {
-		// 	this.setFreeCollateral(new BN(result.value.value.toString()));
-		// }
-	};
 
 	get contractsToRead() {
 		const { accountStore } = this.rootStore;

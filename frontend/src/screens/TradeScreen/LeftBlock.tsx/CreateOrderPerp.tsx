@@ -12,7 +12,7 @@ import { Accordion } from "@szhsin/react-accordion";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import Slider from "@components/Slider";
 import BN from "@src/utils/BN";
-import tradeStore from "@stores/TradeStore";
+import { useStores } from "@stores";
 
 interface IProps extends ComponentProps<any> {}
 
@@ -46,8 +46,11 @@ const orderTypes = [
 ];
 
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
+	const { oracleStore } = useStores();
 	const [orderTypeIndex, setOrderTypeIndex] = useState(0);
 	const vm = usePerpTradeVM();
+	let price = oracleStore?.prices != null ? new BN(oracleStore?.prices[vm.token0.priceFeed]?.price.toString()) : BN.ZERO;
+	let marketPrice = BN.formatUnits(price, 2);
 	const onChangePercent = (percent: number) => {
 		const max = vm.maxAbsPositionSize?.long ?? BN.ZERO;
 		const value = (max.toNumber() * percent) / 100;
@@ -76,7 +79,10 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 						label="Order type"
 						options={orderTypes}
 						selected={orderTypes[orderTypeIndex].key}
-						onSelect={(_, index) => setOrderTypeIndex(index)}
+						onSelect={(_, index) => {
+							setOrderTypeIndex(index);
+							index == 1 && vm.setPrice(marketPrice);
+						}}
 					/>
 					<SizedBox height={2} />
 				</Column>
@@ -183,6 +189,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					? `Short ${vm.token0.symbol}`
 					: `Long ${vm.token0.symbol}`}
 			</Button>
+			<SizedBox height={16} />
+			<Button onClick={vm.updateMaxValueForMarket}>max size</Button>
 		</Root>
 	);
 });

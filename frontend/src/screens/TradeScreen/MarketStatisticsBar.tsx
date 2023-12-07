@@ -1,12 +1,10 @@
 import styled from "@emotion/styled";
 import { Column, DesktopRow, Row } from "@src/components/Flex";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
 import Button from "@components/Button";
-import dayjs from "dayjs";
-import axios from "axios";
 import BN from "@src/utils/BN";
 import arrow from "@src/assets/icons/arrowUp.svg";
 import { observer } from "mobx-react";
@@ -176,8 +174,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 						</Text>
 						<Text type={TEXT_TYPES.H} primary>
 							{tradeStore.isMarketPerp ? perpStats?.price.toFormat(2) : spotStats?.price.toFormat(4)}{" "}
-							{tradeStore.market?.token1.symbol}
-							{/*{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}*/}
+							{/*{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}*/}$ 43000
 						</Text>
 					</Column>
 					<DesktopRow>

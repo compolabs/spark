@@ -138,7 +138,6 @@ const Header: React.FC<IProps> = observer(() => {
 			</Row>
 			<DepositWithdrawModal
 				visible={settingsStore.depositModalOpened}
-				// visible={true}
 				onClose={() => settingsStore.setDepositModal(false)}
 			/>
 		</Root>
