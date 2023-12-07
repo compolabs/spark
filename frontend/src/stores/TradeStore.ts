@@ -112,13 +112,15 @@ class TradeStore {
 	marketSymbol: string | null = null;
 	setMarketSymbol = (v: string) => (this.marketSymbol = v);
 
-	marketsConfig: Record<string, SpotMarket | PerpMarket> = [...spotMarketsConfig].reduce(
-		(acc, item) => {
-			acc[item.symbol] = item;
-			return acc;
-		},
-		{} as Record<string, SpotMarket | PerpMarket>,
-	);
+	get marketsConfig(): Record<string, SpotMarket | PerpMarket> {
+		return [...spotMarketsConfig, ...this.perpMarkets].reduce(
+			(acc, item) => {
+				acc[item.symbol] = item;
+				return acc;
+			},
+			{} as Record<string, SpotMarket | PerpMarket>,
+		);
+	}
 
 	initialized: boolean = false;
 	private setInitialized = (l: boolean) => (this.initialized = l);
@@ -132,7 +134,7 @@ class TradeStore {
 	private setPerpMarkets = (v: PerpMarket[]) => (this.perpMarkets = v);
 
 	favMarkets: string[] = [];
-	private setFavMarkets = (v: string[]) => (this.favMarkets = v);
+	setFavMarkets = (v: string[]) => (this.favMarkets = v);
 
 	serialize = (): ISerializedTradeStore => ({
 		favMarkets: this.favMarkets.join(","),
@@ -245,7 +247,8 @@ class TradeStore {
 	syncIndexerData = () =>
 		getPerpMarkets()
 			.then((res) => this.setPerpMarkets(res))
-			.catch(console.error);
+			.catch(console.error)
+			.finally(() => this.setInitialized(true));
 
 	updateData = async () => {
 		const { accountStore } = this.rootStore;

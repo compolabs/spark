@@ -67,8 +67,6 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			? [token0.symbol, token1.symbol].map((v) => v.toLowerCase()).some((v) => v.includes(searchValue.toLowerCase()))
 			: true,
 	);
-	console.log("filteredSpotMarkets", filteredSpotMarkets.length);
-	console.log("isSpotMarket", isSpotMarket);
 	useOnClickOutside(ref, () => tradeStore.setMarketSelectionOpened(false));
 	return (
 		<Root ref={ref}>
@@ -103,7 +101,7 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			) : (
 				(isSpotMarket ? filteredSpotMarkets : filteredPerpMarkets).map((market) => {
 					const addedToFav = tradeStore.favMarkets.includes(market.symbol);
-					const price = oracleStore.prices == null ? 0 : oracleStore.prices[market.token0.priceFeed].price;
+					const price = oracleStore.prices == null ? 0 : oracleStore.prices[market.token0.priceFeed]?.price;
 					const formattedPrice = BN.formatUnits(price, 8).toFormat(2);
 					return (
 						<Market key={market.symbol}>
