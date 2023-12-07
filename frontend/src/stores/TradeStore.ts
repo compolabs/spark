@@ -18,17 +18,16 @@ import {
 	VaultAbi,
 	VaultAbi__factory,
 } from "@src/contracts";
-import { log } from "fuels/dist/cli/utils/logger";
-import { LOGIN_TYPE } from "@stores/AccountStore";
+import { getPerpMarkets, PerpMarket } from "@src/services/MarketsServise";
 
-export interface IMarket {
+export interface SpotMarket {
 	token0: IToken;
 	token1: IToken;
 	type: string;
-	leverage?: number;
 	price?: BN;
 	change24?: BN;
 	symbol: string;
+	leverage: null;
 }
 
 interface ContractConfig {
@@ -51,17 +50,7 @@ const spotMarketsConfig = [{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYM
 	...v,
 	symbol: `${v.token0.symbol}-${v.token1.symbol}`,
 	type: "spot",
-	price: new BN(10000),
-	change24: new BN(10000),
-}));
-const perpMarketsConfig = [
-	{ token0: TOKENS_BY_SYMBOL.BTC, token1: TOKENS_BY_SYMBOL.USDC, leverage: 10 },
-	{ token0: TOKENS_BY_SYMBOL.ETH, token1: TOKENS_BY_SYMBOL.USDC, leverage: 10 },
-	{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYMBOL.USDC, leverage: 10 },
-].map((v) => ({
-	...v,
-	symbol: `${v.token0.symbol}-PERP`,
-	type: "perp",
+	leverage: null,
 	price: new BN(10000),
 	change24: new BN(10000),
 }));
@@ -73,10 +62,10 @@ class TradeStore {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
-		this.setPerpMarkets(perpMarketsConfig);
 		this.initContracts();
-		reaction(() => this.contracts != null, this.updateState);
-		// setInterval(this.updateState, 30 * 1000);
+		this.syncIndexerData();
+		reaction(() => this.contracts != null, this.updateData);
+		setInterval(this.syncIndexerData, 30 * 1000);
 
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
@@ -123,23 +112,24 @@ class TradeStore {
 	marketSymbol: string | null = null;
 	setMarketSymbol = (v: string) => (this.marketSymbol = v);
 
-	marketsConfig: Record<string, IMarket> = [...spotMarketsConfig, ...perpMarketsConfig].reduce(
+	marketsConfig: Record<string, SpotMarket | PerpMarket> = [...spotMarketsConfig].reduce(
 		(acc, item) => {
 			acc[item.symbol] = item;
 			return acc;
 		},
-		{} as Record<string, IMarket>,
+		{} as Record<string, SpotMarket | PerpMarket>,
 	);
+
 	initialized: boolean = false;
 	private setInitialized = (l: boolean) => (this.initialized = l);
 	loading: boolean = false;
 	private _setLoading = (l: boolean) => (this.loading = l);
 
-	spotMarkets: IMarket[] = [];
-	private setSpotMarkets = (v: IMarket[]) => (this.spotMarkets = v);
+	spotMarkets: SpotMarket[] = [];
+	private setSpotMarkets = (v: SpotMarket[]) => (this.spotMarkets = v);
 
-	perpMarkets: IMarket[] = [];
-	private setPerpMarkets = (v: IMarket[]) => (this.perpMarkets = v);
+	perpMarkets: PerpMarket[] = [];
+	private setPerpMarkets = (v: PerpMarket[]) => (this.perpMarkets = v);
 
 	favMarkets: string[] = [];
 	private setFavMarkets = (v: string[]) => (this.favMarkets = v);
@@ -167,7 +157,7 @@ class TradeStore {
 	}
 
 	get isMarketPerp() {
-		return this.marketSymbol == null ? false : this.marketsConfig[this.marketSymbol].type === "perp";
+		return this.marketSymbol == null ? false : this.marketSymbol.includes("-PERP");
 	}
 
 	marketSelectionOpened: boolean = false;
@@ -252,30 +242,16 @@ class TradeStore {
 		});
 	};
 
-	// rejectUpdateStatePromise?: () => void;
-	// setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
-	updateState = async () => {
+	syncIndexerData = () =>
+		getPerpMarkets()
+			.then((res) => this.setPerpMarkets(res))
+			.catch(console.error);
+
+	updateData = async () => {
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null || accountStore.addressInput == null) return;
 		const contracts = this.contracts;
 		if (contracts == null) return;
-		// if (this.rejectUpdateStatePromise != null) this.rejectUpdateStatePromise();
-		// const promise = new Promise((resolve, reject) => {
-		// 	this.rejectUpdateStatePromise = reject;
-		// 	resolve(
-		// 		Promise.all([
-		// 			this.updateFreeCollateral(contracts?.vaultMarketContract),
-		// 			// this.updatePositions(contracts.clearingHouseContract),
-		// 		]),
-		// 	);
-		// });
-		//
-		// promise
-		// 	.catch((v) => console.error(v))
-		// 	.finally(() => {
-		// 		this.setInitialized(true);
-		// 		this.setRejectUpdateStatePromise(undefined);
-		// 	});
 		await this.updateFreeCollateral(contracts?.vaultMarketContract);
 		this.setInitialized(true);
 	};

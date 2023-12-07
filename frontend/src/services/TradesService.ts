@@ -14,17 +14,17 @@ interface ITradeResponse {
 
 export enum TRADE_TYPE {
 	BUY,
-	SELL
+	SELL,
 }
 
-// BTC/USDC
 export class Trade {
-	asset0: string; //BTC
+	asset0: string;
 	amount0: BN;
-	asset1: string; //USDC
+	asset1: string;
 	amount1: BN;
 	timestamp: number;
 	type: TRADE_TYPE;
+
 	constructor(tradeOutput: ITradeResponse, pairSymbol: string) {
 		const [symbol0] = pairSymbol.split("/");
 		const token0 = TOKENS_BY_SYMBOL[symbol0];
@@ -55,6 +55,7 @@ export class Trade {
 		const price = am1.div(am0);
 		return price.toFormat(price.lt(0.01) ? 4 : 2);
 	}
+
 	get amountFormatter() {
 		const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
 		return am0.toFormat(am0.lt(0.01) ? 4 : 2);

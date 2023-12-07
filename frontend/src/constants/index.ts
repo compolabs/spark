@@ -27,7 +27,8 @@ export const EXPLORER_URL = "https://fuellabs.github.io/block-explorer-v2/beta-4
 export const FAUCET_URL = "https://faucet-beta-4.fuel.network";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
-export const INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabilitylabs/spark_indexer";
+export const SPOT_INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabilitylabs/spark_indexer";
+export const CLEARING_HOUSE_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/clearing_house_indexer";
 
 
 export const CONTRACT_ADDRESSES = {

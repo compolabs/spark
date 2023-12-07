@@ -12,8 +12,7 @@ import star from "@src/assets/icons/star.svg";
 import yellowStar from "@src/assets/icons/yellowStar.svg";
 import { useNavigate } from "react-router-dom";
 import useOnClickOutside from "@src/hooks/useOnClickOutside";
-import oracleStore from "@stores/OracleStore";
-import {TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL} from "@src/constants";
+import BN from "@src/utils/BN";
 
 interface IProps {}
 
@@ -57,12 +56,19 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 	const navigate = useNavigate();
 	const ref = useRef(null);
 	const [isSpotMarket, setSpotMarket] = useState(!tradeStore.isMarketPerp);
-	const markets = isSpotMarket ? tradeStore.spotMarkets : tradeStore.perpMarkets;
-	const filteredMarkets = markets.filter(({ token0, token1 }) =>
+
+	const filteredPerpMarkets = tradeStore.perpMarkets.filter(({ token0, token1 }) =>
 		searchValue
 			? [token0.symbol, token1.symbol].map((v) => v.toLowerCase()).some((v) => v.includes(searchValue.toLowerCase()))
 			: true,
 	);
+	const filteredSpotMarkets = tradeStore.spotMarkets.filter(({ token0, token1 }) =>
+		searchValue
+			? [token0.symbol, token1.symbol].map((v) => v.toLowerCase()).some((v) => v.includes(searchValue.toLowerCase()))
+			: true,
+	);
+	console.log("filteredSpotMarkets", filteredSpotMarkets.length);
+	console.log("isSpotMarket", isSpotMarket);
 	useOnClickOutside(ref, () => tradeStore.setMarketSelectionOpened(false));
 	return (
 		<Root ref={ref}>
@@ -85,7 +91,9 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			</Row>
 			<SizedBox height={12} />
 			<Divider />
-			{filteredMarkets.length === 0 ? (
+			{isSpotMarket ? (
+				filteredSpotMarkets.length === 0
+			) : filteredSpotMarkets.length === 0 ? (
 				<>
 					<SizedBox height={16} />
 					<Row justifyContent="center">
@@ -93,23 +101,24 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 					</Row>
 				</>
 			) : (
-				filteredMarkets.map(({ token0, token1, leverage, price, change24, type, symbol }, index) => {
-					const marketId = `${token0.symbol}-${token1.symbol}-${type}`;
-					const addedToFav = tradeStore.favMarkets.includes(marketId);
+				(isSpotMarket ? filteredSpotMarkets : filteredPerpMarkets).map((market) => {
+					const addedToFav = tradeStore.favMarkets.includes(market.symbol);
+					const price = oracleStore.prices == null ? 0 : oracleStore.prices[market.token0.priceFeed].price;
+					const formattedPrice = BN.formatUnits(price, 8).toFormat(2);
 					return (
-						<Market key={token0.symbol + token1.symbol + index}>
+						<Market key={market.symbol}>
 							<Row alignItems="center">
 								<Column mainAxisSize="stretch">
 									<Icon
 										src={addedToFav ? yellowStar : star}
 										alt="star"
 										style={{ cursor: "pointer" }}
-										onClick={() => (addedToFav ? tradeStore.removeFromFav(marketId) : tradeStore.addToFav(marketId))}
+										onClick={() => (addedToFav ? tradeStore.removeFromFav(market.symbol) : tradeStore.addToFav(market.symbol))}
 									/>
 									<SizedBox height={4} />
 									<Row>
-										<Icon src={token0.logo} alt="logo" />
-										<Icon src={token1.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
+										<Icon src={market.token0?.logo} alt="logo" />
+										<Icon src={market.token1?.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
 									</Row>
 								</Column>
 								<SizedBox width={4} />
@@ -117,13 +126,13 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 									mainAxisSize="stretch"
 									onClick={() => {
 										tradeStore.setMarketSelectionOpened(false);
-										navigate(`/${symbol}`);
+										navigate(`/${market.symbol}`);
 									}}
 								>
-									{leverage != null ? <Leverage>{`${leverage}x`}</Leverage> : <></>}
+									{market.leverage != null ? <Leverage>{`${market.leverage}x`}</Leverage> : <></>}
 									<SizedBox height={4} />
 									<Text type={TEXT_TYPES.H} color="primary">
-										{symbol}
+										{market.symbol}
 									</Text>
 								</Column>
 							</Row>
@@ -131,14 +140,14 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 								alignItems="end"
 								onClick={() => {
 									tradeStore.setMarketSelectionOpened(false);
-									navigate(`/${symbol}`);
+									navigate(`/${market.symbol}`);
 								}}
 							>
 								{/*<Text style={{ textAlign: "right" }} nowrap>*/}
 								{/*	0.02%*/}
 								{/*</Text>*/}
 								<Text type={TEXT_TYPES.H} nowrap color="primary">
-									$ 1,789.00
+									$ {formattedPrice}
 								</Text>
 							</Column>
 						</Market>

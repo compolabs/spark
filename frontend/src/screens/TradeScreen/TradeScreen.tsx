@@ -14,6 +14,7 @@ import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/Orderbook
 import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
+import { Mnemonic } from "fuels";
 
 interface IProps {}
 
