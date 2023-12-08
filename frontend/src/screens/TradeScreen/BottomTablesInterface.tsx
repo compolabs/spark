@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Column, Row } from "@src/components/Flex";
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
@@ -34,6 +34,7 @@ const Root = styled.div`
 
 export const TableTitle = styled(Text)`
 	flex: 1;
+	white-space: nowrap;
 	${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]}
 `;
 
@@ -79,68 +80,86 @@ const CancelButton = styled(Chip)`
 	border: 1px solid ${({ theme }) => theme.colors.borderPrimary} !important;
 `;
 
+const tabs = [
+	{ title: "POSITIONS", disabled: false },
+	{ title: "ORDERS", disabled: false },
+	{ title: "TRADES", disabled: true },
+	{ title: "UNSETTLED P&L", disabled: true },
+	{ title: "BALANCES", disabled: true },
+	{ title: "HISTORY", disabled: true },
+];
+const columns = [
+	["Pair", "Size", "Avg.Ent Price", "Mark price", "Marg. Ratio", "Margin", "Unrealized PNL", ""],
+	["Date", "Pair", "Status", "Type", "Amount", "Filled", "Price", ""],
+];
 const BottomTablesInterface: React.FC<IProps> = observer(() => {
-	const { ordersStore } = useStores();
+	const { ordersStore, tradeStore } = useStores();
+	const [tabIndex, setTabIndex] = useState(1);
 	const theme = useTheme();
 	const vm = useTradeScreenVM();
+	const orders = [];
+	const positions = [];
 	return (
 		<Root>
 			<TabContainer>
-				<Tab disabled>POSITIONS</Tab>
-				<Tab active>ORDERS</Tab>
-				<Tab disabled>TRADES</Tab>
-				<Tab disabled>UNSETTLED P&L</Tab>
-				<Tab disabled>BALANCES</Tab>
-				<Tab disabled>HISTORY</Tab>
+				{tabs.map(({ title, disabled }, index) => (
+					<Tab disabled={disabled} key={title} active={tabIndex === index} onClick={() => !disabled && setTabIndex(index)}>
+						{title}
+					</Tab>
+				))}
 			</TabContainer>
 			<TableRow>
-				<TableTitle>Date</TableTitle>
-				<TableTitle>Pair</TableTitle>
-				<TableTitle>Status</TableTitle>
-				<TableTitle>Type</TableTitle>
-				<TableTitle>Amount</TableTitle>
-				{/*<Title>Total</Title>*/}
-				<TableTitle>Filled</TableTitle>
-				<TableTitle>Price</TableTitle>
+				{columns[tabIndex].map((v) => (
+					<TableTitle>{v}</TableTitle>
+				))}
 				<TableTitle>
 					<Row justifyContent="flex-end">{/*<CancelButton>Cancel all</CancelButton>*/}</Row>
 				</TableTitle>
 			</TableRow>
 			<TableBody>
-				{ordersStore.myOrders
-					.slice()
-					.sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))
-					.sort((a, b) => (a.status === "Active" && b.status !== "Active" ? -1 : 1))
-					.map((order) => (
-						<TableRow key={order.id}>
-							<TableText primary style={{ minWidth: 24 }}>
-								{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}
-							</TableText>
-							<TableText primary>{order.market}</TableText>
-							<TableText primary>{order.status}</TableText>
-							<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-								{order.type}
-							</TableText>
-							<TableText primary>
-								{order.amountStr}
-								&nbsp;
-								<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>
-							</TableText>
-							{/*<TableText>*/}
-							{/*	{order.total}*/}
-							{/*	<Chip>{order.type === "SELL" ? vm.token1.symbol : vm.token0.symbol}</Chip>*/}
-							{/*</TableText>*/}
-							<TableText primary>{order.fulfilled0.div(order.amount0).times(100).toFormat(2)}%</TableText>
-							<TableText primary>{order.price.toFixed(2)}</TableText>
-							<TableText>
-								{order.status === "Active" && (
-									<Row justifyContent="flex-end">
-										<CancelButton onClick={() => vm.cancelOrder(order.orderId.toString())}>Cancel</CancelButton>
-									</Row>
-								)}
-							</TableText>
+				{tradeStore.positions.slice().map((position) => {
+					return (
+						<TableRow key={position.id}>
+							{[].map(() => (
+								<TableText>hueta</TableText>
+							))}
 						</TableRow>
-					))}
+					);
+				})}
+				{/*{ordersStore.myOrders*/}
+				{/*	.slice()*/}
+				{/*	.sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))*/}
+				{/*	.sort((a, b) => (a.status === "Active" && b.status !== "Active" ? -1 : 1))*/}
+				{/*	.map((order) => (*/}
+				{/*		<TableRow key={order.id}>*/}
+				{/*			<TableText primary style={{ minWidth: 24 }}>*/}
+				{/*				{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}*/}
+				{/*			</TableText>*/}
+				{/*			<TableText primary>{order.market}</TableText>*/}
+				{/*			<TableText primary>{order.status}</TableText>*/}
+				{/*			<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>*/}
+				{/*				{order.type}*/}
+				{/*			</TableText>*/}
+				{/*			<TableText primary>*/}
+				{/*				{order.amountStr}*/}
+				{/*				&nbsp;*/}
+				{/*				<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>*/}
+				{/*			</TableText>*/}
+				{/*			/!*<TableText>*!/*/}
+				{/*			/!*	{order.total}*!/*/}
+				{/*			/!*	<Chip>{order.type === "SELL" ? vm.token1.symbol : vm.token0.symbol}</Chip>*!/*/}
+				{/*			/!*</TableText>*!/*/}
+				{/*			<TableText primary>{order.fulfilled0.div(order.amount0).times(100).toFormat(2)}%</TableText>*/}
+				{/*			<TableText primary>{order.price.toFixed(2)}</TableText>*/}
+				{/*			<TableText>*/}
+				{/*				{order.status === "Active" && (*/}
+				{/*					<Row justifyContent="flex-end">*/}
+				{/*						<CancelButton onClick={() => vm.cancelOrder(order.orderId.toString())}>Cancel</CancelButton>*/}
+				{/*					</Row>*/}
+				{/*				)}*/}
+				{/*			</TableText>*/}
+				{/*		</TableRow>*/}
+				{/*	))}*/}
 			</TableBody>
 		</Root>
 	);

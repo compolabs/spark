@@ -18,7 +18,8 @@ import {
 	VaultAbi,
 	VaultAbi__factory,
 } from "@src/contracts";
-import { getPerpMarkets, PerpMarket } from "@src/services/MarketsServise";
+import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
+import { getUserPositions, Position } from "@src/services/AccountBalanceServise";
 
 export interface SpotMarket {
 	token0: IToken;
@@ -63,9 +64,11 @@ class TradeStore {
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
 		this.initContracts();
-		this.syncIndexerData();
+		this.syncUserDataFromIndexer();
+		this.syncMarkets();
 		reaction(() => this.contracts != null, this.updateData);
-		setInterval(this.syncIndexerData, 30 * 1000);
+		reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
+		setInterval(this.syncMarkets, 30 * 1000);
 
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
@@ -132,6 +135,9 @@ class TradeStore {
 
 	perpMarkets: PerpMarket[] = [];
 	private setPerpMarkets = (v: PerpMarket[]) => (this.perpMarkets = v);
+
+	positions: Position[] = [];
+	private setPosition = (v: Position[]) => (this.positions = v);
 
 	favMarkets: string[] = [];
 	setFavMarkets = (v: string[]) => (this.favMarkets = v);
@@ -244,11 +250,15 @@ class TradeStore {
 		});
 	};
 
-	syncIndexerData = () =>
+	syncMarkets = () =>
 		getPerpMarkets()
 			.then((res) => this.setPerpMarkets(res))
 			.catch(console.error)
 			.finally(() => this.setInitialized(true));
+	syncUserDataFromIndexer = () =>
+		getUserPositions(this.rootStore.accountStore.addressB256 ?? "")
+			.then((res) => this.setPosition(res))
+			.catch(console.error);
 
 	updateData = async () => {
 		const { accountStore } = this.rootStore;

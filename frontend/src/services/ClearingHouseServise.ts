@@ -56,7 +56,7 @@ export class PerpMarket {
 	}
 }
 
-export const getPerpMarkets = async (): Promise<[]> => {
+export const getPerpMarkets = async (): Promise<PerpMarket[]> => {
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_clearing_house_indexer.marketentity ) t;`;
 	const url = CLEARING_HOUSE_INDEXER;
 	const headers = {

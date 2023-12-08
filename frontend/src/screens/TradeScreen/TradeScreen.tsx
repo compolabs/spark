@@ -6,7 +6,7 @@ import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
 import SizedBox from "@components/SizedBox";
 import { useStores } from "@stores";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { observer } from "mobx-react";
 import useWindowSize from "@src/hooks/useWindowSize";
 import LeftBlock from "src/screens/TradeScreen/LeftBlock.tsx";
@@ -14,7 +14,7 @@ import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/Orderbook
 import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
-import { Mnemonic } from "fuels";
+import Chart from "@screens/TradeScreen/Chart";
 
 interface IProps {}
 
@@ -55,6 +55,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<SizedBox width={4} />
 				<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
 					{/*<Chart />*/}
+					<div style={{ height: "80%" }} />
 					<BottomTablesInterface />
 				</Column>
 				<SizedBox width={4} />
@@ -91,10 +92,6 @@ const TradeScreen: React.FC<IProps> = observer(() => {
 	const { tradeStore, accountStore } = useStores();
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
-	// if (!tradeStore.initialized) {
-	// 	console.log("no perp markets");
-	// 	return <Text>loading</Text>;
-	// }
 	tradeStore.setMarketSymbol(market == null ? tradeStore.defaultMarketSymbol : market.symbol);
 	return (
 		<PerpTradeVMProvider>
