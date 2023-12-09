@@ -1,14 +1,15 @@
 import styled from "@emotion/styled";
 import { Column, Row } from "@src/components/Flex";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import dayjs from "dayjs";
-import { useTheme } from "@emotion/react";
 import Chip from "@src/components/Chip";
 import Tab from "@components/Tab";
+import Table from "@src/components/Table";
+import SizedBox from "@components/SizedBox";
+import { useTheme } from "@emotion/react";
+import BN from "@src/utils/BN";
 
 interface IProps {}
 
@@ -83,22 +84,150 @@ const CancelButton = styled(Chip)`
 const tabs = [
 	{ title: "POSITIONS", disabled: false },
 	{ title: "ORDERS", disabled: false },
+	{ title: "UNSETTLED P&L", disabled: false },
 	{ title: "TRADES", disabled: true },
-	{ title: "UNSETTLED P&L", disabled: true },
 	{ title: "BALANCES", disabled: true },
 	{ title: "HISTORY", disabled: true },
 ];
-const columns = [
-	["Pair", "Size", "Avg.Ent Price", "Mark price", "Marg. Ratio", "Margin", "Unrealized PNL", ""],
-	["Date", "Pair", "Status", "Type", "Amount", "Filled", "Price", ""],
-];
+
 const BottomTablesInterface: React.FC<IProps> = observer(() => {
-	const { ordersStore, tradeStore } = useStores();
-	const [tabIndex, setTabIndex] = useState(1);
+	//todo add history
+	//todo add UNSETTLED P&L
+	const positionColumns = React.useMemo(
+		() => [
+			{ Header: "Trading Pair", accessor: "pair" },
+			{ Header: "Size", accessor: "size" },
+			{ Header: "Avg.Ent Price", accessor: "entPrice" },
+			{ Header: "Mark price", accessor: "markPrice" },
+			{ Header: "Marg. Ratio", accessor: "mmRation" },
+			{ Header: "Margin", accessor: "margin" },
+			{ Header: "Unrealized PNL", accessor: "pnl" },
+			{ Header: "", accessor: "action" },
+		],
+		[],
+	);
+	const orderColumns = React.useMemo(
+		() => [
+			{ Header: "Date", accessor: "date" },
+			{ Header: "Pair", accessor: "pair" },
+			{ Header: "Status", accessor: "status" },
+			{ Header: "Type", accessor: "type" },
+			{ Header: "Amount", accessor: "amount" },
+			{ Header: "Filled", accessor: "filled" },
+			{ Header: "Price", accessor: "price" },
+			{ Header: "", accessor: "action" },
+		],
+		[],
+	);
+	const unsettledPnLColumns = React.useMemo(
+		() => [
+			{ Header: "Market", accessor: "market" },
+			{ Header: "Cost basis", accessor: "costBasis" },
+			{ Header: "Settled P&L", accessor: "pnl" },
+			{ Header: "Unsettled funding", accessor: "funding" },
+			{ Header: "Claimable/Unsettled PnL", accessor: "amount" },
+			{ Header: "", accessor: "action" },
+		],
+		[],
+	);
+	const columns = [positionColumns, orderColumns, unsettledPnLColumns];
+	const { ordersStore, tradeStore, accountStore } = useStores();
+	const [tabIndex, setTabIndex] = useState(0);
+	const [data, setData] = useState<any>([]);
 	const theme = useTheme();
-	const vm = useTradeScreenVM();
-	const orders = [];
-	const positions = [];
+	useMemo(() => {
+		switch (tabIndex) {
+			case 0:
+				setData(
+					tradeStore.positions.map((position) => {
+						const market = tradeStore.perpMarkets.find((m) => m.symbol === position.symbol);
+						const mmRatio = BN.formatUnits(market?.mmRatio ?? 0, 4);
+						const markPrice =
+							tradeStore.perpPrices == null ? BN.ZERO : tradeStore.perpPrices[position.token.assetId]?.markPrice;
+						//todo fix this
+						//markPrice.mul(positionSize).mul(mmRatio)
+						// const val = BN.formatUnits(markPrice, 6)
+						// 	.times(BN.formatUnits(position.takerPositionSize, 6))
+						// 	.times(mmRatio)
+						// 	.toFormat(2);
+						// const margin = markPrice?.times(position.takerPositionSize).times(market?.mmRatio ?? 0);
+						const margin = BN.ZERO;
+
+						//todo fix this
+						//positionSize.mul(markPrice) + positionNotional
+						// console.log("takerOpenNotional", position.takerOpenNotional.div(1e8).toString());
+						// const unrealizedPnL = BN.formatUnits(position.takerPositionSize.times(markPrice), 6).plus(
+						// 	position.takerOpenNotional,
+						// );
+						const unrealizedPnL = BN.ZERO;
+
+						return {
+							pair: (
+								<Column justifyContent="center">
+									{position.symbol}
+									<SizedBox height={2} />
+									<Text color={position.takerPositionSize.lt(0) ? theme.colors.redLight : theme.colors.greenLight}>
+										{position.takerPositionSize.lt(0) ? "Short" : "Long"}
+									</Text>
+								</Column>
+							),
+							size: (
+								<Row alignItems="center" justifyContent="center">
+									{position.formattedAbsSize}
+									<SizedBox width={4} />
+									<Chip>{position.token.symbol}</Chip>
+								</Row>
+							),
+							entPrice: `$ ${position.entPrice}`,
+							markPrice: BN.formatUnits(markPrice, 6).toFormat(2),
+							mmRation: `${mmRatio.toString()} %`,
+							margin: (
+								<Row alignItems="center" justifyContent="center">
+									{margin.toFormat()}
+									<SizedBox width={4} />
+									<Chip>USDC</Chip>
+								</Row>
+							),
+							pnl: (
+								<Row alignItems="center" justifyContent="center">
+									{unrealizedPnL.toFormat()}
+									<SizedBox width={4} />
+									<Chip>USDC</Chip>
+								</Row>
+							),
+							action: <CancelButton>Cancel</CancelButton>,
+						};
+					}),
+				);
+				break;
+			case 1:
+				setData(
+					ordersStore.myOrders.map(() => ({
+						date: "date",
+						pair: "pair",
+						status: "status",
+						type: "type",
+						amount: "amount",
+						filled: "filled",
+						price: "price",
+						action: "",
+					})),
+				);
+				break;
+			case 2:
+				setData(
+					ordersStore.myOrders.map(() => ({
+						market: "market",
+						costBasis: "costBasis",
+						pnl: "pnl",
+						funding: "funding",
+						amount: "amount",
+						action: "",
+					})),
+				);
+				break;
+		}
+	}, [accountStore.address, accountStore.isLoggedIn, tabIndex, tradeStore.positions, tradeStore.perpPrices]);
 	return (
 		<Root>
 			<TabContainer>
@@ -108,59 +237,15 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 					</Tab>
 				))}
 			</TabContainer>
-			<TableRow>
-				{columns[tabIndex].map((v) => (
-					<TableTitle>{v}</TableTitle>
-				))}
-				<TableTitle>
-					<Row justifyContent="flex-end">{/*<CancelButton>Cancel all</CancelButton>*/}</Row>
-				</TableTitle>
-			</TableRow>
-			<TableBody>
-				{tradeStore.positions.slice().map((position) => {
-					return (
-						<TableRow key={position.id}>
-							{[].map(() => (
-								<TableText>hueta</TableText>
-							))}
-						</TableRow>
-					);
-				})}
-				{/*{ordersStore.myOrders*/}
-				{/*	.slice()*/}
-				{/*	.sort((a, b) => (a.timestamp > b.timestamp ? -1 : 1))*/}
-				{/*	.sort((a, b) => (a.status === "Active" && b.status !== "Active" ? -1 : 1))*/}
-				{/*	.map((order) => (*/}
-				{/*		<TableRow key={order.id}>*/}
-				{/*			<TableText primary style={{ minWidth: 24 }}>*/}
-				{/*				{dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm")}*/}
-				{/*			</TableText>*/}
-				{/*			<TableText primary>{order.market}</TableText>*/}
-				{/*			<TableText primary>{order.status}</TableText>*/}
-				{/*			<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>*/}
-				{/*				{order.type}*/}
-				{/*			</TableText>*/}
-				{/*			<TableText primary>*/}
-				{/*				{order.amountStr}*/}
-				{/*				&nbsp;*/}
-				{/*				<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>*/}
-				{/*			</TableText>*/}
-				{/*			/!*<TableText>*!/*/}
-				{/*			/!*	{order.total}*!/*/}
-				{/*			/!*	<Chip>{order.type === "SELL" ? vm.token1.symbol : vm.token0.symbol}</Chip>*!/*/}
-				{/*			/!*</TableText>*!/*/}
-				{/*			<TableText primary>{order.fulfilled0.div(order.amount0).times(100).toFormat(2)}%</TableText>*/}
-				{/*			<TableText primary>{order.price.toFixed(2)}</TableText>*/}
-				{/*			<TableText>*/}
-				{/*				{order.status === "Active" && (*/}
-				{/*					<Row justifyContent="flex-end">*/}
-				{/*						<CancelButton onClick={() => vm.cancelOrder(order.orderId.toString())}>Cancel</CancelButton>*/}
-				{/*					</Row>*/}
-				{/*				)}*/}
-				{/*			</TableText>*/}
-				{/*		</TableRow>*/}
-				{/*	))}*/}
-			</TableBody>
+			<Table
+				columns={columns[tabIndex]}
+				data={data}
+				style={{
+					whiteSpace: "nowrap",
+					width: "fitContent",
+					minWidth: "fit-content",
+				}}
+			/>
 		</Root>
 	);
 });

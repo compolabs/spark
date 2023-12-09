@@ -20,6 +20,7 @@ import {
 } from "@src/contracts";
 import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
 import { getUserPositions, Position } from "@src/services/AccountBalanceServise";
+import { getPerpMarketPrices, PerpMarketPrice } from "@src/services/PerpMarketService";
 
 export interface SpotMarket {
 	token0: IToken;
@@ -41,8 +42,6 @@ interface ContractConfig {
 	pythContract: PythContractAbi;
 }
 
-//todo implement service for getting markets stats
-//todo implement service file for getting data from indexer
 export interface ISerializedTradeStore {
 	favMarkets: string | null;
 }
@@ -65,10 +64,10 @@ class TradeStore {
 		this.setSpotMarkets(spotMarketsConfig);
 		this.initContracts();
 		this.syncUserDataFromIndexer();
-		this.syncMarkets();
-		reaction(() => this.contracts != null, this.updateData);
+		this.syncDataFromIndexer();
+		reaction(() => this.contracts != null, this.updateDataFromContracts);
 		reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
-		setInterval(this.syncMarkets, 30 * 1000);
+		setInterval(this.syncDataFromIndexer, 30 * 1000);
 
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
@@ -138,6 +137,9 @@ class TradeStore {
 
 	positions: Position[] = [];
 	private setPosition = (v: Position[]) => (this.positions = v);
+
+	perpPrices: Record<string, PerpMarketPrice> | null = null;
+	private setPerpPrices = (v: Record<string, PerpMarketPrice> | null) => (this.perpPrices = v);
 
 	favMarkets: string[] = [];
 	setFavMarkets = (v: string[]) => (this.favMarkets = v);
@@ -250,17 +252,21 @@ class TradeStore {
 		});
 	};
 
-	syncMarkets = () =>
-		getPerpMarkets()
-			.then((res) => this.setPerpMarkets(res))
-			.catch(console.error)
-			.finally(() => this.setInitialized(true));
-	syncUserDataFromIndexer = () =>
-		getUserPositions(this.rootStore.accountStore.addressB256 ?? "")
-			.then((res) => this.setPosition(res))
-			.catch(console.error);
+	syncUserDataFromIndexer = async () => {
+		const res = await Promise.all([
+			getUserPositions(this.rootStore.accountStore.addressB256 ?? ""),
+			getPerpMarketPrices(),
+		]);
+		this.setPosition(res[0]);
+		this.setPerpPrices(res[1]);
+	};
+	syncDataFromIndexer = async () => {
+		const res = await Promise.all([getPerpMarkets(), getPerpMarketPrices()]);
+		this.setPerpMarkets(res[0]);
+		this.setPerpPrices(res[1]);
+	};
 
-	updateData = async () => {
+	updateDataFromContracts = async () => {
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null || accountStore.addressInput == null) return;
 		const contracts = this.contracts;

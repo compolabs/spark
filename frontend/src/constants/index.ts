@@ -30,7 +30,7 @@ export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 export const SPOT_INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabilitylabs/spark_indexer";
 export const CLEARING_HOUSE_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/clearing_house_indexer";
 export const VAULT_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/vault_indexer";
-
+export const PERP_MARKET_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/perp_market_indexer";
 export const ACCOUNT_BALANCE_INDEXER =
 	"https://indexer.spark-defi.com/api/sql/composabilitylabs/account_balance_indexer";
 

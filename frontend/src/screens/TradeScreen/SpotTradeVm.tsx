@@ -130,7 +130,6 @@ class SpotTradeVm {
 			const v1 = BN.formatUnits(this.buyPrice, this.token1.decimals);
 			const v2 = BN.formatUnits(total, this.token1.decimals);
 			this.setBuyAmount(BN.parseUnits(v2.div(v1), this.token0.decimals));
-			//todo add
 			const balance = this.rootStore.accountStore.getBalance(this.token1);
 			if (balance == null) return;
 			const percent = total.times(100).div(balance);

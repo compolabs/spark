@@ -79,7 +79,7 @@ const SettingsButton = styled(Button)`
 		}
 	}
 `;
-//todo add dropdown
+//todo add dropdown for mobile
 const Header: React.FC<IProps> = observer(() => {
 	const { accountStore, settingsStore } = useStores();
 	const location = useLocation();
