@@ -54,8 +54,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<LeftBlock />
 				<SizedBox width={4} />
 				<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
-					{/*<Chart />*/}
-					<div style={{ height: "80%" }} />
+					<Chart />
 					<BottomTablesInterface />
 				</Column>
 				<SizedBox width={4} />
@@ -89,7 +88,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 });
 
 const TradeScreen: React.FC<IProps> = observer(() => {
-	const { tradeStore, accountStore } = useStores();
+	const { tradeStore } = useStores();
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
 	tradeStore.setMarketSymbol(market == null ? tradeStore.defaultMarketSymbol : market.symbol);

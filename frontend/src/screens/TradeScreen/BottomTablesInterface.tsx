@@ -10,10 +10,16 @@ import Table from "@src/components/Table";
 import SizedBox from "@components/SizedBox";
 import { useTheme } from "@emotion/react";
 import BN from "@src/utils/BN";
+import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
+import tableSizeExtraSmall from "@src/assets/icons/tableSizeExtraSmall.svg";
+import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
+import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
+import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
+import Tooltip from "@components/Tooltip";
 
 interface IProps {}
 
-const Root = styled.div`
+const Root = styled.div<{ size: string }>`
 	background: ${({ theme }) => theme.colors.bgSecondary};
 	display: flex;
 	width: 100%;
@@ -21,8 +27,6 @@ const Root = styled.div`
 	box-sizing: border-box;
 	border: 1px solid ${({ theme }) => theme.colors.bgSecondary};
 	flex: 1;
-	max-height: 190px;
-	overflow: hidden;
 	border-radius: 10px;
 
 	max-width: 100%;
@@ -31,6 +35,22 @@ const Root = styled.div`
 	& > * {
 		min-width: 580px;
 	}
+
+	${({ size }) =>
+		(() => {
+			switch (size) {
+				case "extraSmall":
+					return `max-height: 120px;`;
+				case "small":
+					return `max-height: 197px;`;
+				case "medium":
+					return `max-height: 263px;`;
+				case "large":
+					return `max-height: 395px;`;
+				default:
+					return `max-height: 197px;`;
+			}
+		})()}
 `;
 
 export const TableTitle = styled(Text)`
@@ -70,12 +90,31 @@ const TabContainer = styled(Row)`
 	box-sizing: border-box;
 	padding: 0 12px;
 	height: 32px;
+	position: relative;
 
 	& > * {
 		margin: 0 12px;
 	}
 `;
+const TableSizeSelector = styled.div`
+	position: absolute;
+	right: 0;
+	top: 4px;
+`;
+const TableSize = styled.div<{ active?: boolean }>`
+	display: flex;
+	align-items: center;
+	padding: 4px 12px;
+	box-sizing: border-box;
+	width: 100%;
+	cursor: pointer;
 
+	${({ active, theme }) => active && `background: ${theme.colors.borderPrimary}`};
+
+	:hover {
+		background: ${({ theme }) => theme.colors.borderSecondary};
+	}
+`;
 const CancelButton = styled(Chip)`
 	cursor: pointer;
 	border: 1px solid ${({ theme }) => theme.colors.borderPrimary} !important;
@@ -90,6 +129,12 @@ const tabs = [
 	{ title: "HISTORY", disabled: true },
 ];
 
+const tableSizesConfig = [
+	{ title: "Extra small", icon: tableSizeExtraSmall, size: "extraSmall" },
+	{ title: "Small", icon: tableSmallSize, size: "small" },
+	{ title: "Medium", icon: tableMediumSize, size: "medium" },
+	{ title: "Large", icon: tableLargeSize, size: "large" },
+];
 const BottomTablesInterface: React.FC<IProps> = observer(() => {
 	//todo add history
 	//todo add UNSETTLED P&L
@@ -130,8 +175,9 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 		],
 		[],
 	);
+	const { ordersStore, tradeStore, settingsStore } = useStores();
 	const columns = [positionColumns, orderColumns, unsettledPnLColumns];
-	const { ordersStore, tradeStore, accountStore } = useStores();
+	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
 	const [data, setData] = useState<any>([]);
 	const theme = useTheme();
@@ -227,25 +273,55 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 				);
 				break;
 		}
-	}, [accountStore.address, accountStore.isLoggedIn, tabIndex, tradeStore.positions, tradeStore.perpPrices]);
+	}, [
+		tabIndex,
+		tradeStore.positions,
+		tradeStore.perpPrices,
+		ordersStore.myOrders,
+		theme.colors.greenLight,
+		theme.colors.redLight,
+		tradeStore.perpMarkets,
+	]);
 	return (
-		<Root>
+		<Root size={tableSize}>
 			<TabContainer>
 				{tabs.map(({ title, disabled }, index) => (
 					<Tab disabled={disabled} key={title} active={tabIndex === index} onClick={() => !disabled && setTabIndex(index)}>
 						{title}
 					</Tab>
 				))}
+				<TableSizeSelector>
+					<Tooltip
+						config={{ placement: "bottom-start", trigger: "click" }}
+						content={
+							<Column crossAxisSize="max" style={{ zIndex: 500 }}>
+								{tableSizesConfig.map(({ size, icon, title }) => (
+									<TableSize active={size === tableSize} onClick={() => setTableSize(size)}>
+										<img src={icon} alt={title} />
+										<SizedBox width={4} />
+										<Text nowrap type={TEXT_TYPES.BUTTON}>
+											{title.toUpperCase()}
+										</Text>
+									</TableSize>
+								))}
+							</Column>
+						}
+					>
+						<img src={tableSizeSelector} alt="tableSizeSelector" style={{ cursor: "pointer" }} />
+					</Tooltip>
+				</TableSizeSelector>
 			</TabContainer>
-			<Table
-				columns={columns[tabIndex]}
-				data={data}
-				style={{
-					whiteSpace: "nowrap",
-					width: "fitContent",
-					minWidth: "fit-content",
-				}}
-			/>
+			<Column style={{ overflowY: "scroll" }} crossAxisSize="max">
+				<Table
+					columns={columns[tabIndex]}
+					data={data}
+					style={{
+						whiteSpace: "nowrap",
+						width: "fitContent",
+						minWidth: "fit-content",
+					}}
+				/>
+			</Column>
 		</Root>
 	);
 });

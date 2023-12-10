@@ -10,6 +10,7 @@ const Tab = styled(Text)<IProps>`
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	white-space: nowrap;
 	padding: 8px 4px;
 	cursor: ${({ theme, disabled }) => (disabled ? "not-allowed" : "pointer")};
 	color: ${({ theme, active, disabled }) =>

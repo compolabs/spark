@@ -1,5 +1,5 @@
 import AccountStore, { ISerializedAccountStore } from "@stores/AccountStore";
-import SettingsStore from "@stores/SettingsStore";
+import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 import NotificationStore from "@stores/NotificationStore";
 import { makeAutoObservable } from "mobx";
 import OrdersStore from "@stores/OrdersStore";
@@ -9,6 +9,7 @@ import TradeStore, { ISerializedTradeStore } from "@stores/TradeStore";
 export interface ISerializedRootStore {
 	accountStore?: ISerializedAccountStore;
 	tradeStore?: ISerializedTradeStore;
+	settingStore?: ISerializedSettingStore;
 }
 
 export default class RootStore {
@@ -21,7 +22,7 @@ export default class RootStore {
 
 	constructor(initState?: ISerializedRootStore) {
 		this.accountStore = new AccountStore(this, initState?.accountStore);
-		this.settingsStore = new SettingsStore(this);
+		this.settingsStore = new SettingsStore(this, initState?.settingStore);
 		this.notificationStore = new NotificationStore(this);
 		this.oracleStore = new OracleStore(this);
 		this.ordersStore = new OrdersStore(this);
@@ -32,8 +33,10 @@ export default class RootStore {
 	get initialized() {
 		return this.accountStore.provider != null;
 	}
+
 	serialize = (): ISerializedRootStore => ({
 		accountStore: this.accountStore.serialize(),
 		tradeStore: this.tradeStore.serialize(),
+		settingStore: this.settingsStore.serialize(),
 	});
 }
