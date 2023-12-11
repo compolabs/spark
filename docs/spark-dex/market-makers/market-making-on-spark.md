@@ -32,25 +32,64 @@
     | Volume Tier | Trading Volume (USDC)                     | Fee Discount | Fuel Token Bonus |
     | ----------- | ----------------------------------------- | ------------ | ---------------- |
     | 1           | Up to 100,000 USDC within 30 days         | Standard Fee | -                |
-    | 2           | 100,001 - 500,000 USDC within 30 days     | 10%          | 100 Fuel tokens  |
-    | 3           | 500,001 - 1,000,000 USDC within 30 days   | 20%          | 250 Fuel tokens  |
-    | 4           | 1,000,001 - 5,000,000 USDC within 30 days | 30%          | 500 Fuel tokens  |
+    | 2           | 100,001 - 500,000 USDC within 30 days     | 25%          | 100 Fuel tokens  |
+    | 3           | 500,001 - 1,000,000 USDC within 30 days   | 30%          | 250 Fuel tokens  |
+    | 4           | 1,000,001 - 5,000,000 USDC within 30 days | 40%          | 500 Fuel tokens  |
 
 **Standard Fees:**
 
-| Fee Type | Maker Fee | Taker Fee                          |
-| -------- | --------- | ---------------------------------- |
-| Standard | 0%        | 1 bps for stables and Fuel tokens  |
-| Standard | 0%        | 2 bps for BTC and ETH,             |
-| Standard | 0%        | 3 bps for all other tokens         |
+| Fee Type     | Maker Fee | Taker Fee                          |
+| ------------ | --------- | ---------------------------------- |
+| Stables      | 0%        | 1 bps for stables and Fuel tokens  |
+| Core Markets | 0%        | 2 bps for BTC and ETH,             |
+| Alt Markets  | 0%        | 3 bps for all other tokens         |
 
 **VIP Market Maker Fees:**
 
-| Fee Type | Maker Fee  | Taker Fee  |
-| -------- | ---------- | ---------- |
-| VIP      | Customized | Customized |
+| Fee Type     | Spot     | Perp     |
+| ------------ | -------- | -------- |
+| Stables      | 0,5 bps  | 0,25 bps |
+| Core Markets | 0,75 bps | 0,5 bps  |
+| Alt Markets  | 0,75 bps | 0,75 bps |
 
-**Rebate Calculation Formula:** $$Rebate=0.02%×Trading VolumeRebate=0.05%×Trading Volume$$
+**Rebate Calculation Formula:** $$Rebate=0.2%×Trading VolumeRebate=0.05%×Trading Volume$$
+
+Rebate=0.02%×Trading VolumeRebate=0.05%×Trading Volume
+
+#### 1. Managing Buy/Sell Pressure
+
+Market makers must balance their buy and sell orders to manage inventory risk and create an equilibrium in the market. The formula for placing orders can be influenced by several factors:
+
+* **Order Size**: Based on the market maker's risk tolerance and capital.
+* **Price Levels**: Determined by the mid-market price, adjusted for desired spread.
+
+**Formula:**
+
+* **Bid Price** = Mid-Market Price - (Spread \* Buy Pressure Factor)
+* **Ask Price** = Mid-Market Price + (Spread \* Sell Pressure Factor)
+
+Where Buy Pressure Factor and Sell Pressure Factor are coefficients that determine how aggressively the market maker wants to buy or sell. These factors can be adjusted based on market conditions, inventory levels, and volatility.
+
+#### 2. Liquidity Provision
+
+The goal here is to ensure there's enough depth in the order book. The market maker places several buy and sell limit orders at different price levels.
+
+**Formula:**
+
+* **Multiple Bid Prices**: \[Bid Price - (Depth \* n)] for n layers of depth
+* **Multiple Ask Prices**: \[Ask Price + (Depth \* n)] for n layers of depth
+
+Where `Depth` is the price interval between different layers, and `n` is the number of layers.
+
+#### 3. Funding Rate Earnings (Perpetual Markets)
+
+In perpetual markets, the funding rate is a mechanism to anchor the perpetual contract price to the spot price. Market makers can earn from the funding rate by taking positions opposite to the majority of traders.
+
+**Formula:**
+
+* **Funding Rate Earnings** = Position Size \* Funding Rate
+
+Where `Position Size` is the size of the open position in the perpetual market, and `Funding Rate` is the rate paid or received for holding the position.
 
 **Volume SLA (USDC) within 30 days:**
 
