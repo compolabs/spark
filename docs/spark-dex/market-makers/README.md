@@ -1,6 +1,6 @@
 # 🧙♂ Market Makers
 
-Spark Market Making Incentivization Program is up and running, and we're inviting everyone to trade on Spark. Be the first to trade on Fuel and Polygon Miden, and pioneer to get the yield.&#x20;
+Spark Market Making Incentivization Program is designed to invite everyone to trade on Spark. Be the first to trade on Fuel and get the yield.&#x20;
 
 You not only contribute to enhancing liquidity but also gain access to a rewarding program.&#x20;
 
