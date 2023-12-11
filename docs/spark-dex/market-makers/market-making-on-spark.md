@@ -70,6 +70,20 @@ Market makers must balance their buy and sell orders to manage inventory risk an
 
 Where Buy Pressure Factor and Sell Pressure Factor are coefficients that determine how aggressively the market maker wants to buy or sell. These factors can be adjusted based on market conditions, inventory levels, and volatility.
 
+The minimum depth and maximum spreads per market are as follows:
+
+**Depth:**
+
+* $25K for stables.
+* $5K for core markets (BTC & ETH).
+* $2.5K for alt markets (non-BTC & non-ETH).
+
+**Spreads:**
+
+* 10 bps for stable.
+* 30 bps for core markets (BTC & ETH).
+* 50 bps for alt markets (non-BTC & non-ETH).
+
 #### 2. Liquidity Provision
 
 The goal here is to ensure there's enough depth in the order book. The market maker places several buy and sell limit orders at different price levels.
