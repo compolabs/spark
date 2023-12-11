@@ -135,7 +135,7 @@ const tableSizesConfig = [
 	{ title: "Medium", icon: tableMediumSize, size: "medium" },
 	{ title: "Large", icon: tableLargeSize, size: "large" },
 ];
-const BottomTablesInterface: React.FC<IProps> = observer(() => {
+const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 	//todo add history
 	//todo add UNSETTLED P&L
 	const positionColumns = React.useMemo(
@@ -144,8 +144,16 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 			{ Header: "Size", accessor: "size" },
 			{ Header: "Avg.Ent Price", accessor: "entPrice" },
 			{ Header: "Mark price", accessor: "markPrice" },
-			{ Header: "Marg. Ratio", accessor: "mmRation" },
-			{ Header: "Margin", accessor: "margin" },
+			{
+				Header: "Maintenance margin",
+				accessor: "maintenanceMargin",
+				info: "Minimum collateral to prevent liquidation.",
+			}, //todo implement math
+			{
+				Header: "Initial margin",
+				accessor: "positionMargin",
+				info: "Required upfront collateral for opening a position.",
+			},
 			{ Header: "Unrealized PNL", accessor: "pnl" },
 			{ Header: "", accessor: "action" },
 		],
@@ -153,13 +161,9 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 	);
 	const orderColumns = React.useMemo(
 		() => [
-			{ Header: "Date", accessor: "date" },
-			{ Header: "Pair", accessor: "pair" },
-			{ Header: "Status", accessor: "status" },
+			{ Header: "Market", accessor: "market" },
 			{ Header: "Type", accessor: "type" },
-			{ Header: "Amount", accessor: "amount" },
-			{ Header: "Filled", accessor: "filled" },
-			{ Header: "Price", accessor: "price" },
+			{ Header: "Size", accessor: "size" },
 			{ Header: "", accessor: "action" },
 		],
 		[],
@@ -175,7 +179,7 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 		],
 		[],
 	);
-	const { ordersStore, tradeStore, settingsStore } = useStores();
+	const { tradeStore, settingsStore } = useStores();
 	const columns = [positionColumns, orderColumns, unsettledPnLColumns];
 	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
@@ -187,17 +191,20 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 				setData(
 					tradeStore.positions.map((position) => {
 						const market = tradeStore.perpMarkets.find((m) => m.symbol === position.symbol);
-						const mmRatio = BN.formatUnits(market?.mmRatio ?? 0, 4);
+						// const mmRatio = BN.formatUnits(market?.mmRatio ?? 0, 4);
 						const markPrice =
 							tradeStore.perpPrices == null ? BN.ZERO : tradeStore.perpPrices[position.token.assetId]?.markPrice;
 						//todo fix this
 						//markPrice.mul(positionSize).mul(mmRatio)
-						// const val = BN.formatUnits(markPrice, 6)
-						// 	.times(BN.formatUnits(position.takerPositionSize, 6))
-						// 	.times(mmRatio)
-						// 	.toFormat(2);
-						// const margin = markPrice?.times(position.takerPositionSize).times(market?.mmRatio ?? 0);
-						const margin = BN.ZERO;
+						//  6 				6				6			 6
+						// markPrice.mul(positionSize).mul(mmRatio).mul(marketPrice)
+
+						//maintance margin - для поддерживания позиций
+						//initial margin -  маржин отображающий сколько денег осталось для открытия бущудший позиций
+
+						// const val = markPrice.times(position.takerPositionSize).times(mmRatio).times(markPrice);
+						const margin = markPrice?.times(position.takerPositionSize).times(market?.mmRatio ?? 0);
+						// const margin = BN.ZERO;
 
 						//todo fix this
 						//positionSize.mul(markPrice) + positionNotional
@@ -226,7 +233,6 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 							),
 							entPrice: `$ ${position.entPrice}`,
 							markPrice: BN.formatUnits(markPrice, 6).toFormat(2),
-							mmRation: `${mmRatio.toString()} %`,
 							margin: (
 								<Row alignItems="center" justifyContent="center">
 									{margin.toFormat()}
@@ -248,40 +254,35 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 				break;
 			case 1:
 				setData(
-					ordersStore.myOrders.map(() => ({
-						date: "date",
-						pair: "pair",
-						status: "status",
-						type: "type",
-						amount: "amount",
-						filled: "filled",
-						price: "price",
-						action: "",
-					})),
+					tradeStore.perpOrders.map((order) => {
+						return {
+							market: order.marketSymbol,
+							type: "Limit",
+							size: order.formattedSize,
+							action: <CancelButton>Cancel</CancelButton>,
+						};
+					}),
 				);
 				break;
 			case 2:
-				setData(
-					ordersStore.myOrders.map(() => ({
-						market: "market",
-						costBasis: "costBasis",
-						pnl: "pnl",
-						funding: "funding",
-						amount: "amount",
-						action: "",
-					})),
-				);
 				break;
 		}
 	}, [
 		tabIndex,
 		tradeStore.positions,
 		tradeStore.perpPrices,
-		ordersStore.myOrders,
 		theme.colors.greenLight,
 		theme.colors.redLight,
 		tradeStore.perpMarkets,
+		tradeStore.perpOrders,
 	]);
+
+	//active
+	// baseSize
+	// baseToken
+	// id
+	// orderPrice
+	// trader
 	return (
 		<Root size={tableSize}>
 			<TabContainer>
@@ -325,4 +326,4 @@ const BottomTablesInterface: React.FC<IProps> = observer(() => {
 		</Root>
 	);
 });
-export default BottomTablesInterface;
+export default BottomTablesInterfacePerp;

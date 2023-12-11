@@ -171,16 +171,13 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				</AccordionItem>
 			</Accordion>
 			<SizedBox height={16} />
-			{/*<Button disabled={vm.loading || !vm.initialized} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>*/}
-			<Button onClick={vm.openOrder}>
+			<Button disabled={vm.loading || !vm.initialized} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>
 				{vm.loading || !vm.initialized
 					? "Loading..."
 					: vm.isShort
 					? `Short ${vm.token0.symbol}`
 					: `Long ${vm.token0.symbol}`}
 			</Button>
-			<SizedBox height={16} />
-			<Button onClick={vm.updateMaxValueForMarket}>max size</Button>
 		</Root>
 	);
 });
