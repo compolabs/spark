@@ -7,7 +7,7 @@ import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Text, { TEXT_TYPES } from "@components/Text";
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import { useStores } from "@stores";
 import AccordionItem from "@components/AccordionItem";

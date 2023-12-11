@@ -19,17 +19,6 @@ interface IProps extends ComponentProps<any> {}
 const Root = styled.div`
 	padding: 12px;
 `;
-const Chip = styled.div`
-	padding: 8px 10px;
-	color: ${({ theme }) => theme.colors.textSecondary};
-	${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
-	border-radius: 4px;
-	border: 1px solid ${({ theme }) => theme.colors.borderSecondary};
-	background: ${({ theme }) => theme.colors.bgPrimary};
-	box-sizing: border-box;
-	margin-left: 8px;
-	cursor: pointer;
-`;
 
 const MaxButton = styled(Button)`
 	padding: 0 8px !important;
@@ -81,7 +70,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 						selected={orderTypes[orderTypeIndex].key}
 						onSelect={(_, index) => {
 							setOrderTypeIndex(index);
-							index == 1 && vm.setPrice(marketPrice);
+							index === 1 && vm.setPrice(marketPrice);
 						}}
 					/>
 					<SizedBox height={2} />
@@ -182,7 +171,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				</AccordionItem>
 			</Accordion>
 			<SizedBox height={16} />
-			<Button disabled={vm.loading || !vm.initialized} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>
+			{/*<Button disabled={vm.loading || !vm.initialized} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>*/}
+			<Button onClick={vm.openOrder}>
 				{vm.loading || !vm.initialized
 					? "Loading..."
 					: vm.isShort

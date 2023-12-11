@@ -39,12 +39,12 @@ class AccountStore {
 		}
 		this.initFuel();
 		this.initProvider();
-		// when(() => this.provider != null, this.updateAccountBalances);
-		// setInterval(this.updateAccountBalances, 10 * 1000);
-		// reaction(
-		// 	() => this.address,
-		// 	() => Promise.all([this.updateAccountBalances()]),
-		// );
+		when(() => this.provider != null, this.updateAccountBalances);
+		setInterval(this.updateAccountBalances, 10 * 1000);
+		reaction(
+			() => this.address,
+			() => Promise.all([this.updateAccountBalances()]),
+		);
 	}
 
 	seed: string | null = null;
@@ -97,6 +97,11 @@ class AccountStore {
 		const balance = this.findBalanceByAssetId(token.assetId);
 		if (balance == null) return null;
 		return balance.balance ?? BN.ZERO;
+	};
+	getBalanceFormatted = (assetId: string, round?: number): string => {
+		const balance = this.findBalanceByAssetId(assetId);
+		if (balance == null) return "0.00";
+		return BN.formatUnits(balance.balance ?? 0, balance.decimals).toFormat(round ?? 2);
 	};
 	findBalanceByAssetId = (assetId: string) =>
 		this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);

@@ -1,4 +1,4 @@
-import { IToken, PERP_MARKET_INDEXER, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { ACCOUNT_BALANCE_INDEXER, IToken, PERP_MARKET_INDEXER, TOKENS_BY_ASSET_ID } from "@src/constants";
 import BN from "@src/utils/BN";
 import axios from "axios";
 
@@ -117,6 +117,7 @@ export class PerpOrder {
 	id: string;
 	orderPrice: BN;
 	trader: string;
+	marketSymbol: string;
 
 	constructor(orderOutput: IPerpOrderResponse) {
 		this.active = orderOutput.active;
@@ -125,23 +126,28 @@ export class PerpOrder {
 		this.id = orderOutput.id;
 		this.orderPrice = new BN(orderOutput.order_price);
 		this.trader = orderOutput.trader;
+		const token = TOKENS_BY_ASSET_ID[this.baseToken];
+		this.marketSymbol = `${token.symbol}-PERP`;
 	}
 
 	get token(): IToken {
 		return TOKENS_BY_ASSET_ID[this.baseToken];
 	}
+
+	get formattedSize(): string {
+		return BN.formatUnits(this.baseSize, this.token.decimals).toFormat(4);
+	}
 }
 
-export const getPerpOrders = async (): Promise<PerpTrade[]> => {
-	//todo get latest for trades
-	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_perp_market_indexer.orderentity) t;`;
-	const url = PERP_MARKET_INDEXER;
+export const getUserPerpOrders = async (address: string): Promise<PerpOrder[]> => {
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_perp_market_indexer.orderentity WHERE trader = '${address}' AND active = true  ) t;`;
+	const url = ACCOUNT_BALANCE_INDEXER;
 	const headers = {
 		"Content-Type": "application/json",
 		Accept: "application/json",
 	};
 	const res = await axios.request({ method: "POST", url, headers, data: { query } });
 	return res?.data.data[0] != null
-		? res.data.data[0].map((order: IPerpOrderResponse): PerpOrder => new PerpOrder(order))
+		? res?.data.data[0].map((order: IPerpOrderResponse): PerpOrder => new PerpOrder(order))
 		: [];
 };

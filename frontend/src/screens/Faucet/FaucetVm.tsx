@@ -2,11 +2,10 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable } from "mobx";
 import { RootStore, useStores } from "@stores";
-import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { TokenAbi__factory, TokenFactoryAbi__factory } from "@src/contracts";
+import { TokenAbi__factory } from "@src/contracts";
 import { hashMessage } from "fuels";
-import { AddressInput } from "@src/contracts/TokenAbi";
 
 const ctx = React.createContext<FaucetVM | null>(null);
 

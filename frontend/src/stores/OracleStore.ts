@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
 import { EvmPriceServiceConnection, Price, PriceFeed } from "@pythnetwork/pyth-evm-js";
-import { CONTRACT_ADDRESSES, TOKENS_BY_PRICE_FEED_ID, TOKENS_LIST } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_LIST } from "@src/constants";
 import { arrayify, Bytes } from "fuels";
 import { Vec } from "@src/contracts/common";
 import { PythContractAbi__factory } from "@src/contracts";
@@ -46,7 +46,7 @@ class OracleStore {
 		this.setUpdateData(parsedUpdateData);
 		await connection.subscribePriceFeedUpdates(priceIds, (priceFeed: PriceFeed) => {
 			const price = priceFeed.getPriceUnchecked();
-			const token = TOKENS_BY_PRICE_FEED_ID[`0x${priceFeed.id}`].symbol;
+			// const token = TOKENS_BY_PRICE_FEED_ID[`0x${priceFeed.id}`].symbol;
 			this.setPrices({ ...this.prices, [`0x${priceFeed.id}`]: price });
 		});
 	};

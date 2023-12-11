@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import React, { useEffect } from "react";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import { Column, Row } from "@src/components/Flex";
-import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
 import SizedBox from "@components/SizedBox";
 import { useStores } from "@stores";
@@ -14,7 +13,8 @@ import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/Orderbook
 import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
-import Chart from "@screens/TradeScreen/Chart";
+import BottomTablesInterfacePerp from "./BottomTablesInterfacePerp";
+import BottomTablesInterfaceSpot from "./BottomTablesInterfaceSpot";
 
 interface IProps {}
 
@@ -54,8 +54,8 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<LeftBlock />
 				<SizedBox width={4} />
 				<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
-					<Chart />
-					<BottomTablesInterface />
+					{/*<Chart />*/}
+					{tradeStore.isMarketPerp ? <BottomTablesInterfacePerp /> : <BottomTablesInterfaceSpot />}
 				</Column>
 				<SizedBox width={4} />
 				<OrderbookAndTradesInterface />

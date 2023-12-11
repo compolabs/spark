@@ -67,6 +67,12 @@ const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover
 							{headerGroup.headers.map((column, index) => (
 								<th {...column.getHeaderProps()} key={index + "th"}>
 									{column.render("Header")}
+									{/*{column.render("info") && (*/}
+									{/*	<>*/}
+									{/*		<SizedBox width={4} />*/}
+									{/*		<img src={info} alt="info" />*/}
+									{/*	</>*/}
+									{/*)}*/}
 								</th>
 							))}
 						</tr>
@@ -95,6 +101,7 @@ const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover
 					})}
 				</tbody>
 			</table>
+			{data.length === 0 && <Text type={TEXT_TYPES.SUPPORTING}>No data</Text>}
 			{loading && <Text style={{ cursor: "pointer", padding: "16px 0" }}>Loading...</Text>}
 		</Root>
 	);

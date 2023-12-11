@@ -2,8 +2,10 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable, reaction } from "mobx";
 import { RootStore, useStores } from "@stores";
-import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
+import { Contract } from "fuels";
+import { ClearingHouseAbi__factory } from "@src/contracts";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -17,8 +19,6 @@ export const PerpTradeVMProvider: React.FC<IProps> = ({ children }) => {
 	return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
-type OrderAction = "long" | "short";
-
 export const usePerpTradeVM = () => useVM(ctx);
 
 class PerpTradeVm {
@@ -27,24 +27,23 @@ class PerpTradeVm {
 	initialized: boolean = false;
 	private setInitialized = (l: boolean) => (this.initialized = l);
 
-	// rejectUpdateStatePromise?: () => void;
-	// setRejectUpdateStatePromise = (v: any) => (this.rejectUpdateStatePromise = v);
-
 	maxAbsPositionSize?: { long: BN; short: BN } | null = null;
 	setMaxAbsPositionSize = (v: { long: BN; short: BN } | null) => (this.maxAbsPositionSize = v);
 
 	constructor(rootStore: RootStore) {
+		// console.log("perp constructor");
 		this.rootStore = rootStore;
 		this.updateMarket();
 		makeAutoObservable(this);
 		reaction(
-			() => [this.rootStore.tradeStore.marketSymbol],
+			() => [this.rootStore.tradeStore.marketSymbol, this.rootStore.tradeStore.contracts != null],
 			() => this.updateMarket(),
 		);
 	}
 
 	updateMarket = async () => {
-		const { tradeStore, accountStore } = this.rootStore;
+		// console.log("updateMarket in perp consturctor");
+		const { tradeStore } = this.rootStore;
 		const market = tradeStore.market;
 		if (market == null || market.type === "spot") return;
 		this.setAssetId0(market?.token0.assetId);
@@ -53,20 +52,22 @@ class PerpTradeVm {
 		this.setInitialized(true);
 	};
 	updateMaxValueForMarket = async () => {
-		const { accountStore, tradeStore } = this.rootStore;
+		const { accountStore } = this.rootStore;
 		const addressInput = accountStore.addressInput;
-		const baseAsset = { value: this.token0.assetId };
+		// const baseAsset = { value: this.token0.assetId };
 		if (addressInput == null) return;
-		const result = await tradeStore.contracts?.clearingHouseContract.functions
-			.get_max_abs_position_size(addressInput, baseAsset)
-			.addContracts(tradeStore.contractsArray)
-			.simulate();
-		if (result?.value != null) {
-			const value = result.value;
-			const short = new BN(value[0].toString());
-			const long = new BN(value[1].toString());
-			this.setMaxAbsPositionSize({ long, short });
-		}
+		//todo change to indexer calc
+
+		// const result = await tradeStore.contracts?.clearingHouseContract.functions
+		// 	.get_max_abs_position_size(addressInput, baseAsset)
+		// 	.addContracts(tradeStore.contractsArray)
+		// 	.simulate();
+		// if (result?.value != null) {
+		// 	const value = result.value;
+		// 	const short = new BN(value[0].toString());
+		// 	const long = new BN(value[1].toString());
+		// 	this.setMaxAbsPositionSize({ long, short });
+		// }
 	};
 	loading: boolean = false;
 	setLoading = (l: boolean) => (this.loading = l);
@@ -95,10 +96,22 @@ class PerpTradeVm {
 			this.setLoading(true);
 			const fee = await oracleStore.getPythFee();
 			if (fee == null) return;
+			// const baseAsset = { value: this.token0.assetId };
+			// const price = this.price.toFixed(0).toString();
+			// const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
+			const wallet = await this.rootStore.accountStore.getWallet();
+			if (wallet == null) {
+				console.log("wallet==null", wallet == null);
+				return;
+			}
+			const clearingHouseContract = new Contract(CONTRACT_ADDRESSES.clearingHouse, ClearingHouseAbi__factory.abi, wallet);
+
 			const baseAsset = { value: this.token0.assetId };
-			const price = this.price.toFixed(0).toString();
-			const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
-			await tradeStore.contracts?.clearingHouseContract.functions
+			const price = "41637961421";
+			const size = { value: "11572614", negative: false };
+
+			console.time("openOrder");
+			await clearingHouseContract.functions
 				.open_order(baseAsset, size, price, oracleStore.updateData)
 				.addContracts([
 					contract.clearingHouseContract,
@@ -111,12 +124,14 @@ class PerpTradeVm {
 				.callParams({ forward: { amount: fee ?? "", assetId: TOKENS_BY_SYMBOL.ETH.assetId } })
 				.txParams({ gasPrice: 1 })
 				.call();
+			console.timeEnd("openOrder");
 		} catch (e) {
 			console.log(e);
 		} finally {
 			this.setLoading(false);
 		}
 	};
+	closeOrder = async () => {};
 
 	isShort: boolean = false;
 	setIsShort = (v: boolean) => (this.isShort = v);

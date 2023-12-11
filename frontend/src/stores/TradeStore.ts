@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, when } from "mobx";
 import RootStore from "@stores/RootStore";
 import { CONTRACT_ADDRESSES, IToken, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
@@ -20,7 +20,7 @@ import {
 } from "@src/contracts";
 import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
 import { getUserPositions, Position } from "@src/services/AccountBalanceServise";
-import { getPerpMarketPrices, PerpMarketPrice } from "@src/services/PerpMarketService";
+import { getPerpMarketPrices, getUserPerpOrders, PerpMarketPrice, PerpOrder } from "@src/services/PerpMarketService";
 
 export interface SpotMarket {
 	token0: IToken;
@@ -65,10 +65,10 @@ class TradeStore {
 		this.initContracts();
 		this.syncUserDataFromIndexer();
 		this.syncDataFromIndexer();
-		reaction(() => this.contracts != null, this.updateDataFromContracts);
+		when(() => this.contracts != null, this.updateDataFromContracts);
 		reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
 		setInterval(this.syncDataFromIndexer, 30 * 1000);
-
+		//
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
 			this.setFavMarkets(markets.split(","));
@@ -137,6 +137,9 @@ class TradeStore {
 
 	positions: Position[] = [];
 	private setPosition = (v: Position[]) => (this.positions = v);
+
+	perpOrders: PerpOrder[] = [];
+	private setPerpOrders = (v: PerpOrder[]) => (this.perpOrders = v);
 
 	perpPrices: Record<string, PerpMarketPrice> | null = null;
 	private setPerpPrices = (v: Record<string, PerpMarketPrice> | null) => (this.perpPrices = v);
@@ -253,12 +256,10 @@ class TradeStore {
 	};
 
 	syncUserDataFromIndexer = async () => {
-		const res = await Promise.all([
-			getUserPositions(this.rootStore.accountStore.addressB256 ?? ""),
-			getPerpMarketPrices(),
-		]);
+		const address = (this.rootStore.accountStore.addressB256 ?? "").slice(2);
+		const res = await Promise.all([getUserPositions(address), getUserPerpOrders(address)]);
 		this.setPosition(res[0]);
-		this.setPerpPrices(res[1]);
+		this.setPerpOrders(res[1]);
 	};
 	syncDataFromIndexer = async () => {
 		const res = await Promise.all([getPerpMarkets(), getPerpMarketPrices()]);

@@ -1,5 +1,5 @@
 import RootStore from "@stores/RootStore";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable } from "mobx";
 import { getOrderbook, Order } from "@src/services/OrdersService";
 import BN from "@src/utils/BN";
 import _ from "lodash";

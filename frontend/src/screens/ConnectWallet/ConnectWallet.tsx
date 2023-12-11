@@ -9,7 +9,6 @@ import { observer } from "mobx-react";
 import { LOGIN_TYPE } from "@stores/AccountStore";
 import Button from "@components/Button";
 import { useNavigate } from "react-router-dom";
-import { ROUTES } from "@src/constants";
 
 interface IProps {}
 
