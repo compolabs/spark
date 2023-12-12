@@ -47,6 +47,7 @@ class PerpTradeVm {
 			() => [this.rootStore.tradeStore.marketSymbol, this.rootStore.tradeStore.contracts != null],
 			() => this.updateMarket(),
 		);
+		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
 		reaction(
 			() => [
 				this.rootStore.tradeStore.perpMarkets,
@@ -132,6 +133,14 @@ class PerpTradeVm {
 		return TOKENS_BY_ASSET_ID[this.assetId1];
 	}
 
+	initPriceToMarket = () => {
+		const price =
+			this.rootStore.oracleStore?.prices != null
+				? new BN(this.rootStore.oracleStore?.prices[this.token0.priceFeed]?.price.toString())
+				: BN.ZERO;
+		const marketPrice = BN.formatUnits(price, 2);
+		this.setPrice(marketPrice);
+	};
 	openOrder = async () => {
 		console.log("perp openOrder");
 		const { accountStore, oracleStore, tradeStore } = this.rootStore;
@@ -242,7 +251,7 @@ class PerpTradeVm {
 		const size = BN.formatUnits(this.orderSize, this.token0.decimals);
 		const price = BN.formatUnits(this.price, this.token1.decimals);
 		const freeColl = BN.formatUnits(tradeStore.freeCollateral ?? 0, this.token0.decimals);
-		// if (freeColl.eq(0)) return BN.ZERO;
+		if (freeColl.eq(0)) return BN.ZERO;
 		return size.times(price.div(freeColl)).div(100);
 	}
 

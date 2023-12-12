@@ -6,6 +6,7 @@ import { arrayify, Bytes } from "fuels";
 import { Vec } from "@src/contracts/common";
 import { PythContractAbi__factory } from "@src/contracts";
 
+//todo change get fee to amount of perp markets
 class OracleStore {
 	public rootStore: RootStore;
 
@@ -21,10 +22,13 @@ class OracleStore {
 	feePrice: number = 0;
 	private setFeePrice = (v: number) => (this.feePrice = v);
 
+	initialized: boolean = false;
+	private setInitialized = (l: boolean) => (this.initialized = l);
+
 	constructor(rootStore: RootStore) {
 		makeAutoObservable(this);
 		this.rootStore = rootStore;
-		this.initAndGetPythPrices();
+		this.initAndGetPythPrices().then(() => this.setInitialized(true));
 	}
 
 	initAndGetPythPrices = async () => {
@@ -44,9 +48,16 @@ class OracleStore {
 		const updateData = await connection.getPriceFeedsUpdateData(priceIds);
 		const parsedUpdateData = updateData.map((v) => Array.from(arrayify(v)));
 		this.setUpdateData(parsedUpdateData);
+		const res = await connection.getLatestPriceFeeds(priceIds);
+
+		const initPrices = res?.reduce((acc, priceFeed) => {
+			const price = priceFeed.getPriceUnchecked();
+			return { ...acc, [`0x${priceFeed.id}`]: price };
+		}, {} as any);
+		this.setPrices(initPrices);
+
 		await connection.subscribePriceFeedUpdates(priceIds, (priceFeed: PriceFeed) => {
 			const price = priceFeed.getPriceUnchecked();
-			// const token = TOKENS_BY_PRICE_FEED_ID[`0x${priceFeed.id}`].symbol;
 			this.setPrices({ ...this.prices, [`0x${priceFeed.id}`]: price });
 		});
 	};

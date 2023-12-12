@@ -14,18 +14,18 @@ export interface ISerializedRootStore {
 
 export default class RootStore {
 	public accountStore: AccountStore;
+	public oracleStore: OracleStore;
 	public settingsStore: SettingsStore;
 	public notificationStore: NotificationStore;
 	public ordersStore: OrdersStore;
 	public tradeStore: TradeStore;
-	public oracleStore: OracleStore;
 
 	constructor(initState?: ISerializedRootStore) {
 		this.accountStore = new AccountStore(this, initState?.accountStore);
+		this.ordersStore = new OrdersStore(this);
 		this.settingsStore = new SettingsStore(this, initState?.settingStore);
 		this.notificationStore = new NotificationStore(this);
 		this.oracleStore = new OracleStore(this);
-		this.ordersStore = new OrdersStore(this);
 		this.tradeStore = new TradeStore(this, initState?.tradeStore);
 		makeAutoObservable(this);
 	}

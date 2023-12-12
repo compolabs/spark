@@ -110,7 +110,6 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		{ title: "24h Low", value: "" },
 	];
 	useEffect(() => {
-		console.log("useEffect tradeStore.isMarketPerp", tradeStore.isMarketPerp);
 		if (tradeStore.isMarketPerp) {
 			setPerpStats({
 				price: tradeStore.marketPrice,
