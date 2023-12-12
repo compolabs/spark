@@ -84,74 +84,80 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			</Top>
 			<SizedBox height={24} />
 			<Row justifyContent="space-between" style={{ padding: "0 12px", boxSizing: "border-box" }}>
-				<Text type={TEXT_TYPES.BODY}>MARKETS</Text>
-				<Text type={TEXT_TYPES.BODY}>PRICE & 24h CHANGE</Text>
+				<Text type={TEXT_TYPES.BODY}>MARKET</Text>
+				<Text type={TEXT_TYPES.BODY}>PRICE</Text>
 			</Row>
 			<SizedBox height={12} />
 			<Divider />
-			{isSpotMarket ? (
-				filteredSpotMarkets.length === 0
-			) : filteredSpotMarkets.length === 0 ? (
+			{isSpotMarket && filteredSpotMarkets.length === 0 && (
 				<>
 					<SizedBox height={16} />
 					<Row justifyContent="center">
-						<Text>No markets found</Text>
+						<Text>No spot markets found</Text>
 					</Row>
 				</>
-			) : (
-				(isSpotMarket ? filteredSpotMarkets : filteredPerpMarkets).map((market) => {
-					const addedToFav = tradeStore.favMarkets.includes(market.symbol);
-					const price = oracleStore.prices == null ? 0 : oracleStore.prices[market.token0.priceFeed]?.price;
-					const formattedPrice = BN.formatUnits(price, 8).toFormat(2);
-					return (
-						<Market key={market.symbol}>
-							<Row alignItems="center">
-								<Column mainAxisSize="stretch">
-									<Icon
-										src={addedToFav ? yellowStar : star}
-										alt="star"
-										style={{ cursor: "pointer" }}
-										onClick={() => (addedToFav ? tradeStore.removeFromFav(market.symbol) : tradeStore.addToFav(market.symbol))}
-									/>
-									<SizedBox height={4} />
-									<Row>
-										<Icon src={market.token0?.logo} alt="logo" />
-										<Icon src={market.token1?.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
-									</Row>
-								</Column>
-								<SizedBox width={4} />
-								<Column
-									mainAxisSize="stretch"
-									onClick={() => {
-										tradeStore.setMarketSelectionOpened(false);
-										navigate(`/${market.symbol}`);
-									}}
-								>
-									{market.leverage != null ? <Leverage>{`${market.leverage}x`}</Leverage> : <></>}
-									<SizedBox height={4} />
-									<Text type={TEXT_TYPES.H} color="primary">
-										{market.symbol}
-									</Text>
-								</Column>
-							</Row>
+			)}
+			{!isSpotMarket && filteredPerpMarkets.length === 0 && (
+				<>
+					<SizedBox height={16} />
+					<Row justifyContent="center">
+						<Text>No perp markets found</Text>
+					</Row>
+				</>
+			)}
+
+			{(isSpotMarket ? filteredSpotMarkets : filteredPerpMarkets).map((market) => {
+				const addedToFav = tradeStore.favMarkets.includes(market.symbol);
+				const price = oracleStore.prices == null ? 0 : oracleStore.prices[market.token0.priceFeed]?.price;
+				const formattedPrice = BN.formatUnits(price, 8).toFormat(2);
+				return (
+					<Market key={market.symbol}>
+						<Row alignItems="center">
+							<Column mainAxisSize="stretch">
+								<Icon
+									src={addedToFav ? yellowStar : star}
+									alt="star"
+									style={{ cursor: "pointer" }}
+									onClick={() => (addedToFav ? tradeStore.removeFromFav(market.symbol) : tradeStore.addToFav(market.symbol))}
+								/>
+								<SizedBox height={4} />
+								<Row>
+									<Icon src={market.token0?.logo} alt="logo" />
+									<Icon src={market.token1?.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
+								</Row>
+							</Column>
+							<SizedBox width={4} />
 							<Column
-								alignItems="end"
+								mainAxisSize="stretch"
 								onClick={() => {
 									tradeStore.setMarketSelectionOpened(false);
 									navigate(`/${market.symbol}`);
 								}}
 							>
-								{/*<Text style={{ textAlign: "right" }} nowrap>*/}
-								{/*	0.02%*/}
-								{/*</Text>*/}
-								<Text type={TEXT_TYPES.H} nowrap color="primary">
-									$ {formattedPrice}
+								{market.leverage != null ? <Leverage>{`${market.leverage}x`}</Leverage> : <></>}
+								<SizedBox height={4} />
+								<Text type={TEXT_TYPES.H} color="primary">
+									{market.symbol}
 								</Text>
 							</Column>
-						</Market>
-					);
-				})
-			)}
+						</Row>
+						<Column
+							alignItems="end"
+							onClick={() => {
+								tradeStore.setMarketSelectionOpened(false);
+								navigate(`/${market.symbol}`);
+							}}
+						>
+							{/*<Text style={{ textAlign: "right" }} nowrap>*/}
+							{/*	0.02%*/}
+							{/*</Text>*/}
+							<Text type={TEXT_TYPES.H} nowrap color="primary">
+								$ {formattedPrice}
+							</Text>
+						</Column>
+					</Market>
+				);
+			})}
 		</Root>
 	);
 });

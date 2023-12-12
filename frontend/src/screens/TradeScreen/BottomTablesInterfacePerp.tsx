@@ -277,17 +277,16 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 		tradeStore.perpOrders,
 	]);
 
-	//active
-	// baseSize
-	// baseToken
-	// id
-	// orderPrice
-	// trader
 	return (
 		<Root size={tableSize}>
 			<TabContainer>
 				{tabs.map(({ title, disabled }, index) => (
-					<Tab disabled={disabled} key={title} active={tabIndex === index} onClick={() => !disabled && setTabIndex(index)}>
+					<Tab
+						disabled={disabled}
+						key={title + index}
+						active={tabIndex === index}
+						onClick={() => !disabled && setTabIndex(index)}
+					>
 						{title}
 					</Tab>
 				))}
@@ -297,7 +296,7 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 						content={
 							<Column crossAxisSize="max" style={{ zIndex: 500 }}>
 								{tableSizesConfig.map(({ size, icon, title }) => (
-									<TableSize active={size === tableSize} onClick={() => setTableSize(size)}>
+									<TableSize active={size === tableSize} onClick={() => setTableSize(size)} key={title}>
 										<img src={icon} alt={title} />
 										<SizedBox width={4} />
 										<Text nowrap type={TEXT_TYPES.BUTTON}>
