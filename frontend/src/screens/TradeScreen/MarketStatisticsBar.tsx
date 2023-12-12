@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Column, DesktopRow, Row } from "@src/components/Flex";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
@@ -109,37 +109,50 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		{ title: "24h High", value: "" },
 		{ title: "24h Low", value: "" },
 	];
-	// useEffect(() => {
-	// 	const to = dayjs().unix();
-	// 	const from = to - 60 * 60 * 24 * 2;
-	// 	const req = `https://spark-tv-datafeed.spark-defi.com/api/v1/history?symbol=UNI%2FUSDC&resolution=1D&from=${from}&to=${to}&countback=2&currencyCode=USDC`;
-	// 	axios
-	// 		.get(req)
-	// 		.then((res) => res.data)
-	// 		.then((data) => {
-	// 			if (data.t[1] != null && data.t[0] != null) {
-	// 				setSpotStats({
-	// 					price: new BN(data.c[1]),
-	// 					priceChange: data.c[0] === 0 ? BN.ZERO : new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
-	// 					dailyHigh: new BN(data.h[1] ?? BN.ZERO),
-	// 					dailyLow: new BN(data.l[1] ?? BN.ZERO),
-	// 					//fixme
-	// 					volumeAsset1: BN.formatUnits(data.v[1] * data.c[1], 9), //data.c[1] = price of USDC
-	// 					volumeAsset0: BN.formatUnits(data.v[1] * 1, 9), //1 = price of USDC
-	// 				});
-	// 			} else if (data.h[0] != null && data.h[1] == null) {
-	// 				setSpotStats({
-	// 					price: new BN(data.c[0]),
-	// 					priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
-	// 					dailyHigh: new BN(data.h[0]),
-	// 					dailyLow: new BN(data.l[0]),
-	// 					//fixme
-	// 					volumeAsset1: BN.formatUnits(data.v[0] * data.c[0], 9), //data.c[1] = price of USDC
-	// 					volumeAsset0: BN.formatUnits(data.v[0] * 1, 9), //1 = price of USDC
-	// 				});
-	// 			}
-	// 		});
-	// }, []);
+	useEffect(() => {
+		console.log("useEffect tradeStore.isMarketPerp", tradeStore.isMarketPerp);
+		if (tradeStore.isMarketPerp) {
+			setPerpStats({
+				price: tradeStore.marketPrice,
+				priceChange: BN.ZERO,
+				indexPrice: BN.ZERO,
+				fundingRate: BN.ZERO,
+				avgFunding: BN.ZERO,
+				openInterest: BN.ZERO,
+				dailyVolume: BN.ZERO,
+			});
+		} else {
+			// const to = dayjs().unix();
+			// const from = to - 60 * 60 * 24 * 2;
+			// const req = `https://spark-tv-datafeed.spark-defi.com/api/v1/history?symbol=UNI%2FUSDC&resolution=1D&from=${from}&to=${to}&countback=2&currencyCode=USDC`;
+			// axios
+			// 	.get(req)
+			// 	.then((res) => res.data)
+			// 	.then((data) => {
+			// 		if (data.t[1] != null && data.t[0] != null) {
+			// 			setSpotStats({
+			// 				price: new BN(data.c[1]),
+			// 				priceChange: data.c[0] === 0 ? BN.ZERO : new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
+			// 				dailyHigh: new BN(data.h[1] ?? BN.ZERO),
+			// 				dailyLow: new BN(data.l[1] ?? BN.ZERO),
+			// 				//fixme
+			// 				volumeAsset1: BN.formatUnits(data.v[1] * data.c[1], 9), //data.c[1] = price of USDC
+			// 				volumeAsset0: BN.formatUnits(data.v[1] * 1, 9), //1 = price of USDC
+			// 			});
+			// 		} else if (data.h[0] != null && data.h[1] == null) {
+			// 			setSpotStats({
+			// 				price: new BN(data.c[0]),
+			// 				priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
+			// 				dailyHigh: new BN(data.h[0]),
+			// 				dailyLow: new BN(data.l[0]),
+			// 				//fixme
+			// 				volumeAsset1: BN.formatUnits(data.v[0] * data.c[0], 9), //data.c[1] = price of USDC
+			// 				volumeAsset0: BN.formatUnits(data.v[0] * 1, 9), //1 = price of USDC
+			// 			});
+			// 		}
+			// 	});
+		}
+	}, [tradeStore.isMarketPerp, tradeStore.marketPrice]);
 	return (
 		<Root>
 			<MarketSelect
@@ -170,11 +183,10 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 							type={TEXT_TYPES.BODY}
 							// style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}
 						>
-							{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}%
+							{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}
 						</Text>
 						<Text type={TEXT_TYPES.H} primary>
-							{tradeStore.isMarketPerp ? perpStats?.price.toFormat(2) : spotStats?.price.toFormat(4)}{" "}
-							{/*{state.price?.toFormat(2) ?? "-"}&nbsp;{vm.token1.symbol}*/}$ 43000
+							$ {tradeStore.isMarketPerp ? perpStats?.price.toFormat(2) : spotStats?.price.toFormat(4)}
 						</Text>
 					</Column>
 					<DesktopRow>

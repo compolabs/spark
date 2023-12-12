@@ -37,7 +37,8 @@ export class PerpMarketPrice {
 	constructor(priceOutput: IPerpPriceResponse) {
 		this.id = priceOutput.id;
 		this.tokenId = `0x${priceOutput.token}`;
-		this.symbol = `${this.tokenId}-PERP`;
+		const token = TOKENS_BY_ASSET_ID[this.tokenId];
+		this.symbol = `${token.symbol}-PERP`;
 		this.id = priceOutput.id;
 		this.markPrice = new BN(priceOutput.mark_price);
 		this.marketPrice = new BN(priceOutput.market_price);
@@ -63,7 +64,7 @@ export const getPerpMarketPrices = async (): Promise<Record<string, PerpMarketPr
 				.reduce(
 					(acc: PerpMarketPrice[], val: PerpMarketPrice) => ({
 						...acc,
-						[val.tokenId]: val,
+						[val.symbol]: val,
 					}),
 					{} as Record<string, PerpMarketPrice>,
 				)

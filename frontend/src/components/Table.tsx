@@ -101,7 +101,6 @@ const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover
 					})}
 				</tbody>
 			</table>
-			{data.length === 0 && <Text type={TEXT_TYPES.SUPPORTING}>No data</Text>}
 			{loading && <Text style={{ cursor: "pointer", padding: "16px 0" }}>Loading...</Text>}
 		</Root>
 	);

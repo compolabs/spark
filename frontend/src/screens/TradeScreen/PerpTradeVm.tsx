@@ -1,11 +1,20 @@
 import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { Contract } from "fuels";
-import { ClearingHouseAbi__factory } from "@src/contracts";
+import {
+	AccountBalanceAbi__factory,
+	ClearingHouseAbi__factory,
+	InsuranceFundAbi__factory,
+	PerpMarketAbi__factory,
+	ProxyAbi__factory,
+	PythContractAbi__factory,
+	VaultAbi__factory,
+} from "@src/contracts";
+import { PerpMarket } from "@src/services/ClearingHouseServise";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -31,7 +40,6 @@ class PerpTradeVm {
 	setMaxAbsPositionSize = (v: { long: BN; short: BN } | null) => (this.maxAbsPositionSize = v);
 
 	constructor(rootStore: RootStore) {
-		// console.log("perp constructor");
 		this.rootStore = rootStore;
 		this.updateMarket();
 		makeAutoObservable(this);
@@ -39,10 +47,18 @@ class PerpTradeVm {
 			() => [this.rootStore.tradeStore.marketSymbol, this.rootStore.tradeStore.contracts != null],
 			() => this.updateMarket(),
 		);
+		reaction(
+			() => [
+				this.rootStore.tradeStore.perpMarkets,
+				this.rootStore.tradeStore.perpPrices,
+				this.rootStore.tradeStore.freeCollateral,
+				this.rootStore.tradeStore.positions,
+			],
+			() => this.calcMaxPositionSize(),
+		);
 	}
 
 	updateMarket = async () => {
-		// console.log("updateMarket in perp consturctor");
 		const { tradeStore } = this.rootStore;
 		const market = tradeStore.market;
 		if (market == null || market.type === "spot") return;
@@ -50,6 +66,36 @@ class PerpTradeVm {
 		this.setAssetId1(market?.token1.assetId);
 		await this.updateMaxValueForMarket();
 		this.setInitialized(true);
+	};
+
+	calcMaxPositionSize = async () => {
+		const HUNDRED_PERCENT = 1_000_000;
+		const { tradeStore } = this.rootStore;
+		const market = tradeStore.currentMarket;
+		if (market == null) return;
+		if (!(market instanceof PerpMarket)) return;
+		const scale = BN.parseUnits(1, market.decimal);
+		const markPrice = tradeStore.perpPrices != null ? tradeStore.perpPrices[market.symbol]?.markPrice : null;
+		if (tradeStore.freeCollateral == null || markPrice == null) return;
+		const maxPositionValue = tradeStore.freeCollateral?.times(HUNDRED_PERCENT).div(market.imRatio);
+		const maxPositionSize = maxPositionValue.times(scale).div(markPrice);
+		const currentPositionSize =
+			this.rootStore.tradeStore.positions.find(({ symbol }) => symbol === market.symbol)?.takerPositionSize ?? BN.ZERO;
+
+		let long = BN.ZERO;
+		let short = BN.ZERO;
+		if (currentPositionSize.gt(0)) {
+			short = maxPositionSize;
+			long = currentPositionSize.abs().plus(maxPositionSize).times(2);
+			this.setMaxAbsPositionSize({ long: BN.ZERO, short: BN.ZERO });
+		} else {
+			long = maxPositionSize;
+			short = currentPositionSize.abs().plus(maxPositionSize).times(2);
+		}
+
+		const roundLong = new BN(long.toFixed(0).toString());
+		const roundShort = new BN(short.toFixed(0).toString());
+		this.setMaxAbsPositionSize({ long: roundLong, short: roundShort });
 	};
 	updateMaxValueForMarket = async () => {
 		const { accountStore } = this.rootStore;
@@ -87,11 +133,12 @@ class PerpTradeVm {
 	}
 
 	openOrder = async () => {
+		console.log("perp openOrder");
 		const { accountStore, oracleStore, tradeStore } = this.rootStore;
 		if (oracleStore.updateData == null) return;
-		await accountStore.checkConnectionWithWallet();
-		const contract = tradeStore.contracts;
-		if (contract == null) return;
+		// await accountStore.checkConnectionWithWallet();
+		// const contract = tradeStore.contracts;
+		// if (contract == null) return;
 		try {
 			this.setLoading(true);
 			const fee = await oracleStore.getPythFee();
@@ -100,30 +147,41 @@ class PerpTradeVm {
 			// const price = this.price.toFixed(0).toString();
 			// const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
 			const wallet = await this.rootStore.accountStore.getWallet();
-			if (wallet == null) {
-				console.log("wallet==null", wallet == null);
-				return;
-			}
+			if (wallet == null) return;
 			const clearingHouseContract = new Contract(CONTRACT_ADDRESSES.clearingHouse, ClearingHouseAbi__factory.abi, wallet);
+			const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
+			const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
+			const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
+			const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
+			const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+			const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
 
 			const baseAsset = { value: this.token0.assetId };
 			const price = "41637961421";
 			const size = { value: "11572614", negative: false };
 
-			console.time("openOrder");
+			console.log({
+				baseAsset: baseAsset,
+				price: price,
+				size: size,
+			});
 			await clearingHouseContract.functions
 				.open_order(baseAsset, size, price, oracleStore.updateData)
 				.addContracts([
-					contract.clearingHouseContract,
-					contract.proxyContract,
-					contract.perpMarketContract,
-					contract.vaultMarketContract,
-					contract.accountBalanceContract,
-					contract.pythContract,
+					proxyContract,
+					accountBalanceContract,
+					insuranceFundContract,
+					perpMarketContract,
+					vaultMarketContract,
+					pythContract,
 				])
 				.callParams({ forward: { amount: fee ?? "", assetId: TOKENS_BY_SYMBOL.ETH.assetId } })
 				.txParams({ gasPrice: 1 })
-				.call();
+				.call()
+				.then(({ transactionResult }) => {
+					console.log("transactionResult", transactionResult);
+					transactionResult && this.notifyThatActionIsSuccessful("Order has been placed", transactionResult.id ?? "");
+				});
 			console.timeEnd("openOrder");
 		} catch (e) {
 			console.log(e);
@@ -184,6 +242,7 @@ class PerpTradeVm {
 		const size = BN.formatUnits(this.orderSize, this.token0.decimals);
 		const price = BN.formatUnits(this.price, this.token1.decimals);
 		const freeColl = BN.formatUnits(tradeStore.freeCollateral ?? 0, this.token0.decimals);
+		// if (freeColl.eq(0)) return BN.ZERO;
 		return size.times(price.div(freeColl)).div(100);
 	}
 
@@ -209,4 +268,16 @@ class PerpTradeVm {
 		const max = this.isShort ? this.maxAbsPositionSize?.short : this.maxAbsPositionSize?.long;
 		return max == null ? BN.ZERO : max;
 	}
+
+	notifyThatActionIsSuccessful = (title: string, txId: string) => {
+		this.rootStore.notificationStore.toast(title, {
+			type: "success",
+		});
+	};
+	notifyError = (title: string, error: any) => {
+		console.error(error);
+		this.rootStore.notificationStore.toast(title, {
+			type: "error",
+		});
+	};
 }

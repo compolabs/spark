@@ -51,8 +51,6 @@ const spotMarketsConfig = [{ token0: TOKENS_BY_SYMBOL.UNI, token1: TOKENS_BY_SYM
 	symbol: `${v.token0.symbol}-${v.token1.symbol}`,
 	type: "spot",
 	leverage: null,
-	price: new BN(10000),
-	change24: new BN(10000),
 }));
 
 class TradeStore {
@@ -144,6 +142,12 @@ class TradeStore {
 	perpPrices: Record<string, PerpMarketPrice> | null = null;
 	private setPerpPrices = (v: Record<string, PerpMarketPrice> | null) => (this.perpPrices = v);
 
+	get marketPrice() {
+		if (this.marketSymbol == null) return BN.ZERO;
+		const price = this.perpPrices == null ? BN.ZERO : this.perpPrices[this.marketSymbol]?.marketPrice;
+		return BN.formatUnits(price, 6);
+	}
+
 	favMarkets: string[] = [];
 	setFavMarkets = (v: string[]) => (this.favMarkets = v);
 
@@ -171,6 +175,10 @@ class TradeStore {
 
 	get isMarketPerp() {
 		return this.marketSymbol == null ? false : this.marketSymbol.includes("-PERP");
+	}
+
+	get currentMarket() {
+		return this.marketSymbol == null ? null : this.marketsConfig[this.marketSymbol];
 	}
 
 	marketSelectionOpened: boolean = false;

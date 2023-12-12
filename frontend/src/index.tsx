@@ -10,6 +10,8 @@ import ThemeWrapper from "@src/themes/ThemeProvider";
 // import GlobalStyles from "@src/themes/GlobalStyles";
 // css
 import "react-toastify/dist/ReactToastify.css";
+import "react-loading-skeleton/dist/skeleton.css";
+import "rc-dialog/assets/index.css";
 import "./index.css";
 import "normalize.css";
 

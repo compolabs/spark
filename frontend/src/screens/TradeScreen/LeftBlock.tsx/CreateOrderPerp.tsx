@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Column, Row } from "@components/Flex";
-import React, { ComponentProps, useState } from "react";
+import React, { ComponentProps, useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import TokenInput from "@components/TokenInput";
@@ -38,6 +38,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	const { oracleStore } = useStores();
 	const [orderTypeIndex, setOrderTypeIndex] = useState(0);
 	const vm = usePerpTradeVM();
+
 	let price = oracleStore?.prices != null ? new BN(oracleStore?.prices[vm.token0.priceFeed]?.price.toString()) : BN.ZERO;
 	let marketPrice = BN.formatUnits(price, 2);
 	const onChangePercent = (percent: number) => {
