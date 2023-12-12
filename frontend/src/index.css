@@ -49,3 +49,8 @@ code {
     --toastify-color-error: #FD0A53;
     --toastify-font-family: JetBrains Mono, sans-serif;
 }
+
+.react-loading-skeleton {
+    --base-color: #1B1B1B;
+    --highlight-color: #4B4B4B;
+}
