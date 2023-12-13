@@ -106,10 +106,6 @@ class TradeStore {
 	freeCollateral: BN | null = null;
 	setFreeCollateral = (v: BN | null) => (this.freeCollateral = v);
 
-	get formattedFreeCollateral() {
-		return BN.formatUnits(this.freeCollateral ?? 0, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
-	}
-
 	marketSymbol: string | null = null;
 	setMarketSymbol = (v: string) => (this.marketSymbol = v);
 
@@ -145,8 +141,21 @@ class TradeStore {
 
 	get marketPrice() {
 		if (this.marketSymbol == null) return BN.ZERO;
-		const price = this.perpPrices == null ? BN.ZERO : this.perpPrices[this.marketSymbol]?.marketPrice;
-		return BN.formatUnits(price, 6);
+		return this.perpPrices == null ? BN.ZERO : this.perpPrices[this.marketSymbol]?.marketPrice;
+	}
+
+	get fundingRate() {
+		//fundingRate := sign(marketPrice - indexPrice) * min(abs((marketPrice - indexPrice)/indexPrice), max_funding_rate/1e6)/24
+		const { oracleStore } = this.rootStore;
+		const { market } = this.rootStore.tradeStore;
+		const token = market?.token0;
+		if (token == null) return BN.ZERO;
+		const indexPrice = oracleStore.getTokenIndexPrice(token.priceFeed);
+		const diff = this.marketPrice.minus(indexPrice);
+		const sign = diff.gt(0) ? 1 : -1;
+		const formattedMaxFundingRate = BN.formatUnits(200000, 6); //1e6
+		const min = BN.min(diff.abs().div(indexPrice), formattedMaxFundingRate).div(24);
+		return min.times(sign).times(100); //because percent
 	}
 
 	favMarkets: string[] = [];

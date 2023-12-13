@@ -1,4 +1,3 @@
-import axios from "axios";
 import { CLEARING_HOUSE_INDEXER, IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import makeIndexerRequest from "@src/utils/makeIndexerRequest";
@@ -66,8 +65,7 @@ export const getPerpMarkets = async (): Promise<PerpMarket[]> => {
 };
 
 export const getFunding = async (): Promise<BN> => {
-	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_clearing_house_indexer.marketentity ) t;`;
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_clearing_house_indexer.fundingentity ORDER BY TIMESTAMP DESC LIMIT 1 ) t;`;
 	const res = await makeIndexerRequest(query, CLEARING_HOUSE_INDEXER);
-	console.log("res of funding", res);
-	return BN.ZERO;
+	return res?.data.data[0] == null ? BN.ZERO : new BN(res?.data.data[0][0].funding);
 };

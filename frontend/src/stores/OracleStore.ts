@@ -5,6 +5,7 @@ import { CONTRACT_ADDRESSES, TOKENS_LIST } from "@src/constants";
 import { arrayify, Bytes } from "fuels";
 import { Vec } from "@src/contracts/common";
 import { PythContractAbi__factory } from "@src/contracts";
+import BN from "@src/utils/BN";
 
 //todo change get fee to amount of perp markets
 class OracleStore {
@@ -70,12 +71,18 @@ class OracleStore {
 		return fee.value.toNumber() ?? 3;
 	};
 
-	get tokenIndexPrice(): string {
+	getTokenIndexPrice(priceFeed: string): BN {
+		if (this.prices == null) return BN.ZERO;
+		const price = this.prices[priceFeed];
+		const v = BN.formatUnits(price?.price, 2);
+		return price?.price == null ? BN.ZERO : v;
+	}
+
+	get tokenIndexPrice(): BN {
 		const { market } = this.rootStore.tradeStore;
 		const token = market?.token0;
-		if (market == null || token == null || this.prices == null) return "0";
-		const price = this.prices[token.priceFeed];
-		return price?.price == null ? "0" : price?.price;
+		if (token == null) return BN.ZERO;
+		return this.getTokenIndexPrice(token?.priceFeed);
 	}
 }
 

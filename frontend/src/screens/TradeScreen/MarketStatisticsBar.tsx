@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
-import Button from "@components/Button";
 import BN from "@src/utils/BN";
 import arrow from "@src/assets/icons/arrowUp.svg";
 import { observer } from "mobx-react";
@@ -70,57 +69,25 @@ const PriceRow = styled(Row)`
 	}
 `;
 
-interface IPerpMarketState {
-	price: BN;
-	priceChange?: BN;
-	indexPrice: BN;
-	fundingRate: BN;
-	avgFunding: BN;
-	openInterest: BN;
-	dailyVolume: BN;
-}
-
-interface ISpotMarketState {
-	price: BN;
-	priceChange: BN;
-	indexPrice?: BN;
-	dailyVolume?: BN;
-	dailyHigh: BN;
-	dailyLow: BN;
-	volumeAsset1: BN;
-	volumeAsset0: BN;
-}
-
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	const { tradeStore, oracleStore } = useStores();
 	const theme = useTheme();
-	const [perpStats, setPerpStats] = useState<IPerpMarketState | null>(null);
+	const [price, setPrice] = useState<string | null>(null);
 	const perpStatsArr = [
-		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 8).toFormat(2) },
-		{ title: "Funding rate", value: "" },
-		{ title: "Avg funding", value: "" },
-		{ title: "Open interest", value: "" },
-		{ title: "24h volume", value: "" },
+		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 6).toFormat(2) },
+		{ title: "Predicted Funding rate", value: tradeStore.fundingRate.toFormat(5) + " %" },
 	];
-	const [spotStats, setSpotStats] = useState<ISpotMarketState | null>(null);
 	const spotStatsArr = [
-		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 8).toFormat(2) },
+		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 6).toFormat(2) },
 		{ title: "24h volume", value: "" },
 		{ title: "24h High", value: "" },
 		{ title: "24h Low", value: "" },
 	];
 	useEffect(() => {
 		if (tradeStore.isMarketPerp) {
-			setPerpStats({
-				price: tradeStore.marketPrice,
-				priceChange: BN.ZERO,
-				indexPrice: BN.ZERO,
-				fundingRate: BN.ZERO,
-				avgFunding: BN.ZERO,
-				openInterest: BN.ZERO,
-				dailyVolume: BN.ZERO,
-			});
+			setPrice(BN.formatUnits(tradeStore.marketPrice, 6).toFormat(2));
 		} else {
+			setPrice(BN.ZERO.toString(2));
 			// const to = dayjs().unix();
 			// const from = to - 60 * 60 * 24 * 2;
 			// const req = `https://spark-tv-datafeed.spark-defi.com/api/v1/history?symbol=UNI%2FUSDC&resolution=1D&from=${from}&to=${to}&countback=2&currencyCode=USDC`;
@@ -151,7 +118,8 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			// 		}
 			// 	});
 		}
-	}, [tradeStore.isMarketPerp, tradeStore.marketPrice]);
+		// }, [tradeStore.isMarketPerp, tradeStore.marketPrice, oracleStore.tokenIndexPrice]);
+	}, [tradeStore.marketPrice, tradeStore.marketSymbol, tradeStore.isMarketPerp]);
 	return (
 		<Root>
 			<MarketSelect
@@ -178,14 +146,14 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			<MarketStatistics>
 				<PriceRow alignItems="center">
 					<Column alignItems="flex-end">
-						<Text
-							type={TEXT_TYPES.BODY}
-							// style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}
-						>
-							{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}
-						</Text>
+						{/*<Text*/}
+						{/*	type={TEXT_TYPES.BODY}*/}
+						{/*	style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}*/}
+						{/*>*/}
+						{/*	{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}*/}
+						{/*</Text>*/}
 						<Text type={TEXT_TYPES.H} primary>
-							$ {tradeStore.isMarketPerp ? perpStats?.price.toFormat(2) : spotStats?.price.toFormat(4)}
+							$ {price}
 						</Text>
 					</Column>
 					<DesktopRow>
@@ -203,11 +171,11 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 						))}
 					</DesktopRow>
 				</PriceRow>
-				<DesktopRow>
-					<Button text fitContent>
-						SEE ALL MARKET DETAILS
-					</Button>
-				</DesktopRow>
+				{/*<DesktopRow>*/}
+				{/*	<Button text fitContent>*/}
+				{/*		SEE ALL MARKET DETAILS*/}
+				{/*	</Button>*/}
+				{/*</DesktopRow>*/}
 			</MarketStatistics>
 		</Root>
 	);
