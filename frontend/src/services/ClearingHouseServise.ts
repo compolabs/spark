@@ -1,6 +1,7 @@
 import axios from "axios";
 import { CLEARING_HOUSE_INDEXER, IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
+import makeIndexerRequest from "@src/utils/makeIndexerRequest";
 
 interface IPeprMarketResponse {
 	asset_id: string;
@@ -58,13 +59,15 @@ export class PerpMarket {
 
 export const getPerpMarkets = async (): Promise<PerpMarket[]> => {
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_clearing_house_indexer.marketentity ) t;`;
-	const url = CLEARING_HOUSE_INDEXER;
-	const headers = {
-		"Content-Type": "application/json",
-		Accept: "application/json",
-	};
-	const res = await axios.request({ method: "POST", url, headers, data: { query } });
+	const res = await makeIndexerRequest(query, CLEARING_HOUSE_INDEXER);
 	return res?.data.data[0] != null
 		? res.data.data[0].map((market: IPeprMarketResponse): PerpMarket => new PerpMarket(market))
 		: [];
+};
+
+export const getFunding = async (): Promise<BN> => {
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_clearing_house_indexer.marketentity ) t;`;
+	const res = await makeIndexerRequest(query, CLEARING_HOUSE_INDEXER);
+	console.log("res of funding", res);
+	return BN.ZERO;
 };

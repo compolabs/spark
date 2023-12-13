@@ -1,7 +1,7 @@
-import axios from "axios";
-import { SPOT_INDEXER, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { ACCOUNT_BALANCE_INDEXER, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
+import makeIndexerRequest from "@src/utils/makeIndexerRequest";
 
 interface IOrderResponse {
 	id: string;
@@ -137,25 +137,12 @@ export const getOrderbook = async (
 	const buyQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spark_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId1}' AND asset1 = '${assetId0}') t;`;
 	owner = owner.substring(2);
 	const ownerQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spark_indexer.orderentity WHERE owner = '${owner}') t;`;
-	const url = SPOT_INDEXER;
-	const headers = {
-		"Content-Type": "application/json",
-		Accept: "application/json",
-	};
 
 	const res = await Promise.all([
-		axios.request({ method: "POST", url, headers, data: { query: buyQuery } }),
-		axios.request({ method: "POST", url, headers, data: { query: sellQuery } }),
-		owner.length === 0
-			? null
-			: axios.request({
-					method: "POST",
-					url,
-					headers,
-					data: { query: ownerQuery },
-			  }),
+		makeIndexerRequest(buyQuery, ACCOUNT_BALANCE_INDEXER),
+		makeIndexerRequest(sellQuery, ACCOUNT_BALANCE_INDEXER),
+		owner.length === 0 ? null : makeIndexerRequest(ownerQuery, ACCOUNT_BALANCE_INDEXER),
 	]);
-	// res.map((res) => console.log(res?.data.data[0]));
 	const [buy, sell, myOrders] = res.map((res) =>
 		res?.data.data[0] != null
 			? res.data.data[0].map(

@@ -1,6 +1,6 @@
 import { ACCOUNT_BALANCE_INDEXER, IToken, TOKENS_BY_ASSET_ID } from "@src/constants";
-import axios from "axios";
 import BN from "@src/utils/BN";
+import makeIndexerRequest from "@src/utils/makeIndexerRequest";
 
 interface IPositionResponse {
 	id: string;
@@ -40,13 +40,6 @@ export class Position {
 	}
 
 	get entPrice() {
-		//todo check this
-
-		// console.log({
-		// 	"this.takerOpenNotional": this.takerOpenNotional.toString(),
-		// 	"this.takerPositionSize": this.takerPositionSize.toString(),
-		// 	"this.token.decimals": this.token.decimals,
-		// });
 		const value = BN.parseUnits(this.takerOpenNotional.div(this.takerPositionSize).abs(), this.token.decimals).toString();
 		return BN.formatUnits(value, 6).toFormat(2);
 	}
@@ -54,12 +47,7 @@ export class Position {
 
 export const getUserPositions = async (address: string): Promise<Position[]> => {
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_account_balance_indexer.positionentity WHERE trader = '${address}' ) t;`;
-	const url = ACCOUNT_BALANCE_INDEXER;
-	const headers = {
-		"Content-Type": "application/json",
-		Accept: "application/json",
-	};
-	const res = await axios.request({ method: "POST", url, headers, data: { query } });
+	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
 	return res?.data.data[0] != null
 		? res?.data.data[0].map((position: IPositionResponse): Position => new Position(position))
 		: [];

@@ -1,6 +1,6 @@
-import { ACCOUNT_BALANCE_INDEXER, IToken, PERP_MARKET_INDEXER, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { ACCOUNT_BALANCE_INDEXER, IToken, TOKENS_BY_ASSET_ID } from "@src/constants";
 import BN from "@src/utils/BN";
-import axios from "axios";
+import makeIndexerRequest from "@src/utils/makeIndexerRequest";
 
 interface IPerpPriceResponse {
 	id: string;
@@ -51,13 +51,7 @@ export class PerpMarketPrice {
 
 export const getPerpMarketPrices = async (): Promise<Record<string, PerpMarketPrice>> => {
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_perp_market_indexer.priceentity) t;`;
-	const url = PERP_MARKET_INDEXER;
-	const headers = {
-		"Content-Type": "application/json",
-		Accept: "application/json",
-	};
-	const res = await axios.request({ method: "POST", url, headers, data: { query } });
-
+	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
 	return res?.data.data[0] != null
 		? res.data.data[0]
 				.map((price: IPerpPriceResponse): PerpMarketPrice => new PerpMarketPrice(price))
@@ -99,12 +93,7 @@ export class PerpTrade {
 export const getPerpTrades = async (): Promise<PerpTrade[]> => {
 	//todo get latest for trades
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_perp_market_indexer.tradeentity) t;`;
-	const url = PERP_MARKET_INDEXER;
-	const headers = {
-		"Content-Type": "application/json",
-		Accept: "application/json",
-	};
-	const res = await axios.request({ method: "POST", url, headers, data: { query } });
+	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
 	return res?.data.data[0] != null
 		? res.data.data[0].map((trade: IPerpTradeResponse): PerpTrade => new PerpTrade(trade))
 		: [];
@@ -142,12 +131,7 @@ export class PerpOrder {
 
 export const getUserPerpOrders = async (address: string): Promise<PerpOrder[]> => {
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_perp_market_indexer.orderentity WHERE trader = '${address}' AND active = true  ) t;`;
-	const url = ACCOUNT_BALANCE_INDEXER;
-	const headers = {
-		"Content-Type": "application/json",
-		Accept: "application/json",
-	};
-	const res = await axios.request({ method: "POST", url, headers, data: { query } });
+	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
 	return res?.data.data[0] != null
 		? res?.data.data[0].map((order: IPerpOrderResponse): PerpOrder => new PerpOrder(order))
 		: [];
