@@ -21,6 +21,7 @@ import {
 import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
 import { getUserPositions, Position } from "@src/services/AccountBalanceServise";
 import { getPerpMarketPrices, getUserPerpOrders, PerpMarketPrice, PerpOrder } from "@src/services/PerpMarketService";
+import { getUserFreeCollateral } from "@src/services/VaultServise";
 
 export interface SpotMarket {
 	token0: IToken;
@@ -218,10 +219,20 @@ class TradeStore {
 		await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
-			const contracts = this.contractsToRead;
+			// const contracts = this.contractsToRead;
+
 			const vault = CONTRACT_ADDRESSES.vault;
 			const wallet = await accountStore.getWallet();
-			if (wallet == null || contracts == null) return;
+
+			if (wallet == null) return;
+			const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
+			const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
+			const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
+			// const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
+			// const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
+			// const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+			const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
+
 			const vaultContract = VaultAbi__factory.connect(vault, wallet);
 			const fee = await oracleStore.getPythFee();
 			if (oracleStore.updateData == null || fee == null) return;
@@ -230,12 +241,7 @@ class TradeStore {
 				.callParams({
 					forward: { amount: fee, assetId: TOKENS_BY_SYMBOL.ETH.assetId },
 				})
-				.addContracts([
-					contracts.pythContractAbi,
-					contracts.accountBalanceAbi,
-					contracts.proxyAbi,
-					contracts.clearingHouseAbi,
-				])
+				.addContracts([pythContract, accountBalanceContract, proxyContract, clearingHouseContract])
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
@@ -285,12 +291,9 @@ class TradeStore {
 	};
 
 	updateFreeCollateral = async (vault: VaultAbi) => {
-		const addressInput = this.rootStore.accountStore.addressInput;
-		if (addressInput == null) return;
-		const result = await vault.functions.get_free_collateral(addressInput).addContracts(this.contractsArray).simulate();
-		if (result.value != null) {
-			this.setFreeCollateral(new BN(result.value.value.toString()));
-		}
+		const address = (this.rootStore.accountStore.addressB256 ?? "").slice(2);
+		const collateral = await getUserFreeCollateral(address);
+		this.setFreeCollateral(collateral);
 	};
 
 	get contractsToRead() {

@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Column, Row } from "@components/Flex";
-import React, { ComponentProps, useEffect, useState } from "react";
+import React, { ComponentProps, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
 import TokenInput from "@components/TokenInput";
@@ -179,6 +179,8 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					? `Short ${vm.token0.symbol}`
 					: `Long ${vm.token0.symbol}`}
 			</Button>
+			<SizedBox height={16} />
+			<Button onClick={vm.sergioTestCase}>call sergio btn</Button>
 		</Root>
 	);
 });

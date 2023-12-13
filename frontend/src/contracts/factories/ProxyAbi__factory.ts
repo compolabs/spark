@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.1
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -29,15 +29,10 @@ const _abi = {
     },
     {
       "typeId": 2,
-      "type": "enum AccessError",
+      "type": "enum Error",
       "components": [
         {
-          "name": "CannotReinitialized",
-          "type": 0,
-          "typeArguments": null
-        },
-        {
-          "name": "NotOwner",
+          "name": "AccessDenied",
           "type": 0,
           "typeArguments": null
         }
@@ -313,18 +308,20 @@ const _abi = {
     }
   ],
   "messagesTypes": [],
-  "configurables": []
+  "configurables": [
+    {
+      "name": "OWNER",
+      "configurableType": {
+        "name": "",
+        "type": 5,
+        "typeArguments": []
+      },
+      "offset": 12868
+    }
+  ]
 };
 
 const _storageSlots: StorageSlot[] = [
-  {
-    "key": "b48b753af346966d0d169c0b2e3234611f65d5cfdb57c7b6e7cd6ca93707bee0",
-    "value": "0000000000000001000000000000000009c0b2d1a486c439a87bcba6b46a7a1a"
-  },
-  {
-    "key": "b48b753af346966d0d169c0b2e3234611f65d5cfdb57c7b6e7cd6ca93707bee1",
-    "value": "23f3897cc83a94521a96da5c23bc58db00000000000000000000000000000000"
-  },
   {
     "key": "f383b0ce51358be57daa3b725fe44acdb2d880604e367199080b4379c41bb6ed",
     "value": "0000000000000000000000000000000000000000000000000000000000000000"

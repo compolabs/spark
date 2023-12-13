@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.67.0
+  Fuels version: 0.69.1
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -22,13 +22,17 @@ import type {
 
 import type { Enum, Vec } from "./common";
 
-export enum AccessErrorInput { CannotReinitialized = 'CannotReinitialized', NotOwner = 'NotOwner' };
-export enum AccessErrorOutput { CannotReinitialized = 'CannotReinitialized', NotOwner = 'NotOwner' };
+export enum ErrorInput { AccessDenied = 'AccessDenied' };
+export enum ErrorOutput { AccessDenied = 'AccessDenied' };
 
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;
 export type SparkContractsInput = { version: BigNumberish, account_balance_address: AddressInput, clearing_house_address: AddressInput, insurance_fund_address: AddressInput, treasury_address: AddressInput, perp_market_address: AddressInput, vault_address: AddressInput, pyth_address: AddressInput };
 export type SparkContractsOutput = { version: BN, account_balance_address: AddressOutput, clearing_house_address: AddressOutput, insurance_fund_address: AddressOutput, treasury_address: AddressOutput, perp_market_address: AddressOutput, vault_address: AddressOutput, pyth_address: AddressOutput };
+
+export type ProxyAbiConfigurables = {
+  OWNER: AddressInput;
+};
 
 interface ProxyAbiInterface extends Interface {
   functions: {
