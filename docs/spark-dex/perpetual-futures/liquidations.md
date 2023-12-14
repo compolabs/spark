@@ -62,4 +62,4 @@ So, a 0.10 ETH short position, also entered at $2,000 with $100 collateral, will
 * Liquidations are executed by keeper bots, which are coded and run by individuals.
 * These bots trigger liquidations through the clearinghouse contract, which assesses if the conditions for liquidation are met. Successful liquidations earn liquidators a bonus from the collateral of the liquidated position.
 
-This system ensures that leveraged positions are managed carefully to avoid losses to the exchange while providing traders with opportunities to leverage their trades.
+These bots call the clearinghouse contract to trigger the liquidations, and the clearinghouse determines whether a position meets the conditions for liquidations or not. Liquidators receive a bonus when successfully triggering a liquidation, paid from a portion of the collateral backing the liquidated position.
