@@ -24,6 +24,7 @@
   * [P\&L](spark-dex/perpetual-futures/p-and-l.md)
   * [Fees](spark-dex/perpetual-futures/fees.md)
   * [Risk Parameters](spark-dex/perpetual-futures/risk-parameters.md)
+  * [Account Value and Free Collateral](spark-dex/perpetual-futures/account-value-and-free-collateral.md)
   * [Funding Rates](spark-dex/perpetual-futures/funding-rates.md)
   * [Oracles](spark-dex/perpetual-futures/oracles.md)
   * [Liquidations](spark-dex/perpetual-futures/liquidations.md)
