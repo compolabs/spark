@@ -23,17 +23,19 @@ import type {
 
 import type { Enum, Vec } from "./common";
 
-export enum ErrorInput { TradingIsPaused = 'TradingIsPaused', InvalidAsset = 'InvalidAsset', AccessDenied = 'AccessDenied', NotEnoughFreeCollateral = 'NotEnoughFreeCollateral', OnlyClearingHouse = 'OnlyClearingHouse', InvalidPythFeePayment = 'InvalidPythFeePayment' };
-export enum ErrorOutput { TradingIsPaused = 'TradingIsPaused', InvalidAsset = 'InvalidAsset', AccessDenied = 'AccessDenied', NotEnoughFreeCollateral = 'NotEnoughFreeCollateral', OnlyClearingHouse = 'OnlyClearingHouse', InvalidPythFeePayment = 'InvalidPythFeePayment' };
-export enum PauseErrorInput { Paused = 'Paused', NotPaused = 'NotPaused' };
-export enum PauseErrorOutput { Paused = 'Paused', NotPaused = 'NotPaused' };
-export enum ReentrancyErrorInput { NonReentrant = 'NonReentrant' };
-export enum ReentrancyErrorOutput { NonReentrant = 'NonReentrant' };
+export enum ErrorInput { TradingIsPaused = 'TradingIsPaused', InvalidAsset = 'InvalidAsset', AccessDenied = 'AccessDenied', NotEnoughFreeCollateral = 'NotEnoughFreeCollateral', OnlyClearingHouse = 'OnlyClearingHouse', InvalidPythFeePayment = 'InvalidPythFeePayment' }
+export enum ErrorOutput { TradingIsPaused = 'TradingIsPaused', InvalidAsset = 'InvalidAsset', AccessDenied = 'AccessDenied', NotEnoughFreeCollateral = 'NotEnoughFreeCollateral', OnlyClearingHouse = 'OnlyClearingHouse', InvalidPythFeePayment = 'InvalidPythFeePayment' }
+export enum PauseErrorInput { Paused = 'Paused', NotPaused = 'NotPaused' }
+export enum PauseErrorOutput { Paused = 'Paused', NotPaused = 'NotPaused' }
+export enum ReentrancyErrorInput { NonReentrant = 'NonReentrant' }
+export enum ReentrancyErrorOutput { NonReentrant = 'NonReentrant' }
 
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;
 export type AssetIdInput = { value: string };
 export type AssetIdOutput = AssetIdInput;
+export type CollateralChangeEventInput = { trader: AddressInput, collateral: BigNumberish };
+export type CollateralChangeEventOutput = { trader: AddressOutput, collateral: BN };
 export type I64Input = { value: BigNumberish, negative: boolean };
 export type I64Output = { value: BN, negative: boolean };
 export type RawBytesInput = { ptr: BigNumberish, cap: BigNumberish };

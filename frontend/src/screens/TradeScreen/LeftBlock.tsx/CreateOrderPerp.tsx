@@ -48,9 +48,9 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	};
 
 	const orderDetails = [
-		{ title: "Order Size", value: vm.formattedOrderSize },
-		{ title: "Est. fee", value: "0.00" },
-		{ title: "Total amount", value: vm.formattedOrderValue },
+		{ title: "Order Size", value: `${vm.formattedOrderSize} ${vm.token0.symbol}` },
+		{ title: "Est. fee", value: "0.00 ETH" },
+		{ title: "Total amount", value: `${vm.formattedOrderValue} ${vm.token1.symbol}` },
 	];
 	return (
 		<Root {...rest}>

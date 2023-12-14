@@ -22,6 +22,7 @@ import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
 import { getUserPositions, Position } from "@src/services/AccountBalanceServise";
 import { getPerpMarketPrices, getUserPerpOrders, PerpMarketPrice, PerpOrder } from "@src/services/PerpMarketService";
 import { getUserFreeCollateral } from "@src/services/VaultServise";
+import { Contract } from "fuels";
 
 export interface SpotMarket {
 	token0: IToken;
@@ -196,13 +197,14 @@ class TradeStore {
 
 	deposit = async (amount: BN) => {
 		const { accountStore } = this.rootStore;
-		await accountStore.checkConnectionWithWallet();
+		// await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
-			const vault = CONTRACT_ADDRESSES.vault;
 			const wallet = await accountStore.getWallet();
 			if (wallet == null) return;
-			const vaultContract = VaultAbi__factory.connect(vault, wallet);
+			const vaultContract = new Contract(CONTRACT_ADDRESSES.vault, VaultAbi__factory.abi, wallet);
+			// const vaultContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+			// const vaultContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
 			const { transactionResult } = await vaultContract.functions
 				.deposit_collateral()
 				.callParams({
@@ -210,6 +212,7 @@ class TradeStore {
 				})
 				.txParams({ gasPrice: 1 })
 				.call();
+			console.log("transactionResult of deposit", transactionResult);
 			if (transactionResult != null) {
 				const formattedAmount = BN.formatUnits(amount, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
 				this.notifyThatActionIsSuccessful(`You have successfully deposited ${formattedAmount} USDC`);

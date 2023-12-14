@@ -20,21 +20,27 @@ import type {
   InvokeFunction,
 } from 'fuels';
 
-import type { Enum, Vec } from "./common";
+import type { Option, Enum, Vec } from "./common";
 
-export enum ErrorInput { AccessDenied = 'AccessDenied' };
-export enum ErrorOutput { AccessDenied = 'AccessDenied' };
+export enum ErrorInput { AccessDenied = 'AccessDenied' }
+export enum ErrorOutput { AccessDenied = 'AccessDenied' }
 
 export type AccountBalanceInput = { taker_position_size: I64Input, taker_open_notional: I64Input, last_tw_premium_growth_global: I64Input };
 export type AccountBalanceOutput = { taker_position_size: I64Output, taker_open_notional: I64Output, last_tw_premium_growth_global: I64Output };
-export type AccountBalanceChangeEventInput = { trader: AddressInput, token: AssetIdInput, account_balance: AccountBalanceInput };
-export type AccountBalanceChangeEventOutput = { trader: AddressOutput, token: AssetIdOutput, account_balance: AccountBalanceOutput };
+export type AccountBalanceChangeEventInput = { trader: AddressInput, token: AssetIdInput, account_balance: Option<AccountBalanceInput> };
+export type AccountBalanceChangeEventOutput = { trader: AddressOutput, token: AssetIdOutput, account_balance: Option<AccountBalanceOutput> };
+export type AccountBalanceChangeEventsBatchInput = { account_balances: [Option<AccountBalanceChangeEventInput>, Option<AccountBalanceChangeEventInput>, Option<AccountBalanceChangeEventInput>, Option<AccountBalanceChangeEventInput>, Option<AccountBalanceChangeEventInput>] };
+export type AccountBalanceChangeEventsBatchOutput = { account_balances: [Option<AccountBalanceChangeEventOutput>, Option<AccountBalanceChangeEventOutput>, Option<AccountBalanceChangeEventOutput>, Option<AccountBalanceChangeEventOutput>, Option<AccountBalanceChangeEventOutput>] };
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;
 export type AssetIdInput = { value: string };
 export type AssetIdOutput = AssetIdInput;
 export type I64Input = { value: BigNumberish, negative: boolean };
 export type I64Output = { value: BN, negative: boolean };
+export type OwedRealizedPnlChangeEventInput = { trader: AddressInput, owed_realized_pnl: I64Input };
+export type OwedRealizedPnlChangeEventOutput = { trader: AddressOutput, owed_realized_pnl: I64Output };
+export type OwedRealizedPnlChangeEventsBatchInput = { owed_realized_pnls: [Option<OwedRealizedPnlChangeEventInput>, Option<OwedRealizedPnlChangeEventInput>] };
+export type OwedRealizedPnlChangeEventsBatchOutput = { owed_realized_pnls: [Option<OwedRealizedPnlChangeEventOutput>, Option<OwedRealizedPnlChangeEventOutput>] };
 
 export type AccountBalanceAbiConfigurables = {
   DUST: BigNumberish;
@@ -43,6 +49,8 @@ export type AccountBalanceAbiConfigurables = {
 
 interface AccountBalanceAbiInterface extends Interface {
   functions: {
+    emit_account_balance_change_event: FunctionFragment;
+    emit_owed_realized_pnl_change_event: FunctionFragment;
     get_account_balance: FunctionFragment;
     get_base_tokens: FunctionFragment;
     get_liquidatable_position_size: FunctionFragment;
@@ -62,6 +70,8 @@ interface AccountBalanceAbiInterface extends Interface {
     update_tw_premium_growth_global: FunctionFragment;
   };
 
+  encodeFunctionData(functionFragment: 'emit_account_balance_change_event', values: [[Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>]]): Uint8Array;
+  encodeFunctionData(functionFragment: 'emit_owed_realized_pnl_change_event', values: [[Option<AddressInput>, Option<AddressInput>]]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_account_balance', values: [AddressInput, AssetIdInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_base_tokens', values: [AddressInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'get_liquidatable_position_size', values: [AddressInput, AssetIdInput, I64Input]): Uint8Array;
@@ -80,6 +90,8 @@ interface AccountBalanceAbiInterface extends Interface {
   encodeFunctionData(functionFragment: 'settle_position_in_closed_market', values: [AddressInput, AssetIdInput]): Uint8Array;
   encodeFunctionData(functionFragment: 'update_tw_premium_growth_global', values: [AddressInput, AssetIdInput, I64Input]): Uint8Array;
 
+  decodeFunctionData(functionFragment: 'emit_account_balance_change_event', data: BytesLike): DecodedValue;
+  decodeFunctionData(functionFragment: 'emit_owed_realized_pnl_change_event', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_account_balance', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_base_tokens', data: BytesLike): DecodedValue;
   decodeFunctionData(functionFragment: 'get_liquidatable_position_size', data: BytesLike): DecodedValue;
@@ -102,6 +114,8 @@ interface AccountBalanceAbiInterface extends Interface {
 export class AccountBalanceAbi extends Contract {
   interface: AccountBalanceAbiInterface;
   functions: {
+    emit_account_balance_change_event: InvokeFunction<[events: [Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>, Option<[AddressInput, AssetIdInput]>]], void>;
+    emit_owed_realized_pnl_change_event: InvokeFunction<[events: [Option<AddressInput>, Option<AddressInput>]], void>;
     get_account_balance: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput], AccountBalanceOutput>;
     get_base_tokens: InvokeFunction<[trader: AddressInput], Vec<AssetIdOutput>>;
     get_liquidatable_position_size: InvokeFunction<[trader: AddressInput, base_token: AssetIdInput, account_value: I64Input], I64Output>;

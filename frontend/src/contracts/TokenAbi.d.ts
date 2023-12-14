@@ -24,8 +24,8 @@ import type {
 
 import type { Option, Enum } from "./common";
 
-export enum BurnErrorInput { NotEnoughTokens = 'NotEnoughTokens' };
-export enum BurnErrorOutput { NotEnoughTokens = 'NotEnoughTokens' };
+export enum BurnErrorInput { NotEnoughTokens = 'NotEnoughTokens' }
+export enum BurnErrorOutput { NotEnoughTokens = 'NotEnoughTokens' }
 export type IdentityInput = Enum<{ Address: AddressInput, ContractId: ContractIdInput }>;
 export type IdentityOutput = Enum<{ Address: AddressOutput, ContractId: ContractIdOutput }>;
 

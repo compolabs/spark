@@ -4,7 +4,7 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.69.0
+  Fuels version: 0.69.1
   Forc version: 0.46.1
   Fuel-Core version: 0.20.8
 */
@@ -201,33 +201,16 @@ const _abi = {
     },
     {
       "typeId": 13,
-      "type": "struct MarketPriceChangeEvent",
-      "components": [
-        {
-          "name": "price",
-          "type": 22,
-          "typeArguments": null
-        },
-        {
-          "name": "token",
-          "type": 10,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": null
-    },
-    {
-      "typeId": 14,
       "type": "struct MatchEvent",
       "components": [
         {
           "name": "order_sell",
-          "type": 16,
+          "type": 15,
           "typeArguments": null
         },
         {
           "name": "order_buy",
-          "type": 16,
+          "type": 15,
           "typeArguments": null
         },
         {
@@ -239,7 +222,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 15,
+      "typeId": 14,
       "type": "struct Order",
       "components": [
         {
@@ -271,7 +254,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 16,
+      "typeId": 15,
       "type": "struct OrderChangeEvent",
       "components": [
         {
@@ -285,10 +268,32 @@ const _abi = {
           "typeArguments": [
             {
               "name": "",
-              "type": 15,
+              "type": 14,
               "typeArguments": null
             }
           ]
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 16,
+      "type": "struct PriceChangeEvent",
+      "components": [
+        {
+          "name": "token",
+          "type": 10,
+          "typeArguments": null
+        },
+        {
+          "name": "market_price",
+          "type": 22,
+          "typeArguments": null
+        },
+        {
+          "name": "mark_price",
+          "type": 22,
+          "typeArguments": null
         }
       ],
       "typeParameters": null
@@ -533,7 +538,7 @@ const _abi = {
         "typeArguments": [
           {
             "name": "",
-            "type": 15,
+            "type": 14,
             "typeArguments": null
           }
         ]
@@ -899,7 +904,7 @@ const _abi = {
       "logId": 6,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 16,
         "typeArguments": []
       }
     },
@@ -907,7 +912,7 @@ const _abi = {
       "logId": 7,
       "loggedType": {
         "name": "",
-        "type": 14,
+        "type": 13,
         "typeArguments": []
       }
     },
@@ -923,7 +928,7 @@ const _abi = {
       "logId": 9,
       "loggedType": {
         "name": "",
-        "type": 16,
+        "type": 15,
         "typeArguments": []
       }
     },
@@ -963,7 +968,7 @@ const _abi = {
       "logId": 14,
       "loggedType": {
         "name": "",
-        "type": 13,
+        "type": 16,
         "typeArguments": []
       }
     },
@@ -1001,7 +1006,7 @@ const _abi = {
         "type": 9,
         "typeArguments": []
       },
-      "offset": 227152
+      "offset": 227688
     },
     {
       "name": "PROXY_ADDRESS",
@@ -1010,7 +1015,7 @@ const _abi = {
         "type": 9,
         "typeArguments": []
       },
-      "offset": 226912
+      "offset": 227432
     },
     {
       "name": "DUST",
@@ -1019,7 +1024,7 @@ const _abi = {
         "type": 22,
         "typeArguments": null
       },
-      "offset": 227040
+      "offset": 227560
     },
     {
       "name": "DEBUG_STEP",
@@ -1034,7 +1039,7 @@ const _abi = {
           }
         ]
       },
-      "offset": 226408
+      "offset": 226928
     }
   ]
 };

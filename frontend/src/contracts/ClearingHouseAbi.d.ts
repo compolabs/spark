@@ -23,25 +23,29 @@ import type {
 
 import type { Option, Enum, Vec } from "./common";
 
-export enum ErrorInput { InvalidPythFeePayment = 'InvalidPythFeePayment', PositionSizeIsZero = 'PositionSizeIsZero', MarketNotFound = 'MarketNotFound', MarketNotPaused = 'MarketNotPaused', MarketNotOpened = 'MarketNotOpened', MarketAlreadyExists = 'MarketAlreadyExists', OnlyVaultOrTrader = 'OnlyVaultOrTrader', BaseTokenDoesNotExists = 'BaseTokenDoesNotExists', CannotLiquidateWhenThereIsStillOrder = 'CannotLiquidateWhenThereIsStillOrder', EnoughAccountValue = 'EnoughAccountValue', WrongLiquidationDirection = 'WrongLiquidationDirection', InsufficientInsuranceFundCapacity = 'InsufficientInsuranceFundCapacity', NotEnoughFreeCollateralByImRatio = 'NotEnoughFreeCollateralByImRatio', AccessDenied = 'AccessDenied' };
-export enum ErrorOutput { InvalidPythFeePayment = 'InvalidPythFeePayment', PositionSizeIsZero = 'PositionSizeIsZero', MarketNotFound = 'MarketNotFound', MarketNotPaused = 'MarketNotPaused', MarketNotOpened = 'MarketNotOpened', MarketAlreadyExists = 'MarketAlreadyExists', OnlyVaultOrTrader = 'OnlyVaultOrTrader', BaseTokenDoesNotExists = 'BaseTokenDoesNotExists', CannotLiquidateWhenThereIsStillOrder = 'CannotLiquidateWhenThereIsStillOrder', EnoughAccountValue = 'EnoughAccountValue', WrongLiquidationDirection = 'WrongLiquidationDirection', InsufficientInsuranceFundCapacity = 'InsufficientInsuranceFundCapacity', NotEnoughFreeCollateralByImRatio = 'NotEnoughFreeCollateralByImRatio', AccessDenied = 'AccessDenied' };
-export enum MarketStatusInput { Opened = 'Opened', Paused = 'Paused', Closed = 'Closed' };
-export enum MarketStatusOutput { Opened = 'Opened', Paused = 'Paused', Closed = 'Closed' };
-export enum ReentrancyErrorInput { NonReentrant = 'NonReentrant' };
-export enum ReentrancyErrorOutput { NonReentrant = 'NonReentrant' };
+export enum ErrorInput { InvalidPythFeePayment = 'InvalidPythFeePayment', PositionSizeIsZero = 'PositionSizeIsZero', MarketNotFound = 'MarketNotFound', MarketNotPaused = 'MarketNotPaused', MarketNotOpened = 'MarketNotOpened', MarketAlreadyExists = 'MarketAlreadyExists', OnlyVaultOrTrader = 'OnlyVaultOrTrader', BaseTokenDoesNotExists = 'BaseTokenDoesNotExists', CannotLiquidateWhenThereIsStillOrder = 'CannotLiquidateWhenThereIsStillOrder', EnoughAccountValue = 'EnoughAccountValue', WrongLiquidationDirection = 'WrongLiquidationDirection', InsufficientInsuranceFundCapacity = 'InsufficientInsuranceFundCapacity', NotEnoughFreeCollateralByImRatio = 'NotEnoughFreeCollateralByImRatio', AccessDenied = 'AccessDenied' }
+export enum ErrorOutput { InvalidPythFeePayment = 'InvalidPythFeePayment', PositionSizeIsZero = 'PositionSizeIsZero', MarketNotFound = 'MarketNotFound', MarketNotPaused = 'MarketNotPaused', MarketNotOpened = 'MarketNotOpened', MarketAlreadyExists = 'MarketAlreadyExists', OnlyVaultOrTrader = 'OnlyVaultOrTrader', BaseTokenDoesNotExists = 'BaseTokenDoesNotExists', CannotLiquidateWhenThereIsStillOrder = 'CannotLiquidateWhenThereIsStillOrder', EnoughAccountValue = 'EnoughAccountValue', WrongLiquidationDirection = 'WrongLiquidationDirection', InsufficientInsuranceFundCapacity = 'InsufficientInsuranceFundCapacity', NotEnoughFreeCollateralByImRatio = 'NotEnoughFreeCollateralByImRatio', AccessDenied = 'AccessDenied' }
+export enum MarketStatusInput { Opened = 'Opened', Paused = 'Paused', Closed = 'Closed' }
+export enum MarketStatusOutput { Opened = 'Opened', Paused = 'Paused', Closed = 'Closed' }
+export enum ReentrancyErrorInput { NonReentrant = 'NonReentrant' }
+export enum ReentrancyErrorOutput { NonReentrant = 'NonReentrant' }
 
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;
 export type AssetIdInput = { value: string };
 export type AssetIdOutput = AssetIdInput;
-export type FundingRateChangeEventInput = { funding_rate: I64Input, timestamp: BigNumberish };
-export type FundingRateChangeEventOutput = { funding_rate: I64Output, timestamp: BN };
+export type FundingChangeEventInput = { funding: [I64Input, BigNumberish] };
+export type FundingChangeEventOutput = { funding: [I64Output, BN] };
+export type FundingChangeEventsBatchInput = { fundings: [Option<FundingChangeEventInput>, Option<FundingChangeEventInput>, Option<FundingChangeEventInput>, Option<FundingChangeEventInput>, Option<FundingChangeEventInput>] };
+export type FundingChangeEventsBatchOutput = { fundings: [Option<FundingChangeEventOutput>, Option<FundingChangeEventOutput>, Option<FundingChangeEventOutput>, Option<FundingChangeEventOutput>, Option<FundingChangeEventOutput>] };
 export type I64Input = { value: BigNumberish, negative: boolean };
 export type I64Output = { value: BN, negative: boolean };
 export type LiquidateEventInput = { liquidation_penalty: BigNumberish, liquidator: AddressInput, trader: AddressInput, base_token: AssetIdInput, position_size_to_be_liquidated: I64Input, liquidation_fee_to_liquidator: BigNumberish };
 export type LiquidateEventOutput = { liquidation_penalty: BN, liquidator: AddressOutput, trader: AddressOutput, base_token: AssetIdOutput, position_size_to_be_liquidated: I64Output, liquidation_fee_to_liquidator: BN };
 export type MarketInput = { asset_id: AssetIdInput, decimal: BigNumberish, price_feed: string, im_ratio: BigNumberish, mm_ratio: BigNumberish, status: MarketStatusInput, paused_index_price: Option<BigNumberish>, paused_timestamp: Option<BigNumberish>, closed_price: Option<BigNumberish> };
 export type MarketOutput = { asset_id: AssetIdOutput, decimal: number, price_feed: string, im_ratio: BN, mm_ratio: BN, status: MarketStatusOutput, paused_index_price: Option<BN>, paused_timestamp: Option<BN>, closed_price: Option<BN> };
+export type MarketChangeEventInput = { market: MarketInput };
+export type MarketChangeEventOutput = { market: MarketOutput };
 export type RawBytesInput = { ptr: BigNumberish, cap: BigNumberish };
 export type RawBytesOutput = { ptr: BN, cap: BN };
 
@@ -49,7 +53,7 @@ export type ClearingHouseAbiConfigurables = {
   OWNER: AddressInput;
   FULLY_CLOSED_RATIO: BigNumberish;
   PROXY_ADDRESS: AddressInput;
-  DEBUG_STEP: Option;
+  DEBUG_STEP: Option<any>;
 };
 
 interface ClearingHouseAbiInterface extends Interface {

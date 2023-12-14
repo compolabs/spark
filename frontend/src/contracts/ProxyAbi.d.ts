@@ -22,8 +22,8 @@ import type {
 
 import type { Enum, Vec } from "./common";
 
-export enum ErrorInput { AccessDenied = 'AccessDenied' };
-export enum ErrorOutput { AccessDenied = 'AccessDenied' };
+export enum ErrorInput { AccessDenied = 'AccessDenied' }
+export enum ErrorOutput { AccessDenied = 'AccessDenied' }
 
 export type AddressInput = { value: string };
 export type AddressOutput = AddressInput;

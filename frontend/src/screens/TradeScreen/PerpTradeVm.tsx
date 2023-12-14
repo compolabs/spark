@@ -155,9 +155,9 @@ class PerpTradeVm {
 			this.setLoading(true);
 			const fee = await oracleStore.getPythFee();
 			if (fee == null) return;
-			// const baseAsset = { value: this.token0.assetId };
-			// const price = this.price.toFixed(0).toString();
-			// const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
+			const baseAsset = { value: this.token0.assetId };
+			const price = this.price.toFixed(0).toString();
+			const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
 			const wallet = await this.rootStore.accountStore.getWallet();
 			if (wallet == null) return;
 			// const clearingHouseContract = new Contract(CONTRACT_ADDRESSES.clearingHouse, ClearingHouseAbi__factory.abi, wallet);
@@ -169,15 +169,6 @@ class PerpTradeVm {
 			const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
 			const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
 
-			const baseAsset = { value: this.token0.assetId };
-			const price = "41637961421";
-			const size = { value: "11572614", negative: false };
-
-			console.log({
-				baseAsset: baseAsset,
-				price: price,
-				size: size,
-			});
 			console.log("fee", fee);
 			const res = await clearingHouseContract.functions
 				.open_order(baseAsset, size, price, oracleStore.updateData)
