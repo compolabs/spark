@@ -7,16 +7,9 @@
 .rc-dialog-wrap {
     flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
     display: flex;
+    justify-content: center;
 }
-
-@media (min-width: 880px) {
-    .rc-dialog-wrap {
-        justify-content: center;
-    }
-}
-
 
 .rc-dialog {
     margin: 0;

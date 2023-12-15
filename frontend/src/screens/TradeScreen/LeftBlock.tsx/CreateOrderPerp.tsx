@@ -179,8 +179,6 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					? `Short ${vm.token0.symbol}`
 					: `Long ${vm.token0.symbol}`}
 			</Button>
-			<SizedBox height={16} />
-			<Button onClick={vm.sergioTestCase}>call sergio btn</Button>
 		</Root>
 	);
 });

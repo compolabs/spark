@@ -1,4 +1,4 @@
-import { makeAutoObservable, reaction, when } from "mobx";
+import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
 import { CONTRACT_ADDRESSES, IToken, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
@@ -63,11 +63,11 @@ class TradeStore {
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
 		this.initContracts();
-		this.syncUserDataFromIndexer();
-		this.syncDataFromIndexer();
-		when(() => this.contracts != null, this.updateDataFromContracts);
-		reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
-		setInterval(this.syncDataFromIndexer, 30 * 1000);
+		// this.syncUserDataFromIndexer();
+		// this.syncDataFromIndexer();
+		// when(() => this.contracts != null, this.updateDataFromContracts);
+		// reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
+		// setInterval(this.syncDataFromIndexer, 30 * 1000);
 		//
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";

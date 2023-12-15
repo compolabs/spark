@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
@@ -8,11 +8,13 @@ import Button from "@components/Button";
 import { ROUTES } from "@src/constants";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import SizedBox from "@components/SizedBox";
-import { DesktopRow, Row } from "@components/Flex";
+import { DesktopRow, MobileRow, Row } from "@components/Flex";
 import ConnectedWallet from "@components/Header/ConnectedWallet";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import Tab from "@components/Tab";
 import DepositWithdrawModal from "@screens/TradeScreen/DepositWithdrawModal";
+import MobileMenu from "./MobileMenu";
+import MobileMenuIcon from "./MobileMenuIcon";
 
 interface IProps {}
 
@@ -57,10 +59,7 @@ export const MENU_ITEMS: Array<TMenuItem> = [
 ];
 
 const SettingsButton = styled(Button)`
-	//width: 32px;
-	//height: 32px;
 	border-radius: 32px;
-	//padding: 0 !important;
 	padding: 2px 4px;
 
 	path {
@@ -81,9 +80,15 @@ const SettingsButton = styled(Button)`
 `;
 //todo add dropdown for mobile
 const Header: React.FC<IProps> = observer(() => {
+	const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
 	const { accountStore, settingsStore } = useStores();
 	const location = useLocation();
 	const navigate = useNavigate();
+	const toggleMenu = (state: boolean) => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+		document.body.classList.toggle("noscroll", state);
+		setMobileMenuOpened(state);
+	};
 	return (
 		<Root>
 			<Row alignItems="center">
@@ -120,6 +125,9 @@ const Header: React.FC<IProps> = observer(() => {
 				</TabContainer>
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
+				<MobileRow>
+					<MobileMenuIcon onClick={() => toggleMenu(!mobileMenuOpened)} opened={mobileMenuOpened} />
+				</MobileRow>
 				<DesktopRow>
 					{accountStore.address != null && (
 						<>
@@ -128,18 +136,24 @@ const Header: React.FC<IProps> = observer(() => {
 						</>
 					)}
 				</DesktopRow>
-				{accountStore.address != null ? (
-					<ConnectedWallet />
+				{!mobileMenuOpened && <SizedBox width={16} />}
+				{!mobileMenuOpened ? (
+					accountStore.address != null ? (
+						<ConnectedWallet />
+					) : (
+						<Button green fitContent onClick={() => navigate(ROUTES.CONNECT)}>
+							Connect wallet
+						</Button>
+					)
 				) : (
-					<Button green fitContent onClick={() => navigate(ROUTES.CONNECT)}>
-						Connect wallet
-					</Button>
+					<></>
 				)}
 			</Row>
 			<DepositWithdrawModal
 				visible={settingsStore.depositModalOpened}
 				onClose={() => settingsStore.setDepositModal(false)}
 			/>
+			<MobileMenu opened={mobileMenuOpened} onClose={() => toggleMenu(false)} />
 		</Root>
 	);
 });

@@ -11,12 +11,9 @@ import {
 	PerpMarketAbi__factory,
 	ProxyAbi__factory,
 	PythContractAbi__factory,
-	TokenAbi__factory,
 	VaultAbi__factory,
 } from "@src/contracts";
 import { PerpMarket } from "@src/services/ClearingHouseServise";
-import { arrayify, sleep } from "fuels";
-import { EvmPriceServiceConnection } from "@pythnetwork/pyth-evm-js";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -209,72 +206,6 @@ class PerpTradeVm {
 		}
 	};
 
-	sergioTestCase = async () => {
-		// pyth prices
-		const connection = new EvmPriceServiceConnection("https://xc-mainnet.pyth.network");
-		const priceIds = ["0xe62df6c8b4a85fe1a67db44dc12de5db330f7ac66b72dc658afedf0f4a415b43"];
-		const updateData = await connection.getPriceFeedsUpdateData(priceIds);
-		const parsedUpdateData = updateData.map((v) => Array.from(arrayify(v)));
-		console.log("parsedUpdateData from pyth", parsedUpdateData);
-
-		try {
-			const { accountStore } = this.rootStore;
-			const wallet = await accountStore.getWallet();
-			if (wallet == null) return;
-			const tokenFactoryContract = TokenAbi__factory.connect(CONTRACT_ADDRESSES.tokenFactory, wallet);
-			const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
-			const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
-			const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
-			const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
-			const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
-			const vaultContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-			const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
-
-			console.log("start of mint");
-			const usdc = "0xe47db7a897c11f167f4404d0167987d252ea3d965dfeef79461958562f8860ff";
-			// //3000 usdc
-			const mintAmount = BN.parseUnits(3000, 6).toString();
-			// const hash = hashMessage("USDC");
-			// const identity = { Address: { value: wallet.address.toB256() } };
-			// await tokenFactoryContract.functions.mint(identity, hash, mintAmount).txParams({ gasPrice: 1 }).call();
-			// console.log("minted usdc");
-
-			await sleep(5000);
-
-			console.log("start of deposit");
-			await vaultContract.functions
-				.deposit_collateral()
-				.callParams({ forward: { amount: mintAmount, assetId: usdc } })
-				.txParams({ gasPrice: 1 })
-				.call();
-			console.log("deposited usdc");
-
-			await sleep(5000);
-
-			const btc = "0x26829bff466f19001665597228458372fd57cbd325864c7118b5eb5441c42157";
-			const eth = "0x0000000000000000000000000000000000000000000000000000000000000000";
-			const baseAssetOfBTCMarket = { value: btc };
-			const price = "41637961421"; //market price of btc
-			const size = { value: "11572614", negative: false }; // position size, negative shows if it short or long position
-
-			await clearingHouseContract.functions
-				.open_order(baseAssetOfBTCMarket, size, price, parsedUpdateData)
-				.addContracts([
-					proxyContract,
-					accountBalanceContract,
-					insuranceFundContract,
-					perpMarketContract,
-					vaultContract,
-					pythContract,
-				])
-				.callParams({ forward: { amount: 1, assetId: eth } }) //this is to pay pyth for price update
-				.txParams({ gasPrice: 1 })
-				.call();
-			console.log("opened postion in btc market");
-		} catch (e) {
-			console.error(e);
-		}
-	};
 	closeOrder = async () => {};
 
 	isShort: boolean = false;
