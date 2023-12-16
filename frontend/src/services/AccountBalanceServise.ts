@@ -11,7 +11,7 @@ interface IPositionResponse {
 	trader: string;
 }
 
-export class Position {
+export class PerpPosition {
 	id: string;
 	lastTwPremiumGrowthGlobal: string;
 	takerOpenNotional: BN;
@@ -45,10 +45,10 @@ export class Position {
 	}
 }
 
-export const getUserPositions = async (address: string): Promise<Position[]> => {
+export const getUserPositions = async (address: string): Promise<PerpPosition[]> => {
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_account_balance_indexer.positionentity WHERE trader = '${address}' ) t;`;
 	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
 	return res?.data.data[0] != null
-		? res?.data.data[0].map((position: IPositionResponse): Position => new Position(position))
+		? res?.data.data[0].map((position: IPositionResponse): PerpPosition => new PerpPosition(position))
 		: [];
 };

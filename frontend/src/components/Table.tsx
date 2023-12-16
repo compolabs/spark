@@ -36,7 +36,8 @@ const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
 
 		th {
 			${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]};
-			padding: 11px 0;
+			padding: 11px 12px;
+			text-align: left;
 			color: ${({ theme }) => `${theme.colors.textSecondary}`};
 			border-bottom: 1px solid ${({ theme }) => `${theme.colors.bgSecondary}`};
 			cursor: default;

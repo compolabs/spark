@@ -1,4 +1,10 @@
-import { ACCOUNT_BALANCE_INDEXER, IToken, TOKENS_BY_ASSET_ID } from "@src/constants";
+import {
+	ACCOUNT_BALANCE_INDEXER,
+	IToken,
+	PERP_MARKET_INDEXER,
+	TOKENS_BY_ASSET_ID,
+	TOKENS_BY_SYMBOL,
+} from "@src/constants";
 import BN from "@src/utils/BN";
 import makeIndexerRequest from "@src/utils/makeIndexerRequest";
 
@@ -15,6 +21,7 @@ interface IPerpOrderResponse {
 	base_token: string;
 	id: string;
 	order_price: number;
+	order_id: string;
 	trader: string;
 }
 
@@ -108,6 +115,7 @@ export class PerpOrder {
 	orderPrice: BN;
 	trader: string;
 	marketSymbol: string;
+	orderId: string;
 
 	constructor(orderOutput: IPerpOrderResponse) {
 		this.active = orderOutput.active;
@@ -118,20 +126,37 @@ export class PerpOrder {
 		this.trader = orderOutput.trader;
 		const token = TOKENS_BY_ASSET_ID[this.baseToken];
 		this.marketSymbol = `${token.symbol}-PERP`;
+		this.orderId = orderOutput.order_id;
 	}
 
 	get token(): IToken {
 		return TOKENS_BY_ASSET_ID[this.baseToken];
 	}
 
-	get formattedSize(): string {
-		return BN.formatUnits(this.baseSize, this.token.decimals).toFormat(4);
+	get formattedSize(): BN {
+		return BN.formatUnits(this.baseSize, this.token.decimals);
+	}
+
+	get formattedPrice(): BN {
+		return BN.formatUnits(this.orderPrice, TOKENS_BY_SYMBOL.USDC.decimals);
+	}
+
+	get formattedTotal(): BN {
+		return this.formattedSize.times(this.formattedPrice);
 	}
 }
 
 export const getUserPerpOrders = async (address: string): Promise<PerpOrder[]> => {
 	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_perp_market_indexer.orderentity WHERE trader = '${address}' AND active = true  ) t;`;
-	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
+	const res = await makeIndexerRequest(query, PERP_MARKET_INDEXER);
+	return res?.data.data[0] != null
+		? res?.data.data[0].map((order: IPerpOrderResponse): PerpOrder => new PerpOrder(order))
+		: [];
+};
+
+export const getPerpOrders = async (): Promise<PerpOrder[]> => {
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_perp_market_indexer.orderentity WHERE active = true ) t;`;
+	const res = await makeIndexerRequest(query, PERP_MARKET_INDEXER);
 	return res?.data.data[0] != null
 		? res?.data.data[0].map((order: IPerpOrderResponse): PerpOrder => new PerpOrder(order))
 		: [];

@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
 import { EvmPriceServiceConnection, Price, PriceFeed } from "@pythnetwork/pyth-evm-js";
-import { CONTRACT_ADDRESSES, TOKENS_LIST } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import { arrayify, Bytes } from "fuels";
 import { Vec } from "@src/contracts/common";
 import { PythContractAbi__factory } from "@src/contracts";
@@ -45,7 +45,9 @@ class OracleStore {
 		});
 		this.setPythClient(connection);
 		// You can find the ids of prices at https://pyth.network/developers/price-feed-ids
-		const priceIds = TOKENS_LIST.filter((t) => t.priceFeed).map((t) => t.priceFeed);
+		// const priceIds = TOKENS_LIST.filter((t) => t.priceFeed).map((t) => t.priceFeed);
+		//todo make dynamic
+		const priceIds = [TOKENS_BY_SYMBOL.BTC.priceFeed, TOKENS_BY_SYMBOL.USDC.priceFeed];
 		const updateData = await connection.getPriceFeedsUpdateData(priceIds);
 		const parsedUpdateData = updateData.map((v) => Array.from(arrayify(v)));
 		this.setUpdateData(parsedUpdateData);

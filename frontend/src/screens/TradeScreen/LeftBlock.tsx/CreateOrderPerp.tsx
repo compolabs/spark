@@ -13,6 +13,7 @@ import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import Slider from "@components/Slider";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
+import Notification from "@components/Notification";
 
 interface IProps extends ComponentProps<any> {}
 
@@ -35,7 +36,7 @@ const orderTypes = [
 ];
 
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
-	const { oracleStore } = useStores();
+	const { oracleStore, tradeStore } = useStores();
 	const [orderTypeIndex, setOrderTypeIndex] = useState(0);
 	const vm = usePerpTradeVM();
 
@@ -109,6 +110,20 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					/>
 				</Column>
 			</Row>
+			{tradeStore.freeCollateral != null && tradeStore.freeCollateral.eq(0) && (
+				<>
+					<SizedBox height={4} />
+					<Notification type="info" text="You have to deposit first" />
+					<SizedBox height={4} />
+				</>
+			)}
+			{vm.orderSize.eq(0) && (
+				<>
+					<SizedBox height={4} />
+					<Notification type="info" text="Enter trade amount" />
+					<SizedBox height={4} />
+				</>
+			)}
 			<SizedBox height={8} />
 			<Accordion transition transitionTimeout={400}>
 				<AccordionItem
@@ -171,8 +186,18 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					))}
 				</AccordionItem>
 			</Accordion>
+			<>
+				<SizedBox height={4} />
+				<Notification type="info" text="Open order transaction takes up to 2.5 mins. Please wait" />
+				<SizedBox height={4} />
+			</>
 			<SizedBox height={16} />
-			<Button disabled={vm.loading || !vm.initialized} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>
+			<Button
+				disabled={!(!vm.loading && !vm.initialized && vm.orderSize.gt(0))}
+				green={!vm.isShort}
+				red={vm.isShort}
+				onClick={vm.openOrder}
+			>
 				{vm.loading || !vm.initialized
 					? "Loading..."
 					: vm.isShort

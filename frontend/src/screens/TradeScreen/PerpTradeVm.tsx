@@ -2,18 +2,10 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
-import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import {
-	AccountBalanceAbi__factory,
-	ClearingHouseAbi__factory,
-	InsuranceFundAbi__factory,
-	PerpMarketAbi__factory,
-	ProxyAbi__factory,
-	PythContractAbi__factory,
-	VaultAbi__factory,
-} from "@src/contracts";
 import { PerpMarket } from "@src/services/ClearingHouseServise";
+import { sleep } from "fuels";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -64,7 +56,7 @@ class PerpTradeVm {
 		if (market == null || market.type === "spot") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
-		await this.updateMaxValueForMarket();
+		await this.calcMaxPositionSize();
 		this.setInitialized(true);
 	};
 
@@ -82,12 +74,11 @@ class PerpTradeVm {
 		const currentPositionSize =
 			this.rootStore.tradeStore.positions.find(({ symbol }) => symbol === market.symbol)?.takerPositionSize ?? BN.ZERO;
 
-		let long = BN.ZERO;
-		let short = BN.ZERO;
+		let long;
+		let short;
 		if (currentPositionSize.gt(0)) {
 			short = maxPositionSize;
 			long = currentPositionSize.abs().plus(maxPositionSize).times(2);
-			this.setMaxAbsPositionSize({ long: BN.ZERO, short: BN.ZERO });
 		} else {
 			long = maxPositionSize;
 			short = currentPositionSize.abs().plus(maxPositionSize).times(2);
@@ -96,24 +87,6 @@ class PerpTradeVm {
 		const roundLong = new BN(long.toFixed(0).toString());
 		const roundShort = new BN(short.toFixed(0).toString());
 		this.setMaxAbsPositionSize({ long: roundLong, short: roundShort });
-	};
-	updateMaxValueForMarket = async () => {
-		const { accountStore } = this.rootStore;
-		const addressInput = accountStore.addressInput;
-		// const baseAsset = { value: this.token0.assetId };
-		if (addressInput == null) return;
-		//todo change to indexer calc
-
-		// const result = await tradeStore.contracts?.clearingHouseContract.functions
-		// 	.get_max_abs_position_size(addressInput, baseAsset)
-		// 	.addContracts(tradeStore.contractsArray)
-		// 	.simulate();
-		// if (result?.value != null) {
-		// 	const value = result.value;
-		// 	const short = new BN(value[0].toString());
-		// 	const long = new BN(value[1].toString());
-		// 	this.setMaxAbsPositionSize({ long, short });
-		// }
 	};
 	loading: boolean = false;
 	setLoading = (l: boolean) => (this.loading = l);
@@ -141,13 +114,11 @@ class PerpTradeVm {
 		this.setPrice(marketPrice);
 	};
 	openOrder = async () => {
-		console.log("perp openOrder");
-		// const { accountStore, oracleStore, tradeStore } = this.rootStore;
-		const { oracleStore } = this.rootStore;
+		const { accountStore, oracleStore, tradeStore } = this.rootStore;
 		if (oracleStore.updateData == null) return;
-		// await accountStore.checkConnectionWithWallet();
-		// const contract = tradeStore.contracts;
-		// if (contract == null) return;
+		await accountStore.checkConnectionWithWallet();
+		const contracts = tradeStore.contracts;
+		if (contracts == null) return;
 		try {
 			this.setLoading(true);
 			const fee = await oracleStore.getPythFee();
@@ -157,48 +128,41 @@ class PerpTradeVm {
 			const size = { value: this.orderSize.toFixed(0).toString(), negative: this.isShort };
 			const wallet = await this.rootStore.accountStore.getWallet();
 			if (wallet == null) return;
-			// const clearingHouseContract = new Contract(CONTRACT_ADDRESSES.clearingHouse, ClearingHouseAbi__factory.abi, wallet);
-			const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
-			const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
-			const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
-			const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
-			const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
-			const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-			const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
-
-			console.log("fee", fee);
-			const res = await clearingHouseContract.functions
+			await contracts.clearingHouseContract.functions
 				.open_order(baseAsset, size, price, oracleStore.updateData)
 				.addContracts([
-					proxyContract,
-					accountBalanceContract,
-					insuranceFundContract,
-					perpMarketContract,
-					vaultMarketContract,
-					pythContract,
+					contracts.proxyContract,
+					contracts.accountBalanceContract,
+					contracts.insuranceFundContract,
+					contracts.perpMarketContract,
+					contracts.vaultContract,
+					contracts.pythContract,
 				])
 				.callParams({ forward: { amount: fee ?? "", assetId: TOKENS_BY_SYMBOL.ETH.assetId } })
 				.txParams({ gasPrice: 1 })
 				.call();
-			console.log("get_market", res);
-			// await clearingHouseContract.functions
-			// 	.open_order(baseAsset, size, price, oracleStore.updateData)
-			// 	.addContracts([
-			// 		proxyContract,
-			// 		accountBalanceContract,
-			// 		insuranceFundContract,
-			// 		perpMarketContract,
-			// 		vaultMarketContract,
-			// 		pythContract,
-			// 	])
-			// 	.callParams({ forward: { amount: fee ?? "", assetId: TOKENS_BY_SYMBOL.ETH.assetId } })
-			// 	.txParams({ gasPrice: 1 })
-			// 	.call()
-			// 	.then(({ transactionResult }) => {
-			// 		console.log("transactionResult", transactionResult);
-			// 		transactionResult && this.notifyThatActionIsSuccessful("Order has been placed", transactionResult.id ?? "");
-			// 	});
-			console.timeEnd("openOrder");
+			await tradeStore.syncUserDataFromIndexer();
+		} catch (e) {
+			console.log(e);
+		} finally {
+			this.setLoading(false);
+		}
+	};
+	cancelPerpOrders = async (orderId: string) => {
+		const { accountStore, oracleStore, tradeStore } = this.rootStore;
+		if (oracleStore.updateData == null) return;
+		await accountStore.checkConnectionWithWallet();
+		const contracts = tradeStore.contracts;
+		if (contracts == null) return;
+		try {
+			this.setLoading(true);
+			const fee = await oracleStore.getPythFee();
+			if (fee == null) return;
+			const wallet = await this.rootStore.accountStore.getWallet();
+			if (wallet == null) return;
+			await contracts.perpMarketContract.functions.remove_order(orderId).txParams({ gasPrice: 1 }).call();
+			await sleep(2000);
+			await tradeStore.syncUserDataFromIndexer();
 		} catch (e) {
 			console.log(e);
 		} finally {

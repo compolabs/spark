@@ -16,6 +16,7 @@ import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
 import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
 import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
 import Tooltip from "@components/Tooltip";
+import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 
 interface IProps {}
 
@@ -119,6 +120,11 @@ const CancelButton = styled(Chip)`
 	cursor: pointer;
 	border: 1px solid ${({ theme }) => theme.colors.borderPrimary} !important;
 `;
+const TokenIcon = styled.img`
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+`;
 
 const tabs = [
 	{ title: "POSITIONS", disabled: false },
@@ -145,7 +151,7 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 			{ Header: "Avg.Ent Price", accessor: "entPrice" },
 			{ Header: "Mark price", accessor: "markPrice" },
 			{
-				Header: "Maintenance margin",
+				Header: "Main. margin",
 				accessor: "maintenanceMargin",
 				info: "Minimum collateral to prevent liquidation.",
 			}, //todo implement math
@@ -159,12 +165,13 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 		],
 		[],
 	);
+	//todo add data
 	const orderColumns = React.useMemo(
 		() => [
 			{ Header: "Market", accessor: "market" },
 			{ Header: "Type", accessor: "type" },
 			{ Header: "Size", accessor: "size" },
-			{ Header: "", accessor: "action" },
+			{ Header: "Action", accessor: "action" },
 		],
 		[],
 	);
@@ -180,6 +187,7 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 		[],
 	);
 	const { tradeStore, settingsStore } = useStores();
+	const vm = usePerpTradeVM();
 	const columns = [positionColumns, orderColumns, unsettledPnLColumns];
 	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
@@ -247,19 +255,27 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 									<Chip>USDC</Chip>
 								</Row>
 							),
-							action: <CancelButton>Cancel</CancelButton>,
+							action: <CancelButton onClick={() => null}>{vm.loading ? "..." : "Cancel"}</CancelButton>,
 						};
 					}),
 				);
 				break;
 			case 1:
 				setData(
-					tradeStore.perpOrders.map((order) => {
+					tradeStore.perpUserOrders.map((order) => {
 						return {
-							market: order.marketSymbol,
+							market: (
+								<Row alignItems="center">
+									<TokenIcon src={order.token.logo} alt="market-icon" />
+									<SizedBox width={4} />
+									<Text>{order.marketSymbol}</Text>
+								</Row>
+							),
 							type: "Limit",
 							size: order.formattedSize,
-							action: <CancelButton>Cancel</CancelButton>,
+							action: (
+								<CancelButton onClick={() => vm.cancelPerpOrders(order.orderId)}>{vm.loading ? "..." : "Cancel"}</CancelButton>
+							),
 						};
 					}),
 				);

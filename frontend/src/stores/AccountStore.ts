@@ -180,7 +180,6 @@ class AccountStore {
 	get isLoggedIn() {
 		return this.address != null;
 	}
-
 	getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
 		const provider = await Provider.create(NODE_URL);
 		if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
@@ -215,6 +214,11 @@ class AccountStore {
 	get addressB256(): null | string {
 		if (this.address == null) return null;
 		return Address.fromString(this.address).toB256();
+	}
+
+	get indexerAddress(): string {
+		if (this.address == null) return " ";
+		return Address.fromString(this.address).toB256().slice(2);
 	}
 }
 

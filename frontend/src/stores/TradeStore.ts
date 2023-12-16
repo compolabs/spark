@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 import RootStore from "@stores/RootStore";
 import { CONTRACT_ADDRESSES, IToken, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
@@ -19,10 +19,16 @@ import {
 	VaultAbi__factory,
 } from "@src/contracts";
 import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
-import { getUserPositions, Position } from "@src/services/AccountBalanceServise";
-import { getPerpMarketPrices, getUserPerpOrders, PerpMarketPrice, PerpOrder } from "@src/services/PerpMarketService";
+import { getUserPositions, PerpPosition } from "@src/services/AccountBalanceServise";
+import {
+	getPerpMarketPrices,
+	getPerpOrders,
+	getUserPerpOrders,
+	PerpMarketPrice,
+	PerpOrder,
+} from "@src/services/PerpMarketService";
 import { getUserFreeCollateral } from "@src/services/VaultServise";
-import { Contract } from "fuels";
+import { sleep } from "fuels";
 
 export interface SpotMarket {
 	token0: IToken;
@@ -40,7 +46,7 @@ interface ContractConfig {
 	clearingHouseContract: ClearingHouseAbi;
 	insuranceFundContract: InsuranceFundAbi;
 	perpMarketContract: PerpMarketAbi;
-	vaultMarketContract: VaultAbi;
+	vaultContract: VaultAbi;
 	pythContract: PythContractAbi;
 }
 
@@ -63,12 +69,11 @@ class TradeStore {
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
 		this.initContracts();
-		// this.syncUserDataFromIndexer();
-		// this.syncDataFromIndexer();
-		// when(() => this.contracts != null, this.updateDataFromContracts);
-		// reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
-		// setInterval(this.syncDataFromIndexer, 30 * 1000);
-		//
+		this.syncUserDataFromIndexer();
+		this.syncDataFromIndexer();
+		reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
+		setInterval(this.syncDataFromIndexer, 30 * 1000);
+
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";
 			this.setFavMarkets(markets.split(","));
@@ -77,10 +82,6 @@ class TradeStore {
 
 	contracts: ContractConfig | null = null;
 	private setContract = (c: ContractConfig | null) => (this.contracts = c);
-
-	get contractsArray() {
-		return this.contracts == null ? [] : Object.values(this.contracts);
-	}
 
 	initContracts = async () => {
 		const { accountStore } = this.rootStore;
@@ -91,7 +92,7 @@ class TradeStore {
 		const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
 		const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
 		const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
-		const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
+		const vaultContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
 		const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
 		this.setContract({
 			proxyContract,
@@ -99,7 +100,7 @@ class TradeStore {
 			clearingHouseContract,
 			insuranceFundContract,
 			perpMarketContract,
-			vaultMarketContract,
+			vaultContract,
 			pythContract,
 		});
 	};
@@ -131,9 +132,13 @@ class TradeStore {
 	perpMarkets: PerpMarket[] = [];
 	private setPerpMarkets = (v: PerpMarket[]) => (this.perpMarkets = v);
 
-	positions: Position[] = [];
-	private setPosition = (v: Position[]) => (this.positions = v);
+	positions: PerpPosition[] = [];
+	private setPosition = (v: PerpPosition[]) => (this.positions = v);
 
+	perpUserOrders: PerpOrder[] = [];
+	private setPerpUserOrders = (v: PerpOrder[]) => (this.perpUserOrders = v);
+
+	//todo add offset logic
 	perpOrders: PerpOrder[] = [];
 	private setPerpOrders = (v: PerpOrder[]) => (this.perpOrders = v);
 
@@ -150,7 +155,7 @@ class TradeStore {
 		const { oracleStore } = this.rootStore;
 		const { market } = this.rootStore.tradeStore;
 		const token = market?.token0;
-		if (token == null) return BN.ZERO;
+		if (token == null || this.marketPrice == null) return BN.ZERO;
 		const indexPrice = oracleStore.getTokenIndexPrice(token.priceFeed);
 		const diff = this.marketPrice.minus(indexPrice);
 		const sign = diff.gt(0) ? 1 : -1;
@@ -197,70 +202,65 @@ class TradeStore {
 
 	deposit = async (amount: BN) => {
 		const { accountStore } = this.rootStore;
-		// await accountStore.checkConnectionWithWallet();
+		await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
 			const wallet = await accountStore.getWallet();
-			if (wallet == null) return;
-			const vaultContract = new Contract(CONTRACT_ADDRESSES.vault, VaultAbi__factory.abi, wallet);
-			// const vaultContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-			// const vaultContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-			const { transactionResult } = await vaultContract.functions
+			if (wallet == null || this.contracts == null) return;
+			const result = await this.contracts.vaultContract.functions
 				.deposit_collateral()
 				.callParams({
 					forward: { amount: amount.toString(), assetId: TOKENS_BY_SYMBOL.USDC.assetId },
 				})
 				.txParams({ gasPrice: 1 })
 				.call();
-			console.log("transactionResult of deposit", transactionResult);
-			if (transactionResult != null) {
+			if (result != null) {
 				const formattedAmount = BN.formatUnits(amount, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
 				this.notifyThatActionIsSuccessful(`You have successfully deposited ${formattedAmount} USDC`);
 			}
+			await sleep(3000);
 			await this.rootStore.accountStore.updateAccountBalances();
+			const newCollBalance = await getUserFreeCollateral(this.rootStore.accountStore.indexerAddress);
+			this.setFreeCollateral(newCollBalance);
 		} catch (e) {
 			const errorText = e?.toString();
-			console.log(errorText);
 			this.notifyError(errorText ?? "", { type: "error" });
 		} finally {
 			this._setLoading(false);
 		}
 	};
 	withdraw = async (amount: BN) => {
+		//todo fix this also works for too long
 		const { accountStore, oracleStore } = this.rootStore;
 		await accountStore.checkConnectionWithWallet();
 		try {
 			this._setLoading(true);
-			// const contracts = this.contractsToRead;
-
-			const vault = CONTRACT_ADDRESSES.vault;
 			const wallet = await accountStore.getWallet();
-
-			if (wallet == null) return;
-			const clearingHouseContract = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
-			const proxyContract = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
-			const accountBalanceContract = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
-			// const insuranceFundContract = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
-			// const perpMarketContract = PerpMarketAbi__factory.connect(CONTRACT_ADDRESSES.perpMarket, wallet);
-			// const vaultMarketContract = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-			const pythContract = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
-
-			const vaultContract = VaultAbi__factory.connect(vault, wallet);
+			if (wallet == null || this.contracts == null) return;
 			const fee = await oracleStore.getPythFee();
 			if (oracleStore.updateData == null || fee == null) return;
-			const { transactionResult } = await vaultContract.functions
+			const { transactionResult } = await this.contracts.vaultContract.functions
 				.withdraw_collateral(amount.toString(), oracleStore.updateData)
 				.callParams({
 					forward: { amount: fee, assetId: TOKENS_BY_SYMBOL.ETH.assetId },
 				})
-				.addContracts([pythContract, accountBalanceContract, proxyContract, clearingHouseContract])
+				.addContracts([
+					this.contracts.vaultContract,
+					this.contracts.pythContract,
+					this.contracts.accountBalanceContract,
+					this.contracts.proxyContract,
+					this.contracts.clearingHouseContract,
+				])
 				.txParams({ gasPrice: 1 })
 				.call();
 			if (transactionResult != null) {
 				const formattedAmount = BN.formatUnits(amount, TOKENS_BY_SYMBOL.USDC.decimals).toFormat(2);
 				this.notifyThatActionIsSuccessful(`You have successfully ${formattedAmount} withdrawn USDC`);
 			}
+			await sleep(3000);
 			await this.rootStore.accountStore.updateAccountBalances();
+			const newCollBalance = await getUserFreeCollateral(this.rootStore.accountStore.indexerAddress);
+			this.setFreeCollateral(newCollBalance);
 		} catch (e) {
 			console.log(e);
 			this.notifyError("Error", e?.toString());
@@ -282,51 +282,22 @@ class TradeStore {
 	};
 
 	syncUserDataFromIndexer = async () => {
-		const address = (this.rootStore.accountStore.addressB256 ?? "").slice(2);
-		const res = await Promise.all([getUserPositions(address), getUserPerpOrders(address)]);
+		const address = this.rootStore.accountStore.indexerAddress;
+		const res = await Promise.all([
+			getUserPositions(address),
+			getUserPerpOrders(address),
+			getUserFreeCollateral(address),
+		]);
 		this.setPosition(res[0]);
-		this.setPerpOrders(res[1]);
+		this.setPerpUserOrders(res[1]);
+		this.setFreeCollateral(res[2]);
 	};
 	syncDataFromIndexer = async () => {
-		const res = await Promise.all([getPerpMarkets(), getPerpMarketPrices()]);
+		const res = await Promise.all([getPerpMarkets(), getPerpMarketPrices(), getPerpOrders()]);
 		this.setPerpMarkets(res[0]);
 		this.setPerpPrices(res[1]);
+		this.setPerpOrders(res[2]);
 	};
-
-	updateDataFromContracts = async () => {
-		const { accountStore } = this.rootStore;
-		if (accountStore.address == null || accountStore.addressInput == null) return;
-		const contracts = this.contracts;
-		if (contracts == null) return;
-		await this.updateFreeCollateral(contracts?.vaultMarketContract);
-		this.setInitialized(true);
-	};
-
-	updateFreeCollateral = async (vault: VaultAbi) => {
-		const address = (this.rootStore.accountStore.addressB256 ?? "").slice(2);
-		const collateral = await getUserFreeCollateral(address);
-		this.setFreeCollateral(collateral);
-	};
-
-	get contractsToRead() {
-		const { accountStore } = this.rootStore;
-		const wallet = accountStore.walletToRead;
-		if (wallet == null) return null;
-		const vaultAbi = VaultAbi__factory.connect(CONTRACT_ADDRESSES.vault, wallet);
-		const proxyAbi = ProxyAbi__factory.connect(CONTRACT_ADDRESSES.proxy, wallet);
-		const clearingHouseAbi = ClearingHouseAbi__factory.connect(CONTRACT_ADDRESSES.clearingHouse, wallet);
-		const accountBalanceAbi = AccountBalanceAbi__factory.connect(CONTRACT_ADDRESSES.accountBalance, wallet);
-		const insuranceFundAbi = InsuranceFundAbi__factory.connect(CONTRACT_ADDRESSES.insuranceFund, wallet);
-		const pythContractAbi = PythContractAbi__factory.connect(CONTRACT_ADDRESSES.pyth, wallet);
-		return {
-			vaultAbi,
-			proxyAbi,
-			clearingHouseAbi,
-			accountBalanceAbi,
-			insuranceFundAbi,
-			pythContractAbi,
-		};
-	}
 }
 
 export default TradeStore;
