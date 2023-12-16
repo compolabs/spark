@@ -27,7 +27,7 @@ class PerpTradeVm {
 	initialized: boolean = false;
 	private setInitialized = (l: boolean) => (this.initialized = l);
 
-	maxAbsPositionSize?: { long: BN; short: BN } | null = null;
+	maxAbsPositionSize: { long: BN; short: BN } | null = null;
 	setMaxAbsPositionSize = (v: { long: BN; short: BN } | null) => (this.maxAbsPositionSize = v);
 
 	constructor(rootStore: RootStore) {
@@ -74,8 +74,12 @@ class PerpTradeVm {
 		const currentPositionSize =
 			this.rootStore.tradeStore.positions.find(({ symbol }) => symbol === market.symbol)?.takerPositionSize ?? BN.ZERO;
 
-		let long;
-		let short;
+		let long = BN.ZERO;
+		let short = BN.ZERO;
+		if (currentPositionSize.eq(0)) {
+			this.setMaxAbsPositionSize({ long, short });
+			return;
+		}
 		if (currentPositionSize.gt(0)) {
 			short = maxPositionSize;
 			long = currentPositionSize.abs().plus(maxPositionSize).times(2);

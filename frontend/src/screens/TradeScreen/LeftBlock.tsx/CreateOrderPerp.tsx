@@ -43,13 +43,13 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	let price = oracleStore?.prices != null ? new BN(oracleStore?.prices[vm.token0.priceFeed]?.price.toString()) : BN.ZERO;
 	let marketPrice = BN.formatUnits(price, 2);
 	const onChangePercent = (percent: number) => {
-		const max = vm.maxAbsPositionSize?.long ?? BN.ZERO;
+		const max = (vm.isShort ? vm.maxAbsPositionSize?.short : vm.maxAbsPositionSize?.long) ?? BN.ZERO;
 		const value = (max.toNumber() * percent) / 100;
 		vm.setOrderSize(new BN(value), true);
 	};
 
 	const orderDetails = [
-		{ title: "Order Size", value: `${vm.formattedOrderSize} ${vm.token0.symbol}` },
+		{ title: "Order Size", value: `${vm.formattedOrderSize ?? 0} ${vm.token0.symbol}` },
 		{ title: "Est. fee", value: "0.00 ETH" },
 		{ title: "Total amount", value: `${vm.formattedOrderValue} ${vm.token1.symbol}` },
 	];
