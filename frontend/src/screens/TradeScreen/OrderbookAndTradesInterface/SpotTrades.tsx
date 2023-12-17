@@ -64,7 +64,7 @@ const SpotTrades: React.FC<IProps> = observer(() => {
 
 			<Container>
 				{vm.trades.map((trade) => (
-					<Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }}>
+					<Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }} key={"trade" + trade.id}>
 						<Text type={TEXT_TYPES.BODY} color={theme.colors.textPrimary}>
 							{trade.price.toFormat(2)}
 						</Text>

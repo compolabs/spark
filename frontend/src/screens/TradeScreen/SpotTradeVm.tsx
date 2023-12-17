@@ -285,7 +285,7 @@ class SpotTradeVm {
 		}
 	};
 
-	cancelOrder = async (id: string) => {
+	cancelOrder = async (id: number) => {
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null) return;
 		await accountStore.checkConnectionWithWallet();
@@ -306,10 +306,10 @@ class SpotTradeVm {
 				)
 				.then(() => {
 					const { mySpotOrders } = this.rootStore.spotOrdersStore;
-					const index = mySpotOrders.findIndex((obj) => obj.id === id);
+					const index = mySpotOrders.findIndex((obj) => obj.orderId === id);
 					mySpotOrders.splice(index, 1);
 				});
-			//todo add update
+			this.rootStore.tradeStore.syncDataFromIndexer();
 		} catch (e) {
 			this.notifyError(JSON.parse(JSON.stringify(e)).toString(), e);
 		} finally {

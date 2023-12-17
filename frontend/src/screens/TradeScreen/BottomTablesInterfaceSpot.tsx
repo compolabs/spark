@@ -15,6 +15,8 @@ import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
 import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
 import Tooltip from "@components/Tooltip";
 import dayjs from "dayjs";
+import Chip from "@components/Chip";
+import { useSpotTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 
 interface IProps {}
 
@@ -79,7 +81,10 @@ export const TableRow = styled(Row)`
 		margin-bottom: 0;
 	}
 `;
-
+const CancelButton = styled(Chip)`
+	cursor: pointer;
+	border: 1px solid ${({ theme }) => theme.colors.borderPrimary} !important;
+`;
 const TabContainer = styled(Row)`
 	align-items: center;
 	box-sizing: border-box;
@@ -163,6 +168,7 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 
 	const { spotOrdersStore, settingsStore, accountStore } = useStores();
 	const columns = [orderColumns, balanceColumns];
+	const vm = useSpotTradeScreenVM();
 	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
 	const [data, setData] = useState<any>([]);
@@ -171,21 +177,24 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 		switch (tabIndex) {
 			case 0:
 				setData(
-					spotOrdersStore.mySpotOrders.map((order) => ({
-						date: dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm"),
-						pair: order.market,
-						status: order.status,
-						type: (
-							<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-								{order.type}
-							</TableText>
-						),
-						//todo
-						amount: <TableText primary>{order.amountStr}</TableText>,
-						filled: order.fulfilled0.div(order.amount0).times(100).toFormat(2),
-						price: order.price.toFixed(2),
-						action: "",
-					})),
+					spotOrdersStore.mySpotOrders
+						.filter(({ status }) => status === "Active")
+						.map((order) => ({
+							date: dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm"),
+							pair: order.market,
+							status: order.status,
+							type: (
+								<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+									{order.type}
+								</TableText>
+							),
+							amount: <TableText primary>{order.amountStr}</TableText>,
+							filled: order.fulfilled0.div(order.amount0).times(100).toFormat(2),
+							price: order.price.toFixed(2),
+							action: (
+								<CancelButton onClick={() => vm.cancelOrder(order.orderId)}>{vm.loading ? "Loading..." : "Close"}</CancelButton>
+							),
+						})),
 				);
 				break;
 			case 1:
@@ -205,7 +214,7 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 				);
 				break;
 		}
-	}, [tabIndex, accountStore, spotOrdersStore.mySpotOrders, theme.colors.redLight, theme.colors.greenLight]);
+	}, [tabIndex, accountStore, spotOrdersStore.mySpotOrders, theme.colors.redLight, theme.colors.greenLight, vm.loading]);
 	return (
 		<Root size={tableSize}>
 			<TabContainer>

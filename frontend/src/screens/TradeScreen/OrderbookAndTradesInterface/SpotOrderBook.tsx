@@ -146,7 +146,7 @@ const SpreadRow = styled(Row)`
 
 const DECIMAL_OPTIONS = [2, 4, 5, 6];
 
-const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
+const SpotOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	const vm = useSpotTradeScreenVM();
 	const { spotOrdersStore } = useStores();
 	const theme = useTheme();
@@ -302,7 +302,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		</Root>
 	);
 });
-export default OrderBook;
+export default SpotOrderBook;
 
 const PlugRow = styled(Row)`
 	justify-content: space-between;

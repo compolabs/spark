@@ -79,7 +79,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 			{/*<StatusBar />*/}
 			{/*<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>*/}
 			{/*	<MobileCreateOrderDialogContainer>*/}
-			{/*		<OrderBook mobileMode />*/}
+			{/*		<SpotOrderBook mobileMode />*/}
 			{/*		<LeftBlock style={{ maxWidth: "100%", height: "100%" }} />*/}
 			{/*	</MobileCreateOrderDialogContainer>*/}
 			{/*</Dialog>*/}

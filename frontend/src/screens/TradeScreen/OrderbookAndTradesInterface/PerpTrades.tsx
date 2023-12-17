@@ -45,7 +45,6 @@ const Container = styled.div<{
 	padding: 0 12px;
 	overflow-x: hidden;
 	overflow-y: auto;
-	//overflow-y: auto;
 	max-height: calc(100vh - 200px);
 `;
 const PerpTrades: React.FC<IProps> = observer(() => {
@@ -67,9 +66,8 @@ const PerpTrades: React.FC<IProps> = observer(() => {
 			<SizedBox height={8} />
 
 			<Container>
-				{/*{Array.from({ length: 100 })*/}
 				{tradeStore.perpTrades.map((trade) => (
-					<Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }}>
+					<Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }} key={"trade" + trade.id}>
 						<Text type={TEXT_TYPES.BODY} color={theme.colors.textPrimary}>
 							{trade.formattedPrice.toFormat(2)}
 						</Text>
@@ -79,11 +77,6 @@ const PerpTrades: React.FC<IProps> = observer(() => {
 					</Row>
 				))}
 			</Container>
-			{/*{tradeStore.perpTrades == null ? (*/}
-			{/*	<Skeleton height={48} style={{ margin: 4 }} count={15} />*/}
-			{/*) : (*/}
-			{/*	<Container> PerpTrades data </Container>*/}
-			{/*)}*/}
 		</Root>
 	);
 });

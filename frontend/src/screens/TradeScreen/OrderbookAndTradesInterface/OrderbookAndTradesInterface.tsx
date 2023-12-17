@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React, { useState } from "react";
-import OrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/OrderBook";
+import SpotOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotOrderBook";
 import SizedBox from "@components/SizedBox";
 import Button, { ButtonGroup } from "@components/Button";
 import { useStores } from "@stores";
@@ -34,7 +34,7 @@ const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 				<Button onClick={() => setIsOrderbook(false)}>Trades</Button>
 			</ButtonGroup>
 			<SizedBox height={8} />
-			{isOrderbook ? tradeStore.isMarketPerp ? <PerpOrderBook /> : <OrderBook /> : null}
+			{isOrderbook ? tradeStore.isMarketPerp ? <PerpOrderBook /> : <SpotOrderBook /> : null}
 			{!isOrderbook ? tradeStore.isMarketPerp ? <PerpTrades /> : <SpotTrades /> : null}
 		</Root>
 	);

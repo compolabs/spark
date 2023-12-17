@@ -35,7 +35,7 @@ class SpotOrdersStore {
 		const minSellPriceSpotOrder = _.minBy(this.orderbook.sell, "price");
 		return maxBuyPriceSpotOrder != null && minSellPriceSpotOrder != null
 			? new BN(maxBuyPriceSpotOrder.price).minus(minSellPriceSpotOrder.price).div(maxBuyPriceSpotOrder.price).toFixed(2)
-			: "x";
+			: "0.00";
 	}
 
 	get spreadPrice(): string {
