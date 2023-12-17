@@ -224,13 +224,17 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 
 						return {
 							pair: (
-								<Column justifyContent="center">
-									{position.symbol}
-									<SizedBox height={2} />
-									<Text color={position.takerPositionSize.lt(0) ? theme.colors.redLight : theme.colors.greenLight}>
-										{position.takerPositionSize.lt(0) ? "Short" : "Long"}
-									</Text>
-								</Column>
+								<Row justifyContent="center" alignItems="center">
+									<TokenIcon src={position.token.logo} alt="token" />
+									<SizedBox width={8} />
+									<Column justifyContent="center">
+										{position.symbol}
+										<SizedBox height={2} />
+										<Text color={position.takerPositionSize.lt(0) ? theme.colors.redLight : theme.colors.greenLight}>
+											{position.takerPositionSize.lt(0) ? "Short" : "Long"}
+										</Text>
+									</Column>
+								</Row>
 							),
 							size: (
 								<Row alignItems="center" justifyContent="center">
@@ -240,22 +244,26 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 								</Row>
 							),
 							entPrice: `$ ${position.entPrice}`,
-							markPrice: BN.formatUnits(markPrice, 6).toFormat(2),
+							markPrice: BN.formatUnits(markPrice, 6)?.toFormat(2),
 							margin: (
 								<Row alignItems="center" justifyContent="center">
-									{margin.toFormat()}
+									{margin?.toFormat()}
 									<SizedBox width={4} />
 									<Chip>USDC</Chip>
 								</Row>
 							),
 							pnl: (
 								<Row alignItems="center" justifyContent="center">
-									{unrealizedPnL.toFormat()}
+									{unrealizedPnL?.toFormat()}
 									<SizedBox width={4} />
 									<Chip>USDC</Chip>
 								</Row>
 							),
-							action: <CancelButton onClick={() => null}>{vm.loading ? "..." : "Cancel"}</CancelButton>,
+							action: (
+								<CancelButton onClick={() => vm.cancelPerpPosition(position.id)}>
+									{vm.loading ? "Loading..." : "Close"}
+								</CancelButton>
+							),
 						};
 					}),
 				);
@@ -268,13 +276,21 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 								<Row alignItems="center">
 									<TokenIcon src={order.token.logo} alt="market-icon" />
 									<SizedBox width={4} />
-									<Text>{order.marketSymbol}</Text>
+									{order.marketSymbol}
 								</Row>
 							),
 							type: "Limit",
-							size: order.formattedSize,
+							size: (
+								<Row alignItems="center">
+									{order.formattedSize.toFormat(2)}
+									<SizedBox width={4} />
+									<Chip>{order.token.symbol}</Chip>
+								</Row>
+							),
 							action: (
-								<CancelButton onClick={() => vm.cancelPerpOrders(order.orderId)}>{vm.loading ? "..." : "Cancel"}</CancelButton>
+								<CancelButton onClick={() => vm.cancelPerpOrder(order.orderId)}>
+									{vm.loading ? "......" : "Cancel"}
+								</CancelButton>
 							),
 						};
 					}),
@@ -290,7 +306,8 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 		theme.colors.greenLight,
 		theme.colors.redLight,
 		tradeStore.perpMarkets,
-		tradeStore.perpOrders,
+		tradeStore.perpUserOrders,
+		vm.loading,
 	]);
 
 	return (

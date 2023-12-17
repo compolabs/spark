@@ -43,6 +43,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 	let price = oracleStore?.prices != null ? new BN(oracleStore?.prices[vm.token0.priceFeed]?.price.toString()) : BN.ZERO;
 	let marketPrice = BN.formatUnits(price, 2);
 	const onChangePercent = (percent: number) => {
+		//todo fix set price when users comes from spot market
 		const max = (vm.isShort ? vm.maxAbsPositionSize?.short : vm.maxAbsPositionSize?.long) ?? BN.ZERO;
 		const value = (max.toNumber() * percent) / 100;
 		vm.setOrderSize(new BN(value), true);
@@ -192,12 +193,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				<SizedBox height={4} />
 			</>
 			<SizedBox height={16} />
-			<Button
-				disabled={!(!vm.loading && !vm.initialized && vm.orderSize.gt(0))}
-				green={!vm.isShort}
-				red={vm.isShort}
-				onClick={vm.openOrder}
-			>
+			<Button disabled={!vm.canOpenOrder} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>
 				{vm.loading || !vm.initialized
 					? "Loading..."
 					: vm.isShort

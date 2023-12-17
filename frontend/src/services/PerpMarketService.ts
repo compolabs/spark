@@ -81,6 +81,7 @@ export class PerpTrade {
 	trade_value: BN;
 	marketSymbol: string;
 
+	//todo how to undestand if its a short or long
 	constructor(tradeOutput: IPerpTradeResponse) {
 		this.id = tradeOutput.id;
 		this.matcher = tradeOutput.matcher;
@@ -94,6 +95,14 @@ export class PerpTrade {
 
 	get token(): IToken {
 		return TOKENS_BY_ASSET_ID[this.tokenId];
+	}
+
+	get formattedPrice(): BN {
+		return BN.formatUnits(this.price, TOKENS_BY_SYMBOL.USDC.decimals);
+	}
+
+	get formattedTradeAmount(): BN {
+		return BN.formatUnits(this.trade_amount, this.token.decimals);
 	}
 }
 

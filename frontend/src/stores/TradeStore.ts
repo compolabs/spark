@@ -19,13 +19,15 @@ import {
 	VaultAbi__factory,
 } from "@src/contracts";
 import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
-import { getUserPositions, PerpPosition } from "@src/services/AccountBalanceServise";
+import { getOpenInterest, getUserPositions, PerpPosition } from "@src/services/AccountBalanceServise";
 import {
 	getPerpMarketPrices,
 	getPerpOrders,
+	getPerpTrades,
 	getUserPerpOrders,
 	PerpMarketPrice,
 	PerpOrder,
+	PerpTrade,
 } from "@src/services/PerpMarketService";
 import { getUserFreeCollateral } from "@src/services/VaultServise";
 import { sleep } from "fuels";
@@ -111,6 +113,9 @@ class TradeStore {
 	marketSymbol: string | null = null;
 	setMarketSymbol = (v: string) => (this.marketSymbol = v);
 
+	openInterest: BN | null = null;
+	setOpenInterest = (v: BN | null) => (this.openInterest = v);
+
 	get marketsConfig(): Record<string, SpotMarket | PerpMarket> {
 		return [...spotMarketsConfig, ...this.perpMarkets].reduce(
 			(acc, item) => {
@@ -142,12 +147,21 @@ class TradeStore {
 	perpOrders: PerpOrder[] = [];
 	private setPerpOrders = (v: PerpOrder[]) => (this.perpOrders = v);
 
+	perpTrades: PerpTrade[] = [];
+
+	private setPerpTrades = (v: PerpTrade[]) => (this.perpTrades = v);
+
 	perpPrices: Record<string, PerpMarketPrice> | null = null;
 	private setPerpPrices = (v: Record<string, PerpMarketPrice> | null) => (this.perpPrices = v);
 
 	get marketPrice() {
 		if (this.marketSymbol == null) return BN.ZERO;
 		return this.perpPrices == null ? BN.ZERO : this.perpPrices[this.marketSymbol]?.marketPrice;
+	}
+
+	get markPrice() {
+		if (this.marketSymbol == null) return BN.ZERO;
+		return this.perpPrices == null ? BN.ZERO : this.perpPrices[this.marketSymbol]?.markPrice;
 	}
 
 	get fundingRate() {
@@ -293,10 +307,11 @@ class TradeStore {
 		this.setFreeCollateral(res[2]);
 	};
 	syncDataFromIndexer = async () => {
-		const res = await Promise.all([getPerpMarkets(), getPerpMarketPrices(), getPerpOrders()]);
+		const res = await Promise.all([getPerpMarkets(), getPerpMarketPrices(), getPerpOrders(), getPerpTrades()]);
 		this.setPerpMarkets(res[0]);
 		this.setPerpPrices(res[1]);
 		this.setPerpOrders(res[2]);
+		this.setPerpTrades(res[3]);
 	};
 }
 

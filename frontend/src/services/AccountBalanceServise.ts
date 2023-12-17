@@ -1,4 +1,4 @@
-import { ACCOUNT_BALANCE_INDEXER, IToken, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { ACCOUNT_BALANCE_INDEXER, IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import makeIndexerRequest from "@src/utils/makeIndexerRequest";
 
@@ -46,9 +46,21 @@ export class PerpPosition {
 }
 
 export const getUserPositions = async (address: string): Promise<PerpPosition[]> => {
-	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_account_balance_indexer.positionentity WHERE trader = '${address}' ) t;`;
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_account_balance_indexer.positionentity WHERE trader = '${address}' AND taker_position_size != '0' ) t;`;
 	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
 	return res?.data.data[0] != null
 		? res?.data.data[0].map((position: IPositionResponse): PerpPosition => new PerpPosition(position))
 		: [];
+};
+export const getOpenInterest = async (tokenAddress: string): Promise<BN> => {
+	//abs(accountBalance(i, base_asset).taker_open_notional)
+	//fixme add calc to sql side
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_account_balance_indexer.positionentity WHERE token = '${tokenAddress.slice(
+		2,
+	)}' ) t;`;
+	const res = await makeIndexerRequest(query, ACCOUNT_BALANCE_INDEXER);
+	const arr = res?.data.data[0] != null ? (res?.data.data[0] as IPositionResponse[]) : [];
+	const sum = arr.reduce((acc, v) => acc.plus(new BN(v.taker_open_notional).abs()), BN.ZERO);
+	//todo уточнить какой decimals
+	return BN.formatUnits(sum, 8);
 };

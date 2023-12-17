@@ -6,6 +6,7 @@ import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { PerpMarket } from "@src/services/ClearingHouseServise";
 import { sleep } from "fuels";
+import { getOpenInterest } from "@src/services/AccountBalanceServise";
 
 const ctx = React.createContext<PerpTradeVm | null>(null);
 
@@ -40,12 +41,7 @@ class PerpTradeVm {
 		);
 		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
 		reaction(
-			() => [
-				this.rootStore.tradeStore.perpMarkets,
-				this.rootStore.tradeStore.perpPrices,
-				this.rootStore.tradeStore.freeCollateral,
-				this.rootStore.tradeStore.positions,
-			],
+			() => [this.rootStore.tradeStore.freeCollateral, this.rootStore.tradeStore.perpPrices],
 			() => this.calcMaxPositionSize(),
 		);
 	}
@@ -56,19 +52,21 @@ class PerpTradeVm {
 		if (market == null || market.type === "spot") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
-		await this.calcMaxPositionSize();
+		this.calcMaxPositionSize();
+		this.setOpenInterest(await getOpenInterest(market.token0.assetId));
 		this.setInitialized(true);
 	};
-
-	calcMaxPositionSize = async () => {
+	openInterest: BN | null = null;
+	setOpenInterest = (v: BN | null) => (this.openInterest = v);
+	calcMaxPositionSize = () => {
 		const HUNDRED_PERCENT = 1_000_000;
 		const { tradeStore } = this.rootStore;
 		const market = tradeStore.currentMarket;
 		if (market == null) return;
 		if (!(market instanceof PerpMarket)) return;
 		const scale = BN.parseUnits(1, market.decimal);
-		const markPrice = tradeStore.perpPrices != null ? tradeStore.perpPrices[market.symbol]?.markPrice : null;
-		if (tradeStore.freeCollateral == null || markPrice == null) return;
+		const markPrice = tradeStore.marketPrice;
+		if (tradeStore.freeCollateral == null) return;
 		const maxPositionValue = tradeStore.freeCollateral?.times(HUNDRED_PERCENT).div(market.imRatio);
 		const maxPositionSize = maxPositionValue.times(scale).div(markPrice);
 		const currentPositionSize =
@@ -76,16 +74,16 @@ class PerpTradeVm {
 
 		let long = BN.ZERO;
 		let short = BN.ZERO;
-		if (currentPositionSize.eq(0)) {
+		if (maxPositionValue.eq(0)) {
 			this.setMaxAbsPositionSize({ long, short });
 			return;
 		}
 		if (currentPositionSize.gt(0)) {
 			short = maxPositionSize;
-			long = currentPositionSize.abs().plus(maxPositionSize).times(2);
+			long = currentPositionSize.times(2).abs().plus(maxPositionSize);
 		} else {
 			long = maxPositionSize;
-			short = currentPositionSize.abs().plus(maxPositionSize).times(2);
+			short = currentPositionSize.times(2).abs().plus(maxPositionSize);
 		}
 
 		const roundLong = new BN(long.toFixed(0).toString());
@@ -117,7 +115,13 @@ class PerpTradeVm {
 		const marketPrice = BN.formatUnits(price, 2);
 		this.setPrice(marketPrice);
 	};
+
+	get canOpenOrder() {
+		return !this.loading && this.initialized && this.orderSize.gt(0) && this.orderValue.gt(0) && this.orderValue.gt(0);
+	}
+
 	openOrder = async () => {
+		if (!this.canOpenOrder) return;
 		const { accountStore, oracleStore, tradeStore } = this.rootStore;
 		if (oracleStore.updateData == null) return;
 		await accountStore.checkConnectionWithWallet();
@@ -152,19 +156,22 @@ class PerpTradeVm {
 			this.setLoading(false);
 		}
 	};
-	cancelPerpOrders = async (orderId: string) => {
+	cancelPerpPosition = async (id: string) => {
 		const { accountStore, oracleStore, tradeStore } = this.rootStore;
-		if (oracleStore.updateData == null) return;
+		const position = tradeStore.positions.find(({ id }) => id);
+
+		console.log(position);
+	};
+	cancelPerpOrder = async (orderId: string) => {
+		this.setLoading(true);
+		const { accountStore, tradeStore } = this.rootStore;
 		await accountStore.checkConnectionWithWallet();
 		const contracts = tradeStore.contracts;
 		if (contracts == null) return;
 		try {
-			this.setLoading(true);
-			const fee = await oracleStore.getPythFee();
-			if (fee == null) return;
 			const wallet = await this.rootStore.accountStore.getWallet();
 			if (wallet == null) return;
-			await contracts.perpMarketContract.functions.remove_order(orderId).txParams({ gasPrice: 1 }).call();
+			await contracts.perpMarketContract.functions.remove_order(`0x${orderId}`).txParams({ gasPrice: 1 }).call();
 			await sleep(2000);
 			await tradeStore.syncUserDataFromIndexer();
 		} catch (e) {
@@ -173,8 +180,6 @@ class PerpTradeVm {
 			this.setLoading(false);
 		}
 	};
-
-	closeOrder = async () => {};
 
 	isShort: boolean = false;
 	setIsShort = (v: boolean) => (this.isShort = v);

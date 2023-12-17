@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { useVM } from "@src/hooks/useVM";
 import { makeAutoObservable } from "mobx";
 import { RootStore, useStores } from "@stores";
-import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import { TokenAbi__factory } from "@src/contracts";
 import { hashMessage } from "fuels";
@@ -25,7 +25,7 @@ const faucetAmounts: Record<string, number> = {
 	ETH: 0.5,
 	USDC: 3000,
 	BTC: 0.01,
-	// UNI: 50,
+	UNI: 50,
 	// LINK: 50,
 	// COMP: 5,
 };
@@ -52,8 +52,7 @@ class FaucetVM {
 		if (accountStore.assetBalances == null) return [];
 		//todo return spot tokens too
 
-		// return TOKENS_LIST.filter((t) => t.symbol !== "SWAY").map((v) => {
-		return [TOKENS_BY_SYMBOL.ETH, TOKENS_BY_SYMBOL.USDC, TOKENS_BY_SYMBOL.BTC].map((v) => {
+		return TOKENS_LIST.map((v) => {
 			const balance = accountStore.findBalanceByAssetId(v.assetId);
 			const mintAmount = new BN(faucetAmounts[v.symbol] ?? 0);
 			const formatBalance = BN.formatUnits(balance?.balance ?? BN.ZERO, v.decimals);

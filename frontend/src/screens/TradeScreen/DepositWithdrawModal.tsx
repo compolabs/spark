@@ -36,8 +36,8 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 	const usdcBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.USDC) ?? BN.ZERO;
 	const usdcBalanceFormat = BN.formatUnits(usdcBalance, TOKENS_BY_SYMBOL.USDC.decimals);
 	const freeCollateralFormat = BN.formatUnits(tradeStore.freeCollateral ?? 0, TOKENS_BY_SYMBOL.USDC.decimals);
-	const canDeposit = depositAmount.gt(0) && depositAmount.lte(usdcBalance);
-	const canWithdraw = withdrawAmount.gt(0) && tradeStore.freeCollateral?.lte(withdrawAmount);
+	const canDeposit = depositAmount.gt(0) && depositAmount.lte(usdcBalance) && !tradeStore.loading;
+	const canWithdraw = withdrawAmount.gt(0) && tradeStore.freeCollateral?.lte(withdrawAmount) && !tradeStore.loading;
 
 	return (
 		<Dialog
@@ -92,7 +92,10 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 				</Row>
 				<SizedBox height={52} />
 				<Button
-					onClick={() => (isDeposit ? tradeStore.deposit(depositAmount) : tradeStore.withdraw(withdrawAmount))}
+					onClick={async () => {
+						isDeposit ? await tradeStore.deposit(depositAmount) : await tradeStore.withdraw(withdrawAmount);
+						rest.onClose != null && rest.onClose({} as any);
+					}}
 					disabled={!(isDeposit ? canDeposit : canWithdraw)}
 				>
 					{tradeStore.loading ? "Loading..." : isDeposit ? "Deposit" : "Withdraw"}

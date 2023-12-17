@@ -162,29 +162,24 @@ const PerpOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 
 	useEventListener("resize", handleResize);
 
-	const longOrders = tradeStore.perpOrders.filter((o) => o.baseSize.gt(0));
-	// .slice()
-	// .sort((a, b) => {
-	// 	if (a.price == null && b.price == null) return 0;
-	// 	if (a.price == null && b.price != null) return 1;
-	// 	if (a.price == null && b.price == null) return -1;
-	// 	return a.price < b.price ? 1 : -1;
-	// })
-	// .reverse()
-	// .slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders)
-	// .reverse();
-	const shortOrders = tradeStore.perpOrders.filter((o) => o.baseSize.lt(0));
-	// .slice()
-	// .sort((a, b) => {
-	// 	if (a.price == null && b.price == null) return 0;
-	// 	if (a.price == null && b.price != null) return 1;
-	// 	if (a.price == null && b.price == null) return -1;
-	// 	return a.price < b.price ? 1 : -1;
-	// })
-	// .slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
-
-	const totalBuy = longOrders.reduce((acc, order) => acc.plus(order.baseSize), BN.ZERO);
-	const totalSell = shortOrders.reduce((acc, order) => acc.plus(order.baseSize), BN.ZERO);
+	const longOrders = tradeStore.perpOrders
+		.filter((o) => o.baseSize.gt(0))
+		// .sort((a, b) => {
+		// 	if (a.price == null && b.price == null) return 0;
+		// 	if (a.price == null && b.price != null) return 1;
+		// 	if (a.price == null && b.price == null) return -1;
+		// 	return a.price < b.price ? 1 : -1;
+		// })
+		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
+	const shortOrders = tradeStore.perpOrders
+		.filter((o) => o.baseSize.lt(0))
+		// .sort((a, b) => {
+		// 	if (a.price == null && b.price == null) return 0;
+		// 	if (a.price == null && b.price != null) return 1;
+		// 	if (a.price == null && b.price == null) return -1;
+		// 	return a.price < b.price ? 1 : -1;
+		// })
+		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
 
 	if (tradeStore.perpOrders.length === 0)
 		return (
@@ -233,13 +228,7 @@ const PerpOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 
 				{orderFilter !== 2 &&
 					shortOrders.map((o, index) => (
-						<OrderRow
-							type="short"
-							// fulfillPercent={+new BN(o.fullFillPercent).toFormat(2)}
-							// volumePercent={o.amountLeft.div(totalSell).times(100).toNumber()}
-							key={index + "negative"}
-							onClick={() => {}}
-						>
+						<OrderRow type="short" key={index + "negative"} onClick={() => {}}>
 							<span className="progress-bar" />
 							<span className="volume-bar" />
 							<Text primary>{o.formattedSize.abs().toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
@@ -254,28 +243,12 @@ const PerpOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 						<SizedBox width={12} />
 						{/*<Text primary>{ordersStore.spreadPrice}</Text>*/}
 						<SizedBox width={12} />
-						{/*<Text color={+ordersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>*/}
-						{/*	{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}*/}
-						{/*</Text>*/}
 					</SpreadRow>
 				)}
 
 				{orderFilter !== 1 &&
 					longOrders.map((o, index) => (
-						<OrderRow
-							onClick={() => {
-								// const price = BN.parseUnits(o.price, vm.token1.decimals);
-								// vm.setIsSell(true);
-								// vm.setSellPrice(price, true);
-								// vm.setBuyPrice(BN.ZERO, true);
-								// vm.setBuyAmount(BN.ZERO, true);
-								// vm.setBuyTotal(BN.ZERO, true);
-							}}
-							// fulfillPercent={+new BN(o.fullFillPercent).toFormat(0)}
-							// volumePercent={o.amountLeft.div(totalBuy).times(100).toNumber()}
-							type="long"
-							key={index + "positive"}
-						>
+						<OrderRow type="long" key={index + "positive"}>
 							<span className="progress-bar" />
 							<span className="volume-bar" />
 							<Text primary>{o.formattedSize.toFormat(DECIMAL_OPTIONS[+decimalKey])}</Text>
