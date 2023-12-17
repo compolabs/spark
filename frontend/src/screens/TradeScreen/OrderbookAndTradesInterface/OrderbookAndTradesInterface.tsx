@@ -24,7 +24,7 @@ const Root = styled.div`
 
 const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 	const { tradeStore } = useStores();
-	const [isOrderbook, setIsOrderbook] = useState(false);
+	const [isOrderbook, setIsOrderbook] = useState(true);
 	return (
 		<Root>
 			<ButtonGroup style={{ padding: "0 12px" }}>

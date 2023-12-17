@@ -157,10 +157,10 @@ class PerpTradeVm {
 		}
 	};
 	cancelPerpPosition = async (id: string) => {
-		const { accountStore, oracleStore, tradeStore } = this.rootStore;
-		const position = tradeStore.positions.find(({ id }) => id);
-
-		console.log(position);
+		//todo утоничть как закрыть позицию
+		// const { accountStore, oracleStore, tradeStore } = this.rootStore;
+		// const position = tradeStore.positions.find(({ id }) => id);
+		// console.log(position);
 	};
 	cancelPerpOrder = async (orderId: string) => {
 		this.setLoading(true);

@@ -111,13 +111,19 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 				const price = oracleStore.prices == null ? 0 : oracleStore.prices[market.token0.priceFeed]?.price;
 				const formattedPrice = BN.formatUnits(price, 8).toFormat(2);
 				return (
-					<Market key={market.symbol}>
+					<Market
+						key={market.symbol}
+						onClick={() => {
+							tradeStore.setMarketSelectionOpened(false);
+							navigate(`/${market.symbol}`);
+						}}
+					>
 						<Row alignItems="center">
 							<Column mainAxisSize="stretch">
 								<Icon
 									src={addedToFav ? yellowStar : star}
 									alt="star"
-									style={{ cursor: "pointer" }}
+									style={{ cursor: "pointer", zIndex: 100000 }}
 									onClick={() => (addedToFav ? tradeStore.removeFromFav(market.symbol) : tradeStore.addToFav(market.symbol))}
 								/>
 								<SizedBox height={4} />
@@ -141,16 +147,7 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 								</Text>
 							</Column>
 						</Row>
-						<Column
-							alignItems="end"
-							onClick={() => {
-								tradeStore.setMarketSelectionOpened(false);
-								navigate(`/${market.symbol}`);
-							}}
-						>
-							{/*<Text style={{ textAlign: "right" }} nowrap>*/}
-							{/*	0.02%*/}
-							{/*</Text>*/}
+						<Column alignItems="end">
 							<Text type={TEXT_TYPES.H} nowrap color="primary">
 								$ {formattedPrice}
 							</Text>

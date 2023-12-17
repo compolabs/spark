@@ -78,7 +78,6 @@ const SettingsButton = styled(Button)`
 		}
 	}
 `;
-//todo add dropdown for mobile
 const Header: React.FC<IProps> = observer(() => {
 	const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
 	const { accountStore, settingsStore } = useStores();

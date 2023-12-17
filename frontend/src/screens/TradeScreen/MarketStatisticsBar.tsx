@@ -174,11 +174,6 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 						))}
 					</DesktopRow>
 				</PriceRow>
-				{/*<DesktopRow>*/}
-				{/*	<Button text fitContent>*/}
-				{/*		SEE ALL MARKET DETAILS*/}
-				{/*	</Button>*/}
-				{/*</DesktopRow>*/}
 			</MarketStatistics>
 		</Root>
 	);

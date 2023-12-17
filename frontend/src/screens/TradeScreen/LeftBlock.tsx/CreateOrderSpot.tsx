@@ -106,7 +106,9 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 				<SizedBox width={8} />
 				<Column crossAxisSize="max" alignItems="flex-end">
 					{/*todo implement max*/}
-					<MaxButton fitContent>MAX</MaxButton>
+					<MaxButton fitContent onClick={vm.onMaxClick}>
+						MAX
+					</MaxButton>
 					<SizedBox height={4} />
 					<TokenInput
 						assetId={vm.token1.assetId}

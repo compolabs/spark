@@ -19,7 +19,7 @@ import {
 	VaultAbi__factory,
 } from "@src/contracts";
 import { getPerpMarkets, PerpMarket } from "@src/services/ClearingHouseServise";
-import { getOpenInterest, getUserPositions, PerpPosition } from "@src/services/AccountBalanceServise";
+import { getUserPositions, PerpPosition } from "@src/services/AccountBalanceServise";
 import {
 	getPerpMarketPrices,
 	getPerpOrders,

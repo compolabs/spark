@@ -5,7 +5,6 @@ import Text, { TEXT_TYPES } from "@components/Text";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import Skeleton from "react-loading-skeleton";
 import { Row } from "@components/Flex";
 import { useTheme } from "@emotion/react";
 

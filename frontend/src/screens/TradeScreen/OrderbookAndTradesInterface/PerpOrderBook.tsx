@@ -164,23 +164,26 @@ const PerpOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 
 	const longOrders = tradeStore.perpOrders
 		.filter((o) => o.baseSize.gt(0))
-		// .sort((a, b) => {
-		// 	if (a.price == null && b.price == null) return 0;
-		// 	if (a.price == null && b.price != null) return 1;
-		// 	if (a.price == null && b.price == null) return -1;
-		// 	return a.price < b.price ? 1 : -1;
-		// })
+		.sort((a, b) => {
+			if (a.orderPrice == null && b.orderPrice == null) return 0;
+			if (a.orderPrice == null && b.orderPrice != null) return 1;
+			if (a.orderPrice == null && b.orderPrice == null) return -1;
+			return a.orderPrice.lt(b.orderPrice) ? 1 : -1;
+		})
 		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
 	const shortOrders = tradeStore.perpOrders
 		.filter((o) => o.baseSize.lt(0))
-		// .sort((a, b) => {
-		// 	if (a.price == null && b.price == null) return 0;
-		// 	if (a.price == null && b.price != null) return 1;
-		// 	if (a.price == null && b.price == null) return -1;
-		// 	return a.price < b.price ? 1 : -1;
-		// })
+		.sort((a, b) => {
+			if (a.orderPrice == null && b.orderPrice == null) return 0;
+			if (a.orderPrice == null && b.orderPrice != null) return 1;
+			if (a.orderPrice == null && b.orderPrice == null) return -1;
+			return a.orderPrice.lt(b.orderPrice) ? 1 : -1;
+		})
 		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders);
 
+	const firstLongPrice = longOrders[longOrders.length - 1]?.orderPrice ?? BN.ZERO;
+	const firstShortPrice = shortOrders[0]?.orderPrice ?? BN.ZERO;
+	const spread = firstShortPrice.minus(firstLongPrice).abs();
 	if (tradeStore.perpOrders.length === 0)
 		return (
 			<Root alignItems="center" justifyContent="center" mainAxisSize="stretch">
@@ -205,9 +208,7 @@ const PerpOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 						src={image}
 						alt="filter"
 						selected={orderFilter === index}
-						onClick={() => {
-							setOrderFilter(index);
-						}}
+						onClick={() => setOrderFilter(index)}
 					/>
 				))}
 			</SettingsContainder>
@@ -241,7 +242,7 @@ const PerpOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 					<SpreadRow>
 						<Text type={TEXT_TYPES.SUPPORTING}>SPREAD</Text>
 						<SizedBox width={12} />
-						{/*<Text primary>{ordersStore.spreadPrice}</Text>*/}
+						<Text primary>{BN.formatUnits(spread, 6).toFormat(2)}</Text>
 						<SizedBox width={12} />
 					</SpreadRow>
 				)}

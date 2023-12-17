@@ -51,7 +51,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 
 	const orderDetails = [
 		{ title: "Order Size", value: `${vm.formattedOrderSize ?? 0} ${vm.token0.symbol}` },
-		{ title: "Est. fee", value: "0.00 ETH" },
+		// { title: "Est. fee", value: "0.00 ETH" }, //todo add fee calc
 		{ title: "Total amount", value: `${vm.formattedOrderValue} ${vm.token1.symbol}` },
 	];
 	return (
@@ -136,7 +136,6 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 							</Text>
 							<Row justifyContent="flex-end" alignItems="center">
 								<Text primary>{vm.leverageSize.toFormat(2)}x</Text>
-								{/*<Text primary>{vm.leverage.toFormat(2)}x</Text>*/}
 							</Row>
 						</Row>
 					}

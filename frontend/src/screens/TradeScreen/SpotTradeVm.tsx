@@ -38,14 +38,32 @@ class SpotTradeVm {
 				this.getLatestTrades();
 			},
 		);
+		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
 		when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
 	}
 
+	initPriceToMarket = () => {
+		const price =
+			this.rootStore.oracleStore?.prices != null
+				? new BN(this.rootStore.oracleStore?.prices[this.token0.priceFeed]?.price.toString())
+				: BN.ZERO;
+		const marketPrice = BN.formatUnits(price, 2);
+		this.setBuyPrice(marketPrice);
+		this.setSellPrice(marketPrice);
+	};
 	updateMarket = () => {
 		const market = this.rootStore.tradeStore.market;
 		if (market == null || market.type === "perp") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
+	};
+	onMaxClick = () => {
+		const tokenId = this.isSell ? this.assetId0 : this.assetId1;
+		let balance = this.rootStore.accountStore.findBalanceByAssetId(tokenId)?.balance ?? BN.ZERO;
+		if (tokenId === TOKENS_BY_SYMBOL.ETH.assetId) {
+			balance = balance.minus(40);
+		}
+		this.isSell ? this.setSellAmount(balance, true) : this.setBuyTotal(balance, true);
 	};
 
 	public loading: boolean = false;
