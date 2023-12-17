@@ -5,7 +5,7 @@ import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { SpotMarketAbi__factory } from "@src/contracts";
-import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
+import { SpotTrade } from "@src/services/SpotMarketService";
 
 const ctx = React.createContext<SpotTradeVm | null>(null);
 
@@ -39,7 +39,7 @@ class SpotTradeVm {
 			},
 		);
 		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
-		when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
+		when(() => this.rootStore.spotOrdersStore.initialized, this.setMarketPrice);
 	}
 
 	initPriceToMarket = () => {
@@ -69,8 +69,8 @@ class SpotTradeVm {
 	public loading: boolean = false;
 	private setLoading = (l: boolean) => (this.loading = l);
 
-	public trades: Array<Trade> = [];
-	public setTrades = (v: Array<Trade>) => (this.trades = v);
+	public trades: Array<SpotTrade> = [];
+	public setTrades = (v: Array<SpotTrade>) => (this.trades = v);
 
 	get latestTrade() {
 		if (this.trades.length === 0) return null;
@@ -90,7 +90,7 @@ class SpotTradeVm {
 	public setAssetId1 = (assetId: string) => (this.assetId1 = assetId);
 
 	setMarketPrice = () => {
-		const { orderbook } = this.rootStore.ordersStore;
+		const { orderbook } = this.rootStore.spotOrdersStore;
 		const buy = orderbook.buy.sort((a, b) => (a.price > b.price ? -1 : 1));
 		const sell = orderbook.sell.sort((a, b) => (a.price < b.price ? -1 : 1));
 		const buyPrice = buy.length > 0 ? BN.parseUnits(buy[0].price, this.token1.decimals) : BN.ZERO;
@@ -100,8 +100,8 @@ class SpotTradeVm {
 	};
 
 	getLatestTrades = async () => {
-		const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
-		this.setTrades(data);
+		// const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
+		// this.setTrades(data);
 	};
 
 	get token0() {
@@ -267,13 +267,13 @@ class SpotTradeVm {
 				.then(({ transactionResult }) => {
 					transactionResult && this.notifyThatActionIsSuccessful("Order has been placed", transactionResult.id ?? "");
 				})
-				.then(() => this.rootStore.ordersStore.sync());
+				.then(() => this.rootStore.spotOrdersStore.sync());
 		} catch (e) {
 			const error = JSON.parse(JSON.stringify(e)).toString();
 			this.rootStore.notificationStore.toast(error.error, { type: "error" });
 			console.error(e);
 		} finally {
-			await this.rootStore.ordersStore.sync();
+			await this.rootStore.spotOrdersStore.sync();
 			this.setLoading(false);
 		}
 	};
@@ -298,9 +298,9 @@ class SpotTradeVm {
 						transactionResult && this.notifyThatActionIsSuccessful("Order has been canceled", transactionResult.id ?? ""),
 				)
 				.then(() => {
-					const { myOrders } = this.rootStore.ordersStore;
-					const index = myOrders.findIndex((obj) => obj.id === id);
-					myOrders.splice(index, 1);
+					const { mySpotOrders } = this.rootStore.spotOrdersStore;
+					const index = mySpotOrders.findIndex((obj) => obj.id === id);
+					mySpotOrders.splice(index, 1);
 				});
 			//todo add update
 		} catch (e) {
@@ -334,33 +334,3 @@ class SpotTradeVm {
 		});
 	};
 }
-
-//setupMarketMakingAlgorithm = async () => {
-// 		const { accountStore, ordersStore } = this.rootStore;
-// 		if (ordersStore.spreadPercent == null) return;
-// 		if (accountStore.address == null) return;
-// 		await accountStore.checkConnectionWithWallet();
-// 		const wallet = accountStore.walletToRead;
-// 		if (wallet == null) return;
-// 		const get_price = OracleAbi__factory.connect(CONTRACT_ADDRESSES.priceOracle, wallet).functions.get_price;
-// 		const price0 = await get_price(this.assetId0)
-// 			.simulate()
-// 			.then(({ value }) => value.price);
-// 		const price1 = await get_price(this.assetId1)
-// 			.simulate()
-// 			.then(({ value }) => value.price);
-// 		const price = price0.div(price1);
-//
-// 		const { buy, sell } = ordersStore.orderbook;
-// 		const sellAmount = buy.reduce((acc, order) => (price.lte(order.price) ? acc.plus(order.totalLeft) : acc), BN.ZERO);
-// 		const buyAmount = sell.reduce((acc, order) => (price.gte(order.price) ? acc.plus(order.amountLeft) : acc), BN.ZERO);
-// 		if (sellAmount > BN.ZERO && sellAmount > buyAmount) {
-// 			this.setIsSell(true);
-// 			this.setSellAmount(sellAmount);
-// 			this.setSellPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
-// 		} else if (buyAmount > BN.ZERO && buyAmount > sellAmount) {
-// 			this.setIsSell(false);
-// 			this.setBuyAmount(buyAmount);
-// 			this.setBuyPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
-// 		}
-// 	};

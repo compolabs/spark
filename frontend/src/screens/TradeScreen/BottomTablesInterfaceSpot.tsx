@@ -157,7 +157,7 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 		[],
 	);
 
-	const { ordersStore, settingsStore, accountStore } = useStores();
+	const { spotOrdersStore, settingsStore, accountStore } = useStores();
 	const columns = [orderColumns, tradeColumns, balanceColumns];
 	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
@@ -167,7 +167,7 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 		switch (tabIndex) {
 			case 0:
 				setData(
-					ordersStore.myOrders.map((order) => ({
+					spotOrdersStore.mySpotOrders.map((order) => ({
 						date: dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm"),
 						pair: order.market,
 						status: order.status,
@@ -204,7 +204,7 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 			// 	setData();
 			// 	break;
 		}
-	}, [tabIndex, accountStore, ordersStore.myOrders, theme.colors.redLight, theme.colors.greenLight]);
+	}, [tabIndex, accountStore, spotOrdersStore.mySpotOrders, theme.colors.redLight, theme.colors.greenLight]);
 	return (
 		<Root size={tableSize}>
 			<TabContainer>

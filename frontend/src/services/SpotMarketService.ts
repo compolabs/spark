@@ -1,9 +1,9 @@
-import { ACCOUNT_BALANCE_INDEXER, SPOT_INDEXER, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { SPOT_INDEXER, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 import makeIndexerRequest from "@src/utils/makeIndexerRequest";
 
-interface IOrderResponse {
+interface ISpotOrderResponse {
 	id: string;
 	order_id: number;
 	owner: string;
@@ -22,7 +22,7 @@ interface IOrderResponse {
 	market: string;
 }
 
-export class Order {
+export class SpotOrder {
 	asset0: string;
 	amount0: BN;
 	asset1: string;
@@ -40,7 +40,7 @@ export class Order {
 	price: number;
 	market: string;
 
-	constructor(orderOutput: IOrderResponse) {
+	constructor(orderOutput: ISpotOrderResponse) {
 		this.id = orderOutput.id.toString();
 		this.orderId = orderOutput.order_id;
 		this.asset0 = orderOutput.asset0;
@@ -123,12 +123,12 @@ export class Order {
 	}
 }
 
-export const getOrderbook = async (
+export const getSpotOrderbook = async (
 	owner: string,
 	market: string,
 ): Promise<{
-	myOrders: Array<Order>;
-	orderbook: { buy: Array<Order>; sell: Array<Order> };
+	mySpotOrders: Array<SpotOrder>;
+	orderbook: { buy: Array<SpotOrder>; sell: Array<SpotOrder> };
 }> => {
 	const [symbol0, symbol1] = market.split("/");
 	let assetId0 = TOKENS_BY_SYMBOL[symbol0].assetId.substring(2);
@@ -143,11 +143,11 @@ export const getOrderbook = async (
 		makeIndexerRequest(sellQuery, SPOT_INDEXER),
 		owner.length === 0 ? null : makeIndexerRequest(ownerQuery, SPOT_INDEXER),
 	]);
-	const [buy, sell, myOrders] = res.map((res) =>
+	const [buy, sell, mySpotOrders] = res.map((res) =>
 		res?.data.data[0] != null
 			? res.data.data[0].map(
-					(order: IOrderResponse): Order =>
-						new Order({
+					(order: ISpotOrderResponse): SpotOrder =>
+						new SpotOrder({
 							...order,
 							market,
 							asset0: `0x${order.asset0}`,
@@ -167,10 +167,91 @@ export const getOrderbook = async (
 	);
 	// console.log({ myOrders, orderbook: { sell, buy } });
 	return {
-		myOrders,
+		mySpotOrders,
 		orderbook: {
-			sell: sell.filter((order: Order) => order.amountLeft.gt(0) && order.totalLeft.gt(0)),
-			buy: buy.filter((order: Order) => order.amountLeft.gt(0) && order.totalLeft.gt(0)),
+			sell: sell.filter((order: SpotOrder) => order.amountLeft.gt(0) && order.totalLeft.gt(0)),
+			buy: buy.filter((order: SpotOrder) => order.amountLeft.gt(0) && order.totalLeft.gt(0)),
 		},
 	};
 };
+
+interface ISpotTradeResponse {
+	address: string; //much be owner? todo check
+	amount0: number;
+	amount1: number;
+	asset0: string;
+	asset1: string;
+	id: string;
+	timestamp: number;
+}
+
+export enum TRADE_TYPE {
+	BUY,
+	SELL,
+}
+
+export class SpotTrade {
+	address: string;
+	amount0: BN;
+	amount1: BN;
+	asset0: string;
+	asset1: string;
+	id: string;
+	timestamp: number;
+
+	constructor(tradeOutput: ISpotTradeResponse) {
+		this.address = tradeOutput.id.toString();
+		this.amount0 = new BN(tradeOutput.amount0);
+		this.amount1 = new BN(tradeOutput.amount1);
+		this.asset0 = tradeOutput.asset0;
+		this.asset1 = tradeOutput.asset1;
+		this.id = tradeOutput.id;
+		this.timestamp = tradeOutput.timestamp;
+	}
+
+	get token0() {
+		return TOKENS_BY_ASSET_ID[this.asset0];
+	}
+
+	get token1() {
+		return TOKENS_BY_ASSET_ID[this.asset1];
+	}
+
+	get time() {
+		return dayjs(this.timestamp * 1000).format("HH:mm:ss");
+	}
+
+	get priceFormatter() {
+		const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+		const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+		const price = am1.div(am0);
+		return price.toFormat(price.lt(0.01) ? 4 : 2);
+	}
+
+	get amountFormatter() {
+		const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+		return am0.toFormat(am0.lt(0.01) ? 4 : 2);
+	}
+
+	get price() {
+		const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+		const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+		return am1.div(am0);
+	}
+
+	get reversePrice() {
+		const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+		const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+		return am0.div(am1);
+	}
+
+	get amount() {
+		const am0 = BN.formatUnits(this.amount0, this.token0.decimals);
+		return am0.toFormat(am0.lt(0.01) ? 9 : 2);
+	}
+
+	get total() {
+		const am1 = BN.formatUnits(this.amount1, this.token1.decimals);
+		return am1.toFormat(am1.lt(0.01) ? 6 : 2);
+	}
+}
