@@ -259,7 +259,7 @@ class SpotTradeVm {
 						},
 					}),
 					limitOrdersContract.functions
-						.create_order(token1, amount1, this.matcherFee)
+						.create_order({ value: token1 }, amount1, this.matcherFee)
 						.callParams({ forward: { amount: amount0, assetId: token0 } }),
 				])
 				.txParams({ gasPrice: 1 })

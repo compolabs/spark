@@ -1,4 +1,4 @@
-import { ACCOUNT_BALANCE_INDEXER, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { ACCOUNT_BALANCE_INDEXER, SPOT_INDEXER, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import dayjs from "dayjs";
 import makeIndexerRequest from "@src/utils/makeIndexerRequest";
@@ -133,15 +133,15 @@ export const getOrderbook = async (
 	const [symbol0, symbol1] = market.split("/");
 	let assetId0 = TOKENS_BY_SYMBOL[symbol0].assetId.substring(2);
 	let assetId1 = TOKENS_BY_SYMBOL[symbol1].assetId.substring(2);
-	const sellQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spark_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId0}' AND asset1 = '${assetId1}') t;`;
-	const buyQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spark_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId1}' AND asset1 = '${assetId0}') t;`;
+	const sellQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId0}' AND asset1 = '${assetId1}') t;`;
+	const buyQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.orderentity WHERE status = 'Active' AND asset0 = '${assetId1}' AND asset1 = '${assetId0}') t;`;
 	owner = owner.substring(2);
-	const ownerQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spark_indexer.orderentity WHERE owner = '${owner}') t;`;
+	const ownerQuery = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.orderentity WHERE owner = '${owner}') t;`;
 
 	const res = await Promise.all([
-		makeIndexerRequest(buyQuery, ACCOUNT_BALANCE_INDEXER),
-		makeIndexerRequest(sellQuery, ACCOUNT_BALANCE_INDEXER),
-		owner.length === 0 ? null : makeIndexerRequest(ownerQuery, ACCOUNT_BALANCE_INDEXER),
+		makeIndexerRequest(buyQuery, SPOT_INDEXER),
+		makeIndexerRequest(sellQuery, SPOT_INDEXER),
+		owner.length === 0 ? null : makeIndexerRequest(ownerQuery, SPOT_INDEXER),
 	]);
 	const [buy, sell, myOrders] = res.map((res) =>
 		res?.data.data[0] != null

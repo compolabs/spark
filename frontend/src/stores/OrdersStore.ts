@@ -1,6 +1,6 @@
 import RootStore from "@stores/RootStore";
-import { makeAutoObservable } from "mobx";
-import { getOrderbook, Order } from "@src/services/OrdersService";
+import { makeAutoObservable, reaction } from "mobx";
+import { getOrderbook, Order } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
 import _ from "lodash";
 
@@ -17,9 +17,9 @@ class OrdersStore {
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
-		// this.sync().then(() => this.setInitialized(true));
-		// setInterval(this.sync, 5000);
-		// reaction(() => this.rootStore.accountStore.address, this.sync);
+		this.sync().then(() => this.setInitialized(true));
+		setInterval(this.sync, 5000);
+		reaction(() => this.rootStore.accountStore.address, this.sync);
 	}
 
 	sync = () =>
