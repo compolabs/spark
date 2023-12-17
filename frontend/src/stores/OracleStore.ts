@@ -1,7 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import RootStore from "@stores/RootStore";
 import { EvmPriceServiceConnection, Price, PriceFeed } from "@pythnetwork/pyth-evm-js";
-import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL } from "@src/constants";
 import { arrayify, Bytes } from "fuels";
 import { Vec } from "@src/contracts/common";
 import { PythContractAbi__factory } from "@src/contracts";

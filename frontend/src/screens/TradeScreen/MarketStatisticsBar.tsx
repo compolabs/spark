@@ -8,6 +8,7 @@ import BN from "@src/utils/BN";
 import arrow from "@src/assets/icons/arrowUp.svg";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
+import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 
 interface IProps {}
 
@@ -72,10 +73,12 @@ const PriceRow = styled(Row)`
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	const { tradeStore, oracleStore } = useStores();
 	const theme = useTheme();
+	const vm = usePerpTradeVM();
 	const [price, setPrice] = useState<string | null>(null);
 	const perpStatsArr = [
 		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 6).toFormat(2) },
 		{ title: "Predicted Funding rate", value: tradeStore.fundingRate.toFormat(5) + " %" },
+		{ title: "Open interest", value: vm?.openInterest == null ? "0.00" : vm.openInterest.toFormat(0) + " K" },
 	];
 	const spotStatsArr = [
 		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 6).toFormat(2) },
