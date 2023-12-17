@@ -329,7 +329,14 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 						content={
 							<Column crossAxisSize="max" style={{ zIndex: 500 }}>
 								{tableSizesConfig.map(({ size, icon, title }) => (
-									<TableSize active={size === tableSize} onClick={() => setTableSize(size)} key={title}>
+									<TableSize
+										active={size === tableSize}
+										onClick={() => {
+											setTableSize(size);
+											settingsStore.setTradeTableSize(size);
+										}}
+										key={title}
+									>
 										<img src={icon} alt={title} />
 										<SizedBox width={4} />
 										<Text nowrap type={TEXT_TYPES.BUTTON}>
