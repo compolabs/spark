@@ -14,7 +14,7 @@ const Root = styled.div`
 	display: flex;
 	flex-direction: column;
 `;
-const OrderBookHeader = styled.div<{}>`
+const Header = styled.div<{}>`
 	width: 100%;
 	box-sizing: border-box;
 	display: grid;
@@ -56,14 +56,14 @@ const PerpTrades: React.FC<IProps> = observer(() => {
 	return (
 		<Root>
 			<SizedBox height={8} />
-			<OrderBookHeader>
+			<Header>
 				<Text type={TEXT_TYPES.SUPPORTING}>Price {vm.token1.symbol}</Text>
 				{/*<Text type={TEXT_TYPES.SUPPORTING}>Timestamp</Text>*/}
 				<div />
 				<Text type={TEXT_TYPES.SUPPORTING} style={{ textAlign: "right" }}>
 					Qty({vm.token0.symbol})
 				</Text>
-			</OrderBookHeader>
+			</Header>
 			<SizedBox height={8} />
 
 			<Container>

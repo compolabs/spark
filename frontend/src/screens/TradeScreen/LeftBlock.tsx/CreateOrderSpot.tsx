@@ -3,7 +3,7 @@ import { Column, Row } from "@components/Flex";
 import React, { ComponentProps, useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
-import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
+import { useSpotTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
@@ -41,7 +41,7 @@ const orderTypes = [
 
 const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore } = useStores();
-	const vm = useTradeScreenVM();
+	const vm = useSpotTradeScreenVM();
 	const [percent, _setPercent] = useState(0);
 
 	const setPercent = (v: number) => {

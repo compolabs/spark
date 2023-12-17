@@ -115,7 +115,6 @@ export const getPerpTrades = async (): Promise<PerpTrade[]> => {
 		: [];
 };
 
-////// perp order
 export class PerpOrder {
 	active: boolean;
 	baseSize: BN;

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import * as React from "react";
 import { ChartingLibraryWidgetOptions, LanguageCode, ResolutionString, widget } from "@src/charting_library";
 import { observer } from "mobx-react-lite";
-import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
+import { useSpotTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
 import { useTheme } from "@emotion/react";
 
@@ -33,7 +33,7 @@ const getLanguageFromURL = (): LanguageCode | null => {
 };
 
 const TVChartContainer = () => {
-	const vm = useTradeScreenVM();
+	const vm = useSpotTradeScreenVM();
 	const chartContainerRef = useRef<HTMLDivElement>() as React.MutableRefObject<HTMLInputElement>;
 	const theme = useTheme();
 	const defaultProps: Omit<ChartContainerProps, "container"> = {

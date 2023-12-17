@@ -5,7 +5,7 @@ import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
 import { SpotMarketAbi__factory } from "@src/contracts";
-import { SpotTrade } from "@src/services/SpotMarketService";
+import { getLatestSpotTradePrice, getLatestSpotTrades, SpotTrade } from "@src/services/SpotMarketService";
 
 const ctx = React.createContext<SpotTradeVm | null>(null);
 
@@ -21,7 +21,7 @@ export const SpotTradeVMProvider: React.FC<IProps> = ({ children }) => {
 
 type OrderAction = "buy" | "sell";
 
-export const useTradeScreenVM = () => useVM(ctx);
+export const useSpotTradeScreenVM = () => useVM(ctx);
 
 class SpotTradeVm {
 	public rootStore: RootStore;
@@ -30,12 +30,12 @@ class SpotTradeVm {
 		this.rootStore = rootStore;
 		this.updateMarket();
 		makeAutoObservable(this);
-		this.getLatestTrades().then();
+		this.getLatestSpotTrades().then();
 		reaction(
 			() => this.rootStore.tradeStore.marketSymbol,
 			() => {
 				this.updateMarket();
-				this.getLatestTrades();
+				this.getLatestSpotTrades();
 			},
 		);
 		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
@@ -99,9 +99,16 @@ class SpotTradeVm {
 		this.setSellPrice(buyPrice);
 	};
 
-	getLatestTrades = async () => {
-		// const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
-		// this.setTrades(data);
+	getLatestSpotTrades = async () => {
+		const asset0 = this.token0.assetId.slice(2);
+		const asset1 = this.token1.assetId.slice(2);
+		const data = await getLatestSpotTrades(asset0, asset1);
+		this.setTrades(data);
+	};
+	getLatestSpotTradePrice = async () => {
+		const asset0 = this.token0.assetId.slice(2);
+		const asset1 = this.token1.assetId.slice(2);
+		return await getLatestSpotTradePrice(asset0, asset1);
 	};
 
 	get token0() {

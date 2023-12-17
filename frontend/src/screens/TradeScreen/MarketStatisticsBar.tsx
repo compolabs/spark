@@ -9,6 +9,7 @@ import arrow from "@src/assets/icons/arrowUp.svg";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
+import { getLatestSpotTradePrice } from "@src/services/SpotMarketService";
 
 interface IProps {}
 
@@ -82,47 +83,25 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	];
 	const spotStatsArr = [
 		{ title: "Index price", value: BN.formatUnits(oracleStore.tokenIndexPrice, 6).toFormat(2) },
-		{ title: "24h volume", value: "" },
-		{ title: "24h High", value: "" },
-		{ title: "24h Low", value: "" },
+		// { title: "24h volume", value: "" },
+		// { title: "24h High", value: "" },
+		// { title: "24h Low", value: "" },
 	];
 	useEffect(() => {
 		if (tradeStore.isMarketPerp) {
 			setPrice(BN.formatUnits(tradeStore.marketPrice, 6).toFormat(2));
 		} else {
-			setPrice(BN.ZERO.toString(2));
-			// const to = dayjs().unix();
-			// const from = to - 60 * 60 * 24 * 2;
-			// const req = `https://spark-tv-datafeed.spark-defi.com/api/v1/history?symbol=UNI%2FUSDC&resolution=1D&from=${from}&to=${to}&countback=2&currencyCode=USDC`;
-			// axios
-			// 	.get(req)
-			// 	.then((res) => res.data)
-			// 	.then((data) => {
-			// 		if (data.t[1] != null && data.t[0] != null) {
-			// 			setSpotStats({
-			// 				price: new BN(data.c[1]),
-			// 				priceChange: data.c[0] === 0 ? BN.ZERO : new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
-			// 				dailyHigh: new BN(data.h[1] ?? BN.ZERO),
-			// 				dailyLow: new BN(data.l[1] ?? BN.ZERO),
-			// 				//fixme
-			// 				volumeAsset1: BN.formatUnits(data.v[1] * data.c[1], 9), //data.c[1] = price of USDC
-			// 				volumeAsset0: BN.formatUnits(data.v[1] * 1, 9), //1 = price of USDC
-			// 			});
-			// 		} else if (data.h[0] != null && data.h[1] == null) {
-			// 			setSpotStats({
-			// 				price: new BN(data.c[0]),
-			// 				priceChange: new BN(new BN(data.c[1]).minus(data.c[0])).div(data.c[0]).times(100),
-			// 				dailyHigh: new BN(data.h[0]),
-			// 				dailyLow: new BN(data.l[0]),
-			// 				//fixme
-			// 				volumeAsset1: BN.formatUnits(data.v[0] * data.c[0], 9), //data.c[1] = price of USDC
-			// 				volumeAsset0: BN.formatUnits(data.v[0] * 1, 9), //1 = price of USDC
-			// 			});
-			// 		}
-			// 	});
+			const asset0 = tradeStore.market?.token0.assetId.slice(2) ?? "";
+			const asset1 = tradeStore.market?.token1.assetId.slice(2) ?? "";
+			getLatestSpotTradePrice(asset0, asset1).then((v) => setPrice(v.toFormat(2)));
 		}
-		// }, [tradeStore.isMarketPerp, tradeStore.marketPrice, oracleStore.tokenIndexPrice]);
-	}, [tradeStore.marketPrice, tradeStore.marketSymbol, tradeStore.isMarketPerp]);
+	}, [
+		tradeStore.marketPrice,
+		tradeStore.marketSymbol,
+		tradeStore.isMarketPerp,
+		tradeStore.market?.token0.assetId,
+		tradeStore.market?.token1.assetId,
+	]);
 	return (
 		<Root>
 			<MarketSelect

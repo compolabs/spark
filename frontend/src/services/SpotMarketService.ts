@@ -203,8 +203,8 @@ export class SpotTrade {
 		this.address = tradeOutput.id.toString();
 		this.amount0 = new BN(tradeOutput.amount0);
 		this.amount1 = new BN(tradeOutput.amount1);
-		this.asset0 = tradeOutput.asset0;
-		this.asset1 = tradeOutput.asset1;
+		this.asset0 = `0x${tradeOutput.asset0}`;
+		this.asset1 = `0x${tradeOutput.asset1}`;
 		this.id = tradeOutput.id;
 		this.timestamp = tradeOutput.timestamp;
 	}
@@ -255,3 +255,18 @@ export class SpotTrade {
 		return am1.toFormat(am1.lt(0.01) ? 6 : 2);
 	}
 }
+
+export const getLatestSpotTrades = async (asset0: string, asset1: string): Promise<SpotTrade[]> => {
+	//todo add limit and select
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.tradeentity WHERE asset0 = '${asset0}' AND asset1 = '${asset1}') t;`;
+	const res = await makeIndexerRequest(query, SPOT_INDEXER);
+	return res?.data.data[0] != null
+		? res.data.data[0].map((trade: ISpotTradeResponse): SpotTrade => new SpotTrade(trade))
+		: [];
+};
+export const getLatestSpotTradePrice = async (asset0: string, asset1: string): Promise<BN> => {
+	const query = `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.tradeentity WHERE asset0 = '${asset0}' AND asset1 = '${asset1}' ORDER BY timestamp DESC LIMIT 1) t;`;
+	const res = await makeIndexerRequest(query, SPOT_INDEXER);
+	const latestTrade = new SpotTrade(res.data.data[0][0]);
+	return latestTrade.price ?? BN.ZERO;
+};

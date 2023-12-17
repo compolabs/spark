@@ -96,6 +96,11 @@ const TableSizeSelector = styled.div`
 	right: 0;
 	top: 4px;
 `;
+const TokenIcon = styled.img`
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+`;
 const TableSize = styled.div<{ active?: boolean }>`
 	display: flex;
 	align-items: center;
@@ -113,7 +118,6 @@ const TableSize = styled.div<{ active?: boolean }>`
 
 const tabs = [
 	{ title: "ORDERS", disabled: false },
-	{ title: "TRADES", disabled: true },
 	{ title: "BALANCES", disabled: false },
 ];
 
@@ -138,17 +142,17 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 		[],
 	);
 
-	const tradeColumns = React.useMemo(
-		() => [
-			{ Header: "Market", accessor: "market" },
-			{ Header: "Size", accessor: "size" },
-			{ Header: "Entry Price", accessor: "entry" },
-			{ Header: "Notional", accessor: "notional" },
-			{ Header: "Fee", accessor: "fee" },
-			{ Header: "Date", accessor: "date" },
-		],
-		[],
-	);
+	// const tradeColumns = React.useMemo(
+	// 	() => [
+	// 		{ Header: "Market", accessor: "market" },
+	// 		{ Header: "Size", accessor: "size" },
+	// 		{ Header: "Entry Price", accessor: "entry" },
+	// 		{ Header: "Notional", accessor: "notional" },
+	// 		{ Header: "Fee", accessor: "fee" },
+	// 		{ Header: "Date", accessor: "date" },
+	// 	],
+	// 	[],
+	// );
 	const balanceColumns = React.useMemo(
 		() => [
 			{ Header: "Asset", accessor: "asset" },
@@ -158,7 +162,7 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 	);
 
 	const { spotOrdersStore, settingsStore, accountStore } = useStores();
-	const columns = [orderColumns, tradeColumns, balanceColumns];
+	const columns = [orderColumns, balanceColumns];
 	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
 	const [data, setData] = useState<any>([]);
@@ -177,32 +181,29 @@ const BottomTablesInterfaceSpot: React.FC<IProps> = observer(() => {
 							</TableText>
 						),
 						//todo
-						amount: (
-							<TableText primary>
-								{order.amountStr}
-								&nbsp;
-								{/*<Chip>{order.type === "SELL" ? vm.token0.symbol : vm.token1.symbol}</Chip>*/}
-							</TableText>
-						),
+						amount: <TableText primary>{order.amountStr}</TableText>,
 						filled: order.fulfilled0.div(order.amount0).times(100).toFormat(2),
 						price: order.price.toFixed(2),
 						action: "",
 					})),
 				);
 				break;
-			case 2:
+			case 1:
 				setData(
 					accountStore.assetBalances
 						?.filter(({ balance }) => balance && balance.gt(0))
 						?.map((balance) => ({
-							asset: balance.symbol,
+							asset: (
+								<Row alignItems="center">
+									<TokenIcon src={balance.logo} alt="market-icon" />
+									<SizedBox width={4} />
+									{balance.symbol}
+								</Row>
+							),
 							balance: accountStore.getBalanceFormatted(balance.assetId, 4),
 						})),
 				);
 				break;
-			// case 2:
-			// 	setData();
-			// 	break;
 		}
 	}, [tabIndex, accountStore, spotOrdersStore.mySpotOrders, theme.colors.redLight, theme.colors.greenLight]);
 	return (

@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import React, { HTMLAttributes, useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import SizedBox from "@components/SizedBox";
-import { useTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
+import { useSpotTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import { Column, Row } from "@src/components/Flex";
@@ -147,7 +147,7 @@ const SpreadRow = styled(Row)`
 const DECIMAL_OPTIONS = [2, 4, 5, 6];
 
 const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
-	const vm = useTradeScreenVM();
+	const vm = useSpotTradeScreenVM();
 	const { spotOrdersStore } = useStores();
 	const theme = useTheme();
 	const [decimalKey, setDecimalKey] = useState("0");
