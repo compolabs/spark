@@ -28,10 +28,12 @@ const OrderbookAndTradesInterface: React.FC<IProps> = () => {
 	return (
 		<Root>
 			<ButtonGroup style={{ padding: "0 12px" }}>
-				<Button active onClick={() => setIsOrderbook(true)}>
+				<Button active={isOrderbook} onClick={() => setIsOrderbook(true)}>
 					Orderbook
 				</Button>
-				<Button onClick={() => setIsOrderbook(false)}>Trades</Button>
+				<Button active={!isOrderbook} onClick={() => setIsOrderbook(false)}>
+					Trades
+				</Button>
 			</ButtonGroup>
 			<SizedBox height={8} />
 			{isOrderbook ? tradeStore.isMarketPerp ? <PerpOrderBook /> : <SpotOrderBook /> : null}
