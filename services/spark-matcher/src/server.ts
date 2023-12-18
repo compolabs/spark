@@ -6,7 +6,6 @@ import { CONTRACT_ADDRESS, NODE_URL, PORT, PRIVATE_KEY } from "./config";
 import { SpotMarketAbi, SpotMarketAbi__factory as SpotMarketAbiFactory } from "./contracts";
 import fetchIndexer from "./utils/fetchIndexer";
 import BN from "./utils/BN";
-import { asyncCallWithTimeout } from "./utils";
 
 enum STATUS {
   RUNNING,
@@ -80,7 +79,7 @@ class SparkMatcher {
           new BN(order1.amount0).minus(order1.fulfilled0).gt(0) &&
           new BN(order1.amount1).minus(order1.fulfilled1).gt(0)
         ) {
-          const isOrdersActive = await Promise.all([
+          const orders = await Promise.all([
             await this.contract.functions
               .order_by_id(order0.orderId)
               .simulate()
@@ -89,65 +88,75 @@ class SparkMatcher {
               .order_by_id(order1.orderId)
               .simulate()
               .catch(console.error),
-          ]).then((orders) => orders.every((res) => res != null && res.value.status == "Active"));
-          if (isOrdersActive) {
-            // let asset0 = order0.asset0;
-            // let asset1 = order0.asset1;
-            // console.log(
-            //   `\n${order0.type} Order #${order0.orderId}: ${BN.formatUnits(
-            //     new BN(order0.amount0).minus(order0.fulfilled0),
-            //     asset0.decimals
-            //   )} ${asset0.symbol} -> ${BN.formatUnits(
-            //     new BN(order0.amount1).minus(order0.fulfilled1),
-            //     asset1.decimals
-            //   )} ${asset1.symbol}`
-            // );
+          ]);
+          const isOrdersActive = orders.every((res) => res != null && res.value.status == "Active");
 
-            // asset0 = order1.asset0;
-            // asset1 = order1.asset1;
-            // console.log(
-            //   `${order1.type} Order #${order1.orderId}: ${BN.formatUnits(
-            //     new BN(order1.amount0).minus(order1.fulfilled0),
-            //     asset0.decimals
-            //   )} ${asset0.symbol} -> ${BN.formatUnits(
-            //     new BN(order1.amount1).minus(order1.fulfilled1),
-            //     asset1.decimals
-            //   )} ${asset1.symbol}`
-            // );
-            this.processing.push(order0.orderId);
-            this.processing.push(order1.orderId);
-            const promise = await this.contract.functions
-              .match_orders(order0.orderId, order1.orderId)
-              .txParams({ gasPrice: 2 })
-              .call()
-              .then(() => console.log(`✅ ${order0.orderId} + ${order1.orderId}`))
-              .catch((e) => {
-                if (e.reason) {
-                  const status = okErrors.includes(e.reason) ? "✅" : "❌";
-                  console.log(`${status} ${order0.orderId} + ${order1.orderId} ${e.reason}`);
-                } else if (e.name && e.cause && e.cause.logs && e.cause.logs[0]) {
-                  console.log(
-                    `❌ ${order0.orderId} + ${order1.orderId}: ${e.name}: ${e.cause.logs[0] ?? ""}`
-                  );
-                } else if (/"reason": "(.+)"/.test(e.toString())) {
-                  const reason = e.toString().match('"reason": "(.+)"')[1];
-                  console.log(`❌ ${order0.orderId} + ${order1.orderId}: ${reason}`);
-                } else {
-                  console.log(`❌ ${order0.orderId} + ${order1.orderId}: ${e.toString()}`);
-                  Object.entries(e);
-                }
-              })
-              .finally(() => {
-                const index0 = this.processing.indexOf(order0.orderId);
-                const index1 = this.processing.indexOf(order1.orderId);
-                index0 !== -1 && this.processing.splice(index0, 1);
-                index1 !== -1 && this.processing.splice(index1, 1);
-              });
-            promises.push(promise);
+          if (!isOrdersActive) {
+            console.log(
+              `🛸👽 Phantom order \nOrder #${order0.orderId}\n indexer status: ${
+                orders[0] && orders[0].value.status
+              }\n real status: ${order0.status} \nOrder #${order1.orderId}\n indexer status:${
+                orders[1] && orders[1].value.status
+              }\n real status: ${order1.status} `
+            );
+            continue;
           }
+          // let asset0 = order0.asset0;
+          // let asset1 = order0.asset1;
+          // console.log(
+          //   `\n${order0.type} Order #${order0.orderId}: ${BN.formatUnits(
+          //     new BN(order0.amount0).minus(order0.fulfilled0),
+          //     asset0.decimals
+          //   )} ${asset0.symbol} -> ${BN.formatUnits(
+          //     new BN(order0.amount1).minus(order0.fulfilled1),
+          //     asset1.decimals
+          //   )} ${asset1.symbol}`
+          // );
+
+          // asset0 = order1.asset0;
+          // asset1 = order1.asset1;
+          // console.log(
+          //   `${order1.type} Order #${order1.orderId}: ${BN.formatUnits(
+          //     new BN(order1.amount0).minus(order1.fulfilled0),
+          //     asset0.decimals
+          //   )} ${asset0.symbol} -> ${BN.formatUnits(
+          //     new BN(order1.amount1).minus(order1.fulfilled1),
+          //     asset1.decimals
+          //   )} ${asset1.symbol}`
+          // );
+          this.processing.push(order0.orderId);
+          this.processing.push(order1.orderId);
+          const promise = await this.contract.functions
+            .match_orders(order0.orderId, order1.orderId)
+            .txParams({ gasPrice: 2 })
+            .call()
+            .then(() => console.log(`✅ ${order0.orderId} + ${order1.orderId}`))
+            .catch((e) => {
+              if (e.reason) {
+                const status = okErrors.includes(e.reason) ? "✅" : "❌";
+                console.log(`${status} ${order0.orderId} + ${order1.orderId} ${e.reason}`);
+              } else if (e.name && e.cause && e.cause.logs && e.cause.logs[0]) {
+                console.log(
+                  `❌ ${order0.orderId} + ${order1.orderId}: ${e.name}: ${e.cause.logs[0] ?? ""}`
+                );
+              } else if (/"reason": "(.+)"/.test(e.toString())) {
+                const reason = e.toString().match('"reason": "(.+)"')[1];
+                console.log(`❌ ${order0.orderId} + ${order1.orderId}: ${reason}`);
+              } else {
+                console.log(`❌ ${order0.orderId} + ${order1.orderId}: ${e.toString()}`);
+                Object.entries(e);
+              }
+            })
+            .finally(() => {
+              const index0 = this.processing.indexOf(order0.orderId);
+              const index1 = this.processing.indexOf(order1.orderId);
+              index0 !== -1 && this.processing.splice(index0, 1);
+              index1 !== -1 && this.processing.splice(index1, 1);
+            });
+          promises.push(promise);
         }
-        await sleep(1000);
       }
+      await sleep(1000);
     }
 
     console.log("🏁 Job finish");
