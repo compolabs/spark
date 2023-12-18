@@ -77,7 +77,7 @@ const TradingViewWidget = observer(() => {
 	const { tradeStore } = useStores();
 	const theme = useTheme();
 	useEffect(() => {
-		(onLoadScriptRef as any).current = createWidget(tradeStore.isMarketPerp ? "OKX:BTCUSDC" : "OKX:UNIUSDC");
+		(onLoadScriptRef as any).current = createWidget;
 
 		if (!tvScriptLoadingPromise) {
 			tvScriptLoadingPromise = new Promise((resolve) => {
@@ -101,8 +101,7 @@ const TradingViewWidget = observer(() => {
 			if (document.getElementById("tradingview_3f939") && "TradingView" in window) {
 				new (window as any).TradingView.widget({
 					autosize: true,
-					// symbol: symbol,
-					symbol: "OKX:BTCUSDC",
+					symbol: tradeStore.isMarketPerp ? "OKX:BTCUSDC" : "OKX:UNIUSDC",
 					interval: "30",
 					timezone: "Etc/UTC",
 					theme: "dark",

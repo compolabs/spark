@@ -1,17 +1,19 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { observer } from "mobx-react";
-import { Row } from "@components/Flex";
+import { useStores } from "@stores";
+import { Column, Row } from "@components/Flex";
 import { useTheme } from "@emotion/react";
+import BN from "@src/utils/BN";
+import useEventListener from "@src/utils/useEventListener";
 import { useSpotTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 
 interface IProps {}
 
-const Root = styled.div`
-	display: flex;
-	flex-direction: column;
+const Root = styled(Column)`
+	width: 100%;
 `;
 const Header = styled.div<{}>`
 	width: 100%;
@@ -48,8 +50,25 @@ const Container = styled.div<{
 `;
 const SpotTrades: React.FC<IProps> = observer(() => {
 	const vm = useSpotTradeScreenVM();
+	const { tradeStore } = useStores();
 	const theme = useTheme();
-	//todo add limit amount
+	const [amountOfOrders, setAmountOfOrders] = useState(0);
+
+	const calcSize = () => setAmountOfOrders(+new BN(window.innerHeight - 194).div(17).toFixed(0));
+
+	useEffect(calcSize, []);
+	const handleResize = useCallback(calcSize, []);
+
+	useEventListener("resize", handleResize);
+
+	const trades = vm.trades.slice(-amountOfOrders);
+
+	if (tradeStore.perpOrders.length === 0)
+		return (
+			<Root alignItems="center" justifyContent="center" mainAxisSize="stretch">
+				<Text type={TEXT_TYPES.SUPPORTING}>No trades yet</Text>
+			</Root>
+		);
 	return (
 		<Root>
 			<SizedBox height={8} />
@@ -63,7 +82,7 @@ const SpotTrades: React.FC<IProps> = observer(() => {
 			<SizedBox height={8} />
 
 			<Container>
-				{vm.trades.map((trade) => (
+				{trades.map((trade) => (
 					<Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }} key={"trade" + trade.id}>
 						<Text type={TEXT_TYPES.BODY} color={theme.colors.textPrimary}>
 							{trade.price.toFormat(2)}
@@ -81,3 +100,4 @@ const SpotTrades: React.FC<IProps> = observer(() => {
 	);
 });
 export default SpotTrades;
+//tradeStore.perpTrades.

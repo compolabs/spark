@@ -88,25 +88,29 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 		// { title: "24h Low", value: "" },
 	];
 	useEffect(() => {
-		if (tradeStore.isMarketPerp) {
+		console.log("tradeStore.isMarketPerp", tradeStore.isMarketPerp);
+		if (tradeStore.isMarketPerp && tradeStore.marketSymbol != null) {
+			console.log("1");
 			setPrice(BN.formatUnits(tradeStore.marketPrice, 6).toFormat(2));
 		} else {
+			console.log("2");
 			const asset0 = tradeStore.market?.token0.assetId.slice(2) ?? "";
 			const asset1 = tradeStore.market?.token1.assetId.slice(2) ?? "";
 			getLatestSpotTradePrice(asset0, asset1).then((v) => setPrice(v.toFormat(2)));
 		}
 	}, [
 		tradeStore.marketPrice,
-		tradeStore.marketSymbol,
+		// tradeStore.marketSymbol,
 		tradeStore.isMarketPerp,
-		tradeStore.market?.token0.assetId,
-		tradeStore.market?.token1.assetId,
+		// tradeStore.market?.token0.assetId,
+		// tradeStore.market?.token1.assetId,
 	]);
 	return (
 		<Root>
 			<MarketSelect
 				focused={tradeStore.marketSelectionOpened}
 				style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B", borderRadius: "10px 0 0 10px" } : {}}
+				onClick={() => !tradeStore.marketSelectionOpened && tradeStore.setMarketSelectionOpened(true)}
 			>
 				<Row alignItems="center">
 					<Icon style={{ width: 24, height: 24 }} src={tradeStore.market?.token0.logo} alt="token0" />
@@ -117,13 +121,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 					</Text>
 				</Row>
 				<SizedBox width={10} />
-				<img
-					onClick={() => !tradeStore.marketSelectionOpened && tradeStore.setMarketSelectionOpened(true)}
-					style={{ width: 24, height: 24, marginLeft: -8 }}
-					src={arrow}
-					alt="arrow"
-					className="menu-arrow"
-				/>
+				<img style={{ width: 24, height: 24, marginLeft: -8 }} src={arrow} alt="arrow" className="menu-arrow" />
 			</MarketSelect>
 			<MarketStatistics>
 				<PriceRow alignItems="center">

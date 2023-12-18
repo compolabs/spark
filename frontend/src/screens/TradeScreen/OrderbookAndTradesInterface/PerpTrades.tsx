@@ -1,18 +1,19 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import { Row } from "@components/Flex";
+import { Column, Row } from "@components/Flex";
 import { useTheme } from "@emotion/react";
+import BN from "@src/utils/BN";
+import useEventListener from "@src/utils/useEventListener";
 
 interface IProps {}
 
-const Root = styled.div`
-	display: flex;
-	flex-direction: column;
+const Root = styled(Column)`
+	width: 100%;
 `;
 const Header = styled.div<{}>`
 	width: 100%;
@@ -51,7 +52,23 @@ const PerpTrades: React.FC<IProps> = observer(() => {
 	const vm = usePerpTradeVM();
 	const { tradeStore } = useStores();
 	const theme = useTheme();
-	//todo add limit amount
+	const [amountOfOrders, setAmountOfOrders] = useState(0);
+
+	const calcSize = () => setAmountOfOrders(+new BN(window.innerHeight - 194).div(17).toFixed(0));
+
+	useEffect(calcSize, []);
+	const handleResize = useCallback(calcSize, []);
+
+	useEventListener("resize", handleResize);
+
+	const trades = tradeStore.perpTrades.slice(-amountOfOrders);
+
+	if (tradeStore.perpOrders.length === 0)
+		return (
+			<Root alignItems="center" justifyContent="center" mainAxisSize="stretch">
+				<Text type={TEXT_TYPES.SUPPORTING}>No trades yet</Text>
+			</Root>
+		);
 	return (
 		<Root>
 			<SizedBox height={8} />
@@ -66,7 +83,7 @@ const PerpTrades: React.FC<IProps> = observer(() => {
 			<SizedBox height={8} />
 
 			<Container>
-				{tradeStore.perpTrades.map((trade) => (
+				{trades.map((trade) => (
 					<Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }} key={"trade" + trade.id}>
 						<Text type={TEXT_TYPES.BODY} color={theme.colors.textPrimary}>
 							{trade.formattedPrice.toFormat(2)}
