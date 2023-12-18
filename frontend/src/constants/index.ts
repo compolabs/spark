@@ -35,15 +35,15 @@ export const ACCOUNT_BALANCE_INDEXER =
 	"https://indexer.spark-defi.com/api/sql/composabilitylabs/account_balance_indexer";
 
 export const CONTRACT_ADDRESSES = {
-	spotMarket: "0xe8aa3e51b255667a22ee812e5d19104022f2bc1df2d215530d503a7fb39aaaa7",
+	spotMarket: "0xc99fa347474ccd17a9f6304d0978b42f844fd974bfac9df2f2899cb89db1bc84",
 	tokenFactory: "0xc3d0426df8a40e7b4803f305537a83e7037be91596c393e7a6b693133f9d7301",
 	pyth: "0x2b480dd77abdc48224a22b809608b445604f0de1a999160fb7f126cca2ffc108",
-	proxy: "0xb9884461ad8d1ed48d8f6b3a9e7137f9a18b4cd3d9930286eb52cbf29e3a3318",
-	accountBalance: "0x536aada5e7f8e8c8f79abacaa2cb800a2c306cd617809f60900cea9617553dd9",
-	clearingHouse: "0x2f972fa6b91379690724ed3ad435d3d6ffe8da7a20a0d98fe3688bad46f44d27",
-	insuranceFund: "0xb9f0919ddd0b151afb499a2fb346ce8d642db61e02ca8794fb1a50853505d2ba",
-	perpMarket: "0xccc3e18425d01fc2feea10d473fd5f41f405dcd9803ff04901d19db166d18568",
-	vault: "0x64bd473a174e6f535278fdc2b2b88829e8efb33e421c1b125185cc64967c34ff",
+	proxy: "0x36eadaee6e25bd050239834703f3881f91cbc3cb3bb7c96f57483703d8ecba3f",
+	accountBalance: "0xcfa7a1e1030c7aaf97fc065dab030fd4d6afd75dc80d35a3b843f0c467f69a2f",
+	clearingHouse: "0x0815f30454fe7bafec5b137513a8d1dcb36a4ffa5530217d7e6381352fb2614b",
+	insuranceFund: "0x7cdf5bd4cd5b9584517bee34b5fc94abe4790b1e99f1a7f81f40ef824164d103",
+	perpMarket: "0x87f7c3ef8c5b36696021c1e355f8946f36a156dfc66d44fd276e35aa950f008e",
+	vault: "0xfa8f7e7b7ed37ce7b0b98ac832317298aadb1a3833c5eec7899429c75124762f",
 };
 
 export interface IToken {

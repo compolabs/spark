@@ -129,10 +129,6 @@ const TokenIcon = styled.img`
 const tabs = [
 	{ title: "POSITIONS", disabled: false },
 	{ title: "ORDERS", disabled: false },
-	{ title: "UNSETTLED P&L", disabled: false },
-	// { title: "TRADES", disabled: true },
-	// { title: "BALANCES", disabled: true },
-	// { title: "HISTORY", disabled: true },
 ];
 
 const tableSizesConfig = [
@@ -142,25 +138,13 @@ const tableSizesConfig = [
 	{ title: "Large", icon: tableLargeSize, size: "large" },
 ];
 const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
-	//todo add history
-	//todo add UNSETTLED P&L
 	const positionColumns = React.useMemo(
 		() => [
-			{ Header: "Trading Pair", accessor: "pair" },
+			{ Header: "Market", accessor: "pair" },
 			{ Header: "Size", accessor: "size" },
-			{ Header: "Avg.Ent Price", accessor: "entPrice" },
-			{ Header: "Mark price", accessor: "markPrice" },
-			{
-				Header: "Main. margin",
-				accessor: "maintenanceMargin",
-				info: "Minimum collateral to prevent liquidation.",
-			}, //todo implement math
-			{
-				Header: "Initial margin",
-				accessor: "positionMargin",
-				info: "Required upfront collateral for opening a position.",
-			},
-			{ Header: "Unrealized PNL", accessor: "pnl" },
+			{ Header: "Entry/Mark", accessor: "entrMarkPrice" },
+			{ Header: "P&L", accessor: "pnl" },
+			{ Header: "Liq Price", accessor: "liqPrice" },
 			{ Header: "", accessor: "action" },
 		],
 		[],
@@ -175,20 +159,9 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 		],
 		[],
 	);
-	const unsettledPnLColumns = React.useMemo(
-		() => [
-			{ Header: "Market", accessor: "market" },
-			{ Header: "Cost basis", accessor: "costBasis" },
-			{ Header: "Settled P&L", accessor: "pnl" },
-			{ Header: "Unsettled funding", accessor: "funding" },
-			{ Header: "Claimable/Unsettled PnL", accessor: "amount" },
-			{ Header: "", accessor: "action" },
-		],
-		[],
-	);
 	const { tradeStore, settingsStore } = useStores();
 	const vm = usePerpTradeVM();
-	const columns = [positionColumns, orderColumns, unsettledPnLColumns];
+	const columns = [positionColumns, orderColumns];
 	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
 	const [data, setData] = useState<any>([]);
@@ -243,15 +216,20 @@ const BottomTablesInterfacePerp: React.FC<IProps> = observer(() => {
 									<Chip>{position.token.symbol}</Chip>
 								</Row>
 							),
-							entPrice: `$ ${position.entPrice}`,
-							markPrice: BN.formatUnits(markPrice, 6)?.toFormat(2),
-							margin: (
-								<Row alignItems="center" justifyContent="center">
-									{margin?.toFormat()}
-									<SizedBox width={4} />
-									<Chip>USDC</Chip>
-								</Row>
+							entrMarkPrice: (
+								<Column alignItems="center" justifyContent="center">
+									${position.entPrice}
+									<SizedBox width={4} />${BN.formatUnits(markPrice, 6)?.toFormat(2)}
+								</Column>
 							),
+							liqPrice: "TODO",
+							// margin: (
+							// 	<Row alignItems="center" justifyContent="center">
+							// 		{margin?.toFormat()}
+							// 		<SizedBox width={4} />
+							// 		<Chip>USDC</Chip>
+							// 	</Row>
+							// ),
 							pnl: (
 								<Row alignItems="center" justifyContent="center">
 									{unrealizedPnL?.toFormat()}

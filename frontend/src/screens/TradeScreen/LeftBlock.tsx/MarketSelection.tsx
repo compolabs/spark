@@ -124,7 +124,11 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 									src={addedToFav ? yellowStar : star}
 									alt="star"
 									style={{ cursor: "pointer", zIndex: 100000 }}
-									onClick={() => (addedToFav ? tradeStore.removeFromFav(market.symbol) : tradeStore.addToFav(market.symbol))}
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										addedToFav ? tradeStore.removeFromFav(market.symbol) : tradeStore.addToFav(market.symbol);
+									}}
 								/>
 								<SizedBox height={4} />
 								<Row>

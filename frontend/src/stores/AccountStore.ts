@@ -81,16 +81,20 @@ class AccountStore {
 			this.setAssetBalances([]);
 			return;
 		}
-		const address = Address.fromString(this.address);
-		const balances = (await this.provider?.getBalances(address)) ?? [];
-		const assetBalances = TOKENS_LIST.map((asset) => {
-			const t = balances.find(({ assetId }) => asset.assetId === assetId);
-			const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-			if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+		try {
+			const address = Address.fromString(this.address);
+			const balances = (await this.provider?.getBalances(address)) ?? [];
+			const assetBalances = TOKENS_LIST.map((asset) => {
+				const t = balances.find(({ assetId }) => asset.assetId === assetId);
+				const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
+				if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
-			return new Balance({ balance, ...asset });
-		});
-		this.setAssetBalances(assetBalances);
+				return new Balance({ balance, ...asset });
+			});
+			this.setAssetBalances(assetBalances);
+		} catch (e) {
+			console.log("Balances update error", e);
+		}
 	};
 
 	getBalance = (token: IToken): BN | null => {
@@ -184,8 +188,8 @@ class AccountStore {
 		const provider = await Provider.create(NODE_URL);
 		if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
 			if (this.seed == null) return null;
-			const seed = Mnemonic.mnemonicToSeed(this.seed);
-			return Wallet.fromPrivateKey(seed, provider);
+			const key = Mnemonic.mnemonicToSeed(this.seed);
+			return Wallet.fromPrivateKey(key, provider);
 		}
 		if (this.address == null || this.fuel == null) return null;
 		await this.checkConnectionWithWallet();
