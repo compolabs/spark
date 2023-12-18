@@ -188,9 +188,8 @@ class AccountStore {
 			return Wallet.fromPrivateKey(seed, provider);
 		}
 		if (this.address == null || this.fuel == null) return null;
-		return Wallet.fromAddress(this.address, provider);
-		// await this.checkConnectionWithWallet();
-		// return this.fuel.getWallet(this.address);
+		await this.checkConnectionWithWallet();
+		return this.fuel.getWallet(this.address);
 	};
 
 	checkConnectionWithWallet = async () => {

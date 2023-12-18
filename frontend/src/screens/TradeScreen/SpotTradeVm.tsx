@@ -231,7 +231,6 @@ class SpotTradeVm {
 
 	createOrder = async (action: OrderAction) => {
 		const { accountStore } = this.rootStore;
-		await accountStore.checkConnectionWithWallet();
 		if (accountStore.address == null) return;
 		const wallet = await accountStore.getWallet();
 		if (wallet == null) return;
@@ -288,7 +287,6 @@ class SpotTradeVm {
 	cancelOrder = async (id: number) => {
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null) return;
-		await accountStore.checkConnectionWithWallet();
 		const wallet = await accountStore.getWallet();
 		if (wallet == null) return;
 		const limitOrdersContract = SpotMarketAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);

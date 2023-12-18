@@ -24,7 +24,7 @@ const Chart: React.FC<IProps> = () => {
 	return (
 		<Root>
 			<ChartVMProvider>
-				<TradingViewWidget />
+				{/*<TradingViewWidget />*/}
 				{/*<TVChartContainer />*/}
 			</ChartVMProvider>
 		</Root>

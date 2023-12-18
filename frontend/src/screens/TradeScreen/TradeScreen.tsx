@@ -15,6 +15,7 @@ import Text, { TEXT_TYPES } from "@components/Text";
 import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
 import BottomTablesInterfacePerp from "./BottomTablesInterfacePerp";
 import BottomTablesInterfaceSpot from "./BottomTablesInterfaceSpot";
+import Chart from "@screens/TradeScreen/Chart";
 
 interface IProps {}
 
@@ -54,7 +55,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<LeftBlock />
 				<SizedBox width={4} />
 				<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
-					{/*<Chart />*/}
+					<Chart />
 					{tradeStore.isMarketPerp ? <BottomTablesInterfacePerp /> : <BottomTablesInterfaceSpot />}
 				</Column>
 				<SizedBox width={4} />

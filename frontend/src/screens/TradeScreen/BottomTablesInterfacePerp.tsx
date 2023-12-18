@@ -130,9 +130,9 @@ const tabs = [
 	{ title: "POSITIONS", disabled: false },
 	{ title: "ORDERS", disabled: false },
 	{ title: "UNSETTLED P&L", disabled: false },
-	{ title: "TRADES", disabled: true },
-	{ title: "BALANCES", disabled: true },
-	{ title: "HISTORY", disabled: true },
+	// { title: "TRADES", disabled: true },
+	// { title: "BALANCES", disabled: true },
+	// { title: "HISTORY", disabled: true },
 ];
 
 const tableSizesConfig = [
