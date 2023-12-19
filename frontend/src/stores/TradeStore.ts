@@ -143,7 +143,6 @@ class TradeStore {
 	perpUserOrders: PerpOrder[] = [];
 	private setPerpUserOrders = (v: PerpOrder[]) => (this.perpUserOrders = v);
 
-	//todo add offset logic
 	perpOrders: PerpOrder[] = [];
 	private setPerpOrders = (v: PerpOrder[]) => (this.perpOrders = v);
 
@@ -244,7 +243,6 @@ class TradeStore {
 		}
 	};
 	withdraw = async (amount: BN) => {
-		//todo fix this also works for too long
 		const { accountStore, oracleStore } = this.rootStore;
 		await accountStore.checkConnectionWithWallet();
 		try {

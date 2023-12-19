@@ -50,7 +50,6 @@ class FaucetVM {
 	get faucetTokens() {
 		const { accountStore } = this.rootStore;
 		if (accountStore.assetBalances == null) return [];
-		//todo return spot tokens too
 
 		return TOKENS_LIST.map((v) => {
 			const balance = accountStore.findBalanceByAssetId(v.assetId);
