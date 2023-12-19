@@ -48,23 +48,11 @@ abi OrderBookContract {
     fn create_order(asset1: b256, amount1: u64, matcher_fee: u64) -> u64;
 
 
-// ## Modify order
-// todo not sure hwo that should work
-
-    //todo implemement
-    #[storage(read, write)]
-    fn modify_order(id: u64);
-
-
 // ## Close order
 // Users can close one or multiple orders, unused fee will be returned to the user's balacne
    
     #[storage(read, write)]
     fn cancel_order(id: u64);
-    
-    //todo implemement
-    #[storage(read, write)]
-    fn cancel_all_orders();
 
 
 // ## Order getters
@@ -86,10 +74,9 @@ abi OrderBookContract {
 
 // ## Fulfill orders
 // Allows you to close a specific order without having to create a new one
-    // todo implemement as an feature
    
-    #[payable, storage(read, write)]
-    fn fulfill_order(id: u64);
+    // #[payable, storage(read, write)]
+    // fn fulfill_order(id: u64);
 
 }
 
@@ -160,14 +147,6 @@ impl OrderBookContract for Contract {
     }
 
 
-// ## Modify order
-// todo not sure hwo that should work
-
-    //todo implemement
-    #[storage(read, write)]
-    fn modify_order(id: u64){}
-
-
 // ## Close order
 // Users can close one or multiple orders, unused fee will be returned to the user's balacne
    
@@ -189,10 +168,6 @@ impl OrderBookContract for Contract {
         log(OrderChangeEvent{ timestamp: timestamp(), address: order.owner, order });
     }
     
-    //todo implemement
-    #[storage(read, write)]
-    fn cancel_all_orders(){}
-
 
 // ## Order getters
 // Allow to get info about orders and orderbook via dry-runs
@@ -348,13 +323,5 @@ impl OrderBookContract for Contract {
         storage.orders.insert(order1.id, order1);
         // (trade0, trade1)
     }
-
-
-// ## Fulfill orders
-// Allows you to close a specific order without having to create a new one
-    // todo implemement as an feature
-   
-    #[payable, storage(read, write)]
-    fn fulfill_order(id: u64) {}
 
 }

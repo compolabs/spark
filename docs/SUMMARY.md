@@ -24,15 +24,16 @@
   * [P\&L](spark-dex/perpetual-futures/p-and-l.md)
   * [Fees](spark-dex/perpetual-futures/fees.md)
   * [Risk Parameters](spark-dex/perpetual-futures/risk-parameters.md)
+  * [Account Value and Free Collateral](spark-dex/perpetual-futures/account-value-and-free-collateral.md)
   * [Funding Rates](spark-dex/perpetual-futures/funding-rates.md)
   * [Oracles](spark-dex/perpetual-futures/oracles.md)
   * [Liquidations](spark-dex/perpetual-futures/liquidations.md)
   * [Insurance Fund](spark-dex/perpetual-futures/insurance-fund.md)
 * [🧙♂ Market Makers](spark-dex/market-makers/README.md)
   * [Market Making on Spark](spark-dex/market-makers/market-making-on-spark.md)
-  * [MM Incentivisation program](spark-dex/market-makers/mm-incentivisation-program.md)
-  * [Maker Rebate Fees](spark-dex/market-makers/maker-rebate-fees.md)
+  * [Spark Points Earning Program](spark-dex/market-makers/spark-points-earning-program.md)
   * [Token Market Making Proposal](spark-dex/market-makers/token-market-making-proposal.md)
+  * [Arbitrage opportunity](spark-dex/market-makers/arbitrage-opportunity.md)
 * [🌊 Liquidity provision](spark-dex/liquidity-provision.md)
 
 ## 📖 Spark Order Book

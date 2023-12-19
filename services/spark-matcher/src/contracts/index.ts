@@ -4,9 +4,9 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.62.0
-  Forc version: 0.44.0
-  Fuel-Core version: 0.20.6
+  Fuels version: 0.69.1
+  Forc version: 0.46.1
+  Fuel-Core version: 0.20.8
 */
 
 export type { SpotMarketAbi } from './SpotMarketAbi';

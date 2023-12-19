@@ -11,10 +11,9 @@ Perpetual futures, also known as perpetual swaps, are a type of derivative contr
 ### Features of Perpetual Futures:
 
 1. **No Expiry Date:** Unlike traditional futures contracts that have a fixed expiration date, perpetual futures contracts do not expire. Traders can hold their positions indefinitely.
-2. **Funding Rates:** Perpetual futures contracts include a funding mechanism that helps keep the market price of the contract close to the underlying asset's spot price. Funding rates are exchanged between long and short position holders to achieve this balance.
+2. **Funding Rates:** Perpetual futures contracts include a funding mechanism that helps keep the market price of the contract close to the underlying asset's spot price. Funding payments are exchanged between long and short-position holders.
 3. **Leverage:** Perpetual futures contracts allow traders to use leverage, enabling them to control larger positions with a relatively smaller amount of capital. This can amplify both potential gains and losses.
 4. **Continuous Trading:** Perpetual futures contracts enable continuous trading 24/7, allowing traders to enter or exit positions at any time, unlike traditional stock markets that have specific trading hours.
-5. **Mark-to-Market Settlement:** Positions are marked to market regularly, ensuring that gains or losses are settled in real time based on the difference between the contract price and the underlying asset's market price.
 
 ### Advantages of Perpetual Futures:
 
@@ -23,7 +22,7 @@ Perpetual futures, also known as perpetual swaps, are a type of derivative contr
 3. **Liquidity and Access:** Perpetual futures contracts provide liquid access to various markets and assets, including cryptocurrencies, commodities, and stock indexes. They allow traders to gain exposure to these markets without the need to own the actual assets.
 4. **Arbitrage Opportunities:** Traders can exploit price differences between perpetual futures and the spot market through arbitrage strategies, aiming to profit from market inefficiencies.
 
-It's important to note that while perpetual futures offer opportunities for profit, they also involve significant risks due to the leverage involved. Traders should have a thorough understanding of the market and risk management techniques before engaging in perpetual futures trading.
+It's important to note that while perpetual futures offer profit opportunities, they also involve significant risks due to the leverage involved. Traders should have a thorough understanding of the market and risk management techniques before engaging in perpetual futures trading.
 
 
 
