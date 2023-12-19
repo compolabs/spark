@@ -5,10 +5,10 @@ import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@src/components/Text";
 import SizedBox from "@components/SizedBox";
 import bg from "@src/assets/referralBackground.png";
 import { useStores } from "@stores";
-import ConnectWalletInterface from "@screens/Referral/ConnectWalletInterface";
-import ReferralInterface from "@screens/Referral/ReferralInterface";
 import { observer } from "mobx-react";
-import { Navigate } from "react-router-dom";
+import { LOGIN_TYPE } from "@stores/AccountStore";
+import Button from "@components/Button";
+import { useNavigate } from "react-router-dom";
 
 interface IProps {}
 
@@ -57,16 +57,48 @@ export const StyledLink = styled.a`
 
 }
 `;
-const Referral: React.FC<IProps> = observer(() => {
-	const { accountStore, referralStore, tradeStore } = useStores();
-	if (referralStore.access) return <Navigate to={`/${tradeStore.defaultMarketSymbol}`} />;
+const ConnectWallet: React.FC<IProps> = observer(() => {
+	const { accountStore, tradeStore } = useStores();
+	const navigate = useNavigate();
+	const wallets = [
+		{
+			name: "Fuel Wallet",
+			type: LOGIN_TYPE.FUEL_WALLET,
+			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUEL_WALLET),
+		},
+		{
+			name: "Fuelet",
+			type: LOGIN_TYPE.FUELET,
+			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUELET),
+		},
+		{ name: "Create account", type: LOGIN_TYPE.GENERATE_SEED, active: true },
+		{
+			name: "Fuel Wallet Dev",
+			type: LOGIN_TYPE.FUEL_DEV,
+			active: accountStore.listConnectors.includes(LOGIN_TYPE.FUEL_DEV),
+		},
+		{ name: "Metamask", active: false },
+		{ name: "Ledger", active: false },
+	];
 	return (
 		<Root>
 			<Image />
 			<SizedBox width={4} />
 			<Body>
 				<Column justifyContent="center" alignItems="center" crossAxisSize="max" style={{ maxWidth: 360 }}>
-					{accountStore.address != null ? <ReferralInterface /> : <ConnectWalletInterface />}
+					{wallets.map(({ name, active, type }) => (
+						<Button
+							key={name}
+							style={{ marginBottom: 16 }}
+							onClick={() => {
+								active && type && accountStore.login(type);
+								navigate(`/${tradeStore.defaultMarketSymbol}`);
+							}}
+							disabled={!active}
+						>
+							{name}
+						</Button>
+					))}
 					<SizedBox height={40} />
 					<Text>New to Fuel blockchain?</Text>
 					<SizedBox height={4} />
@@ -83,4 +115,4 @@ const Referral: React.FC<IProps> = observer(() => {
 	);
 });
 
-export default Referral;
+export default ConnectWallet;

@@ -1,21 +1,21 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect } from "react";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import { Column, Row } from "@src/components/Flex";
-import Chart from "@screens/TradeScreen/Chart";
-import BottomTablesInterface from "@screens/TradeScreen/BottomTablesInterface";
 import StatusBar from "@screens/TradeScreen/StatusBar";
-import { TradeScreenVMProvider } from "@screens/TradeScreen/TradeScreenVm";
 import SizedBox from "@components/SizedBox";
 import { useStores } from "@stores";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { ROUTES } from "@src/constants";
+import { useParams } from "react-router-dom";
 import { observer } from "mobx-react";
 import useWindowSize from "@src/hooks/useWindowSize";
 import LeftBlock from "src/screens/TradeScreen/LeftBlock.tsx";
 import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/OrderbookAndTradesInterface";
 import { PerpTradeVMProvider } from "@screens/TradeScreen/PerpTradeVm";
 import Text, { TEXT_TYPES } from "@components/Text";
+import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
+import BottomTablesInterfacePerp from "./BottomTablesInterfacePerp";
+import BottomTablesInterfaceSpot from "./BottomTablesInterfaceSpot";
+import Chart from "@screens/TradeScreen/Chart";
 
 interface IProps {}
 
@@ -42,10 +42,11 @@ const Root = styled.div`
 // `;
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
-	const { referralStore } = useStores();
 	const width = useWindowSize().width;
-	// const [createOrderDialogOpen, setCreateOrderDialogOpen] = useState(false);
-	if (!referralStore.access) return <Navigate to={ROUTES.ROOT} />;
+	const { tradeStore } = useStores();
+	useEffect(() => {
+		document.title = `Spark | ${tradeStore.marketSymbol}`;
+	}, [tradeStore.marketSymbol]);
 	return width && width >= 880 ? (
 		<Root>
 			<MarketStatisticsBar />
@@ -55,7 +56,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<SizedBox width={4} />
 				<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>
 					<Chart />
-					<BottomTablesInterface />
+					{tradeStore.isMarketPerp ? <BottomTablesInterfacePerp /> : <BottomTablesInterfaceSpot />}
 				</Column>
 				<SizedBox width={4} />
 				<OrderbookAndTradesInterface />
@@ -79,7 +80,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 			{/*<StatusBar />*/}
 			{/*<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>*/}
 			{/*	<MobileCreateOrderDialogContainer>*/}
-			{/*		<OrderBook mobileMode />*/}
+			{/*		<SpotOrderBook mobileMode />*/}
 			{/*		<LeftBlock style={{ maxWidth: "100%", height: "100%" }} />*/}
 			{/*	</MobileCreateOrderDialogContainer>*/}
 			{/*</Dialog>*/}
@@ -87,25 +88,17 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	);
 });
 
-const TradeScreen: React.FC<IProps> = () => {
+const TradeScreen: React.FC<IProps> = observer(() => {
 	const { tradeStore } = useStores();
 	const { marketId } = useParams<{ marketId: string }>();
 	const market = tradeStore.marketsConfig[marketId ?? ""];
-	const navigate = useNavigate();
-	console.log("market == null", market == null);
-	if (market == null) {
-		navigate({
-			pathname: `/${tradeStore.defaultMarketSymbol}`,
-		});
-	} else {
-		tradeStore.setMarketSymbol(market.symbol);
-	}
+	tradeStore.setMarketSymbol(market == null ? tradeStore.defaultMarketSymbol : market.symbol);
 	return (
 		<PerpTradeVMProvider>
-			<TradeScreenVMProvider>
+			<SpotTradeVMProvider>
 				<TradeScreenImpl />
-			</TradeScreenVMProvider>
+			</SpotTradeVMProvider>
 		</PerpTradeVMProvider>
 	);
-};
+});
 export default TradeScreen;

@@ -81,22 +81,31 @@ class AccountStore {
 			this.setAssetBalances([]);
 			return;
 		}
-		const address = Address.fromString(this.address);
-		const balances = (await this.provider?.getBalances(address)) ?? [];
-		const assetBalances = TOKENS_LIST.map((asset) => {
-			const t = balances.find(({ assetId }) => asset.assetId === assetId);
-			const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
-			if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
+		try {
+			const address = Address.fromString(this.address);
+			const balances = (await this.provider?.getBalances(address)) ?? [];
+			const assetBalances = TOKENS_LIST.map((asset) => {
+				const t = balances.find(({ assetId }) => asset.assetId === assetId);
+				const balance = t != null ? new BN(t.amount.toString()) : BN.ZERO;
+				if (t == null) return new Balance({ balance, usdEquivalent: BN.ZERO, ...asset });
 
-			return new Balance({ balance, ...asset });
-		});
-		this.setAssetBalances(assetBalances);
+				return new Balance({ balance, ...asset });
+			});
+			this.setAssetBalances(assetBalances);
+		} catch (e) {
+			console.log("Balances update error", e);
+		}
 	};
 
 	getBalance = (token: IToken): BN | null => {
 		const balance = this.findBalanceByAssetId(token.assetId);
 		if (balance == null) return null;
 		return balance.balance ?? BN.ZERO;
+	};
+	getBalanceFormatted = (assetId: string, round?: number): string => {
+		const balance = this.findBalanceByAssetId(assetId);
+		if (balance == null) return "0.00";
+		return BN.formatUnits(balance.balance ?? 0, balance.decimals).toFormat(round ?? 2);
 	};
 	findBalanceByAssetId = (assetId: string) =>
 		this.assetBalances && this.assetBalances.find((balance) => balance.assetId === assetId);
@@ -169,25 +178,27 @@ class AccountStore {
 		const wallet = Wallet.fromPrivateKey(seed, this.provider);
 		this.setAddress(wallet.address.toAddress());
 		this.rootStore.notificationStore.toast("You can copy your seed in account section", { type: "info" });
+		this.rootStore.notificationStore.toast("Go to faucet page to mint tokens", { type: "warning" });
 	};
 
 	get isLoggedIn() {
 		return this.address != null;
 	}
-
 	getWallet = async (): Promise<WalletLocked | WalletUnlocked | null> => {
+		const provider = await Provider.create(NODE_URL);
 		if (this.loginType === LOGIN_TYPE.GENERATE_SEED) {
 			if (this.seed == null) return null;
-			const seed = Mnemonic.mnemonicToSeed(this.seed);
-			const provider = await Provider.create(NODE_URL);
-			return Wallet.fromPrivateKey(seed, provider);
+			const key = Mnemonic.mnemonicToSeed(this.seed);
+			return Wallet.fromPrivateKey(key, provider);
 		}
 		if (this.address == null || this.fuel == null) return null;
+		await this.checkConnectionWithWallet();
 		return this.fuel.getWallet(this.address);
 	};
 
 	checkConnectionWithWallet = async () => {
 		if (this.loginType == null || this.loginType === LOGIN_TYPE.GENERATE_SEED) return;
+		if (this.fuel == null) return;
 		const isConnected = await this.fuel.isConnected();
 		if (!isConnected) await this.loginWithWallet(this.loginType);
 	};
@@ -206,6 +217,11 @@ class AccountStore {
 	get addressB256(): null | string {
 		if (this.address == null) return null;
 		return Address.fromString(this.address).toB256();
+	}
+
+	get indexerAddress(): string {
+		if (this.address == null) return " ";
+		return Address.fromString(this.address).toB256().slice(2);
 	}
 }
 

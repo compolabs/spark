@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useState } from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
@@ -8,11 +8,13 @@ import Button from "@components/Button";
 import { ROUTES } from "@src/constants";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import SizedBox from "@components/SizedBox";
-import { ReactComponent as GearIcon } from "@src/assets/icons/gear.svg";
-import { DesktopRow, Row } from "@components/Flex";
+import { DesktopRow, MobileRow, Row } from "@components/Flex";
 import ConnectedWallet from "@components/Header/ConnectedWallet";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import Tab from "@components/Tab";
+import DepositWithdrawModal from "@screens/TradeScreen/DepositWithdrawModal";
+import MobileMenu from "./MobileMenu";
+import MobileMenuIcon from "./MobileMenuIcon";
 
 interface IProps {}
 
@@ -57,10 +59,8 @@ export const MENU_ITEMS: Array<TMenuItem> = [
 ];
 
 const SettingsButton = styled(Button)`
-	width: 32px;
-	height: 32px;
 	border-radius: 32px;
-	padding: 0 !important;
+	padding: 2px 4px;
 
 	path {
 		fill: ${({ theme }) => theme.colors.iconSecondary};
@@ -78,12 +78,16 @@ const SettingsButton = styled(Button)`
 		}
 	}
 `;
-//todo add dropdown
 const Header: React.FC<IProps> = observer(() => {
-	const { accountStore } = useStores();
+	const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
+	const { accountStore, settingsStore } = useStores();
 	const location = useLocation();
 	const navigate = useNavigate();
-
+	const toggleMenu = (state: boolean) => {
+		window.scrollTo({ top: 0, behavior: "smooth" });
+		document.body.classList.toggle("noscroll", state);
+		setMobileMenuOpened(state);
+	};
 	return (
 		<Root>
 			<Row alignItems="center">
@@ -92,25 +96,25 @@ const Header: React.FC<IProps> = observer(() => {
 				</a>
 				<Divider />
 				<TabContainer>
-					{MENU_ITEMS.map(({ title, link, route }, key) => {
+					{MENU_ITEMS.map(({ title, link, route }) => {
 						if (link == null && route == null)
 							return (
-								<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
+								<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={title}>
 									{title}
 								</Tab>
 							);
 						else if (route != null)
 							return (
-								<Link to={route} key={key}>
-									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key} active={isRoutesEquals(route, location.pathname)}>
+								<Link to={route} key={title}>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={title} active={isRoutesEquals(route, location.pathname)}>
 										{title}
 									</Tab>
 								</Link>
 							);
 						else if (link != null)
 							return (
-								<a rel="noopener noreferrer" target="_blank" href={link} key={key}>
-									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={key}>
+								<a rel="noopener noreferrer" target="_blank" href={link} key={title}>
+									<Tab type={TEXT_TYPES.BUTTON_SECONDARY} key={title}>
 										{title}
 									</Tab>
 								</a>
@@ -120,27 +124,35 @@ const Header: React.FC<IProps> = observer(() => {
 				</TabContainer>
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
+				<MobileRow>
+					<MobileMenuIcon onClick={() => toggleMenu(!mobileMenuOpened)} opened={mobileMenuOpened} />
+				</MobileRow>
 				<DesktopRow>
-					{/*<SizedBox width={10} />*/}
-					<SettingsButton disabled>
-						<GearIcon />
-					</SettingsButton>
-					<SizedBox width={10} />
+					{accountStore.address != null && (
+						<>
+							<SettingsButton onClick={() => settingsStore.setDepositModal(true)}>Deposit/Withdraw</SettingsButton>
+							<SizedBox width={10} />
+						</>
+					)}
 				</DesktopRow>
-				{accountStore.address != null ? (
-					<ConnectedWallet />
+				{!mobileMenuOpened && <SizedBox width={16} />}
+				{!mobileMenuOpened ? (
+					accountStore.address != null ? (
+						<ConnectedWallet />
+					) : (
+						<Button green fitContent onClick={() => navigate(ROUTES.CONNECT)}>
+							Connect wallet
+						</Button>
+					)
 				) : (
-					<Button
-						green
-						fitContent
-						onClick={() =>
-							accountStore.fuel == null ? window.open("https://wallet.fuel.network/docs/install/") : navigate(ROUTES.TRADE)
-						}
-					>
-						Connect wallet
-					</Button>
+					<></>
 				)}
 			</Row>
+			<DepositWithdrawModal
+				visible={settingsStore.depositModalOpened}
+				onClose={() => settingsStore.setDepositModal(false)}
+			/>
+			<MobileMenu opened={mobileMenuOpened} onClose={() => toggleMenu(false)} />
 		</Root>
 	);
 });

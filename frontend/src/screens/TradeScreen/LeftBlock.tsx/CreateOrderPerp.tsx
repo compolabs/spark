@@ -7,28 +7,18 @@ import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import { useStores } from "@stores";
 import AccordionItem from "@components/AccordionItem";
-import BN from "@src/utils/BN";
 import { Accordion } from "@szhsin/react-accordion";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import Slider from "@components/Slider";
+import BN from "@src/utils/BN";
+import { useStores } from "@stores";
+import Notification from "@components/Notification";
 
 interface IProps extends ComponentProps<any> {}
 
 const Root = styled.div`
 	padding: 12px;
-`;
-const Chip = styled.div`
-	padding: 8px 10px;
-	color: ${({ theme }) => theme.colors.textSecondary};
-	${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
-	border-radius: 4px;
-	border: 1px solid ${({ theme }) => theme.colors.borderSecondary};
-	background: ${({ theme }) => theme.colors.bgPrimary};
-	box-sizing: border-box;
-	margin-left: 8px;
-	cursor: pointer;
 `;
 
 const MaxButton = styled(Button)`
@@ -41,48 +31,60 @@ const MaxButton = styled(Button)`
 `;
 
 const orderTypes = [
-	{ title: "Stop Market", key: "stopmarket", disabled: true },
-	{ title: "Market", key: "market", disabled: true },
 	{ title: "Limit", key: "limit" },
-	{ title: "Stop Limit", key: "stoplimit", disabled: true },
-	{ title: "Take Profit", key: "takeprofit", disabled: true },
-	{ title: "Take Profit Limit", key: "takeprofitlimit", disabled: true },
+	{ title: "Market", key: "market" },
 ];
 
 const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
-	const { accountStore } = useStores();
+	const { oracleStore, tradeStore } = useStores();
+	const [orderTypeIndex, setOrderTypeIndex] = useState(0);
 	const vm = usePerpTradeVM();
-	const [short, setShort] = useState(false);
-	const [leverage, setLeverage] = useState(0);
+
+	let price = oracleStore?.prices != null ? new BN(oracleStore?.prices[vm.token0.priceFeed]?.price.toString()) : BN.ZERO;
+	let marketPrice = BN.formatUnits(price, 2);
+	const onChangePercent = (percent: number) => {
+		//todo fix set price when users comes from spot market
+		const max = (vm.isShort ? vm.maxAbsPositionSize?.short : vm.maxAbsPositionSize?.long) ?? BN.ZERO;
+		const value = (max.toNumber() * percent) / 100;
+		vm.setOrderSize(new BN(value), true);
+	};
 
 	const orderDetails = [
-		{ title: "Max buy", value: "0.00" },
-		{ title: "Est. fee", value: "0.00" },
-		{ title: "Total amount", value: "0.00" },
+		{ title: "Order Size", value: `${vm.formattedOrderSize ?? 0} ${vm.token0.symbol}` },
+		// { title: "Est. fee", value: "0.00 ETH" }, //todo add fee calc
+		{ title: "Total amount", value: `${vm.formattedOrderValue} ${vm.token1.symbol}` },
 	];
-
 	return (
 		<Root {...rest}>
 			<ButtonGroup>
-				<Button active={!short} onClick={() => setShort(false)}>
+				<Button active={!vm.isShort} onClick={() => vm.setIsShort(false)}>
 					LONG
 				</Button>
-				<Button active={short} onClick={() => setShort(true)}>
+				<Button active={vm.isShort} onClick={() => vm.setIsShort(true)}>
 					SHORT
 				</Button>
 			</ButtonGroup>
 			<SizedBox height={16} />
 			<Row>
 				<Column crossAxisSize="max">
-					<Select label="Order type" options={orderTypes} selected={orderTypes[1].key} onSelect={() => null} />
+					<Select
+						label="Order type"
+						options={orderTypes}
+						selected={orderTypes[orderTypeIndex].key}
+						onSelect={(_, index) => {
+							setOrderTypeIndex(index);
+							index === 1 && vm.setPrice(marketPrice);
+						}}
+					/>
 					<SizedBox height={2} />
 				</Column>
 				<SizedBox width={8} />
 				<TokenInput
+					disabled={orderTypeIndex === 1}
 					decimals={vm.token1.decimals}
-					amount={short ? vm.shortPrice : vm.longPrice}
-					setAmount={(v) => (short ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
-					label="Market price"
+					amount={vm.price}
+					setAmount={(v) => vm.setPrice(v, true)}
+					label={orderTypeIndex === 0 ? "Price" : "Market price"}
 				/>
 			</Row>
 			<SizedBox height={2} />
@@ -90,32 +92,39 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 				<TokenInput
 					assetId={vm.token0.assetId}
 					decimals={vm.token0.decimals}
-					amount={short ? vm.shortAmount : vm.longAmount}
-					setAmount={(v) => (short ? vm.setShortAmount(v, true) : vm.setLongAmount(v, true))}
+					amount={vm.orderSize}
+					setAmount={vm.setOrderSize}
+					max={vm.maxAbsPositionSize?.long}
 					label="Order size"
 				/>
 				<SizedBox width={8} />
 				<Column crossAxisSize="max" alignItems="flex-end">
-					<MaxButton fitContent>MAX</MaxButton>
+					<MaxButton fitContent onClick={() => vm.onMaxClick()}>
+						MAX
+					</MaxButton>
 					<SizedBox height={4} />
 					<TokenInput
 						assetId={vm.token1.assetId}
 						decimals={vm.token1.decimals}
-						amount={short ? vm.shortTotal : vm.longTotal}
-						setAmount={(v) => (short ? vm.setShortTotal(v, true) : vm.setLongTotal(v, true))}
+						amount={vm.orderValue}
+						setAmount={vm.setOrderValue}
 					/>
 				</Column>
 			</Row>
-			<SizedBox height={4} />
-			<Row alignItems="center" justifyContent="space-between">
-				<Text type={TEXT_TYPES.SUPPORTING}>Available</Text>
-				<Row alignItems="center" mainAxisSize="fit-content">
-					<Text primary type={TEXT_TYPES.BODY}>
-						{accountStore.findBalanceByAssetId(short ? vm.assetId0 : vm.assetId1)?.formatBalance ?? "-"}
-					</Text>
-					<Text type={TEXT_TYPES.SUPPORTING}>&nbsp;{short ? vm.token0.symbol : vm.token1.symbol}</Text>
-				</Row>
-			</Row>
+			{tradeStore.freeCollateral != null && tradeStore.freeCollateral.eq(0) && (
+				<>
+					<SizedBox height={4} />
+					<Notification type="info" text="You have to deposit first" />
+					<SizedBox height={4} />
+				</>
+			)}
+			{vm.orderSize.eq(0) && (
+				<>
+					<SizedBox height={4} />
+					<Notification type="info" text="Enter trade amount" />
+					<SizedBox height={4} />
+				</>
+			)}
 			<SizedBox height={8} />
 			<Accordion transition transitionTimeout={400}>
 				<AccordionItem
@@ -126,7 +135,7 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 								Leverage
 							</Text>
 							<Row justifyContent="flex-end" alignItems="center">
-								<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.longAmount, vm.token0.decimals).toFormat(2)}x</Text>
+								<Text primary>{vm.leverageSize.toFormat(2)}x</Text>
 							</Row>
 						</Row>
 					}
@@ -135,22 +144,22 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 					<Slider
 						min={0}
 						max={100}
-						value={leverage}
-						percent={leverage}
-						onChange={(v) => setLeverage(v as number)}
+						symbol="x"
+						fixSize={2}
+						percent={vm.leverageSize.toNumber()}
+						value={vm.leveragePercent}
+						onChange={(v) => onChangePercent(v as number)}
 						step={1}
 					/>
-					<SizedBox height={8} />
-					<Row>
-						<TokenInput
-							decimals={vm.token1.decimals}
-							amount={short ? vm.shortPrice : vm.longPrice}
-							setAmount={(v) => (short ? vm.setShortPrice(v, true) : vm.setLongPrice(v, true))}
-						/>
-						{[5, 10, 20].map((v) => (
-							<Chip>{v}x</Chip>
-						))}
-					</Row>
+					{/*<SizedBox height={8} />*/}
+					{/*<Row alignItems="center" justifyContent="flex-end">*/}
+					{/*	/!*<TokenInput decimals={vm.token1.decimals} amount={vm.price} setAmount={vm.setPrice} />*!/*/}
+					{/*	{[5, 10, 20].map((v) => (*/}
+					{/*		<Chip key={"chip" + v} onClick={() => vm.onLeverageClick(v)}>*/}
+					{/*			{v}x*/}
+					{/*		</Chip>*/}
+					{/*	))}*/}
+					{/*</Row>*/}
 				</AccordionItem>
 			</Accordion>
 			<Accordion transition transitionTimeout={400}>
@@ -162,35 +171,33 @@ const CreateOrderPerp: React.FC<IProps> = observer(({ ...rest }) => {
 							<Text nowrap primary type={TEXT_TYPES.BUTTON_SECONDARY}>
 								Order Details
 							</Text>
-							<Row justifyContent="flex-end" alignItems="center">
-								<Text primary>{BN.formatUnits(short ? vm.shortAmount : vm.longAmount, vm.token0.decimals).toFormat(2)}</Text>
-								<Text>&nbsp;{vm.token0.symbol}</Text>
-							</Row>
+							<Row justifyContent="flex-end" alignItems="center"></Row>
 						</Row>
 					}
 					initialEntered
 				>
-					{orderDetails.map(({ title, value }) => (
-						<>
-							<Row alignItems="center" justifyContent="space-between">
-								<Text nowrap>{title}</Text>
-								<Row justifyContent="flex-end" alignItems="center">
-									<Text primary>{value}</Text>
-								</Row>
+					{orderDetails.map(({ title, value }, index) => (
+						<Row alignItems="center" justifyContent="space-between" key={title + index} style={{ marginBottom: 8 }}>
+							<Text nowrap>{title}</Text>
+							<Row justifyContent="flex-end" alignItems="center">
+								<Text primary>{value}</Text>
 							</Row>
-							<SizedBox height={8} />
-						</>
+						</Row>
 					))}
 				</AccordionItem>
 			</Accordion>
+			<>
+				<SizedBox height={4} />
+				<Notification type="info" text="Open order transaction takes up to 2.5 mins. Please wait" />
+				<SizedBox height={4} />
+			</>
 			<SizedBox height={16} />
-			<Button
-				green={!short}
-				red={short}
-				disabled={vm.loading ? true : short ? !vm.canSell : !vm.canShort}
-				onClick={() => vm.createOrder(short ? "short" : "long")}
-			>
-				{vm.loading ? "Loading..." : short ? `Short ${vm.token0.symbol}` : `Long ${vm.token0.symbol}`}
+			<Button disabled={!vm.canOpenOrder} green={!vm.isShort} red={vm.isShort} onClick={vm.openOrder}>
+				{vm.loading || !vm.initialized
+					? "Loading..."
+					: vm.isShort
+					? `Short ${vm.token0.symbol}`
+					: `Long ${vm.token0.symbol}`}
 			</Button>
 		</Root>
 	);

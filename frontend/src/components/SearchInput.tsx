@@ -1,8 +1,7 @@
 import styled from "@emotion/styled";
 import React from "react";
 import search from "@src/assets/icons/search.svg";
-import SizedBox from "@components/SizedBox";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import Input from "./Input";
 
 interface IProps {
@@ -10,11 +9,6 @@ interface IProps {
 	onChange: (v: string) => void;
 }
 
-const Root = styled.div`
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-`;
 const Wrap = styled.div`
 	display: flex;
 	flex-direction: row;

@@ -2,17 +2,31 @@ import RootStore from "@stores/RootStore";
 import { makeAutoObservable } from "mobx";
 import { THEME_TYPE } from "@src/themes/ThemeProvider";
 
+export interface ISerializedSettingStore {
+	tradeTableSize: string | null;
+}
+
 class SettingsStore {
 	public readonly rootStore: RootStore;
 	selectedTheme: THEME_TYPE = THEME_TYPE.DARK_THEME;
 
-	constructor(rootStore: RootStore) {
+	constructor(rootStore: RootStore, initState?: ISerializedSettingStore) {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
+		if (initState != null) {
+			this.setTradeTableSize(initState.tradeTableSize);
+		}
 	}
 
-	walletModalOpened: boolean = false;
-	setWalletModalOpened = (s: boolean) => (this.walletModalOpened = s);
+	depositModalOpened: boolean = false;
+	setDepositModal = (s: boolean) => (this.depositModalOpened = s);
+
+	tradeTableSize: string | null = null;
+	setTradeTableSize = (v: string | null) => (this.tradeTableSize = v);
+
+	serialize = (): ISerializedSettingStore => ({
+		tradeTableSize: this.tradeTableSize,
+	});
 }
 
 export default SettingsStore;

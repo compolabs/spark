@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import React, { HTMLAttributes, useCallback, useEffect, useState } from "react";
 import { observer } from "mobx-react-lite";
 import SizedBox from "@components/SizedBox";
-import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
+import { useSpotTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 import { Column, Row } from "@src/components/Flex";
@@ -146,9 +146,9 @@ const SpreadRow = styled(Row)`
 
 const DECIMAL_OPTIONS = [2, 4, 5, 6];
 
-const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
-	const vm = useTradeScreenVM();
-	const { ordersStore } = useStores();
+const SpotOrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
+	const vm = useSpotTradeScreenVM();
+	const { spotOrdersStore } = useStores();
 	const theme = useTheme();
 	const [decimalKey, setDecimalKey] = useState("0");
 	const [orderFilter, setOrderFilter] = useState(0);
@@ -164,7 +164,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 
 	useEventListener("resize", handleResize);
 
-	const buyOrders = ordersStore.orderbook.buy
+	const buyOrders = spotOrdersStore.orderbook.buy
 		.slice()
 		.sort((a, b) => {
 			if (a.price == null && b.price == null) return 0;
@@ -175,7 +175,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		.reverse()
 		.slice(orderFilter === 0 ? -oneSizeOrders : -amountOfOrders)
 		.reverse();
-	const sellOrders = ordersStore.orderbook.sell
+	const sellOrders = spotOrdersStore.orderbook.sell
 		.slice()
 		.sort((a, b) => {
 			if (a.price == null && b.price == null) return 0;
@@ -188,7 +188,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 	const totalBuy = buyOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
 	const totalSell = sellOrders.reduce((acc, order) => acc.plus(order.amountLeft), BN.ZERO);
 
-	if (ordersStore.orderbook.buy.length === 0 && ordersStore.orderbook.sell.length === 0)
+	if (spotOrdersStore.orderbook.buy.length === 0 && spotOrdersStore.orderbook.sell.length === 0)
 		return (
 			<Root alignItems="center" justifyContent="center" mainAxisSize="stretch">
 				<Text type={TEXT_TYPES.SUPPORTING}>No orders yet</Text>
@@ -212,7 +212,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 						src={image}
 						alt="filter"
 						selected={orderFilter === index}
-						onClick={() => ordersStore.initialized && setOrderFilter(index)}
+						onClick={() => spotOrdersStore.initialized && setOrderFilter(index)}
 					/>
 				))}
 			</SettingsContainder>
@@ -260,10 +260,10 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 					<SpreadRow>
 						<Text type={TEXT_TYPES.SUPPORTING}>SPREAD</Text>
 						<SizedBox width={12} />
-						<Text primary>{ordersStore.spreadPrice}</Text>
+						<Text primary>{spotOrdersStore.spreadPrice}</Text>
 						<SizedBox width={12} />
-						<Text color={+ordersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>
-							{`(${+ordersStore.spreadPercent > 0 ? "+" : ""}${ordersStore.spreadPercent}%) `}
+						<Text color={+spotOrdersStore.spreadPercent > 0 ? theme.colors.greenLight : theme.colors.redLight}>
+							{`(${+spotOrdersStore.spreadPercent > 0 ? "+" : ""}${spotOrdersStore.spreadPercent}%) `}
 						</Text>
 					</SpreadRow>
 				)}
@@ -302,7 +302,7 @@ const OrderBook: React.FC<IProps> = observer(({ mobileMode }) => {
 		</Root>
 	);
 });
-export default OrderBook;
+export default SpotOrderBook;
 
 const PlugRow = styled(Row)`
 	justify-content: space-between;

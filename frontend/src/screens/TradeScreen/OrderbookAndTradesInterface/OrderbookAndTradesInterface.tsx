@@ -1,8 +1,12 @@
 import styled from "@emotion/styled";
 import React, { useState } from "react";
-import OrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/OrderBook";
+import SpotOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotOrderBook";
 import SizedBox from "@components/SizedBox";
 import Button, { ButtonGroup } from "@components/Button";
+import { useStores } from "@stores";
+import PerpOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/PerpOrderBook";
+import PerpTrades from "@screens/TradeScreen/OrderbookAndTradesInterface/PerpTrades";
+import SpotTrades from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotTrades";
 
 interface IProps {}
 
@@ -19,19 +23,21 @@ const Root = styled.div`
 `;
 
 const OrderbookAndTradesInterface: React.FC<IProps> = () => {
+	const { tradeStore } = useStores();
 	const [isOrderbook, setIsOrderbook] = useState(true);
 	return (
 		<Root>
 			<ButtonGroup style={{ padding: "0 12px" }}>
-				<Button active onClick={() => setIsOrderbook(true)}>
+				<Button active={isOrderbook} onClick={() => setIsOrderbook(true)}>
 					Orderbook
 				</Button>
-				<Button disabled onClick={() => setIsOrderbook(false)}>
+				<Button active={!isOrderbook} onClick={() => setIsOrderbook(false)}>
 					Trades
 				</Button>
 			</ButtonGroup>
 			<SizedBox height={8} />
-			{isOrderbook ? <OrderBook /> : null}
+			{isOrderbook ? tradeStore.isMarketPerp ? <PerpOrderBook /> : <SpotOrderBook /> : null}
+			{!isOrderbook ? tradeStore.isMarketPerp ? <PerpTrades /> : <SpotTrades /> : null}
 		</Root>
 	);
 };

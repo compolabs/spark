@@ -1,14 +1,4 @@
 const colors = {
-	// green: "#00E388",
-	// red: "#E80247",
-	// white: "#FFFFFD",
-	// gray1: "#969696",
-	// gray2: "#676767",
-	// gray3: "#222",
-	// gray4: "#141414",
-	// gray5: "#050505",
-	// error: "#FF6F06",
-
 	textPrimary: "#FFFFFF",
 	textSecondary: "#969696",
 	textDisabled: "#595959",
