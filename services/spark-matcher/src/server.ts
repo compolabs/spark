@@ -30,7 +30,7 @@ class SparkMatcher {
 
   run(cronExpression: string) {
     schedule(cronExpression, async () => {
-      if (this.skipCounter > 20) {
+      if (this.skipCounter > 30) {
         console.log("⏰ Job stop due timeout");
         this.processing = [];
         this.status = STATUS.CHILLED;
@@ -61,7 +61,7 @@ class SparkMatcher {
     if (!this.initialized) throw new Error("SparkMatcher is not initialized");
 
     const activeOrders: Array<IOrder> = await fetchIndexer<Array<IOrderResponse>>(
-      `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.orderentity WHERE status = 'Active' LIMIT 200) t;`
+      `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.orderentity WHERE status = 'Active') t;`
     ).then((result) => (result != null ? result.map(orderOutputToIOrder) : []));
 
     const totalOrders: number = await fetchIndexer<Array<{ count: number }>>(
@@ -100,7 +100,7 @@ class SparkMatcher {
               .catch(console.error),
           ]);
           const isOrdersActive = orders.every((res) => res != null && res.value.status == "Active");
-
+          await sleep(1000);
           if (!isOrdersActive) {
             console.log(
               `🛸👽 Phantom order \nOrder #${order0.orderId}\n indexer status: ${
@@ -111,29 +111,29 @@ class SparkMatcher {
             );
             continue;
           }
-          // let asset0 = order0.asset0;
-          // let asset1 = order0.asset1;
-          // console.log(
-          //   `\n${order0.type} Order #${order0.orderId}: ${BN.formatUnits(
-          //     new BN(order0.amount0).minus(order0.fulfilled0),
-          //     asset0.decimals
-          //   )} ${asset0.symbol} -> ${BN.formatUnits(
-          //     new BN(order0.amount1).minus(order0.fulfilled1),
-          //     asset1.decimals
-          //   )} ${asset1.symbol}`
-          // );
+          let asset0 = order0.asset0;
+          let asset1 = order0.asset1;
+          console.log(
+            `\n${order0.type} Order #${order0.orderId}: ${BN.formatUnits(
+              new BN(order0.amount0).minus(order0.fulfilled0),
+              asset0.decimals
+            )} ${asset0.symbol} -> ${BN.formatUnits(
+              new BN(order0.amount1).minus(order0.fulfilled1),
+              asset1.decimals
+            )} ${asset1.symbol}`
+          );
 
-          // asset0 = order1.asset0;
-          // asset1 = order1.asset1;
-          // console.log(
-          //   `${order1.type} Order #${order1.orderId}: ${BN.formatUnits(
-          //     new BN(order1.amount0).minus(order1.fulfilled0),
-          //     asset0.decimals
-          //   )} ${asset0.symbol} -> ${BN.formatUnits(
-          //     new BN(order1.amount1).minus(order1.fulfilled1),
-          //     asset1.decimals
-          //   )} ${asset1.symbol}`
-          // );
+          asset0 = order1.asset0;
+          asset1 = order1.asset1;
+          console.log(
+            `${order1.type} Order #${order1.orderId}: ${BN.formatUnits(
+              new BN(order1.amount0).minus(order1.fulfilled0),
+              asset0.decimals
+            )} ${asset0.symbol} -> ${BN.formatUnits(
+              new BN(order1.amount1).minus(order1.fulfilled1),
+              asset1.decimals
+            )} ${asset1.symbol}`
+          );
           this.processing.push(order0.orderId);
           this.processing.push(order1.orderId);
           const promise = await this.contract.functions
@@ -165,7 +165,6 @@ class SparkMatcher {
             });
           promises.push(promise);
         }
-        await sleep(1000);
       }
     }
 
