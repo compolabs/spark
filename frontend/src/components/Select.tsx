@@ -15,7 +15,7 @@ interface IOption {
 interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 	options: IOption[];
 	selected?: string;
-	onSelect: (option: IOption) => void;
+	onSelect: (option: IOption, index: number) => void;
 	label?: string;
 }
 
@@ -97,10 +97,10 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 			}}
 			content={
 				<Column crossAxisSize="max">
-					{options.map((v) => {
+					{options.map((v, index) => {
 						const active = selected === v.key;
 						return (
-							<Option active={active} key={v.key + "_option"} onClick={() => onSelect(v)} disabled={v.disabled}>
+							<Option active={active} key={v.key + "_option"} onClick={() => onSelect(v, index)} disabled={v.disabled}>
 								{v.title}
 							</Option>
 						);

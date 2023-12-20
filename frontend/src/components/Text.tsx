@@ -27,8 +27,6 @@ interface IProps {
 	nowrap?: boolean;
 }
 
-//todo уточнить про font-variant-numeric:
-
 export const hStyle = `
 font-family: JetBrains Mono;
 font-size: 14px;
@@ -77,7 +75,7 @@ export const TEXT_TYPES_MAP = {
 
 const Text = styled.div<IProps>`
 	white-space: ${({ nowrap }) => (nowrap ? "nowrap" : "normal")};
-	${({  primary, secondary, disabled, theme, color }) =>
+	${({ primary, secondary, disabled, theme, color }) =>
 		(() => {
 			switch (true) {
 				case primary:

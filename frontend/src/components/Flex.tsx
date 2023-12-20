@@ -34,3 +34,12 @@ export const DesktopRow = styled(Row)`
 		display: flex;
 	}
 `;
+
+export const MobileRow = styled(Row)`
+	display: flex;
+	align-items: center;
+	width: fit-content;
+	@media (min-width: 880px) {
+		display: none;
+	}
+`;

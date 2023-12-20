@@ -1,35 +1,32 @@
 import AccountStore, { ISerializedAccountStore } from "@stores/AccountStore";
-import SettingsStore from "@stores/SettingsStore";
+import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 import NotificationStore from "@stores/NotificationStore";
 import { makeAutoObservable } from "mobx";
-import OrdersStore from "@stores/OrdersStore";
-import ReferralStore, { ISerializedReferralStore } from "@stores/ReferralStore";
 import OracleStore from "@stores/OracleStore";
 import TradeStore, { ISerializedTradeStore } from "@stores/TradeStore";
+import SpotOrdersStore from "@stores/SpotOrdersStore";
 
 export interface ISerializedRootStore {
 	accountStore?: ISerializedAccountStore;
-	referralStore?: ISerializedReferralStore;
 	tradeStore?: ISerializedTradeStore;
+	settingStore?: ISerializedSettingStore;
 }
 
 export default class RootStore {
 	public accountStore: AccountStore;
+	public oracleStore: OracleStore;
 	public settingsStore: SettingsStore;
 	public notificationStore: NotificationStore;
-	public ordersStore: OrdersStore;
+	public spotOrdersStore: SpotOrdersStore;
 	public tradeStore: TradeStore;
-	public referralStore: ReferralStore;
-	public oracleStore: OracleStore;
 
 	constructor(initState?: ISerializedRootStore) {
 		this.accountStore = new AccountStore(this, initState?.accountStore);
-		this.settingsStore = new SettingsStore(this);
+		this.spotOrdersStore = new SpotOrdersStore(this);
+		this.settingsStore = new SettingsStore(this, initState?.settingStore);
 		this.notificationStore = new NotificationStore(this);
-		this.ordersStore = new OrdersStore(this);
-		this.tradeStore = new TradeStore(this, initState?.tradeStore);
-		this.referralStore = new ReferralStore(this, initState?.referralStore);
 		this.oracleStore = new OracleStore(this);
+		this.tradeStore = new TradeStore(this, initState?.tradeStore);
 		makeAutoObservable(this);
 	}
 
@@ -39,7 +36,7 @@ export default class RootStore {
 
 	serialize = (): ISerializedRootStore => ({
 		accountStore: this.accountStore.serialize(),
-		referralStore: this.referralStore.serialize(),
 		tradeStore: this.tradeStore.serialize(),
+		settingStore: this.settingsStore.serialize(),
 	});
 }

@@ -12,6 +12,7 @@ import star from "@src/assets/icons/star.svg";
 import yellowStar from "@src/assets/icons/yellowStar.svg";
 import { useNavigate } from "react-router-dom";
 import useOnClickOutside from "@src/hooks/useOnClickOutside";
+import BN from "@src/utils/BN";
 
 interface IProps {}
 
@@ -50,13 +51,18 @@ const Leverage = styled.div`
 	border: 1px solid ${({ theme }) => theme.colors.borderAccent};
 `;
 const MarketSelection: React.FC<IProps> = observer(() => {
-	const { tradeStore } = useStores();
+	const { tradeStore, oracleStore } = useStores();
 	const [searchValue, setSearchValue] = useState<string>("");
 	const navigate = useNavigate();
 	const ref = useRef(null);
 	const [isSpotMarket, setSpotMarket] = useState(!tradeStore.isMarketPerp);
-	const markets = isSpotMarket ? tradeStore.spotMarkets : tradeStore.perpMarkets;
-	const filteredMarkets = markets.filter(({ token0, token1 }) =>
+
+	const filteredPerpMarkets = tradeStore.perpMarkets.filter(({ token0, token1 }) =>
+		searchValue
+			? [token0.symbol, token1.symbol].map((v) => v.toLowerCase()).some((v) => v.includes(searchValue.toLowerCase()))
+			: true,
+	);
+	const filteredSpotMarkets = tradeStore.spotMarkets.filter(({ token0, token1 }) =>
 		searchValue
 			? [token0.symbol, token1.symbol].map((v) => v.toLowerCase()).some((v) => v.includes(searchValue.toLowerCase()))
 			: true,
@@ -78,71 +84,81 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			</Top>
 			<SizedBox height={24} />
 			<Row justifyContent="space-between" style={{ padding: "0 12px", boxSizing: "border-box" }}>
-				<Text type={TEXT_TYPES.BODY}>MARKETS</Text>
-				<Text type={TEXT_TYPES.BODY}>PRICE & 24h CHANGE</Text>
+				<Text type={TEXT_TYPES.BODY}>MARKET</Text>
+				<Text type={TEXT_TYPES.BODY}>PRICE</Text>
 			</Row>
 			<SizedBox height={12} />
 			<Divider />
-			{filteredMarkets.length === 0 ? (
+			{isSpotMarket && filteredSpotMarkets.length === 0 && (
 				<>
 					<SizedBox height={16} />
 					<Row justifyContent="center">
-						<Text>No markets found</Text>
+						<Text>No spot markets found</Text>
 					</Row>
 				</>
-			) : (
-				filteredMarkets.map(({ token0, token1, leverage, price, change24, type, symbol }, index) => {
-					const marketId = `${token0.symbol}-${token1.symbol}-${type}`;
-					const addedToFav = tradeStore.favMarkets.includes(marketId);
-					return (
-						<Market key={token0.symbol + token1.symbol + index}>
-							<Row alignItems="center">
-								<Column mainAxisSize="stretch">
-									<Icon
-										src={addedToFav ? yellowStar : star}
-										alt="star"
-										style={{ cursor: "pointer" }}
-										onClick={() => (addedToFav ? tradeStore.removeFromFav(marketId) : tradeStore.addToFav(marketId))}
-									/>
-									<SizedBox height={4} />
-									<Row>
-										<Icon src={token0.logo} alt="logo" />
-										<Icon src={token1.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
-									</Row>
-								</Column>
-								<SizedBox width={4} />
-								<Column
-									mainAxisSize="stretch"
-									onClick={() => {
-										tradeStore.setMarketSelectionOpened(false);
-										navigate(`/${symbol}`);
+			)}
+			{!isSpotMarket && filteredPerpMarkets.length === 0 && (
+				<>
+					<SizedBox height={16} />
+					<Row justifyContent="center">
+						<Text>No perp markets found</Text>
+					</Row>
+				</>
+			)}
+
+			{(isSpotMarket ? filteredSpotMarkets : filteredPerpMarkets).map((market) => {
+				const addedToFav = tradeStore.favMarkets.includes(market.symbol);
+				const price = oracleStore.prices == null ? 0 : oracleStore.prices[market.token0.priceFeed]?.price;
+				const formattedPrice = BN.formatUnits(price, 8).toFormat(2);
+				return (
+					<Market
+						key={market.symbol}
+						onClick={() => {
+							tradeStore.setMarketSelectionOpened(false);
+							navigate(`/${market.symbol}`);
+						}}
+					>
+						<Row alignItems="center">
+							<Column mainAxisSize="stretch">
+								<Icon
+									src={addedToFav ? yellowStar : star}
+									alt="star"
+									style={{ cursor: "pointer", zIndex: 100000 }}
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+										addedToFav ? tradeStore.removeFromFav(market.symbol) : tradeStore.addToFav(market.symbol);
 									}}
-								>
-									{leverage != null ? <Leverage>{`${leverage}x`}</Leverage> : <></>}
-									<SizedBox height={4} />
-									<Text type={TEXT_TYPES.H} color="primary">
-										{symbol}
-									</Text>
-								</Column>
-							</Row>
+								/>
+								<SizedBox height={4} />
+								<Row>
+									<Icon src={market.token0?.logo} alt="logo" />
+									<Icon src={market.token1?.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
+								</Row>
+							</Column>
+							<SizedBox width={4} />
 							<Column
-								alignItems="end"
+								mainAxisSize="stretch"
 								onClick={() => {
 									tradeStore.setMarketSelectionOpened(false);
-									navigate(`/${symbol}`);
+									navigate(`/${market.symbol}`);
 								}}
 							>
-								<Text style={{ textAlign: "right" }} nowrap>
-									0.02%
-								</Text>
-								<Text type={TEXT_TYPES.H} nowrap color="primary">
-									$ 1,789.00
+								{market.leverage != null ? <Leverage>{`${market.leverage}x`}</Leverage> : <></>}
+								<SizedBox height={4} />
+								<Text type={TEXT_TYPES.H} color="primary">
+									{market.symbol}
 								</Text>
 							</Column>
-						</Market>
-					);
-				})
-			)}
+						</Row>
+						<Column alignItems="end">
+							<Text type={TEXT_TYPES.H} nowrap color="primary">
+								$ {formattedPrice}
+							</Text>
+						</Column>
+					</Market>
+				);
+			})}
 		</Root>
 	);
 });

@@ -3,31 +3,23 @@ import { Column, Row } from "@components/Flex";
 import React, { ComponentProps, useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import { observer } from "mobx-react";
-import { useTradeScreenVM } from "@screens/TradeScreen/TradeScreenVm";
+import { useSpotTradeScreenVM } from "@screens/TradeScreen/SpotTradeVm";
 import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@components/Button";
 import Select from "@components/Select";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Text, { TEXT_TYPES } from "@components/Text";
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import { useStores } from "@stores";
 import AccordionItem from "@components/AccordionItem";
 import BN from "@src/utils/BN";
 import Slider from "@components/Slider";
 import { Accordion } from "@szhsin/react-accordion";
+import MaxButton from "@src/components/MaxButton";
 
 interface IProps extends ComponentProps<any> {}
 
 const Root = styled.div`
 	padding: 12px;
-`;
-
-const MaxButton = styled(Button)`
-	padding: 0 8px !important;
-	height: 18px !important;
-	border-color: ${({ theme }) => theme.colors.borderSecondary};
-	background: ${({ theme }) => theme.colors.bgPrimary};
-	border-radius: 4px;
-	${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]};
 `;
 
 const StyledInfoIcon = styled(InfoIcon)`
@@ -49,7 +41,7 @@ const orderTypes = [
 
 const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 	const { accountStore } = useStores();
-	const vm = useTradeScreenVM();
+	const vm = useSpotTradeScreenVM();
 	const [percent, _setPercent] = useState(0);
 
 	const setPercent = (v: number) => {
@@ -113,7 +105,10 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 				/>
 				<SizedBox width={8} />
 				<Column crossAxisSize="max" alignItems="flex-end">
-					<MaxButton fitContent>MAX</MaxButton>
+					{/*todo implement max*/}
+					<MaxButton fitContent onClick={vm.onMaxClick}>
+						MAX
+					</MaxButton>
 					<SizedBox height={4} />
 					<TokenInput
 						assetId={vm.token1.assetId}

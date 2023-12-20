@@ -3,6 +3,7 @@ import tokenLogos from "./tokenLogos";
 
 export const ROUTES = {
 	ROOT: "/",
+	CONNECT: "/connect",
 	TRADE: "/:marketId",
 	FAUCET: "/faucet",
 };
@@ -16,18 +17,33 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
 	(acc, t) => ({ ...acc, [t.assetId]: t }),
 	{},
 );
+export const TOKENS_BY_PRICE_FEED_ID: Record<string, IToken> = TOKENS_LIST.reduce(
+	(acc, t) => ({ ...acc, [t.priceFeed]: t }),
+	{},
+);
 
 export const NODE_URL = "https://beta-4.fuel.network/graphql";
 export const EXPLORER_URL = "https://fuellabs.github.io/block-explorer-v2/beta-4/#";
 export const FAUCET_URL = "https://faucet-beta-4.fuel.network";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
-export const INDEXER = "https://spark-indexer.spark-defi.com/api/sql/composabilitylabs/spark_indexer";
+export const SPOT_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/spot_market_indexer";
+export const CLEARING_HOUSE_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/clearing_house_indexer";
+export const VAULT_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/vault_indexer";
+export const PERP_MARKET_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/perp_market_indexer";
+export const ACCOUNT_BALANCE_INDEXER =
+	"https://indexer.spark-defi.com/api/sql/composabilitylabs/account_balance_indexer";
+
 export const CONTRACT_ADDRESSES = {
-	priceOracle: "0x633fad7666495c53daa41cc329b78a554f215af4b826671ee576f2a30096999d",
-	spotMarket: "0x9cf9ccbf69b30530ccb62c927ed4bad12a22815a8f9e2c3a5b14f644a43889f6",
-	tokenFactory: "0xd8c627b9cd9ee42e2c2bd9793b13bc9f8e9aad32e25a99ea574f23c1dd17685a",
-	referral: "0xe06f9223c5be21e37b76c073d50dab19c997c4b37d9246ffe9b4de930b8fee73",
+	spotMarket: "0xc99fa347474ccd17a9f6304d0978b42f844fd974bfac9df2f2899cb89db1bc84",
+	tokenFactory: "0xc3d0426df8a40e7b4803f305537a83e7037be91596c393e7a6b693133f9d7301",
+	pyth: "0x2b480dd77abdc48224a22b809608b445604f0de1a999160fb7f126cca2ffc108",
+	proxy: "0x36eadaee6e25bd050239834703f3881f91cbc3cb3bb7c96f57483703d8ecba3f",
+	accountBalance: "0xcfa7a1e1030c7aaf97fc065dab030fd4d6afd75dc80d35a3b843f0c467f69a2f",
+	clearingHouse: "0x0815f30454fe7bafec5b137513a8d1dcb36a4ffa5530217d7e6381352fb2614b",
+	insuranceFund: "0x7cdf5bd4cd5b9584517bee34b5fc94abe4790b1e99f1a7f81f40ef824164d103",
+	perpMarket: "0x87f7c3ef8c5b36696021c1e355f8946f36a156dfc66d44fd276e35aa950f008e",
+	vault: "0xfa8f7e7b7ed37ce7b0b98ac832317298aadb1a3833c5eec7899429c75124762f",
 };
 
 export interface IToken {
@@ -37,10 +53,4 @@ export interface IToken {
 	symbol: string;
 	decimals: number;
 	priceFeed: string;
-}
-
-export interface IContractsConfig {
-	priceOracle: string;
-	market: string;
-	tokenFactory: string;
 }

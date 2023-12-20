@@ -16,7 +16,6 @@ interface IProps {
 export const themes = {
 	darkTheme,
 };
-//todo fix
 const ThemeWrapper: React.FC<IProps> = observer(({ children }) => {
 	const { settingsStore } = useStores();
 	return <ThemeProvider theme={themes[settingsStore.selectedTheme]}>{children}</ThemeProvider>;

@@ -4,55 +4,73 @@ import { makeAutoObservable, reaction, when } from "mobx";
 import { RootStore, useStores } from "@stores";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import { OracleAbi__factory, SpotMarketAbi__factory } from "@src/contracts";
-import { getLatestTradesInPair, Trade } from "@src/services/TradesService";
+import { SpotMarketAbi__factory } from "@src/contracts";
+import { getLatestSpotTradePrice, getLatestSpotTrades, SpotTrade } from "@src/services/SpotMarketService";
 
-const ctx = React.createContext<TradeScreenVm | null>(null);
+const ctx = React.createContext<SpotTradeVm | null>(null);
 
 interface IProps {
 	children: React.ReactNode;
 }
 
-export const TradeScreenVMProvider: React.FC<IProps> = ({ children }) => {
+export const SpotTradeVMProvider: React.FC<IProps> = ({ children }) => {
 	const rootStore = useStores();
-	const store = useMemo(() => new TradeScreenVm(rootStore), [rootStore]);
+	const store = useMemo(() => new SpotTradeVm(rootStore), [rootStore]);
 	return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
 type OrderAction = "buy" | "sell";
 
-export const useTradeScreenVM = () => useVM(ctx);
+export const useSpotTradeScreenVM = () => useVM(ctx);
 
-class TradeScreenVm {
+class SpotTradeVm {
 	public rootStore: RootStore;
 
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		this.updateMarket();
 		makeAutoObservable(this);
-		this.getLatestTrades().then();
+		this.getLatestSpotTrades().then();
 		reaction(
 			() => this.rootStore.tradeStore.marketSymbol,
 			() => {
 				this.updateMarket();
-				this.getLatestTrades();
+				this.getLatestSpotTrades();
 			},
 		);
-		when(() => this.rootStore.ordersStore.initialized, this.setMarketPrice);
+		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
+		when(() => this.rootStore.spotOrdersStore.initialized, this.setMarketPrice);
 	}
 
+	initPriceToMarket = () => {
+		const price =
+			this.rootStore.oracleStore?.prices != null
+				? new BN(this.rootStore.oracleStore?.prices[this.token0.priceFeed]?.price.toString())
+				: BN.ZERO;
+		const marketPrice = BN.formatUnits(price, 2);
+		this.setBuyPrice(marketPrice);
+		this.setSellPrice(marketPrice);
+	};
 	updateMarket = () => {
 		const market = this.rootStore.tradeStore.market;
 		if (market == null || market.type === "perp") return;
 		this.setAssetId0(market?.token0.assetId);
 		this.setAssetId1(market?.token1.assetId);
 	};
+	onMaxClick = () => {
+		const tokenId = this.isSell ? this.assetId0 : this.assetId1;
+		let balance = this.rootStore.accountStore.findBalanceByAssetId(tokenId)?.balance ?? BN.ZERO;
+		if (tokenId === TOKENS_BY_SYMBOL.ETH.assetId) {
+			balance = balance.minus(40);
+		}
+		this.isSell ? this.setSellAmount(balance, true) : this.setBuyTotal(balance, true);
+	};
 
 	public loading: boolean = false;
 	private setLoading = (l: boolean) => (this.loading = l);
 
-	public trades: Array<Trade> = [];
-	public setTrades = (v: Array<Trade>) => (this.trades = v);
+	public trades: Array<SpotTrade> = [];
+	public setTrades = (v: Array<SpotTrade>) => (this.trades = v);
 
 	get latestTrade() {
 		if (this.trades.length === 0) return null;
@@ -72,7 +90,7 @@ class TradeScreenVm {
 	public setAssetId1 = (assetId: string) => (this.assetId1 = assetId);
 
 	setMarketPrice = () => {
-		const { orderbook } = this.rootStore.ordersStore;
+		const { orderbook } = this.rootStore.spotOrdersStore;
 		const buy = orderbook.buy.sort((a, b) => (a.price > b.price ? -1 : 1));
 		const sell = orderbook.sell.sort((a, b) => (a.price < b.price ? -1 : 1));
 		const buyPrice = buy.length > 0 ? BN.parseUnits(buy[0].price, this.token1.decimals) : BN.ZERO;
@@ -81,9 +99,16 @@ class TradeScreenVm {
 		this.setSellPrice(buyPrice);
 	};
 
-	getLatestTrades = async () => {
-		const data = await getLatestTradesInPair(`${this.token0.symbol}/${this.token1.symbol}`);
+	getLatestSpotTrades = async () => {
+		const asset0 = this.token0.assetId.slice(2);
+		const asset1 = this.token1.assetId.slice(2);
+		const data = await getLatestSpotTrades(asset0, asset1);
 		this.setTrades(data);
+	};
+	getLatestSpotTradePrice = async () => {
+		const asset0 = this.token0.assetId.slice(2);
+		const asset1 = this.token1.assetId.slice(2);
+		return await getLatestSpotTradePrice(asset0, asset1);
 	};
 
 	get token0() {
@@ -130,7 +155,6 @@ class TradeScreenVm {
 			const v1 = BN.formatUnits(this.buyPrice, this.token1.decimals);
 			const v2 = BN.formatUnits(total, this.token1.decimals);
 			this.setBuyAmount(BN.parseUnits(v2.div(v1), this.token0.decimals));
-			//todo add
 			const balance = this.rootStore.accountStore.getBalance(this.token1);
 			if (balance == null) return;
 			const percent = total.times(100).div(balance);
@@ -207,7 +231,6 @@ class TradeScreenVm {
 
 	createOrder = async (action: OrderAction) => {
 		const { accountStore } = this.rootStore;
-		await accountStore.checkConnectionWithWallet();
 		if (accountStore.address == null) return;
 		const wallet = await accountStore.getWallet();
 		if (wallet == null) return;
@@ -242,7 +265,7 @@ class TradeScreenVm {
 						},
 					}),
 					limitOrdersContract.functions
-						.create_order(token1, amount1, this.matcherFee)
+						.create_order({ value: token1 }, amount1, this.matcherFee)
 						.callParams({ forward: { amount: amount0, assetId: token0 } }),
 				])
 				.txParams({ gasPrice: 1 })
@@ -250,21 +273,20 @@ class TradeScreenVm {
 				.then(({ transactionResult }) => {
 					transactionResult && this.notifyThatActionIsSuccessful("Order has been placed", transactionResult.id ?? "");
 				})
-				.then(() => this.rootStore.ordersStore.sync());
+				.then(() => this.rootStore.spotOrdersStore.sync());
 		} catch (e) {
 			const error = JSON.parse(JSON.stringify(e)).toString();
 			this.rootStore.notificationStore.toast(error.error, { type: "error" });
 			console.error(e);
 		} finally {
-			await this.rootStore.ordersStore.sync();
+			await this.rootStore.spotOrdersStore.sync();
 			this.setLoading(false);
 		}
 	};
 
-	cancelOrder = async (id: string) => {
+	cancelOrder = async (id: number) => {
 		const { accountStore } = this.rootStore;
 		if (accountStore.address == null) return;
-		await accountStore.checkConnectionWithWallet();
 		const wallet = await accountStore.getWallet();
 		if (wallet == null) return;
 		const limitOrdersContract = SpotMarketAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
@@ -281,11 +303,11 @@ class TradeScreenVm {
 						transactionResult && this.notifyThatActionIsSuccessful("Order has been canceled", transactionResult.id ?? ""),
 				)
 				.then(() => {
-					const { myOrders } = this.rootStore.ordersStore;
-					const index = myOrders.findIndex((obj) => obj.id === id);
-					myOrders.splice(index, 1);
+					const { mySpotOrders } = this.rootStore.spotOrdersStore;
+					const index = mySpotOrders.findIndex((obj) => obj.orderId === id);
+					mySpotOrders.splice(index, 1);
 				});
-			//todo add update
+			this.rootStore.tradeStore.syncDataFromIndexer();
 		} catch (e) {
 			this.notifyError(JSON.parse(JSON.stringify(e)).toString(), e);
 		} finally {
@@ -315,35 +337,5 @@ class TradeScreenVm {
 		this.rootStore.notificationStore.toast(title, {
 			type: "error",
 		});
-	};
-
-	setupMarketMakingAlgorithm = async () => {
-		const { accountStore, ordersStore } = this.rootStore;
-		if (ordersStore.spreadPercent == null) return;
-		if (accountStore.address == null) return;
-		await accountStore.checkConnectionWithWallet();
-		const wallet = accountStore.walletToRead;
-		if (wallet == null) return;
-		const get_price = OracleAbi__factory.connect(CONTRACT_ADDRESSES.priceOracle, wallet).functions.get_price;
-		const price0 = await get_price(this.assetId0)
-			.simulate()
-			.then(({ value }) => value.price);
-		const price1 = await get_price(this.assetId1)
-			.simulate()
-			.then(({ value }) => value.price);
-		const price = price0.div(price1);
-
-		const { buy, sell } = ordersStore.orderbook;
-		const sellAmount = buy.reduce((acc, order) => (price.lte(order.price) ? acc.plus(order.totalLeft) : acc), BN.ZERO);
-		const buyAmount = sell.reduce((acc, order) => (price.gte(order.price) ? acc.plus(order.amountLeft) : acc), BN.ZERO);
-		if (sellAmount > BN.ZERO && sellAmount > buyAmount) {
-			this.setIsSell(true);
-			this.setSellAmount(sellAmount);
-			this.setSellPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
-		} else if (buyAmount > BN.ZERO && buyAmount > sellAmount) {
-			this.setIsSell(false);
-			this.setBuyAmount(buyAmount);
-			this.setBuyPrice(BN.parseUnits(new BN(price0.div(price1).toString()), this.token1.decimals), true);
-		}
 	};
 }

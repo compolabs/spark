@@ -8,7 +8,7 @@ import { useFaucetVM } from "@screens/Faucet/FaucetVm";
 import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
-import { TableBody, TableRow, TableText, TableTitle } from "@screens/TradeScreen/BottomTablesInterface";
+import { TableBody, TableRow, TableText, TableTitle } from "@screens/TradeScreen/BottomTablesInterfacePerp";
 import Chip from "@components/Chip";
 
 interface IProps {}
@@ -75,12 +75,7 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 											Loading...
 										</Button>
 									);
-								if (ethBalance?.eq(0) && token.symbol !== "ETH")
-									return (
-										<Button green disabled>
-											Mint
-										</Button>
-									);
+								if (ethBalance?.eq(0) && token.symbol !== "ETH") return <Button disabled>Mint</Button>;
 								return (
 									<Button
 										style={{ width: 120 }}

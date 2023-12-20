@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import React from "react";
+import React, { useEffect } from "react";
 import Text, { TEXT_TYPES } from "@components/Text";
 import SizedBox from "@components/SizedBox";
 import { Observer } from "mobx-react-lite";
@@ -27,6 +27,9 @@ const Root = styled.div`
 
 const FaucetImpl: React.FC<IProps> = () => {
 	const vm = useFaucetVM();
+	useEffect(() => {
+		document.title = `Spark | Faucet`;
+	}, []);
 	return (
 		<Observer>
 			{() => {
@@ -36,7 +39,7 @@ const FaucetImpl: React.FC<IProps> = () => {
 							Faucet for Fuel Network
 						</Text>
 						<SizedBox height={16} />
-						{vm.faucetTokens.length === 0 ? <Skeleton height={70} style={{ margin: 4 }} count={5} /> : <TokensFaucetTable />}
+						{vm.faucetTokens.length === 0 ? <Skeleton height={48} style={{ margin: 4 }} count={4} /> : <TokensFaucetTable />}
 					</Root>
 				);
 			}}

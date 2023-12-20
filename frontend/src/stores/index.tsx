@@ -4,8 +4,7 @@ import RootStore from "./RootStore";
 import AccountStore from "./AccountStore";
 import SettingsStore from "./SettingsStore";
 import NotificationStore from "./NotificationStore";
-import OrdersStore from "./OrdersStore";
-import ReferralStore from "./ReferralStore";
+import SpotOrdersStore from "./SpotOrdersStore";
 import OracleStore from "./OracleStore";
 import TradeStore from "./TradeStore";
 
@@ -14,8 +13,7 @@ export {
 	SettingsStore,
 	AccountStore,
 	NotificationStore,
-	OrdersStore,
-	ReferralStore,
+	SpotOrdersStore,
 	TradeStore,
 	OracleStore,
 	storesContext,

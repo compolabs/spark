@@ -4,17 +4,33 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.62.0
-  Forc version: 0.44.0
-  Fuel-Core version: 0.20.6
+  Fuels version: 0.69.1
+  Forc version: 0.46.1
+  Fuel-Core version: 0.20.8
 */
 
 export type { SpotMarketAbi } from './SpotMarketAbi';
 export type { TokenFactoryAbi } from './TokenFactoryAbi';
 export type { OracleAbi } from './OracleAbi';
 export type { ReferalContractAbi } from './ReferalContractAbi';
+export type { VaultAbi } from './VaultAbi';
+export type { ProxyAbi } from './ProxyAbi';
+export type { AccountBalanceAbi } from './AccountBalanceAbi';
+export type { ClearingHouseAbi } from './ClearingHouseAbi';
+export type { InsuranceFundAbi } from './InsuranceFundAbi';
+export type { PerpMarketAbi } from './PerpMarketAbi';
+export type { TokenAbi } from './TokenAbi';
+export type { PythContractAbi } from './PythContractAbi';
 
+export { PythContractAbi__factory } from './factories/PythContractAbi__factory';
 export { SpotMarketAbi__factory } from './factories/SpotMarketAbi__factory';
 export { TokenFactoryAbi__factory } from './factories/TokenFactoryAbi__factory';
 export { OracleAbi__factory } from './factories/OracleAbi__factory';
 export { ReferalContractAbi__factory } from './factories/ReferalContractAbi__factory';
+export { VaultAbi__factory } from './factories/VaultAbi__factory';
+export { ProxyAbi__factory } from './factories/ProxyAbi__factory';
+export { AccountBalanceAbi__factory } from './factories/AccountBalanceAbi__factory';
+export { ClearingHouseAbi__factory } from './factories/ClearingHouseAbi__factory';
+export { InsuranceFundAbi__factory } from './factories/InsuranceFundAbi__factory';
+export { PerpMarketAbi__factory } from './factories/PerpMarketAbi__factory';
+export { TokenAbi__factory } from './factories/TokenAbi__factory';
