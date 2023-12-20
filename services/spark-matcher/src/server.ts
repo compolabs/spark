@@ -19,6 +19,7 @@ class SparkMatcher {
   private initialized = true;
   private status = STATUS.CHILLED;
   private processing: number[] = [];
+  private skipCounter = 0;
 
   constructor() {
     console.log({ NODE_URL });
@@ -29,6 +30,13 @@ class SparkMatcher {
 
   run(cronExpression: string) {
     schedule(cronExpression, async () => {
+      if (this.skipCounter > 20) {
+        console.log("⏰ Job stop due timeout");
+        this.processing = [];
+        this.status = STATUS.CHILLED;
+        this.skipCounter = 0;
+      }
+
       if (this.status === STATUS.CHILLED) {
         this.status = STATUS.RUNNING;
         await this.doMatch()
@@ -36,8 +44,10 @@ class SparkMatcher {
           .finally(() => {
             this.processing = [];
             this.status = STATUS.CHILLED;
+            this.skipCounter = 0;
           });
       } else {
+        this.skipCounter += 1;
         console.log("🍃 Job already running, skip");
       }
     }).start();
@@ -51,7 +61,7 @@ class SparkMatcher {
     if (!this.initialized) throw new Error("SparkMatcher is not initialized");
 
     const activeOrders: Array<IOrder> = await fetchIndexer<Array<IOrderResponse>>(
-      `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.orderentity WHERE status = 'Active') t;`
+      `SELECT json_agg(t) FROM (SELECT * FROM composabilitylabs_spot_market_indexer.orderentity WHERE status = 'Active' LIMIT 200) t;`
     ).then((result) => (result != null ? result.map(orderOutputToIOrder) : []));
 
     const totalOrders: number = await fetchIndexer<Array<{ count: number }>>(
