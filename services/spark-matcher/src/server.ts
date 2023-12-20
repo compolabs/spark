@@ -165,8 +165,8 @@ class SparkMatcher {
             });
           promises.push(promise);
         }
+        await sleep(1000);
       }
-      await sleep(1000);
     }
 
     console.log("🏁 Job finish");
