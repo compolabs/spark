@@ -41,10 +41,10 @@ class AccountStore {
 		this.initProvider();
 		when(() => this.provider != null, this.updateAccountBalances);
 		setInterval(this.updateAccountBalances, 10 * 1000);
-		reaction(
-			() => this.address,
-			() => Promise.all([this.updateAccountBalances()]),
-		);
+		// reaction(
+		// 	() => this.address,
+		// 	() => Promise.all([this.updateAccountBalances()]),
+		// );
 	}
 
 	seed: string | null = null;

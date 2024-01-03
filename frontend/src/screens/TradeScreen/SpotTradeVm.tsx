@@ -31,13 +31,13 @@ class SpotTradeVm {
 		this.updateMarket();
 		makeAutoObservable(this);
 		this.getLatestSpotTrades().then();
-		reaction(
-			() => this.rootStore.tradeStore.marketSymbol,
-			() => {
-				this.updateMarket();
-				this.getLatestSpotTrades();
-			},
-		);
+		// reaction(
+		// 	() => this.rootStore.tradeStore.marketSymbol,
+		// 	() => {
+		// 		this.updateMarket();
+		// 		this.getLatestSpotTrades();
+		// 	},
+		// );
 		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
 		when(() => this.rootStore.spotOrdersStore.initialized, this.setMarketPrice);
 	}

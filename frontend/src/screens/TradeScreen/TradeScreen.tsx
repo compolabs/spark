@@ -16,30 +16,35 @@ import { SpotTradeVMProvider } from "@screens/TradeScreen/SpotTradeVm";
 import BottomTablesInterfacePerp from "./BottomTablesInterfacePerp";
 import BottomTablesInterfaceSpot from "./BottomTablesInterfaceSpot";
 import Chart from "@screens/TradeScreen/Chart";
+import Button from "@components/Button";
+import Dialog from "@components/Dialog";
+import SpotOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotOrderBook";
 
-interface IProps {}
+
+interface IProps {
+}
 
 const Root = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 100%;
-	flex: 1;
-	box-sizing: border-box;
-	padding: 0 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    flex: 1;
+    box-sizing: border-box;
+    padding: 0 12px;
 `;
 
-// const MobileCreateOrderDialogContainer = styled(Column)`
-// 	width: 100%;
-//
-// 	& > * {
-// 		width: 100%;
-// 		flex: 1;
-// 		height: 100%;
-// 	}
-// `;
+const MobileCreateOrderDialogContainer = styled(Column)`
+    width: 100%;
+
+    & > * {
+        width: 100%;
+        flex: 1;
+        height: 100%;
+    }
+`;
 
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
 	const width = useWindowSize().width;
@@ -66,27 +71,35 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 		</Root>
 	) : (
 		<Root>
-			<Text type={TEXT_TYPES.BUTTON_SECONDARY}>Page under construction. Please use a desktop device.</Text>
-			{/*<MarketStatisticsBar />*/}
-			{/*<SizedBox height={4} />*/}
-			{/*<Column mainAxisSize="stretch" crossAxisSize="max" style={{ flex: 5 }}>*/}
-			{/*	<Chart />*/}
-			{/*	<BottomTablesInterface />*/}
-			{/*</Column>*/}
-			{/*<SizedBox height={16} />*/}
-			{/*<Button green onClick={() => setCreateOrderDialogOpen(true)}>*/}
-			{/*	Create order*/}
-			{/*</Button>*/}
-			{/*<StatusBar />*/}
-			{/*<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>*/}
-			{/*	<MobileCreateOrderDialogContainer>*/}
-			{/*		<SpotOrderBook mobileMode />*/}
-			{/*		<LeftBlock style={{ maxWidth: "100%", height: "100%" }} />*/}
-			{/*	</MobileCreateOrderDialogContainer>*/}
-			{/*</Dialog>*/}
+			<MarketStatisticsBar />
+			<SizedBox height={8} />
+			{/*<Chart />*/}
+			{/*<BottomTablesInterfacePerp />*/}
+			<Row>
+				<OrderbookAndTradesInterface />
+				<SizedBox width={8} />
+				<LeftBlock />
+			</Row>
+				<SizedBox height={8} />
+			{tradeStore.isMarketPerp ? <BottomTablesInterfacePerp /> : <BottomTablesInterfaceSpot />}
+			<SizedBox height={16} />
+			<Dialog>
+				<MobileCreateOrderDialogContainer>
+					<SpotOrderBook mobileMode />
+					<LeftBlock style={{ maxWidth: "100%", height: "100%" }} />
+				</MobileCreateOrderDialogContainer>
+			</Dialog>
 		</Root>
 	);
 });
+{/*<Button green onClick={() => setCreateOrderDialogOpen(true)}>*/
+}
+{/*	Create order*/
+}
+{/*</Button>*/
+}
+{/*<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>*/
+}
 
 const TradeScreen: React.FC<IProps> = observer(() => {
 	const { tradeStore } = useStores();

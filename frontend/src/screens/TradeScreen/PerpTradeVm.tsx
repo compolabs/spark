@@ -35,15 +35,15 @@ class PerpTradeVm {
 		this.rootStore = rootStore;
 		this.updateMarket();
 		makeAutoObservable(this);
-		reaction(
-			() => [this.rootStore.tradeStore.marketSymbol, this.rootStore.tradeStore.contracts != null],
-			() => this.updateMarket(),
-		);
+		// reaction(
+		// 	() => [this.rootStore.tradeStore.marketSymbol, this.rootStore.tradeStore.contracts != null],
+		// 	() => this.updateMarket(),
+		// );
 		when(() => this.rootStore.oracleStore.initialized, this.initPriceToMarket);
-		reaction(
-			() => [this.rootStore.tradeStore.freeCollateral, this.rootStore.tradeStore.perpPrices],
-			() => this.calcMaxPositionSize(),
-		);
+		// reaction(
+		// 	() => [this.rootStore.tradeStore.freeCollateral, this.rootStore.tradeStore.perpPrices],
+		// 	() => this.calcMaxPositionSize(),
+		// );
 	}
 
 	updateMarket = async () => {
