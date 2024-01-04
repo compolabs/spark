@@ -2,7 +2,7 @@ import styled from "@emotion/styled";
 import React, { useState } from "react";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
-import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
+import { ReactComponent as Logo } from "@src/assets/icons/logoColoredFalse.svg";
 import { TEXT_TYPES } from "@components/Text";
 import Button from "@components/Button";
 import { ROUTES } from "@src/constants";

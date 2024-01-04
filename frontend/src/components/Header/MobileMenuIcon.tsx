@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import React from "react";
-
+import burgerMenuSvg from "@src/assets/icons/burgerMenu.svg";
 interface IProps {
 	onClick: () => void;
 	opened: boolean;

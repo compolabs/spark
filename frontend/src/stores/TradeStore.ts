@@ -300,16 +300,16 @@ class TradeStore {
 			getUserPerpOrders(address),
 			getUserFreeCollateral(address),
 		]);
-		// this.setPosition(res[0]);
-		// this.setPerpUserOrders(res[1]);
-		// this.setFreeCollateral(res[2]);
+		this.setPosition(res[0]);
+		this.setPerpUserOrders(res[1]);
+		this.setFreeCollateral(res[2]);
 	};
 	syncDataFromIndexer = async () => {
 		const res = await Promise.all([getPerpMarkets(), getPerpMarketPrices(), getPerpOrders(), getPerpTrades()]);
-		// this.setPerpMarkets(res[0]);
-		// this.setPerpPrices(res[1]);
-		// this.setPerpOrders(res[2]);
-		// this.setPerpTrades(res[3]);
+		this.setPerpMarkets(res[0]);
+		this.setPerpPrices(res[1]);
+		this.setPerpOrders(res[2]);
+		this.setPerpTrades(res[3]);
 	};
 }
 

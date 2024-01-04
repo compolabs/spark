@@ -80,7 +80,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 				<SizedBox width={8} />
 				<LeftBlock />
 			</Row>
-				<SizedBox height={8} />
+			<SizedBox height={8} />
 			{tradeStore.isMarketPerp ? <BottomTablesInterfacePerp /> : <BottomTablesInterfaceSpot />}
 			<SizedBox height={16} />
 			<Dialog>
@@ -92,14 +92,13 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 		</Root>
 	);
 });
-{/*<Button green onClick={() => setCreateOrderDialogOpen(true)}>*/
-}
-{/*	Create order*/
-}
-{/*</Button>*/
-}
-{/*<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>*/
-}
+/*<Button green onClick={() => setCreateOrderDialogOpen(true)}>*/
+
+/*	Create order*/
+
+/*</Button>*/
+/*<Dialog visible={createOrderDialogOpen} onClose={() => setCreateOrderDialogOpen(false)}>*/
+
 
 const TradeScreen: React.FC<IProps> = observer(() => {
 	const { tradeStore } = useStores();
