@@ -14,7 +14,7 @@ import isRoutesEquals from "@src/utils/isRoutesEquals";
 import Tab from "@components/Tab";
 import DepositWithdrawModal from "@screens/TradeScreen/DepositWithdrawModal";
 import MobileMenu from "./MobileMenu";
-import MobileMenuIcon from "./MobileMenuIcon";
+import MobileMenuIcon, { DefaultIcon } from "./MobileMenuIcon";
 
 interface IProps {}
 
@@ -125,7 +125,9 @@ const Header: React.FC<IProps> = observer(() => {
 			</Row>
 			<Row mainAxisSize="fit-content" alignItems="center" justifyContent="flex-end">
 				<MobileRow>
-					<MobileMenuIcon onClick={() => toggleMenu(!mobileMenuOpened)} opened={mobileMenuOpened} />
+					<MobileMenuIcon customIcon={<DefaultIcon />}
+																					onClick={() => toggleMenu(!mobileMenuOpened)}
+																					opened={mobileMenuOpened} />
 				</MobileRow>
 				<DesktopRow>
 					{accountStore.address != null && (

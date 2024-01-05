@@ -11,8 +11,8 @@ import { useStores } from "@stores";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import { getLatestSpotTradePrice } from "@src/services/SpotMarketService";
 import Button from "@components/Button";
-import { ReactComponent as SwitchSvg } from "@src/assets/icons/switch.svg"; // Импортируйте SVG как компонент
-
+import { ReactComponent as YourSvgIcon } from "@src/assets/icons/switch.svg";
+import MobileMenuIcon from "@components/Header/MobileMenuIcon"; // Импортируйте SVG как компонент
 
 interface IProps {
 }
@@ -136,10 +136,12 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			</MarketSelect>
 
 			<MobileRow>
-				<Button>
-					<SwitchSvg />
-				</Button>
+				<MobileMenuIcon customIcon={<YourSvgIcon />} />
 			</MobileRow>
+
+
+
+
 
 			<DesktopRow style={{ justifyContent: "space-between" }}>
 				<MarketStatistics>
