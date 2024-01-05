@@ -9,7 +9,7 @@ export interface IFlexProps {
 
 export const Row = styled.div<IFlexProps>`
 	display: flex;
-	flex-direction: row;
+	//flex-direction: row;
 
 	justify-content: ${({ justifyContent }) => justifyContent ?? "start"};
 	align-items: ${({ alignItems }) => alignItems ?? "start"};

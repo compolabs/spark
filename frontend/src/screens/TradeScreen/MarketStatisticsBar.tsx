@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { Column, DesktopRow, Row } from "@src/components/Flex";
+import { Column, DesktopRow, MobileRow, Row } from "@src/components/Flex";
 import React, { useEffect, useState } from "react";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
@@ -10,14 +10,16 @@ import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
 import { getLatestSpotTradePrice } from "@src/services/SpotMarketService";
-import switchSvg from "@src/assets/icons/switch.svg";
 import Button from "@components/Button";
+import { ReactComponent as SwitchSvg } from "@src/assets/icons/switch.svg"; // Импортируйте SVG как компонент
+
 
 interface IProps {
 }
 
 const Root = styled.div`
     display: flex;
+				justify-content: space-between;
     align-items: center;
     box-sizing: border-box;
     height: 50px;
@@ -26,6 +28,7 @@ const Root = styled.div`
     border-radius: 10px;
     flex-shrink: 0;
 `;
+
 const Icon = styled.img`
     border-radius: 50%;
 `;
@@ -113,41 +116,57 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	]);
 	return (
 		<Root>
+
+
 			<MarketSelect
 				focused={tradeStore.marketSelectionOpened}
 				style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B", borderRadius: "10px 0 0 10px" } : {}}
 				onClick={() => !tradeStore.marketSelectionOpened && tradeStore.setMarketSelectionOpened(true)}
 			>
-				<Row alignItems="center">
+				<Row alignItems="center" justify-content="space-between">
 					<Icon style={{ width: 24, height: 24 }} src={tradeStore.market?.token0.logo} alt="token0" />
 					<Icon style={{ width: 24, height: 24, marginLeft: -8 }} src={tradeStore.market?.token1.logo} alt="token1" />
 					<SizedBox width={8} />
 					<Text type={TEXT_TYPES.H} primary style={{ whiteSpace: "nowrap" }}>
 						{tradeStore.market?.symbol}
 					</Text>
-
+					<SizedBox width={10} />
+					<img style={{ width: 24, height: 24, marginLeft: -8 }} src={arrow} alt="arrow" className="menu-arrow" />
 				</Row>
-				<SizedBox width={10} />
-				<img style={{ width: 24, height: 24, marginLeft: -8 }} src={arrow} alt="arrow" className="menu-arrow" />
 			</MarketSelect>
 
-			<MarketStatistics>
-				<PriceRow alignItems="center">
-					<Column alignItems="flex-end">
-						{/*<Text*/}
-						{/*	type={TEXT_TYPES.BODY}*/}
-						{/*	style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}*/}
-						{/*>*/}
-						{/*	{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}*/}
-						{/*</Text>*/}
-						{/*<Text type={TEXT_TYPES.H} primary>*/}
-						{/*	$ {price}*/}
-						{/*</Text>*/}
-					</Column>
-					<DesktopRow style={{ justifyContent: "space-between" }}>
+			<MobileRow>
+				<Button>
+					<SwitchSvg />
+				</Button>
+			</MobileRow>
+
+			<DesktopRow style={{ justifyContent: "space-between" }}>
+				<MarketStatistics>
+
+
+					<PriceRow alignItems="center">
+
+
+						{/*<Column alignItems="flex-end">*/}
+						{/*	<Text*/}
+						{/*		type={TEXT_TYPES.BODY}*/}
+						{/*		style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}*/}
+						{/*	>*/}
+						{/*		{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}*/}
+						{/*	</Text>*/}
+						{/*	<Text type={TEXT_TYPES.H} primary>*/}
+						{/*		$ {price}*/}
+						{/*	</Text>*/}
+						{/*</Column>*/}
+
+
 						{(tradeStore.isMarketPerp ? perpStatsArr : spotStatsArr).map(({ title, value }) => (
+
 							<React.Fragment key={title}>
 								<SizedBox width={1} height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} />
+
+
 								<Column>
 									<Text type={TEXT_TYPES.SUPPORTING}>{title}</Text>
 									<SizedBox height={4} />
@@ -155,15 +174,24 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 										{value}
 									</Text>
 								</Column>
+
+
 							</React.Fragment>
 						))}
 
-			<Button >
-				SEE ALL MARKET DETAILS
-			</Button>
-					</DesktopRow>
-				</PriceRow>
-			</MarketStatistics>
+
+						<Button text>
+							SEE ALL MARKET DETAILS
+						</Button>
+
+
+					</PriceRow>
+
+
+				</MarketStatistics>
+			</DesktopRow>
+
+
 		</Root>
 	);
 });
