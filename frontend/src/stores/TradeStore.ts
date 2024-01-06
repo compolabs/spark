@@ -74,7 +74,7 @@ class TradeStore {
 		// this.syncUserDataFromIndexer();
 		// this.syncDataFromIndexer();
 		// reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
-		setInterval(this.syncDataFromIndexer, 30 * 1000);
+		// setInterval(this.syncDataFromIndexer, 30 * 1000);
 
 		if (initState != null) {
 			const markets = initState.favMarkets ?? "";

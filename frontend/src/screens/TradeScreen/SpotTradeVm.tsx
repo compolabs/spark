@@ -30,7 +30,7 @@ class SpotTradeVm {
 		this.rootStore = rootStore;
 		this.updateMarket();
 		makeAutoObservable(this);
-		this.getLatestSpotTrades().then();
+		// this.getLatestSpotTrades().then();
 		// reaction(
 		// 	() => this.rootStore.tradeStore.marketSymbol,
 		// 	() => {
@@ -307,7 +307,7 @@ class SpotTradeVm {
 					const index = mySpotOrders.findIndex((obj) => obj.orderId === id);
 					mySpotOrders.splice(index, 1);
 				});
-			this.rootStore.tradeStore.syncDataFromIndexer();
+			// this.rootStore.tradeStore.syncDataFromIndexer();
 		} catch (e) {
 			this.notifyError(JSON.parse(JSON.stringify(e)).toString(), e);
 		} finally {
