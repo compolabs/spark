@@ -71,8 +71,8 @@ class TradeStore {
 		makeAutoObservable(this);
 		this.setSpotMarkets(spotMarketsConfig);
 		this.initContracts();
-		this.syncUserDataFromIndexer();
-		this.syncDataFromIndexer();
+		// this.syncUserDataFromIndexer();
+		// this.syncDataFromIndexer();
 		// reaction(() => this.rootStore.accountStore.address, this.syncUserDataFromIndexer);
 		setInterval(this.syncDataFromIndexer, 30 * 1000);
 
