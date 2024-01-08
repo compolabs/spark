@@ -9,10 +9,8 @@ import arrow from "@src/assets/icons/arrowUp.svg";
 import { observer } from "mobx-react";
 import { useStores } from "@stores";
 import { usePerpTradeVM } from "@screens/TradeScreen/PerpTradeVm";
-import { getLatestSpotTradePrice } from "@src/services/SpotMarketService";
 import Button from "@components/Button";
-import { ReactComponent as YourSvgIcon } from "@src/assets/icons/switch.svg";
-import MobileMenuIcon from "@components/Header/MobileMenuIcon"; // Импортируйте SVG как компонент
+import { ReactComponent as Switch } from "@src/assets/icons/switch.svg";
 
 interface IProps {}
 
@@ -76,6 +74,15 @@ const PriceRow = styled(Row)`
 	}
 `;
 
+const SwitchButton = styled(Button)`
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+				margin-right: 8px;
+    border: solid color;
+`;
+
 const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 	const { tradeStore, oracleStore } = useStores();
 	const theme = useTheme();
@@ -129,9 +136,16 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 				</Row>
 			</MarketSelect>
 
+
 			<MobileRow>
-				<MobileMenuIcon customIcon={<YourSvgIcon />} />
+
+				<SwitchButton>
+					<Switch width="24" height="24" />
+				</SwitchButton>
+
+
 			</MobileRow>
+
 
 			<DesktopRow style={{ justifyContent: "space-between" }}>
 				<MarketStatistics>
