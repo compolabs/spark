@@ -34,10 +34,11 @@ const Root = styled.div`
     flex: 1;
     box-sizing: border-box;
     padding: 0 12px;
-`;
 
-const MobileRoot = styled(Root)`
-    padding: 0 4px;
+    @media (max-width: 880px) {
+								margin-top: 8px;
+        padding: 0 4px;
+    }
 `;
 
 const MobileCreateOrderDialogContainer = styled(Column)`
@@ -74,7 +75,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 			<StatusBar />
 		</Root>
 	) : (
-		<MobileRoot>
+		<Root>
 			<MarketStatisticsBar />
 			<SizedBox height={8} />
 			{/*<Chart />*/}
@@ -93,7 +94,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
 					<LeftBlock style={{ maxWidth: "100%", height: "100%" }} />
 				</MobileCreateOrderDialogContainer>
 			</Dialog>
-		</MobileRoot>
+		</Root>
 	);
 });
 /*<Button green onClick={() => setCreateOrderDialogOpen(true)}>*/
