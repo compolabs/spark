@@ -12,7 +12,7 @@ enum STATUS {
   CHILLED,
 }
 
-const okErrors: Array<string> = [];
+const okErrors: Array<string> = ["ReferenceError: structuredClone is not defined"];
 
 class SparkMatcher {
   private contract?: SpotMarketAbi;
@@ -103,11 +103,11 @@ class SparkMatcher {
           await sleep(1000);
           if (!isOrdersActive) {
             console.log(
-              `🛸👽 Phantom order \nOrder #${order0.orderId}\n indexer status: ${
+              `🛸👽 Phantom order \nOrder #${order0.orderId}\n read status: ${
                 orders[0] && orders[0].value.status
-              }\n real status: ${order0.status} \nOrder #${order1.orderId}\n indexer status:${
+              }\n indexer status: ${order0.status} \nOrder #${order1.orderId}\n real status:${
                 orders[1] && orders[1].value.status
-              }\n real status: ${order1.status} `
+              }\n indexer status: ${order1.status} `
             );
             continue;
           }
