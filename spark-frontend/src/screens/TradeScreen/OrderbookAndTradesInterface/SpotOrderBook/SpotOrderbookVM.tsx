@@ -98,17 +98,15 @@ class SpotOrderbookVM {
 	setOrderFilter = (value: number) => (this.orderFilter = value);
 
 	updateOrderBook = async () => {
-		if (!this.rootStore.initialized) return;
-		//todo вставить токены из выбранного маркета в tradeStore
+		const market = this.rootStore.tradeStore.market;
+		if (!this.rootStore.initialized || !market) return;
 		const [buy, sell] = await Promise.all([
-			fetchOrders({ baseToken: TOKENS_BY_SYMBOL.BTC.assetId, type: "BUY", limit: 20 }),
-			fetchOrders({ baseToken: TOKENS_BY_SYMBOL.BTC.assetId, type: "SELL", limit: 20 }),
+			fetchOrders({ baseToken: market.baseToken.assetId, type: "BUY", limit: 20 }),
+			fetchOrders({ baseToken: market.baseToken.assetId, type: "SELL", limit: 20 }),
 		]);
 		const maxBuyPriceOrder = _.maxBy(buy, "orderPrice");
 		const minSellPriceOrder = _.minBy(sell, "orderPrice");
-		{
-			/*todo сделать order классом, добавть priceUnits и использоваь тут priceUnits*/
-		}
+		/*todo сделать order классом, добавть priceUnits и использоваь тут priceUnits*/
 		const spreadPercent =
 			maxBuyPriceOrder != null && minSellPriceOrder != null
 				? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).div(maxBuyPriceOrder.price).toFixed(2)

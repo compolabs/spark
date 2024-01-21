@@ -28,8 +28,9 @@ class SpotTradesVM {
 	public setTrades = (v: Array<TSpotMarketTrade>) => (this.trades = v);
 
 	updateTrades = async () => {
-		//todo вставить baseToken из выбранного маркета в tradeStore
-		const data = await fetchTrades(TOKENS_BY_SYMBOL.BTC.assetId, 40);
+		const market = this.rootStore.tradeStore.market;
+		if (!this.rootStore.initialized || !market) return;
+		const data = await fetchTrades(market.baseToken.assetId, 40);
 		this.setTrades(data);
 	};
 }
