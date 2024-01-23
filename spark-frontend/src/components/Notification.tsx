@@ -1,5 +1,6 @@
-import styled from "@emotion/styled";
 import React from "react";
+import styled from "@emotion/styled";
+
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 interface IProps {

@@ -1,2 +1,2 @@
-import LeftBlock from './LeftBlock'
+import LeftBlock from "./LeftBlock";
 export default LeftBlock;

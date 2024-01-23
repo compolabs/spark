@@ -1,8 +1,9 @@
-import { AccordionItem as RawAccordionItem } from "@szhsin/react-accordion";
-import styled from "@emotion/styled";
-import { ReactComponent as ArrowIcon } from "@src/assets/icons/arrowUp.svg";
 import React from "react";
+import styled from "@emotion/styled";
+import { AccordionItem as RawAccordionItem } from "@szhsin/react-accordion";
 import { AccordionItemProps } from "@szhsin/react-accordion/types/components/AccordionItem";
+
+import { ReactComponent as ArrowIcon } from "@src/assets/icons/arrowUp.svg";
 
 const AccordionItemRoot = styled(RawAccordionItem)`
 	border-bottom: 1px solid ${({ theme }) => theme.colors.borderSecondary};
@@ -48,19 +49,19 @@ const AccordionItemRoot = styled(RawAccordionItem)`
 const AccordionItem: React.FC<AccordionItemProps> = ({ header, ...rest }) => (
 	<AccordionItemRoot
 		{...rest}
+		buttonProps={{
+			className: ({ isEnter }) => `itemBtn ${isEnter && "itemBtnExpanded"}`,
+		}}
+		className="item"
+		contentProps={{ className: "itemContent" }}
 		header={
 			<>
 				{header}
 				<ArrowIcon className="arrow" />
 			</>
 		}
-		className="item"
-		buttonProps={{
-			className: ({ isEnter }) => `itemBtn ${isEnter && "itemBtnExpanded"}`,
-		}}
-		contentProps={{ className: "itemContent" }}
 		panelProps={{ className: "itemPanel" }}
 	/>
 );
 
-export default AccordionItem
+export default AccordionItem;

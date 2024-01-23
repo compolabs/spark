@@ -1,11 +1,12 @@
-import styled from "@emotion/styled";
 import React from "react";
-import SizedBox from "@components/SizedBox";
+import styled from "@emotion/styled";
 import { observer } from "mobx-react";
-import { useStores } from "@stores";
-import Text, { TEXT_TYPES } from "@components/Text";
-import { DesktopRow, Row } from "@components/Flex";
+
 import Chip from "@components/Chip";
+import { DesktopRow, Row } from "@components/Flex";
+import SizedBox from "@components/SizedBox";
+import Text, { TEXT_TYPES } from "@components/Text";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -40,7 +41,7 @@ const StatusBar: React.FC<IProps> = observer(() => {
 	return (
 		<Root>
 			<Row alignItems="center" mainAxisSize="fit-content">
-				<Indicator error={accountStore.provider == null || accountStore.signer == null} />
+				<Indicator error={!accountStore.provider || !accountStore.signer} />
 				<SizedBox width={8} />
 				<Text type={TEXT_TYPES.SUPPORTING}> Stable Connection</Text>
 			</Row>

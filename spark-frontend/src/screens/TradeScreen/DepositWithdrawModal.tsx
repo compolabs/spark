@@ -1,18 +1,7 @@
-import React, { useState } from "react";
-import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
-import { observer } from "mobx-react-lite";
-import { Row } from "@components/Flex";
-import { useStores } from "@stores";
+import React from "react";
 import styled from "@emotion/styled";
-import Button, { ButtonGroup } from "@components/Button";
-import SizedBox from "@components/SizedBox";
-import TokenInput from "@components/TokenInput";
-import BN from "@src/utils/BN";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
-import MaxButton from "@src/components/MaxButton";
-import Text, { TEXT_TYPES } from "@components/Text";
-import arrow from "@src/assets/icons/arrowUp.svg";
-import Select from "@components/Select";
+import { observer } from "mobx-react-lite";
+import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
 
 export interface IProps extends IDialogPropTypes {}
 

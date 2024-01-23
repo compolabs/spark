@@ -33,6 +33,9 @@ const Root = styled.input<{
 
 type TProps = React.InputHTMLAttributes<HTMLInputElement> & {
 	small?: boolean;
+	onWheel?: React.WheelEventHandler<HTMLInputElement>;
+	onBlur?: React.FocusEventHandler<HTMLInputElement>;
+	onFocus?: React.FocusEventHandler<HTMLInputElement>;
 };
 
 const AmountInput = React.forwardRef<HTMLInputElement, TProps>(({ onWheel, ...props }, ref) => (
@@ -41,12 +44,12 @@ const AmountInput = React.forwardRef<HTMLInputElement, TProps>(({ onWheel, ...pr
 		ref={ref}
 		small={props.small}
 		type="number"
+		onBlur={props.onBlur}
+		onFocus={props.onFocus}
 		onWheel={(e) => {
 			e.target && (e.target as any).blur();
 			onWheel && onWheel(e);
 		}}
-		onBlur={props.onBlur}
-		onFocus={props.onFocus}
 	/>
 ));
 

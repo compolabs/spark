@@ -1,9 +1,9 @@
 import React from "react";
 import { ThemeProvider } from "@emotion/react";
+import { observer } from "mobx-react";
 
 import darkTheme from "@src/themes/darkTheme";
 import { useStores } from "@stores";
-import { observer } from "mobx-react";
 
 export enum THEME_TYPE {
 	DARK_THEME = "darkTheme",

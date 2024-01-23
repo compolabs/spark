@@ -1,6 +1,7 @@
+import axios from "axios";
+
 import { IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import axios from "axios";
 
 const API_URL = "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest";
 
@@ -59,9 +60,9 @@ type TFetchOrdersParams = {
 
 export async function fetchOrders(params: TFetchOrdersParams): Promise<Array<SpotMarketOrder>> {
 	const { baseToken, type, limit, trader } = params;
-	const baseSizeFilter = type != null ? `baseSize_${type === "BUY" ? "gt" : "lt"}: 0,` : "";
-	const traderFilter = trader != null ? `trader: "${trader.toLowerCase()}",` : "";
-	let filter = `first: ${limit}, where: { baseToken: "${baseToken}", ${baseSizeFilter} ${traderFilter}}`;
+	const baseSizeFilter = type ? `baseSize_${type === "BUY" ? "gt" : "lt"}: 0,` : "";
+	const traderFilter = trader ? `trader: "${trader.toLowerCase()}",` : "";
+	const filter = `first: ${limit}, where: { baseToken: "${baseToken}", ${baseSizeFilter} ${traderFilter}}`;
 
 	const query = `
    		query {

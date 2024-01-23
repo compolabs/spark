@@ -1,11 +1,11 @@
 import React, { useMemo } from "react";
-import useVM from "@src/hooks/useVM";
-import { makeAutoObservable, when } from "mobx";
-import { RootStore, useStores } from "@stores";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
-import BN from "@src/utils/BN";
-import { fetchOrders, SpotMarketOrder } from "@src/services/SpotMarketService";
 import _ from "lodash";
+import { makeAutoObservable, when } from "mobx";
+
+import useVM from "@src/hooks/useVM";
+import { fetchOrders, SpotMarketOrder } from "@src/services/SpotMarketService";
+import BN from "@src/utils/BN";
+import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<SpotOrderbookVM | null>(null);
 
@@ -57,9 +57,9 @@ class SpotOrderbookVM {
 		return this.orderbook.buy
 			.slice()
 			.sort((a, b) => {
-				if (a.price == null && b.price == null) return 0;
-				if (a.price == null && b.price != null) return 1;
-				if (a.price == null && b.price == null) return -1;
+				if (a.price === null && b.price === null) return 0;
+				if (a.price === null && b.price !== null) return 1;
+				if (a.price === null && b.price === null) return -1;
 				return a.price < b.price ? 1 : -1;
 			})
 			.reverse()
@@ -71,9 +71,9 @@ class SpotOrderbookVM {
 		return this.orderbook.sell
 			.slice()
 			.sort((a, b) => {
-				if (a.price == null && b.price == null) return 0;
-				if (a.price == null && b.price != null) return 1;
-				if (a.price == null && b.price == null) return -1;
+				if (a.price === null && b.price === null) return 0;
+				if (a.price === null && b.price !== null) return 1;
+				if (a.price === null && b.price === null) return -1;
 				return a.price < b.price ? 1 : -1;
 			})
 			.slice(this.orderFilter === 0 ? -this.oneSizeOrders : -this.amountOfOrders);
@@ -108,11 +108,11 @@ class SpotOrderbookVM {
 		const minSellPriceOrder = _.minBy(sell, "orderPrice");
 		/*todo сделать order классом, добавть priceUnits и использоваь тут priceUnits*/
 		const spreadPercent =
-			maxBuyPriceOrder != null && minSellPriceOrder != null
+			maxBuyPriceOrder && minSellPriceOrder
 				? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).div(maxBuyPriceOrder.price).toFixed(2)
 				: "0.00";
 		const spreadPrice =
-			maxBuyPriceOrder != null && minSellPriceOrder != null
+			maxBuyPriceOrder && minSellPriceOrder
 				? BN.formatUnits(new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price), 9).toFixed(2)
 				: "";
 

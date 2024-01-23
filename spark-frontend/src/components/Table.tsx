@@ -1,6 +1,7 @@
 import React from "react";
 import { TableProps, useTable } from "react-table";
 import styled from "@emotion/styled";
+
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 interface IProps extends TableProps {
@@ -60,7 +61,7 @@ const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
 const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover, loading, ...rest }) => {
 	const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
 	return (
-		<Root {...rest} hovered={withHover} fitContent={fitContent}>
+		<Root {...rest} fitContent={fitContent} hovered={withHover}>
 			<table {...getTableProps()}>
 				<thead>
 					{headerGroups.map((headerGroup, index) => (

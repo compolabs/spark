@@ -1,8 +1,9 @@
 import { makeAutoObservable } from "mobx";
-import RootStore from "@stores/RootStore";
+
 import { IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
-import BN from "@src/utils/BN";
 import { fetchMarketCreateEvents } from "@src/services/SpotMarketService";
+import BN from "@src/utils/BN";
+import RootStore from "@stores/RootStore";
 
 //todo все классы типа этого стоит хранить в отдельной папке
 export class SpotMarket {

@@ -1,5 +1,5 @@
-import styled from "@emotion/styled";
 import React from "react";
+import styled from "@emotion/styled";
 
 interface IProps {
 	onClick: () => void;
@@ -88,7 +88,7 @@ const MobileMenuIcon: React.FC<IProps> = ({ opened, onClick }) => {
 	return (
 		<Root onClick={onClick}>
 			<div className="menu-icon">
-				<input className="menu-icon__cheeckbox" type="checkbox" checked={opened} onChange={onClick} />
+				<input checked={opened} className="menu-icon__cheeckbox" type="checkbox" onChange={onClick} />
 				<div>
 					<span></span>
 					<span></span>

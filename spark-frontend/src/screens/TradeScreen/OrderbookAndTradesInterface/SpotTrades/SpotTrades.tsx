@@ -1,17 +1,18 @@
-import styled from "@emotion/styled";
 import React, { useCallback, useEffect, useState } from "react";
+import { useTheme } from "@emotion/react";
+import styled from "@emotion/styled";
+import dayjs from "dayjs";
+import { observer } from "mobx-react";
+
+import { Column, Row } from "@components/Flex";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
-import { observer } from "mobx-react";
-import { Column, Row } from "@components/Flex";
-import { useTheme } from "@emotion/react";
-import BN from "@src/utils/BN";
-import useEventListener from "@src/utils/useEventListener";
 import {
 	SpotTradesVMProvider,
 	useSpotTradesVM,
 } from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotTrades/SpotTradesVM";
-import dayjs from "dayjs";
+import BN from "@src/utils/BN";
+import useEventListener from "@src/utils/useEventListener";
 import { useStores } from "@stores";
 
 //todo отрефакторить и перенесть часть логики в вью модель (amountOfOrders и calcSize, например)
@@ -22,7 +23,7 @@ interface IProps {}
 const Root = styled(Column)`
 	width: 100%;
 `;
-const Header = styled.div<{}>`
+const Header = styled.div`
 	width: 100%;
 	box-sizing: border-box;
 	display: grid;
@@ -81,7 +82,7 @@ const SpotTradesImpl: React.FC<IProps> = observer(() => {
 			<Header>
 				{/*todo добавить описание из tradeStore в каком токене столбец (например Price USDC | Qty BTC)*/}
 				<Text type={TEXT_TYPES.SUPPORTING}>Price</Text>
-				<Text type={TEXT_TYPES.SUPPORTING} style={{ textAlign: "right" }}>
+				<Text style={{ textAlign: "right" }} type={TEXT_TYPES.SUPPORTING}>
 					Qty
 				</Text>
 				<Text type={TEXT_TYPES.SUPPORTING}>Time</Text>
@@ -90,17 +91,17 @@ const SpotTradesImpl: React.FC<IProps> = observer(() => {
 
 			<Container>
 				{trades.map((trade) => (
-					<Row alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }} key={"trade" + trade.id}>
-						<Text type={TEXT_TYPES.BODY} color={theme.colors.textPrimary}>
+					<Row key={"trade" + trade.id} alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }}>
+						<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
 							{/*todo влзможно трейд надо сделать классом и добавть priceUnits */}
 
 							{BN.formatUnits(trade.price, 9).toFormat(2)}
 						</Text>
-						<Text type={TEXT_TYPES.BODY} color={theme.colors.textPrimary}>
+						<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
 							{/*todo тут тоже было бы круто если б trade был классом*/}
 							{BN.formatUnits(trade.tradeAmount, tradeStore.market?.baseToken.decimals).toFormat(2)}
 						</Text>
-						<Text type={TEXT_TYPES.BODY} color={theme.colors.textPrimary}>
+						<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
 							{dayjs(trade.timestamp).format("HH:mm")}
 						</Text>
 					</Row>

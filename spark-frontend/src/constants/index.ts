@@ -1,5 +1,5 @@
-import tokens from "./tokens.json";
 import tokenLogos from "./tokenLogos";
+import tokens from "./tokens.json";
 
 export const ROUTES = {
 	ROOT: "/",
