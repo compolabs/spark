@@ -1,19 +1,20 @@
-import styled from "@emotion/styled";
 import React, { ComponentProps, useEffect, useState } from "react";
+import styled from "@emotion/styled";
+import { Accordion } from "@szhsin/react-accordion";
 import { observer } from "mobx-react";
-import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
-import Button, { ButtonGroup } from "@src/components/Button";
-import SizedBox from "@components/SizedBox";
+
+import AccordionItem from "@components/AccordionItem";
 import { Column, Row } from "@components/Flex";
+import MaxButton from "@components/MaxButton";
 import Select from "@components/Select";
+import SizedBox from "@components/SizedBox";
+import Slider from "@components/Slider";
 import Text, { TEXT_TYPES } from "@components/Text";
 import TokenInput from "@components/TokenInput";
-import MaxButton from "@components/MaxButton";
-import Slider from "@components/Slider";
-import { Accordion } from "@szhsin/react-accordion";
-import AccordionItem from "@components/AccordionItem";
-import BN from "@src/utils/BN";
 import { useCreateOrderSpotVM } from "@screens/TradeScreen/LeftBlock.tsx/CreateOrderSpot/CreateOrderSpotVM";
+import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
+import Button, { ButtonGroup } from "@src/components/Button";
+import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 
 interface IProps extends ComponentProps<any> {}
@@ -46,25 +47,27 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 	const market = tradeStore.market;
 
 	useEffect(() => {
-		if (market != null) {
-			const balance = accountStore.getBalance(vm.isSell ? market.baseToken.assetId : market.quoteToken.assetId);
-			const value = vm.isSell ? vm.sellAmount : vm.buyTotal;
-			if (balance != null) {
-				balance.eq(0) ? _setPercent(0) : _setPercent(value.div(balance).times(100).toNumber());
-			}
-		}
+		if (!market) return;
+
+		const balance = accountStore.getBalance(vm.isSell ? market.baseToken.assetId : market.quoteToken.assetId);
+		const value = vm.isSell ? vm.sellAmount : vm.buyTotal;
+
+		if (!balance) return;
+
+		balance.eq(0) ? _setPercent(0) : _setPercent(value.div(balance).times(100).toNumber());
 	}, [accountStore.tokenBalances, vm.buyTotal, vm.isSell, vm.sellAmount]);
 
-	if (market == null) return null;
+	if (!market) return null;
 	const { baseToken, quoteToken } = market;
 
 	const setPercent = (v: number) => {
 		_setPercent(v);
 		const balance = accountStore.getBalance(vm.isSell ? baseToken.assetId : quoteToken.assetId);
-		if (balance != null) {
-			const value = balance.times(v / 100).toNumber();
-			vm.isSell ? vm.setSellAmount(new BN(value), true) : vm.setBuyTotal(new BN(value), true);
-		}
+
+		if (!balance) return;
+
+		const value = balance.times(v / 100).toNumber();
+		vm.isSell ? vm.setSellAmount(new BN(value), true) : vm.setBuyTotal(new BN(value), true);
 	};
 	return (
 		<Root {...rest}>
@@ -83,44 +86,44 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 					<SizedBox height={2} />
 					<Row alignItems="center">
 						<StyledInfoIcon />
-						<Text disabled type={TEXT_TYPES.SUPPORTING}>
+						<Text type={TEXT_TYPES.SUPPORTING} disabled>
 							About order type
 						</Text>
 					</Row>
 				</Column>
 				<SizedBox width={8} />
 				<TokenInput
-					decimals={9}
 					amount={vm.isSell ? vm.sellPrice : vm.buyPrice}
-					setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
+					decimals={9}
 					label="Market price"
+					setAmount={(v) => (vm.isSell ? vm.setSellPrice(v, true) : vm.setBuyPrice(v, true))}
 				/>
 			</Row>
 			<SizedBox height={2} />
 			<Row alignItems="flex-end">
 				<TokenInput
+					amount={vm.isSell ? vm.sellAmount : vm.buyAmount}
 					assetId={baseToken.assetId}
 					decimals={baseToken.decimals}
-					amount={vm.isSell ? vm.sellAmount : vm.buyAmount}
-					setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
 					error={vm.isSell ? vm.sellAmountError : undefined}
-					// errorMessage="Insufficient amount"
 					label="Order size"
+					setAmount={(v) => (vm.isSell ? vm.setSellAmount(v, true) : vm.setBuyAmount(v, true))}
+					// errorMessage="Insufficient amount"
 				/>
 				<SizedBox width={8} />
-				<Column crossAxisSize="max" alignItems="flex-end">
+				<Column alignItems="flex-end" crossAxisSize="max">
 					{/*todo починить функционал кнопки max*/}
 					<MaxButton fitContent onClick={vm.onMaxClick}>
 						MAX
 					</MaxButton>
 					<SizedBox height={4} />
 					<TokenInput
+						amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
 						assetId={quoteToken.assetId}
 						decimals={quoteToken.decimals}
-						amount={vm.isSell ? vm.sellTotal : vm.buyTotal}
+						error={vm.isSell ? undefined : vm.buyTotalError}
 						setAmount={(v) => (vm.isSell ? vm.setSellTotal(v, true) : vm.setBuyTotal(v, true))}
 						// errorMessage="Insufficient amount"
-						error={vm.isSell ? undefined : vm.buyTotalError}
 					/>
 				</Column>
 			</Row>
@@ -128,7 +131,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 			<Row alignItems="center" justifyContent="space-between">
 				<Text type={TEXT_TYPES.SUPPORTING}>Available</Text>
 				<Row alignItems="center" mainAxisSize="fit-content">
-					<Text primary type={TEXT_TYPES.BODY}>
+					<Text type={TEXT_TYPES.BODY} primary>
 						{/*todo баланс сделать классом и добавить юнитсы*/}
 						{BN.formatUnits(
 							accountStore.getBalance(vm.isSell ? baseToken.assetId : quoteToken.assetId),
@@ -140,27 +143,27 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 			</Row>
 			{/*<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>*/}
 			<SizedBox height={28} />
-			<Slider min={0} max={100} value={percent} percent={percent} onChange={(v) => setPercent(v as number)} step={1} />
+			<Slider max={100} min={0} percent={percent} step={1} value={percent} onChange={(v) => setPercent(v as number)} />
 			<SizedBox height={28} />
-			<Accordion transition transitionTimeout={400}>
+			<Accordion transitionTimeout={400} transition>
 				<AccordionItem
-					defaultChecked
 					header={
-						<Row justifyContent="space-between" mainAxisSize="stretch" alignItems="center">
-							<Text nowrap primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+						<Row alignItems="center" justifyContent="space-between" mainAxisSize="stretch">
+							<Text type={TEXT_TYPES.BUTTON_SECONDARY} nowrap primary>
 								Order Details
 							</Text>
-							<Row justifyContent="flex-end" alignItems="center">
+							<Row alignItems="center" justifyContent="flex-end">
 								<Text primary>{BN.formatUnits(vm.isSell ? vm.sellAmount : vm.buyAmount, baseToken.decimals).toFormat(2)}</Text>
 								<Text>&nbsp;{baseToken.symbol}</Text>
 							</Row>
 						</Row>
 					}
+					defaultChecked
 					initialEntered
 				>
 					<Row alignItems="center" justifyContent="space-between">
 						<Text nowrap>Max buy</Text>
-						<Row justifyContent="flex-end" alignItems="center">
+						<Row alignItems="center" justifyContent="flex-end">
 							<Text primary>{BN.formatUnits(vm.isSell ? vm.sellTotal : vm.buyTotal, quoteToken.decimals).toFormat(2)}</Text>
 							<Text>&nbsp;{quoteToken.symbol}</Text>
 						</Row>
@@ -168,7 +171,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 					<SizedBox height={8} />
 					<Row alignItems="center" justifyContent="space-between">
 						<Text nowrap>Matcher Fee</Text>
-						<Row justifyContent="flex-end" alignItems="center">
+						<Row alignItems="center" justifyContent="flex-end">
 							<Text primary>0.000001</Text>
 							<Text>&nbsp;ETH</Text>
 						</Row>
@@ -176,7 +179,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 					<SizedBox height={8} />
 					<Row alignItems="center" justifyContent="space-between">
 						<Text nowrap>Total amount</Text>
-						<Row justifyContent="flex-end" alignItems="center">
+						<Row alignItems="center" justifyContent="flex-end">
 							<Text primary>{BN.formatUnits(vm.isSell ? vm.sellAmount : vm.buyAmount, baseToken.decimals).toFormat(2)}</Text>
 							<Text>&nbsp;{baseToken.symbol}</Text>
 						</Row>
@@ -185,9 +188,9 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 			</Accordion>
 			<SizedBox height={16} />
 			<Button
+				disabled={vm.loading ? true : vm.isSell ? !vm.canSell : !vm.canBuy}
 				green={!vm.isSell}
 				red={vm.isSell}
-				disabled={vm.loading ? true : vm.isSell ? !vm.canSell : !vm.canBuy}
 				onClick={vm.createOrder}
 			>
 				{vm.loading ? "Loading..." : vm.isSell ? `Sell ${baseToken.symbol}` : `Buy ${baseToken.symbol}`}

@@ -1,17 +1,19 @@
-import styled from "@emotion/styled";
 import React, { HTMLAttributes, useCallback, useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import SizedBox from "@components/SizedBox";
-import BN from "@src/utils/BN";
-import { Column, Row } from "@src/components/Flex";
-import Text, { TEXT_TYPES } from "@components/Text";
 import { useTheme } from "@emotion/react";
-import useEventListener from "@src/utils/useEventListener";
-import hexToRgba from "@src/utils/hexToRgb";
+import styled from "@emotion/styled";
+import { observer } from "mobx-react-lite";
+
 import Select from "@components/Select";
-import sell from "@src/assets/icons/sellOrderBookIcon.svg";
-import buy from "@src/assets/icons/buyOrderBookIcon.svg";
+import SizedBox from "@components/SizedBox";
+import Text, { TEXT_TYPES } from "@components/Text";
 import sellAndBuy from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
+import buy from "@src/assets/icons/buyOrderBookIcon.svg";
+import sell from "@src/assets/icons/sellOrderBookIcon.svg";
+import { Column, Row } from "@src/components/Flex";
+import BN from "@src/utils/BN";
+import hexToRgba from "@src/utils/hexToRgb";
+import useEventListener from "@src/utils/useEventListener";
+
 import { SpotOrderbookVMProvider, useSpotOrderbookVM } from "./SpotOrderbookVM";
 
 //todo отрефакторить и возможно перенесть часть логики в вью модель
@@ -53,7 +55,7 @@ const SettingIcon = styled.img<{ selected?: boolean }>`
 	}
 `;
 
-const OrderBookHeader = styled.div<{}>`
+const OrderBookHeader = styled.div`
 	width: 100%;
 	box-sizing: border-box;
 	display: grid;
@@ -100,7 +102,7 @@ const OrderRow = styled(Row)<{
 		background: ${({ type, theme }) =>
 			type === "buy" ? hexToRgba(theme.colors.greenLight, 0.1) : hexToRgba(theme.colors.redLight, 0.1)};
 		transition: all 0.3s;
-		width: ${({ fulfillPercent }) => (fulfillPercent != null ? `${fulfillPercent}%` : `0%`)};
+		width: ${({ fulfillPercent }) => (fulfillPercent ? `${fulfillPercent}%` : `0%`)};
 	}
 
 	.volume-bar {
@@ -112,7 +114,7 @@ const OrderRow = styled(Row)<{
 		background: ${({ type, theme }) =>
 			type === "buy" ? hexToRgba(theme.colors.greenLight, 0.3) : hexToRgba(theme.colors.redLight, 0.3)};
 		transition: all 0.3s;
-		width: ${({ volumePercent }) => (volumePercent != null ? `${volumePercent}%` : `0%`)};
+		width: ${({ volumePercent }) => (volumePercent ? `${volumePercent}%` : `0%`)};
 	}
 
 	& > div:last-of-type {
@@ -154,8 +156,12 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
 	// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 16 + 24); //220
 	// 48 + 50 + 4 + 26 + (12 + 32 + 8 + 32 + 8 + 16 + 24); //260
 
-	useEffect(vm.calcSize, [mobileMode]);
-	const handleResize = useCallback(vm.calcSize, []);
+	useEffect(() => {
+		vm.calcSize();
+	}, [mobileMode]);
+	const handleResize = useCallback(() => {
+		vm.calcSize();
+	}, []);
 
 	useEventListener("resize", handleResize);
 
@@ -180,9 +186,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
 				{[sellAndBuy, sell, buy].map((image, index) => (
 					<SettingIcon
 						key={index}
-						src={image}
 						alt="filter"
 						selected={vm.orderFilter === index}
+						src={image}
 						onClick={() => vm.setOrderFilter(index)}
 					/>
 				))}
@@ -206,9 +212,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
 				{vm.orderFilter !== 2 &&
 					vm.sellOrders.map((o, index) => (
 						<OrderRow
+							key={index + "negative"}
 							type="sell"
 							volumePercent={o.baseSize.div(vm.totalSell).times(100).toNumber()}
-							key={index + "negative"}
 							onClick={() => {
 								// todo при нажатии на строку устанавливать цену и количество в интерфейс создания заказа
 								// const price = BN.parseUnits(o.price, vm.token1.decimals);
@@ -245,6 +251,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
 				{vm.orderFilter !== 1 &&
 					vm.buyOrders.map((o, index) => (
 						<OrderRow
+							key={index + "positive"}
+							type="buy"
+							volumePercent={o.quoteSize.div(vm.totalBuy).times(100).toNumber()}
 							onClick={() => {
 								// todo при нажатии на строку устанавливать цену и количество в интерфейс создания заказа
 								// const price = BN.parseUnits(o.price, vm.token1.decimals);
@@ -254,9 +263,6 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
 								// vm.setBuyAmount(BN.ZERO, true);
 								// vm.setBuyTotal(BN.ZERO, true);
 							}}
-							volumePercent={o.quoteSize.div(vm.totalBuy).times(100).toNumber()}
-							type="buy"
-							key={index + "positive"}
 						>
 							<span className="progress-bar" />
 							<span className="volume-bar" />

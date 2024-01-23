@@ -1,10 +1,12 @@
+import { Contract, ethers } from "ethers";
 import { makeAutoObservable, reaction } from "mobx";
-import { ethers, Contract } from "ethers";
-import RootStore from "./RootStore";
 import { Nullable } from "tsdef";
+
 import ERC20_ABI from "@src/abi/ERC20_ABI.json";
 import { TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
+
+import RootStore from "./RootStore";
 
 export enum LOGIN_TYPE {
 	METAMASK = "metamask",
@@ -41,7 +43,7 @@ class AccountStore {
 			this.loginType = initState.loginType;
 			this.address = initState.address;
 			this.mnemonic = initState.mnemonic;
-			this.address != null && this.connectWallet().then(this.updateTokenBalances);
+			this.address && this.connectWallet().then(this.updateTokenBalances);
 		}
 		this.init();
 		reaction(() => this.address, this.updateTokenBalances);

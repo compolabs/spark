@@ -1,8 +1,9 @@
 import React, { PropsWithChildren, useMemo } from "react";
-import useVM from "@src/hooks/useVM";
 import { makeAutoObservable, reaction, when } from "mobx";
-import { RootStore, useStores } from "@stores";
+
+import useVM from "@src/hooks/useVM";
 import { fetchOrders, SpotMarketOrder } from "@src/services/SpotMarketService";
+import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<BottomTablesInterfaceSpotVM | null>(null);
 
@@ -23,7 +24,7 @@ class BottomTablesInterfaceSpotVM {
 		makeAutoObservable(this);
 		this.rootStore = rootStore;
 		when(
-			() => this.rootStore.tradeStore.market != null,
+			() => !!this.rootStore.tradeStore.market,
 			() => this.sync().then(() => this.setInitialized(true)),
 		);
 		setInterval(this.sync, 10000);
@@ -32,7 +33,7 @@ class BottomTablesInterfaceSpotVM {
 
 	private sync = async () => {
 		const { accountStore, tradeStore } = this.rootStore;
-		if (tradeStore.market == null || accountStore.address == null) return;
+		if (!tradeStore.market || !accountStore.address) return;
 		return fetchOrders({ baseToken: tradeStore.market.baseToken.assetId, limit: 100, trader: accountStore.address })
 			.then(this.setMySpotOrders)
 			.catch(console.error);

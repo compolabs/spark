@@ -1,9 +1,9 @@
 import React, { PropsWithChildren, useMemo } from "react";
-import useVM from "@src/hooks/useVM";
 import { makeAutoObservable } from "mobx";
-import { RootStore, useStores } from "@stores";
+
+import useVM from "@src/hooks/useVM";
 import { fetchTrades, TSpotMarketTrade } from "@src/services/SpotMarketService";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
+import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<SpotTradesVM | null>(null);
 

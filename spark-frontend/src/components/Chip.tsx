@@ -1,4 +1,5 @@
 import styled from "@emotion/styled";
+
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 const Chip = styled(Text)`

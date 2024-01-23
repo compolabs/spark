@@ -1,7 +1,7 @@
 import React from "react";
-import { ChartVMProvider } from "@screens/TradeScreen/Chart/ChartVm";
 import styled from "@emotion/styled";
-import TradingViewWidget from "@screens/TradeScreen/Chart/TradingViewWidget";
+
+import { ChartVMProvider } from "@screens/TradeScreen/Chart/ChartVm";
 
 interface IProps {}
 
@@ -25,8 +25,8 @@ const Chart: React.FC<IProps> = () => {
 		<Root>
 			<ChartVMProvider>
 				{/*{process.env.NODE_ENV === "production" && <TradingViewWidget />}*/}
-				<TradingViewWidget />
-				{/*<TVChartContainer />*/}
+				{/* <TradingViewWidget /> */}
+				{/* <TVChartContainer /> */}
 			</ChartVMProvider>
 		</Root>
 	);

@@ -1,6 +1,7 @@
-import RootStore from "@stores/RootStore";
 import { makeAutoObservable } from "mobx";
+
 import { THEME_TYPE } from "@src/themes/ThemeProvider";
+import RootStore from "@stores/RootStore";
 
 export interface ISerializedSettingStore {
 	tradeTableSize: string | null;
@@ -13,7 +14,7 @@ class SettingsStore {
 	constructor(rootStore: RootStore, initState?: ISerializedSettingStore) {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
-		if (initState != null) {
+		if (initState) {
 			this.setTradeTableSize(initState.tradeTableSize);
 		}
 	}

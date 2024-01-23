@@ -1,10 +1,12 @@
-import styled from "@emotion/styled";
 import React, { HTMLAttributes, useState } from "react";
-import Tooltip from "./Tooltip";
-import arrowIcon from "@src/assets/icons/arrowUp.svg";
+import styled from "@emotion/styled";
+
 import SizedBox from "@components/SizedBox";
+import arrowIcon from "@src/assets/icons/arrowUp.svg";
+
 import { Column } from "./Flex";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "./Text";
+import Tooltip from "./Tooltip";
 
 interface IOption {
 	key: string;
@@ -100,7 +102,7 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 					{options.map((v, index) => {
 						const active = selected === v.key;
 						return (
-							<Option active={active} key={v.key + "_option"} onClick={() => onSelect(v, index)} disabled={v.disabled}>
+							<Option key={v.key + "_option"} active={active} disabled={v.disabled} onClick={() => onSelect(v, index)}>
 								{v.title}
 							</Option>
 						);
@@ -111,10 +113,10 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
 			<Wrap focused={focused}>
 				<Text>{label}</Text>
 				<SizedBox height={2} />
-				<Root onClick={() => setFocused(true)} onBlur={() => setFocused(false)} {...rest}>
+				<Root onBlur={() => setFocused(false)} onClick={() => setFocused(true)} {...rest}>
 					{selectedOption?.title ?? options[0]?.title}
 					{/*<SizedBox width={10}/>*/}
-					<img src={arrowIcon} className="menu-arrow" alt="arrow" />
+					<img alt="arrow" className="menu-arrow" src={arrowIcon} />
 				</Root>
 			</Wrap>
 		</Tooltip>

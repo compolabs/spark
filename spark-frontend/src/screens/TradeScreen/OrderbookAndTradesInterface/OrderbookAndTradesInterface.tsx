@@ -1,10 +1,11 @@
-import styled from "@emotion/styled";
 import React, { useState } from "react";
-import SpotOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotOrderBook";
-import SizedBox from "@components/SizedBox";
+import styled from "@emotion/styled";
+
 import Button, { ButtonGroup } from "@components/Button";
-import SpotTrades from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotTrades";
+import SizedBox from "@components/SizedBox";
 import { OrderbookAndTradesInterfaceVMProvider } from "@screens/TradeScreen/OrderbookAndTradesInterface/OrderbookAndTradesInterfaceVM";
+import SpotOrderBook from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotOrderBook";
+import SpotTrades from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotTrades";
 
 interface IProps {}
 

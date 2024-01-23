@@ -1,5 +1,5 @@
-import styled from "@emotion/styled";
 import React from "react";
+
 import BottomTablesInterfaceSpot from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot";
 
 interface IProps {}

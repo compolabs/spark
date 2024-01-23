@@ -1,5 +1,5 @@
-import styled from "@emotion/styled";
 import React, { ChangeEvent } from "react";
+import styled from "@emotion/styled";
 
 interface IProps
 	extends Omit<React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, "onChange"> {
@@ -32,7 +32,7 @@ const Input: React.FC<IProps> = ({ value, onChange, placeholder, ...rest }) => {
 	return (
 		<>
 			<Root {...rest}>
-				<input onChange={onChange} value={value} placeholder={placeholder} />
+				<input placeholder={placeholder} value={value} onChange={onChange} />
 			</Root>
 		</>
 	);

@@ -1,9 +1,10 @@
+import { makeAutoObservable } from "mobx";
+
 import AccountStore, { ISerializedAccountStore } from "@stores/AccountStore";
-import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 import NotificationStore from "@stores/NotificationStore";
+import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 // import OracleStore from "@stores/OracleStore";
 import TradeStore, { ISerializedTradeStore } from "@stores/TradeStore";
-import { makeAutoObservable } from "mobx";
 
 export interface ISerializedRootStore {
 	accountStore?: ISerializedAccountStore;

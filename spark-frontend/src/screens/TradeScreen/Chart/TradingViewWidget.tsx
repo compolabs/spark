@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import { useStores } from "@stores";
 import { observer } from "mobx-react";
 
 let tvScriptLoadingPromise: Promise<any>;

@@ -1,9 +1,11 @@
-import styled from "@emotion/styled";
 import React, { ComponentProps } from "react";
+import styled from "@emotion/styled";
 import { observer } from "mobx-react";
-import CreateOrderSpot from "./CreateOrderSpot";
+
 import MarketSelection from "@screens/TradeScreen/LeftBlock.tsx/MarketSelection";
 import { useStores } from "@stores";
+
+import CreateOrderSpot from "./CreateOrderSpot";
 
 interface IProps extends ComponentProps<any> {}
 

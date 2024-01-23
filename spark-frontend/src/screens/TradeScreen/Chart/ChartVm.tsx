@@ -1,7 +1,8 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { makeAutoObservable } from "mobx";
-import { RootStore, useStores } from "@stores";
+
 import useVM from "@src/hooks/useVM";
+import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<ChartVM | null>(null);
 

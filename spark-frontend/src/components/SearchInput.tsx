@@ -1,7 +1,9 @@
-import styled from "@emotion/styled";
 import React from "react";
-import search from "@src/assets/icons/search.svg";
+import styled from "@emotion/styled";
+
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import search from "@src/assets/icons/search.svg";
+
 import Input from "./Input";
 
 interface IProps {
@@ -30,8 +32,8 @@ const Wrap = styled.div`
 const SearchInput: React.FC<IProps> = ({ value, onChange }) => {
 	return (
 		<Wrap>
-			<img src={search} alt="search" />
-			<Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search by name..." />
+			<img alt="search" src={search} />
+			<Input placeholder="Search by name..." value={value} onChange={(e) => onChange(e.target.value)} />
 		</Wrap>
 	);
 };

@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
-import useVM from "@src/hooks/useVM";
 import { makeAutoObservable } from "mobx";
+
+import useVM from "@src/hooks/useVM";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<SpotOrderbookVm | null>(null);
