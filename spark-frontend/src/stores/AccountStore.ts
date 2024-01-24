@@ -10,6 +10,7 @@ import RootStore from "./RootStore";
 
 export enum LOGIN_TYPE {
 	METAMASK = "metamask",
+	FUEL_WALLET = "fuel_wallet",
 	GENERATE_SEED = "generate_seed",
 }
 
