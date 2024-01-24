@@ -30,7 +30,7 @@ export const ACCOUNT_BALANCE_INDEXER =
 	"https://indexer.spark-defi.com/api/sql/composabilitylabs/account_balance_indexer";
 
 export const CONTRACT_ADDRESSES = {
-	spotMarket: "0x5124eE51275B9C5DaD5F583F7A3d52cfD69497Af",
+	spotMarket: "0x6e051AecCc713D62b1124D52060e69F1c619431C",
 	tokenFactory: "0xc3d0426df8a40e7b4803f305537a83e7037be91596c393e7a6b693133f9d7301",
 	pyth: "0x2b480dd77abdc48224a22b809608b445604f0de1a999160fb7f126cca2ffc108",
 	proxy: "0x36eadaee6e25bd050239834703f3881f91cbc3cb3bb7c96f57483703d8ecba3f",
