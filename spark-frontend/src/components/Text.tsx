@@ -11,11 +11,11 @@ import styled from "@emotion/styled";
 */
 
 export enum TEXT_TYPES {
-	H,
-	BODY,
-	BUTTON,
-	BUTTON_SECONDARY,
-	SUPPORTING,
+	H = 1,
+	BODY = 2,
+	BUTTON = 3,
+	BUTTON_SECONDARY = 4,
+	SUPPORTING = 5,
 }
 
 interface IProps {
@@ -25,6 +25,7 @@ interface IProps {
 	disabled?: boolean;
 	color?: string;
 	nowrap?: boolean;
+	pointer?: boolean;
 }
 
 export const hStyle = `
@@ -97,5 +98,6 @@ const Text = styled.div<IProps>`
 			}
 		})()}
 	${({ type }) => (type ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY])}
+	cursor: ${({ pointer }) => (pointer ? "pointer" : "inherit")}
 `;
 export default Text;

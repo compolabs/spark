@@ -26,4 +26,5 @@ const colors = {
 	attention: "#FF6F06",
 	favorite: "#FFEC06",
 };
+
 export default colors;

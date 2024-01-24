@@ -1,3 +1,3 @@
-import ConnectWallet from "./ConnectWallet";
+import ConnectWalletDialog from "./ConnectWalletDialog";
 
-export default ConnectWallet;
+export default ConnectWalletDialog;
