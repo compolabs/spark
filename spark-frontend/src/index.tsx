@@ -8,6 +8,7 @@ import ThemeWrapper from "@src/themes/ThemeProvider";
 import { loadState, saveState } from "@src/utils/localStorage";
 import { RootStore, storesContext } from "@stores";
 
+import GlobalStyles from "./themes/GlobalStyles";
 import App from "./App";
 
 // import GlobalStyles from "@src/themes/GlobalStyles";
@@ -49,7 +50,7 @@ root.render(
 				pauseOnFocusLoss
 				pauseOnHover
 			/>
-			{/*<GlobalStyles />*/}
+			<GlobalStyles />
 		</ThemeWrapper>
 	</storesContext.Provider>,
 	// </React.StrictMode>,
