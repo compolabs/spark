@@ -1,11 +1,12 @@
-import styled from "@emotion/styled";
-import { Column, DesktopRow, Row } from "@src/components/Flex";
 import React from "react";
+import { useTheme } from "@emotion/react";
+import styled from "@emotion/styled";
+import { observer } from "mobx-react";
+
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
-import { useTheme } from "@emotion/react";
 import arrow from "@src/assets/icons/arrowUp.svg";
-import { observer } from "mobx-react";
+import { Column, DesktopRow, Row } from "@src/components/Flex";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -92,10 +93,10 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 			>
 				<Row alignItems="center">
 					{/*todo добавить скелетон лоадер*/}
-					{tradeStore.market != null && (
+					{tradeStore.market && (
 						<>
-							<Icon style={{ width: 24, height: 24 }} src={tradeStore.market?.baseToken.logo} alt="token0" />
-							<Icon style={{ width: 24, height: 24, marginLeft: -8 }} src={tradeStore.market?.quoteToken.logo} alt="token1" />
+							<Icon alt="token0" src={tradeStore.market?.baseToken.logo} style={{ width: 24, height: 24 }} />
+							<Icon alt="token1" src={tradeStore.market?.quoteToken.logo} style={{ width: 24, height: 24, marginLeft: -8 }} />
 							<SizedBox width={8} />
 							<Text type={TEXT_TYPES.H} primary>
 								{tradeStore.market?.symbol}
@@ -104,7 +105,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 					)}
 				</Row>
 				<SizedBox width={10} />
-				<img style={{ width: 24, height: 24, marginLeft: -8 }} src={arrow} alt="arrow" className="menu-arrow" />
+				<img alt="arrow" className="menu-arrow" src={arrow} style={{ width: 24, height: 24, marginLeft: -8 }} />
 			</MarketSelect>
 			<MarketStatistics>
 				<PriceRow alignItems="center">
@@ -123,7 +124,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 					<DesktopRow>
 						{spotStatsArr.map(({ title, value }) => (
 							<React.Fragment key={title}>
-								<SizedBox width={1} height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} />
+								<SizedBox height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} width={1} />
 								<Column>
 									<Text type={TEXT_TYPES.SUPPORTING}>{title}</Text>
 									<SizedBox height={4} />

@@ -1,6 +1,7 @@
-import { makeAutoObservable } from "mobx";
-import RootStore from "@stores/RootStore";
 import { toast } from "react-toastify";
+import { makeAutoObservable } from "mobx";
+
+import RootStore from "@stores/RootStore";
 
 class NotificationStore {
 	public rootStore: RootStore;

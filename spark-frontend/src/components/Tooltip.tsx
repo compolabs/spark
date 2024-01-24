@@ -1,7 +1,7 @@
-import styled from "@emotion/styled";
 import React, { CSSProperties } from "react";
 import { usePopperTooltip } from "react-popper-tooltip";
 import { Config } from "react-popper-tooltip/dist/types";
+import styled from "@emotion/styled";
 
 interface IProps {
 	content: string | JSX.Element;

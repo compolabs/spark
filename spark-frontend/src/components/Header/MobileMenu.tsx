@@ -1,15 +1,8 @@
-import styled from "@emotion/styled";
 import React from "react";
+import styled from "@emotion/styled";
 import { observer } from "mobx-react-lite";
-import { ROUTES } from "@src/constants";
-import isRoutesEquals from "@src/utils/isRoutesEquals";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import { useLocation, useNavigate } from "react-router-dom";
-import SizedBox from "@components/SizedBox";
-import Button from "@components/Button";
-import ConnectedWallet from "@components/Header/ConnectedWallet";
-import { useStores } from "@stores";
-import { useTheme } from "@emotion/react";
+
+import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 interface IProps {
 	onClose: () => void;
@@ -52,7 +45,7 @@ const Container = styled.div`
 	background: ${({ theme }) => `${theme.colors.bgSecondary}`};
 	border-radius: 10px;
 `;
-const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => null
+const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => null;
 // const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => {
 // 	const { settingsStore, accountStore } = useStores();
 // 	const navigate = useNavigate();

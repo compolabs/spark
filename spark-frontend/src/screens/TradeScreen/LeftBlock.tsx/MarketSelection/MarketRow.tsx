@@ -1,14 +1,15 @@
-import styled from "@emotion/styled";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "@emotion/styled";
+import { observer } from "mobx-react";
+
 import { Column, Row } from "@components/Flex";
-import yellowStar from "@src/assets/icons/yellowStar.svg";
-import star from "@src/assets/icons/star.svg";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
-import tradeStore, { SpotMarket } from "@src/stores/TradeStore";
-import { observer } from "mobx-react";
+import star from "@src/assets/icons/star.svg";
+import yellowStar from "@src/assets/icons/yellowStar.svg";
+import { SpotMarket } from "@src/stores/TradeStore";
 import { useStores } from "@stores";
-import { useNavigate } from "react-router-dom";
 
 interface IProps {
 	market: SpotMarket;
@@ -47,8 +48,8 @@ const MarketRow: React.FC<IProps> = observer(({ market }) => {
 			<Row alignItems="center">
 				<Column mainAxisSize="stretch">
 					<Icon
-						src={addedToFav ? yellowStar : star}
 						alt="star"
+						src={addedToFav ? yellowStar : star}
 						style={{ cursor: "pointer", zIndex: 100000 }}
 						onClick={(e) => {
 							e.preventDefault();
@@ -58,8 +59,8 @@ const MarketRow: React.FC<IProps> = observer(({ market }) => {
 					/>
 					<SizedBox height={4} />
 					<Row>
-						<Icon src={market.baseToken?.logo} alt="logo" />
-						<Icon src={market.quoteToken?.logo} alt="logo" style={{ left: "-6px", position: "relative" }} />
+						<Icon alt="logo" src={market.baseToken?.logo} />
+						<Icon alt="logo" src={market.quoteToken?.logo} style={{ left: "-6px", position: "relative" }} />
 					</Row>
 				</Column>
 				<SizedBox width={4} />
@@ -73,13 +74,13 @@ const MarketRow: React.FC<IProps> = observer(({ market }) => {
 				>
 					{/*{market.leverage != null ? <Leverage>{`${market.leverage}x`}</Leverage> : <></>}*/}
 					<SizedBox height={4} />
-					<Text type={TEXT_TYPES.H} color="primary">
+					<Text color="primary" type={TEXT_TYPES.H}>
 						{market.symbol}
 					</Text>
 				</Column>
 			</Row>
 			<Column alignItems="end">
-				<Text type={TEXT_TYPES.H} nowrap color="primary">
+				<Text color="primary" type={TEXT_TYPES.H} nowrap>
 					$ {market.priceUnits.toFormat(2)}
 				</Text>
 			</Column>

@@ -1,13 +1,14 @@
 import React from "react";
-import styled from "@emotion/styled";
-import { Column } from "@components/Flex";
-import { observer } from "mobx-react";
-import Header from "@components/Header";
 import { Route, Routes } from "react-router-dom";
-import { ROUTES } from "@src/constants";
-import TradeScreen from "@screens/TradeScreen";
+import styled from "@emotion/styled";
+import { observer } from "mobx-react";
+
+import { Column } from "@components/Flex";
+import Header from "@components/Header";
 // import Faucet from "@screens/Faucet";
 import ConnectWallet from "@screens/ConnectWallet";
+import TradeScreen from "@screens/TradeScreen";
+import { ROUTES } from "@src/constants";
 
 const Root = styled(Column)`
 	width: 100%;
@@ -22,9 +23,9 @@ const App: React.FC = observer(() => {
 		<Root>
 			<Header />
 			<Routes>
-				<Route path={ROUTES.CONNECT} element={<ConnectWallet />} />
-				<Route path={ROUTES.TRADE} element={<TradeScreen />} />
-				<Route path={ROUTES.ROOT} element={<TradeScreen />} />
+				<Route element={<ConnectWallet />} path={ROUTES.CONNECT} />
+				<Route element={<TradeScreen />} path={ROUTES.TRADE} />
+				<Route element={<TradeScreen />} path={ROUTES.ROOT} />
 				{/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
 			</Routes>
 		</Root>

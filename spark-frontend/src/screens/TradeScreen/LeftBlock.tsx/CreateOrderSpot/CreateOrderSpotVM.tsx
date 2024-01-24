@@ -1,11 +1,12 @@
 import React, { PropsWithChildren, useMemo } from "react";
-import useVM from "@src/hooks/useVM";
+import { BigNumberish, ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
-import { RootStore, useStores } from "@stores";
-import BN from "@src/utils/BN";
-import { ethers, BigNumberish } from "ethers";
-import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL } from "@src/constants";
+
 import SPOT_MARKET_ABI from "@src/abi/SPOT_MARKET_ABI.json";
+import { CONTRACT_ADDRESSES, TOKENS_BY_SYMBOL } from "@src/constants";
+import useVM from "@src/hooks/useVM";
+import BN from "@src/utils/BN";
+import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<CreateOrderSpotVM | null>(null);
 
@@ -36,7 +37,7 @@ class CreateOrderSpotVM {
 
 	get canBuy() {
 		return (
-			this.rootStore.accountStore.provider != null &&
+			this.rootStore.accountStore.provider &&
 			this.buyAmount.gt(0) &&
 			this.buyPrice.gt(0) &&
 			this.buyTotal.gt(0) &&
@@ -46,7 +47,7 @@ class CreateOrderSpotVM {
 
 	get canSell() {
 		return (
-			this.rootStore.accountStore.provider != null &&
+			this.rootStore.accountStore.provider &&
 			this.sellAmount.gt(0) &&
 			this.sellPrice.gt(0) &&
 			this.sellTotal.gt(0) &&
@@ -57,13 +58,13 @@ class CreateOrderSpotVM {
 	get sellAmountError(): boolean | undefined {
 		const { accountStore, tradeStore } = this.rootStore;
 		const balance = accountStore.getBalance(tradeStore.market!.baseToken.assetId);
-		return balance == null ? false : this.sellAmount.gt(balance);
+		return balance ? this.sellAmount.gt(balance) : false;
 	}
 
 	get buyTotalError(): boolean {
 		const { accountStore, tradeStore } = this.rootStore;
 		const balance = accountStore.getBalance(tradeStore.market!.quoteToken.assetId);
-		return balance == null ? false : this.buyTotal.gt(balance);
+		return balance ? this.buyTotal.gt(balance) : false;
 	}
 
 	setIsSell = (isSell: boolean) => (this.isSell = isSell);
@@ -102,7 +103,7 @@ class CreateOrderSpotVM {
 			const total = BN.parseUnits(v2.times(v1), tradeStore.market!.quoteToken.decimals);
 			this.setBuyTotal(total);
 			const balance = this.rootStore.accountStore.getBalance(tradeStore.market!.quoteToken.assetId);
-			if (balance == null) return;
+			if (!balance) return;
 			const percent = total.times(100).div(balance);
 			this.setBuyPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
 		}
@@ -119,7 +120,7 @@ class CreateOrderSpotVM {
 			const v2 = BN.formatUnits(total, tradeStore.market!.quoteToken.decimals);
 			this.setBuyAmount(BN.parseUnits(v2.div(v1), tradeStore.market!.baseToken.decimals));
 			const balance = this.rootStore.accountStore.getBalance(tradeStore.market!.quoteToken.assetId);
-			if (balance == null) return;
+			if (!balance) return;
 			const percent = total.times(100).div(balance);
 			this.setBuyPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
 		}
@@ -148,7 +149,7 @@ class CreateOrderSpotVM {
 			const v2 = BN.formatUnits(amount, tradeStore.market!.baseToken.decimals);
 			this.setSellTotal(BN.parseUnits(v2.times(v1), tradeStore.market!.quoteToken.decimals));
 			const balance = this.rootStore.accountStore.getBalance(tradeStore.market!.baseToken.assetId);
-			if (balance == null) return;
+			if (!balance) return;
 			const percent = amount.times(100).div(balance);
 			this.setSellPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
 		}
@@ -167,7 +168,7 @@ class CreateOrderSpotVM {
 			const amount = BN.parseUnits(v2.div(v1), tradeStore.market!.baseToken.decimals);
 			this.setSellAmount(amount);
 			const balance = this.rootStore.accountStore.getBalance(tradeStore.market!.baseToken.assetId);
-			if (balance == null) return;
+			if (!balance) return;
 			const percent = amount.times(100).div(balance);
 			this.setSellPercent(percent.gt(100) ? 100 : +percent.toFormat(0));
 		}
@@ -175,8 +176,8 @@ class CreateOrderSpotVM {
 
 	//todo починить
 	createOrder = async () => {
-		const { accountStore, tradeStore } = this.rootStore;
-		if (accountStore.signer == null || this.rootStore.tradeStore.market == null) return;
+		const { accountStore } = this.rootStore;
+		if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
 		const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI.abi, accountStore.signer);
 		const baseSize = this.isSell ? this.sellAmount.times(-1) : this.buyAmount;
 		this.setLoading(true);

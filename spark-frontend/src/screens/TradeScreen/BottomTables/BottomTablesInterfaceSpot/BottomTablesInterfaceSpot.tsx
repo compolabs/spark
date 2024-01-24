@@ -1,26 +1,27 @@
-import styled from "@emotion/styled";
-import { Column, Row } from "@src/components/Flex";
 import React, { useMemo, useState } from "react";
-import { observer } from "mobx-react";
-import { useStores } from "@stores";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import Tab from "@components/Tab";
-import Table from "@src/components/Table";
-import SizedBox from "@components/SizedBox";
 import { useTheme } from "@emotion/react";
-import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
-import tableSizeExtraSmall from "@src/assets/icons/tableSizeExtraSmall.svg";
-import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
-import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
-import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
-import Tooltip from "@components/Tooltip";
+import styled from "@emotion/styled";
+import { observer } from "mobx-react";
+
 import Chip from "@components/Chip";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
-import BN from "@src/utils/BN";
+import SizedBox from "@components/SizedBox";
+import Tab from "@components/Tab";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Tooltip from "@components/Tooltip";
 import {
 	BottomTablesInterfaceSpotVMProvider,
 	useBottomTablesInterfaceSpotVM,
 } from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot/BottomTablesInterfaceSpotVM";
+import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
+import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
+import tableSizeExtraSmall from "@src/assets/icons/tableSizeExtraSmall.svg";
+import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
+import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
+import { Column, Row } from "@src/components/Flex";
+import Table from "@src/components/Table";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import BN from "@src/utils/BN";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -208,7 +209,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 							return {
 								asset: (
 									<Row alignItems="center">
-										<TokenIcon src={token.logo} alt="market-icon" />
+										<TokenIcon alt="market-icon" src={token.logo} />
 										<SizedBox width={4} />
 										{token.symbol}
 									</Row>
@@ -226,9 +227,9 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 			<TabContainer>
 				{tabs.map(({ title, disabled }, index) => (
 					<Tab
-						disabled={disabled}
 						key={title + index}
 						active={tabIndex === index}
+						disabled={disabled}
 						onClick={() => !disabled && setTabIndex(index)}
 					>
 						{title}
@@ -242,16 +243,16 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 							<Column crossAxisSize="max" style={{ zIndex: 500 }}>
 								{tableSizesConfig.map(({ size, icon, title }) => (
 									<TableSize
+										key={title}
 										active={size === tableSize}
 										onClick={() => {
 											settingsStore.setTradeTableSize(size);
 											setTableSize(size);
 										}}
-										key={title}
 									>
-										<img src={icon} alt={title} />
+										<img alt={title} src={icon} />
 										<SizedBox width={4} />
-										<Text nowrap type={TEXT_TYPES.BUTTON}>
+										<Text type={TEXT_TYPES.BUTTON} nowrap>
 											{title.toUpperCase()}
 										</Text>
 									</TableSize>
@@ -259,11 +260,11 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 							</Column>
 						}
 					>
-						<img src={tableSizeSelector} alt="tableSizeSelector" style={{ cursor: "pointer" }} />
+						<img alt="tableSizeSelector" src={tableSizeSelector} style={{ cursor: "pointer" }} />
 					</Tooltip>
 				</TableSizeSelector>
 			</TabContainer>
-			<Column style={{ overflowY: "scroll" }} crossAxisSize="max">
+			<Column crossAxisSize="max" style={{ overflowY: "scroll" }}>
 				<Table
 					columns={columns[tabIndex]}
 					data={data}

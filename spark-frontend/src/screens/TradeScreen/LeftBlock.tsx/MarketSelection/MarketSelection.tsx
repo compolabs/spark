@@ -1,15 +1,16 @@
-import styled from "@emotion/styled";
 import React, { useRef, useState } from "react";
-import Button, { ButtonGroup } from "@components/Button";
-import SizedBox from "@components/SizedBox";
+import styled from "@emotion/styled";
 import { observer } from "mobx-react";
-import SearchInput from "@components/SearchInput";
-import { Row } from "@components/Flex";
-import Text, { TEXT_TYPES } from "@components/Text";
+
+import Button, { ButtonGroup } from "@components/Button";
 import Divider from "@components/Divider";
-import { useStores } from "@stores";
-import useOnClickOutside from "@src/hooks/useOnClickOutside";
+import { Row } from "@components/Flex";
+import SearchInput from "@components/SearchInput";
+import SizedBox from "@components/SizedBox";
+import Text, { TEXT_TYPES } from "@components/Text";
 import MarketRow from "@screens/TradeScreen/LeftBlock.tsx/MarketSelection/MarketRow";
+import useOnClickOutside from "@src/hooks/useOnClickOutside";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -69,7 +70,7 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 			)}
 
 			{(isSpotMarket ? tradeStore.spotMarkets : []).map((market) => (
-				<MarketRow market={market} key={market.symbol} />
+				<MarketRow key={market.symbol} market={market} />
 			))}
 		</Root>
 	);

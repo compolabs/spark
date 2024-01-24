@@ -1,22 +1,23 @@
-import styled from "@emotion/styled";
 import React, { useState } from "react";
+import styled from "@emotion/styled";
+import copy from "copy-to-clipboard";
 import { observer } from "mobx-react";
-import Tooltip from "@components/Tooltip";
-import { Column, Row } from "@components/Flex";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import SizedBox from "@components/SizedBox";
-import arrowIcon from "@src/assets/icons/arrowUp.svg";
+
 import Button from "@components/Button";
-import { useStores } from "@stores";
-import centerEllipsis from "@src/utils/centerEllipsis";
+import Divider from "@components/Divider";
+import { Column, Row } from "@components/Flex";
+import SizedBox from "@components/SizedBox";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Tooltip from "@components/Tooltip";
+import arrowIcon from "@src/assets/icons/arrowUp.svg";
+import copyIcon from "@src/assets/icons/copy.svg";
+import link from "@src/assets/icons/link.svg";
+import logout from "@src/assets/icons/logout.svg";
 import userIcon from "@src/assets/icons/user.svg";
 import { EXPLORER_URL, TOKENS_BY_SYMBOL } from "@src/constants";
-import copy from "copy-to-clipboard";
 import BN from "@src/utils/BN";
-import copyIcon from "@src/assets/icons/copy.svg";
-import logout from "@src/assets/icons/logout.svg";
-import link from "@src/assets/icons/link.svg";
-import Divider from "@components/Divider";
+import centerEllipsis from "@src/utils/centerEllipsis";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -76,7 +77,7 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
 			icon: copyIcon,
 			action: () => handleCopy("seed"),
 			title: "Copy seed",
-			active: accountStore.mnemonic != null,
+			active: !!accountStore.mnemonic,
 		},
 		{
 			icon: link,
@@ -103,7 +104,7 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
 				//todo нет ховера у элементов меню
 				<Column crossAxisSize="max">
 					<ActionRow>
-						<Icon src={TOKENS_BY_SYMBOL.ETH.logo} alt="ETH" />
+						<Icon alt="ETH" src={TOKENS_BY_SYMBOL.ETH.logo} />
 						<SizedBox width={8} />
 						<Text type={TEXT_TYPES.BUTTON_SECONDARY}>{`${ethBalance} ETH`}</Text>
 					</ActionRow>
@@ -111,8 +112,8 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
 					{actions.map(
 						({ title, action, active, icon }) =>
 							active && (
-								<ActionRow onClick={action} key={title}>
-									<Icon src={icon} alt="ETH" />
+								<ActionRow key={title} onClick={action}>
+									<Icon alt="ETH" src={icon} />
 									<SizedBox width={8} />
 									<Text type={TEXT_TYPES.BUTTON_SECONDARY}>{title}</Text>
 								</ActionRow>
@@ -122,12 +123,12 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
 			}
 		>
 			<Root focused={focused}>
-				<img src={userIcon} alt="user" />
+				<img alt="user" src={userIcon} />
 				{/*<img src={healthIcon} alt="health" />*/}
 				<SizedBox width={8} />
 				{centerEllipsis(accountStore.address ?? "", 10)}
 				<SizedBox width={8} />
-				<img src={arrowIcon} className="menu-arrow" alt="arrow" />
+				<img alt="arrow" className="menu-arrow" src={arrowIcon} />
 			</Root>
 		</Tooltip>
 	);

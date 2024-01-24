@@ -1,14 +1,16 @@
-import styled from "@emotion/styled";
 import React, { useCallback, useEffect, useState } from "react";
-import { observer } from "mobx-react-lite";
-import BN from "@src/utils/BN";
-import BigNumberInput from "./BigNumberInput";
-import AmountInput from "./AmountInput";
+import styled from "@emotion/styled";
 import _ from "lodash";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import SizedBox from "@components/SizedBox";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { observer } from "mobx-react-lite";
+
 import Chip from "@components/Chip";
+import SizedBox from "@components/SizedBox";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import BN from "@src/utils/BN";
+
+import AmountInput from "./AmountInput";
+import BigNumberInput from "./BigNumberInput";
 
 interface IProps {
 	assetId?: string;
@@ -20,6 +22,9 @@ interface IProps {
 	errorMessage?: string;
 	error?: boolean;
 	disabled?: boolean;
+	onBlur?: () => void;
+	onFocus?: () => void;
+	readOnly?: boolean;
 }
 
 const Root = styled.div`
@@ -87,37 +92,37 @@ const TokenInput: React.FC<IProps> = (props) => {
 
 	return (
 		<Root>
-			{props.label != null && (
+			{props.label && (
 				<>
 					<Text>{props.label}</Text>
 					<SizedBox height={2} />
 				</>
 			)}
-			<InputContainer focused={focused} readOnly={!props.setAmount} error={props.error}>
+			<InputContainer error={props.error} focused={focused} readOnly={!props.setAmount}>
 				<BigNumberInput
+					autofocus={focused}
+					decimals={props.decimals}
+					disabled={props.disabled}
+					max={props.max?.toString()}
+					placeholder="0.00"
+					readOnly={!props.setAmount}
 					renderInput={(props, ref) => (
 						<AmountInput
 							{...props}
-							onFocus={(e) => {
-								props.onFocus && props.onFocus(e);
-								!props.readOnly && setFocused(true);
-							}}
+							ref={ref}
+							disabled={props.disabled}
 							onBlur={(e) => {
 								props.onBlur && props.onBlur(e);
 								setFocused(false);
 							}}
-							disabled={props.disabled}
-							ref={ref}
+							onFocus={(e) => {
+								props.onFocus && props.onFocus(e);
+								!props.readOnly && setFocused(true);
+							}}
 						/>
 					)}
-					autofocus={focused}
-					decimals={props.decimals}
 					value={amount}
 					onChange={handleChangeAmount}
-					placeholder="0.00"
-					readOnly={!props.setAmount}
-					disabled={props.disabled}
-					max={props.max?.toString()}
 				/>
 				{props.assetId && <Chip>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Chip>}
 			</InputContainer>

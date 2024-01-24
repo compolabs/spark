@@ -1,5 +1,5 @@
-import styled from "@emotion/styled";
 import { css } from "@emotion/react";
+import styled from "@emotion/styled";
 
 /*
     Fonts:
@@ -96,6 +96,6 @@ const Text = styled.div<IProps>`
 					`;
 			}
 		})()}
-	${({ type }) => (type != null ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY])}
+	${({ type }) => (type ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY])}
 `;
 export default Text;
