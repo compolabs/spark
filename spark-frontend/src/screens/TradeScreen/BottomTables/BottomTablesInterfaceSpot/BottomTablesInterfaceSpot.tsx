@@ -139,7 +139,7 @@ const tableSizesConfig = [
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 	const orderColumns = React.useMemo(
 		() => [
-			// { Header: "Date", accessor: "date" },
+			{ Header: "Date", accessor: "date" },
 			{ Header: "Pair", accessor: "pair" },
 			// { Header: "Status", accessor: "status" },
 			{ Header: "Type", accessor: "type" },
@@ -182,7 +182,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 			case 0:
 				setData(
 					vm.myOrders.map((order) => ({
-						// date: dayjs.unix(order.timestamp).format("DD MMM YY, HH:mm"),
+						date: order.timestamp.format("DD MMM YY, HH:mm"),
 						pair: order.marketSymbol,
 						// status: order.status,
 						type: (

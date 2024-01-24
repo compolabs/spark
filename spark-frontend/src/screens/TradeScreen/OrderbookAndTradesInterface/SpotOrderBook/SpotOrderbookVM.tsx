@@ -104,6 +104,7 @@ class SpotOrderbookVM {
 			fetchOrders({ baseToken: market.baseToken.assetId, type: "BUY", limit: 20 }),
 			fetchOrders({ baseToken: market.baseToken.assetId, type: "SELL", limit: 20 }),
 		]);
+		//todo спред не считается потому что эта хуйня не работает
 		const maxBuyPriceOrder = _.maxBy(buy, "orderPrice");
 		const minSellPriceOrder = _.minBy(sell, "orderPrice");
 		/*todo сделать order классом, добавть priceUnits и использоваь тут priceUnits*/

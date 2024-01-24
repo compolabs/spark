@@ -1,7 +1,7 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 
 import { IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
-import { fetchMarketCreateEvents } from "@src/services/SpotMarketService";
+import { fetchMarketCreateEvents, fetchMarketPrice } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
 import RootStore from "@stores/RootStore";
 
@@ -9,7 +9,7 @@ import RootStore from "@stores/RootStore";
 export class SpotMarket {
 	baseToken: IToken;
 	quoteToken: IToken;
-
+	price: BN = BN.ZERO; //todo брать начальное значение из локалстораджа
 	constructor(baseToken: string, quoteToken: string) {
 		this.baseToken = TOKENS_BY_ASSET_ID[baseToken];
 		this.quoteToken = TOKENS_BY_ASSET_ID[quoteToken];
@@ -19,10 +19,6 @@ export class SpotMarket {
 		return `${this.baseToken.symbol}-${this.quoteToken.symbol}`;
 	}
 
-	get price(): BN {
-		return BN.ZERO;
-	}
-
 	get priceUnits(): BN {
 		return BN.formatUnits(BN.ZERO, 9);
 	}
@@ -30,6 +26,17 @@ export class SpotMarket {
 	get change24(): BN {
 		return BN.ZERO;
 	}
+
+	fetchPrice = async () => {
+		try {
+			const price = await fetchMarketPrice(this.baseToken.assetId);
+			runInAction(() => {
+				this.price = price;
+			});
+		} catch (error) {
+			console.error("Ошибка при получении цены:", error);
+		}
+	};
 }
 
 export interface ISerializedTradeStore {
@@ -82,6 +89,11 @@ class TradeStore {
 			this.setSpotMarkets(spotMarkets);
 			this._setLoading(false);
 			this.setInitialized(true);
+			//todo обновлять цену надо тут, не стоит делать setInterval внутри класса SpotMarket
+			// this.spotMarkets.forEach((market) => {
+			// 	market.fetchPrice();
+			// 	setInterval(market.fetchPrice, 10000);
+			// }); // Запуск обновлений цены после инициализации
 		});
 	};
 

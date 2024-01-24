@@ -102,7 +102,7 @@ const SpotTradesImpl: React.FC<IProps> = observer(() => {
 							{BN.formatUnits(trade.tradeAmount, tradeStore.market?.baseToken.decimals).toFormat(2)}
 						</Text>
 						<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
-							{dayjs(trade.timestamp).format("HH:mm")}
+							{dayjs.unix(trade.timestamp).format("HH:mm:ss")}
 						</Text>
 					</Row>
 				))}

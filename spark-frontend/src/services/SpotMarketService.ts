@@ -2,6 +2,7 @@ import axios from "axios";
 
 import { IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
+import dayjs, { Dayjs } from "dayjs";
 
 const API_URL = "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest";
 
@@ -11,11 +12,13 @@ type TOrderResponse = {
 	trader: string;
 	baseSize: number;
 	orderPrice: number;
+	blockTimestamp: number;
 };
 
 export class SpotMarketOrder {
 	//подразумевается что децимал цены = 9 и децимал quoteToken = 6 (USDC)
 	readonly id: string;
+	readonly timestamp: Dayjs;
 	readonly baseToken: IToken;
 	readonly quoteToken = TOKENS_BY_SYMBOL.USDC;
 	readonly trader: string;
@@ -44,6 +47,7 @@ export class SpotMarketOrder {
 		this.quoteSizeUnits = BN.formatUnits(this.quoteSize, this.quoteToken.decimals);
 		this.price = new BN(order.orderPrice);
 		this.priceUnits = BN.formatUnits(order.orderPrice, this.priceDecimals);
+		this.timestamp = dayjs.unix(order.blockTimestamp);
 	}
 
 	get marketSymbol() {
@@ -72,6 +76,7 @@ export async function fetchOrders(params: TFetchOrdersParams): Promise<Array<Spo
    				baseToken
    				baseSize
    				orderPrice
+   				blockTimestamp
   			}
    		}
   `;
@@ -108,6 +113,25 @@ export async function fetchMarketCreateEvents(limit: number): Promise<Array<TMar
 	} catch (error) {
 		console.error("Error during MarketCreateEvents request:", error);
 		return [];
+	}
+}
+
+export async function fetchMarketPrice(baseToken: string): Promise<BN> {
+	const filter = `first: 1, where: {baseToken: "${baseToken}"}`;
+	const query = `
+		query {
+			tradeEvents(${filter}) {
+    			price
+			}
+		}
+`;
+	try {
+		const response = await axios.post(API_URL, { query });
+		const tradeEvents = response.data.data.tradeEvents;
+		return tradeEvents.length > 0 ? new BN(tradeEvents[0].price) : BN.ZERO;
+	} catch (error) {
+		console.error("Error during Trades request:", error);
+		return BN.ZERO;
 	}
 }
 
