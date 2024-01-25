@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
+import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
+import tokenABI from "src/abi/ERC20_ABI.json";
 
 import { TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
 import useVM from "@src/hooks/useVM";
@@ -63,44 +65,22 @@ class FaucetVM {
 	setActionTokenAssetId = (l: string | null) => (this.actionTokenAssetId = l);
 
 	mint = async (assetId?: string) => {
-		if (assetId === null) return;
 		const { accountStore, notificationStore } = this.rootStore;
-		await accountStore.init();
-		await accountStore.connectWallet();
+		if (assetId === null) return;
 
-		// await accountStore.checkConnectionWithWallet();
-		// try {
-		// 	this._setLoading(true);
-		// 	this.setActionTokenAssetId(assetId);
-		// 	const tokenFactory = CONTRACT_ADDRESSES.tokenFactory;
-		// 	const wallet = await accountStore.getWallet();
-		// 	if (wallet === null || accountStore.addressInput == null) return;
-		// 	const tokenFactoryContract = TokenAbi__factory.connect(tokenFactory, wallet);
-		//
-		// 	const token = TOKENS_BY_ASSET_ID[assetId];
-		// 	const amount = BN.parseUnits(faucetAmounts[token.symbol], token.decimals);
-		// 	const hash = hashMessage(token.symbol);
-		// 	const identity = { Address: accountStore.addressInput };
-		//
-		// 	const { transactionResult } = await tokenFactoryContract.functions
-		// 		.mint(identity, hash, amount.toString())
-		// 		.txParams({ gasPrice: 1 })
-		// 		.call();
-		// 	if (transactionResult != null) {
-		// 		const token = TOKENS_BY_ASSET_ID[assetId];
-		// 		this.rootStore.notificationStore.toast(`You have successfully minted ${token.symbol}`, {
-		// 			type: "success",
-		// 		});
-		// 	}
-		// 	await this.rootStore.accountStore.updateAccountBalances();
-		// } catch (e) {
-		// 	const errorText = e?.toString();
-		// 	console.log(errorText);
-		// 	notificationStore.toast(errorText ?? "", { type: "error" });
-		// } finally {
-		// 	this.setActionTokenAssetId(null);
-		// 	this._setLoading(false);
-		// }
+		const tokenContract = new ethers.Contract(TOKENS_BY_ASSET_ID["ETH"].assetId, tokenABI.abi, accountStore.signer);
+
+		const toAddress = accountStore.address; // адрес, на который будет отправлен токен
+		const amount = ethers.parseUnits(faucetAmounts["ETH"].toString(), TOKENS_BY_ASSET_ID["ETH"].decimals);
+		console.log(amount);
+
+		// Отправка транзакции
+		const tx = await tokenContract.mint(toAddress, amount);
+		console.log("Транзакция отправлена:", tx.hash);
+
+		// Ожидание завершения транзакции
+		await tx.wait();
+		console.log("Минтинг выполнен");
 	};
 
 	addAsset = async (assetId: string) => {
