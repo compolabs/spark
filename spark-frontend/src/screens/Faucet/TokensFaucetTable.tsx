@@ -1,14 +1,15 @@
 import React from "react";
-import { useStores } from "@stores";
-import { Row } from "@components/Flex";
-import { TEXT_TYPES } from "@components/Text";
-import Button from "@components/Button";
-import { FAUCET_URL, TOKENS_BY_SYMBOL } from "@src/constants";
-import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { observer } from "mobx-react-lite";
 import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
+import { observer } from "mobx-react-lite";
+
 import Chip from "@components/Chip";
+import { Column, Row } from "@components/Flex";
+import { TEXT_TYPES } from "@components/Text";
+import { useFaucetVM } from "@screens/Faucet/FaucetVm";
+import { StyledTableRow, TableText, TableTitle } from "@screens/Faucet/table/Table";
+import { TOKENS_BY_SYMBOL } from "@src/constants";
+import { useStores } from "@stores";
 
 interface IProps {}
 
@@ -29,8 +30,10 @@ const Root = styled.div`
 	}
 `;
 
-const StyledTableRow = styled(TableRow)`
-	height: 48px;
+export const TableBody = styled(Column)`
+	overflow: scroll;
+	width: 100%;
+	box-sizing: border-box;
 `;
 
 const TokensFaucetTable: React.FC<IProps> = observer(() => {
@@ -51,13 +54,13 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 			<TableBody>
 				{vm.faucetTokens.map((token) => (
 					<StyledTableRow key={token.assetId}>
-						<TableText primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+						<TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
 							{token.name}
 						</TableText>
-						<TableText primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+						<TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
 							{token.mintAmount.toFormat()} &nbsp;<Chip>{token.symbol}</Chip>
 						</TableText>
-						<TableText primary type={TEXT_TYPES.BUTTON_SECONDARY}>
+						<TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
 							{token.formatBalance?.toFormat(2)} &nbsp;<Chip>{token.symbol}</Chip>
 						</TableText>
 						<Row justifyContent="flex-end" style={{ flex: 1 }}>

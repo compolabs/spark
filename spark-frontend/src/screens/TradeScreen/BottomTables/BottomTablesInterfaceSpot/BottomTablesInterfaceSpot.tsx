@@ -6,8 +6,9 @@ import { observer } from "mobx-react";
 import Chip from "@components/Chip";
 import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Text, { TEXT_TYPES } from "@components/Text";
 import Tooltip from "@components/Tooltip";
+import { TableText } from "@screens/Faucet/table/Table";
 import {
 	BottomTablesInterfaceSpotVMProvider,
 	useBottomTablesInterfaceSpotVM,
@@ -60,31 +61,7 @@ const Root = styled.div<{ size: string }>`
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))
-export const TableTitle = styled(Text)`
-	flex: 1;
-	white-space: nowrap;
-	${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]}
-`;
 
-export const TableText = styled(Text)`
-	flex: 1;
-	display: flex;
-	align-items: center;
-`;
-
-export const TableRow = styled(Row)`
-	margin-bottom: 1px;
-	height: 32px;
-	flex-shrink: 0;
-	background: ${({ theme }) => theme.colors.bgPrimary};
-	align-items: center;
-	padding: 0 12px;
-	box-sizing: border-box;
-
-	:last-of-type {
-		margin-bottom: 0;
-	}
-`;
 const CancelButton = styled(Chip)`
 	cursor: pointer;
 	border: 1px solid ${({ theme }) => theme.colors.borderPrimary} !important;

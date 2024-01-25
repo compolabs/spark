@@ -1,8 +1,8 @@
 import axios from "axios";
+import dayjs, { Dayjs } from "dayjs";
 
 import { IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
-import dayjs, { Dayjs } from "dayjs";
 
 const API_URL = "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest";
 

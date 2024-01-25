@@ -1,9 +1,10 @@
 import React, { useMemo } from "react";
 import { makeAutoObservable } from "mobx";
-import { RootStore, useStores } from "@stores";
+
 import { TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
-import BN from "@src/utils/BN";
 import useVM from "@src/hooks/useVM";
+import BN from "@src/utils/BN";
+import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<FaucetVM | null>(null);
 
@@ -43,7 +44,7 @@ class FaucetVM {
 
 	get faucetTokens() {
 		const { accountStore } = this.rootStore;
-		if (accountStore.tokenBalances == null) return [];
+		if (accountStore.tokenBalances === null) return [];
 
 		return TOKENS_LIST.map((v) => {
 			const balance = accountStore.getBalance(v.assetId);
