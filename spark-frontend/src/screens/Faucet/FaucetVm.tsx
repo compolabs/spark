@@ -72,7 +72,6 @@ class FaucetVM {
 
 		const toAddress = accountStore.address; // адрес, на который будет отправлен токен
 		const amount = ethers.parseUnits(faucetAmounts["ETH"].toString(), TOKENS_BY_ASSET_ID["ETH"].decimals);
-		console.log(amount);
 
 		// Отправка транзакции
 		const tx = await tokenContract.mint(toAddress, amount);
@@ -81,6 +80,7 @@ class FaucetVM {
 		// Ожидание завершения транзакции
 		await tx.wait();
 		console.log("Минтинг выполнен");
+		await this.rootStore.accountStore.updateTokenBalances();
 	};
 
 	// addAsset = async (assetId: string) => {
