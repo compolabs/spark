@@ -59,7 +59,6 @@ const TableBody = styled(Column)`
 
 const TokensFaucetTable: React.FC<IProps> = observer(() => {
 	const { accountStore } = useStores();
-	console.log(`${FAUCETS.ARBITRUM_SEPOLIA}/?address=${accountStore.address}`);
 	const vm = useFaucetVM();
 	const navigate = useNavigate();
 	const ethBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId);
@@ -70,9 +69,7 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 				<TableTitle>Mint amount</TableTitle>
 				<TableTitle>My balance</TableTitle>
 				<TableTitle>
-					<Row justifyContent="flex-end">
-						<Button style={{ width: 120 }}>Mint all</Button>
-					</Row>
+					<Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
 				</TableTitle>
 			</StyledTableRow>
 			<TableBody>
@@ -89,22 +86,22 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 						</TableText>
 						<Row justifyContent="flex-end" style={{ flex: 1 }}>
 							{(() => {
-								if (token.symbol !== "ETH")
-									return (
-										<Button style={{ width: 120 }} green onClick={() => navigate("/")}>
-											Connect wallet
-										</Button>
-									);
+								// if (token.symbol !== "ETH")
+								// 	return (
+								// 		<Button style={{ width: 120 }} green onClick={() => navigate("/")}>
+								// 			Connect wallet
+								// 		</Button>
+								// 	);
 								if (!vm.initialized)
 									return (
 										<Button disabled green>
 											Loading...
 										</Button>
 									);
-								if (ethBalance?.eq(0) && token.symbol !== "ETH") return <Button disabled>Mint</Button>;
+
 								return (
 									<Button
-										disabled={vm.loading || !vm.initialized}
+										disabled={vm.loading || !vm.initialized || (token.symbol !== "ETH" && accountStore.address === null)}
 										style={{ width: 120 }}
 										onClick={() => {
 											if (token.symbol === "ETH") {

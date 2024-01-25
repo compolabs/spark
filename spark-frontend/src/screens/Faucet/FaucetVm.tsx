@@ -66,21 +66,20 @@ class FaucetVM {
 
 	mint = async (assetId?: string) => {
 		const { accountStore, notificationStore } = this.rootStore;
-		if (assetId === null) return;
+		if (assetId === undefined || !TOKENS_BY_ASSET_ID[assetId] === undefined || !accountStore.address) return;
+		const token = TOKENS_BY_ASSET_ID[assetId];
+		const tokenContract = new ethers.Contract(assetId, tokenABI.abi, accountStore.signer);
 
-		const tokenContract = new ethers.Contract(TOKENS_BY_ASSET_ID["ETH"].assetId, tokenABI.abi, accountStore.signer);
+		const amount = ethers.parseUnits(faucetAmounts[token.symbol].toString(), token.decimals);
+		try {
+			this._setLoading(true);
+			const tx = await tokenContract.mint(accountStore.address, amount);
+			await tx.wait();
+		} catch (e: any) {
+			notificationStore.toast(e.toString(), { type: "error" });
+		}
 
-		const toAddress = accountStore.address; // адрес, на который будет отправлен токен
-		const amount = ethers.parseUnits(faucetAmounts["ETH"].toString(), TOKENS_BY_ASSET_ID["ETH"].decimals);
-		console.log(amount);
-
-		// Отправка транзакции
-		const tx = await tokenContract.mint(toAddress, amount);
-		console.log("Транзакция отправлена:", tx.hash);
-
-		// Ожидание завершения транзакции
-		await tx.wait();
-		console.log("Минтинг выполнен");
+		this._setLoading(false);
 	};
 
 	// addAsset = async (assetId: string) => {
