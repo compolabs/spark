@@ -5,8 +5,8 @@ import { observer } from "mobx-react";
 import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
 
 import { ReactComponent as ArrowIcon } from "@src/assets/icons/arrowUp.svg";
-import FuelWalletIcon from "@src/assets/wallets/fuel-wallet.png";
-import MetamaskIcon from "@src/assets/wallets/metamask.png";
+import { ReactComponent as FuelWalletIcon } from "@src/assets/wallets/fuel.svg";
+import { ReactComponent as MetaMaskIcon } from "@src/assets/wallets/metamask.svg";
 import Button from "@src/components/Button";
 import { Checkbox } from "@src/components/Checkbox";
 import { Dialog } from "@src/components/Dialog";
@@ -48,9 +48,13 @@ const WalletItem = styled.div`
 	cursor: pointer;
 `;
 
-const WalletIcon = styled.img`
-	height: 24px;
-	width: 24px;
+const WalletIconContainer = styled.div`
+	display: flex;
+
+	svg {
+		height: 24px;
+		width: 24px;
+	}
 `;
 
 const FooterContainer = styled.div`
@@ -110,13 +114,13 @@ enum ActiveState {
 
 interface Wallet {
 	name: string;
-	icon: string;
+	icon: React.FC;
 	type: LOGIN_TYPE;
 	isActive: boolean;
 }
 
 const WALLETS: Wallet[] = [
-	{ name: "MetaMask", isActive: true, type: LOGIN_TYPE.METAMASK, icon: MetamaskIcon },
+	{ name: "MetaMask", isActive: true, type: LOGIN_TYPE.METAMASK, icon: MetaMaskIcon },
 	{ name: "Fuel Wallet", isActive: true, type: LOGIN_TYPE.FUEL_WALLET, icon: FuelWalletIcon },
 ];
 
@@ -172,9 +176,11 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
 		return (
 			<>
 				<WalletContainer>
-					{activeWallets.map(({ name, icon }) => (
+					{activeWallets.map(({ name, icon: WalletIcon }) => (
 						<WalletItem key={name} onClick={() => setActiveState(ActiveState.USER_AGREEMENT)}>
-							<WalletIcon alt={name} src={icon} />
+							<WalletIconContainer>
+								<WalletIcon />
+							</WalletIconContainer>
 							<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
 								{name}
 							</Text>
