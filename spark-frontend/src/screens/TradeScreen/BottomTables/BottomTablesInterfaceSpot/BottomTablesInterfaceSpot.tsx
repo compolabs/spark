@@ -8,7 +8,7 @@ import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
 import Text, { TEXT_TYPES } from "@components/Text";
 import Tooltip from "@components/Tooltip";
-import { TableText } from "@screens/Faucet/table/Table";
+// import { TableText } from "@screens/Faucet/table/Table";
 import {
 	BottomTablesInterfaceSpotVMProvider,
 	useBottomTablesInterfaceSpotVM,
@@ -19,7 +19,7 @@ import tableSizeExtraSmall from "@src/assets/icons/tableSizeExtraSmall.svg";
 import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
 import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
 import { Column, Row } from "@src/components/Flex";
-import Table from "@src/components/Table";
+import Table, { TableText } from "@src/components/Table";
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";

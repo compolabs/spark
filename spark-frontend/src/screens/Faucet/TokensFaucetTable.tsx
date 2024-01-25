@@ -5,9 +5,9 @@ import { observer } from "mobx-react-lite";
 
 import Chip from "@components/Chip";
 import { Column, Row } from "@components/Flex";
-import { TEXT_TYPES } from "@components/Text";
+import { TableText } from "@components/Table";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { StyledTableRow, TableText, TableTitle } from "@screens/Faucet/table/Table";
 import { TOKENS_BY_SYMBOL } from "@src/constants";
 import { useStores } from "@stores";
 
@@ -29,8 +29,27 @@ const Root = styled.div`
 		min-width: 580px;
 	}
 `;
+const StyledTableRow = styled(Row)`
+	margin-bottom: 1px;
+	height: 48px;
+	flex-shrink: 0;
+	background: ${({ theme }) => theme.colors.bgPrimary};
+	align-items: center;
+	padding: 0 12px;
+	box-sizing: border-box;
 
-export const TableBody = styled(Column)`
+	:last-of-type {
+		margin-bottom: 0;
+	}
+`;
+
+const TableTitle = styled(Text)`
+	flex: 1;
+	white-space: nowrap;
+	${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]}
+`;
+
+const TableBody = styled(Column)`
 	overflow: scroll;
 	width: 100%;
 	box-sizing: border-box;

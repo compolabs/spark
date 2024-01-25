@@ -109,3 +109,9 @@ const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover
 };
 
 export default Table;
+
+export const TableText = styled(Text)`
+	flex: 1;
+	display: flex;
+	align-items: center;
+`;
