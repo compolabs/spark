@@ -64,22 +64,23 @@ class FaucetVM {
 
 	setActionTokenAssetId = (l: string | null) => (this.actionTokenAssetId = l);
 
-	mint = async (assetId?: string) => {
-		const { accountStore, notificationStore } = this.rootStore;
-		if (assetId === undefined || !TOKENS_BY_ASSET_ID[assetId] === undefined || !accountStore.address) return;
-		const token = TOKENS_BY_ASSET_ID[assetId];
-		const tokenContract = new ethers.Contract(assetId, tokenABI.abi, accountStore.signer);
+    mint = async (assetId?: string) => {
+        const { accountStore, notificationStore } = this.rootStore;
+        if (assetId === undefined || !TOKENS_BY_ASSET_ID[assetId] === undefined || !accountStore.address) return;
+        const token = TOKENS_BY_ASSET_ID[assetId];
+        const tokenContract = new ethers.Contract(assetId, tokenABI.abi, accountStore.signer);
 
-		const amount = ethers.parseUnits(faucetAmounts[token.symbol].toString(), token.decimals);
-		try {
-			this._setLoading(true);
-			const tx = await tokenContract.mint(accountStore.address, amount);
-			await tx.wait();
-		} catch (e: any) {
-			notificationStore.toast(e.toString(), { type: "error" });
-		}
+        const amount = ethers.parseUnits(faucetAmounts[token.symbol].toString(), token.decimals);
+        try {
+            this._setLoading(true);
+            const tx = await tokenContract.mint(accountStore.address, amount);
+            await tx.wait();
+        } catch (e: any) {
+            notificationStore.toast(e.toString(), { type: "error" });
+        }
 
-		this._setLoading(false);
+        this._setLoading(false);
+		await this.rootStore.accountStore.updateTokenBalances();
 	};
 
 	// addAsset = async (assetId: string) => {
