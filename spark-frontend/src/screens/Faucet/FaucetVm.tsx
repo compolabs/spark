@@ -71,6 +71,7 @@ class FaucetVM {
 		const tokenContract = new ethers.Contract(assetId, tokenABI.abi, accountStore.signer);
 
 		const amount = ethers.parseUnits(faucetAmounts[token.symbol].toString(), token.decimals);
+		console.log(faucetAmounts[token.symbol]);
 		try {
 			this._setLoading(true);
 			const tx = await tokenContract.mint(accountStore.address, amount);
@@ -79,7 +80,7 @@ class FaucetVM {
 			notificationStore.toast(e.toString(), { type: "error" });
 		}
 
-		this._setLoading(false);
+		this._setLoading(true);
 		await this.rootStore.accountStore.updateTokenBalances();
 	};
 
