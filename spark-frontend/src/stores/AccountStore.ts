@@ -1,9 +1,7 @@
-import { Contract, ethers } from "ethers";
-import { makeAutoObservable, reaction } from "mobx";
+import { ethers } from "ethers";
+import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import ERC20_ABI from "@src/abi/ERC20_ABI.json";
-import { TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 
 import RootStore from "./RootStore";
@@ -35,7 +33,7 @@ class AccountStore {
 
 	tokenBalances: Record<string, BN> = {};
 
-	initialized: boolean = false;
+	initialized: boolean = true;
 
 	constructor(rootStore: RootStore, initState?: ISerializedAccountStore) {
 		this.rootStore = rootStore;
@@ -44,16 +42,14 @@ class AccountStore {
 			this.loginType = initState.loginType;
 			this.address = initState.address;
 			this.mnemonic = initState.mnemonic;
-			this.address && this.connectWallet().then(this.updateTokenBalances);
+			this.address && this.connectWallet();
 		}
 		this.init();
-		reaction(() => this.address, this.updateTokenBalances);
-		setInterval(this.updateTokenBalances, 10000); // обновление каждые 10 секунд
 	}
 
 	init = async () => {
 		this.provider = new ethers.JsonRpcProvider(this.network.rpc);
-		await Promise.all([this.updateTokenBalances()]).then(() => this.setInitialized(true));
+		// await Promise.all([this.updateTokenBalances()]).then(() => this.setInitialized(true));
 	};
 
 	connectWallet = async () => {
@@ -89,32 +85,6 @@ class AccountStore {
 		this.tokenBalances = {};
 	};
 
-	// Обновление балансов для всех токенов
-	updateTokenBalances = async () => {
-		if (!this.signer || !this.address) return;
-		try {
-			for (const token of TOKENS_LIST) {
-				const balance = await this.fetchBalance(token.assetId);
-				this.tokenBalances[token.assetId] = new BN(balance);
-			}
-		} catch (error) {
-			console.error("Error updating token balances:", error);
-		}
-	};
-
-	// Получение баланса для одного токена
-	fetchBalance = async (assetId: string): Promise<string> => {
-		if (!this.signer || !this.address) return "0";
-		return assetId === TOKENS_BY_SYMBOL.ETH.assetId
-			? await this.signer.provider.getBalance(this.address).then((res) => res.toString())
-			: new Contract(assetId, ERC20_ABI.abi, this.signer).balanceOf(this.address);
-	};
-
-	// Получение баланса из стора
-	getBalance = (assetId: string): BN => {
-		return this.tokenBalances[assetId] ?? BN.ZERO;
-	};
-
 	getAddress = () => {
 		return this.address;
 	};
@@ -129,7 +99,7 @@ class AccountStore {
 		mnemonic: this.mnemonic,
 	});
 
-	private setInitialized = (initialized: boolean) => (this.initialized = initialized);
+	// private setInitialized = (initialized: boolean) => (this.initialized = initialized);
 }
 
 export default AccountStore;

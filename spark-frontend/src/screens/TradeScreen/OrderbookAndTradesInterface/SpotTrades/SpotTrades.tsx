@@ -13,7 +13,6 @@ import {
 } from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotTrades/SpotTradesVM";
 import BN from "@src/utils/BN";
 import useEventListener from "@src/utils/useEventListener";
-import { useStores } from "@stores";
 
 //todo отрефакторить и перенесть часть логики в вью модель (amountOfOrders и calcSize, например)
 //todo добавить лоадер
@@ -56,9 +55,9 @@ const Container = styled.div<{
 	overflow-y: auto;
 	max-height: calc(100vh - 200px);
 `;
+
 const SpotTradesImpl: React.FC<IProps> = observer(() => {
 	const vm = useSpotTradesVM();
-	const { tradeStore } = useStores();
 	const theme = useTheme();
 	const [amountOfOrders, setAmountOfOrders] = useState(0);
 
@@ -93,13 +92,10 @@ const SpotTradesImpl: React.FC<IProps> = observer(() => {
 				{trades.map((trade) => (
 					<Row key={"trade" + trade.id} alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }}>
 						<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
-							{/*todo влзможно трейд надо сделать классом и добавть priceUnits */}
-
-							{BN.formatUnits(trade.price, 9).toFormat(2)}
+							{trade.formatPrice}
 						</Text>
 						<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
-							{/*todo тут тоже было бы круто если б trade был классом*/}
-							{BN.formatUnits(trade.tradeAmount, tradeStore.market?.baseToken.decimals).toFormat(2)}
+							{trade.formatTradeAmount}
 						</Text>
 						<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
 							{dayjs.unix(trade.timestamp).format("HH:mm:ss")}
