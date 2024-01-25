@@ -5,7 +5,6 @@ import { observer } from "mobx-react";
 
 import { Column } from "@components/Flex";
 import Header from "@components/Header";
-import ConnectWallet from "@screens/ConnectWallet";
 import Faucet from "@screens/Faucet/Faucet";
 import TradeScreen from "@screens/TradeScreen";
 import { ROUTES } from "@src/constants";
@@ -23,7 +22,6 @@ const App: React.FC = observer(() => {
 		<Root>
 			<Header />
 			<Routes>
-				<Route element={<ConnectWallet />} path={ROUTES.CONNECT} />
 				<Route element={<TradeScreen />} path={ROUTES.TRADE} />
 				<Route element={<TradeScreen />} path={ROUTES.ROOT} />
 				<Route element={<Faucet />} path={ROUTES.FAUCET} />
