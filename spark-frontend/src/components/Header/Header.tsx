@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
@@ -11,6 +11,8 @@ import Tab from "@components/Tab";
 import { TEXT_TYPES } from "@components/Text";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
 import { ROUTES } from "@src/constants";
+import useFlag from "@src/hooks/useFlag";
+import ConnectWalletDialog from "@src/screens/ConnectWallet";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import { useStores } from "@stores";
 
@@ -82,15 +84,18 @@ export const MENU_ITEMS: Array<TMenuItem> = [
 // `;
 
 const Header: React.FC<IProps> = observer(() => {
-	const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
 	const { accountStore } = useStores();
 	const location = useLocation();
-	const navigate = useNavigate();
+
+	const [mobileMenuOpened, setMobileMenuOpened] = useState(false);
+	const [isConnectDialogVisible, openConnectDialog, closeConnectDialog] = useFlag();
+
 	const toggleMenu = (state: boolean) => {
 		window.scrollTo({ top: 0, behavior: "smooth" });
 		document.body.classList.toggle("noscroll", state);
 		setMobileMenuOpened(state);
 	};
+
 	return (
 		<Root>
 			<Row alignItems="center">
@@ -143,7 +148,7 @@ const Header: React.FC<IProps> = observer(() => {
 					accountStore.address ? (
 						<ConnectedWallet />
 					) : (
-						<Button fitContent green onClick={() => navigate(ROUTES.CONNECT)}>
+						<Button fitContent green onClick={openConnectDialog}>
 							Connect wallet
 						</Button>
 					)
@@ -156,6 +161,8 @@ const Header: React.FC<IProps> = observer(() => {
 			{/*	onClose={() => settingsStore.setDepositModal(false)}*/}
 			{/*/>*/}
 			<MobileMenu opened={mobileMenuOpened} onClose={() => toggleMenu(false)} />
+
+			<ConnectWalletDialog visible={isConnectDialogVisible} onClose={closeConnectDialog} />
 		</Root>
 	);
 });

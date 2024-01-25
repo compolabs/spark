@@ -1,9 +1,10 @@
 import * as React from "react";
 import { useEffect, useRef } from "react";
-import { ChartingLibraryWidgetOptions, LanguageCode, ResolutionString, widget } from "@src/charting_library";
-import { observer } from "mobx-react-lite";
-import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
 import { useTheme } from "@emotion/react";
+import { observer } from "mobx-react-lite";
+
+import { ChartingLibraryWidgetOptions, LanguageCode, ResolutionString, widget } from "@src/charting_library";
+import { CHARTS_STORAGE, TV_DATAFEED } from "@src/constants";
 
 export interface ChartContainerProps {
 	symbol: ChartingLibraryWidgetOptions["symbol"];
@@ -125,7 +126,7 @@ const TVChartContainer = () => {
 		};
 	});
 
-	return <div ref={chartContainerRef} className={"TVChartContainer"} />;
+	return <div ref={chartContainerRef} className="TVChartContainer" />;
 };
 
 export default observer(TVChartContainer);

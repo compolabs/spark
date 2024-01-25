@@ -156,12 +156,16 @@
 		"resetMocks": true
 	},
 	"babel": {
+		"plugins": [
+			"@emotion"
+		],
 		"presets": [
 			"react-app"
 		]
 	},
 	"devDependencies": {
 		"@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+		"@emotion/babel-plugin": "^11.11.0",
 		"@types/lodash": "^4.14.202",
 		"@types/react-table": "^7.7.19",
 		"@typescript-eslint/eslint-plugin": "^6.19.1",
