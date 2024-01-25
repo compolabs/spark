@@ -9,7 +9,7 @@ import { Column, Row } from "@components/Flex";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { ARBITRUM_FAUCET_URL, TOKENS_BY_SYMBOL } from "@src/constants";
+import { FAUCETS, TOKENS_BY_SYMBOL } from "@src/constants";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -30,6 +30,7 @@ const Root = styled.div`
 		min-width: 580px;
 	}
 `;
+
 const StyledTableRow = styled(Row)`
 	margin-bottom: 1px;
 	height: 48px;
@@ -107,9 +108,7 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 										onClick={() => {
 											if (token.symbol === "ETH") {
 												window.open(
-													accountStore.address === null
-														? ARBITRUM_FAUCET_URL
-														: `${ARBITRUM_FAUCET_URL}/?address=${accountStore.address}`,
+													accountStore.address === null ? FAUCETS.ARBITRUM : `${FAUCETS.ARBITRUM}/?address=${accountStore.address}`,
 													"blank",
 												);
 											} else {

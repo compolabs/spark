@@ -19,8 +19,12 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
 );
 export const NODE_URL = "https://beta-4.fuel.network/graphql";
 export const EXPLORER_URL = "https://sepolia.arbiscan.io";
-export const FUEL_FAUCET_URL = "https://faucet-beta-4.fuel.network";
-export const ARBITRUM_FAUCET_URL = "https://arbitrum-faucet.com/";
+export const FAUCETS = {
+	FUEL: "https://faucet-beta-4.fuel.network",
+	ARBITRUM: "https://arbitrum-faucet.com/",
+};
+// export const FUEL_FAUCET_URL = "https://faucet-beta-4.fuel.network";
+// export const ARBITRUM_FAUCET_URL = "https://arbitrum-faucet.com/";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 export const SPOT_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/spot_market_indexer";
@@ -40,6 +44,8 @@ export const CONTRACT_ADDRESSES = {
 	insuranceFund: "0x7cdf5bd4cd5b9584517bee34b5fc94abe4790b1e99f1a7f81f40ef824164d103",
 	perpMarket: "0x87f7c3ef8c5b36696021c1e355f8946f36a156dfc66d44fd276e35aa950f008e",
 	vault: "0xfa8f7e7b7ed37ce7b0b98ac832317298aadb1a3833c5eec7899429c75124762f",
+	BTC_ADDRESS: "0xe766A515745ea143DF03536b5aC3c6af9E61bd29",
+	USDC_ADDRESS: "0x5a800d7e1e1C22C3a72b51AE8535B52ccBB72bC5",
 };
 
 //todo cделать классом и добавить в этот класс основные функции работы с токеном и методы работы с ним (с учетом сети)

@@ -74,7 +74,7 @@ class FaucetVM {
 		// 	this.setActionTokenAssetId(assetId);
 		// 	const tokenFactory = CONTRACT_ADDRESSES.tokenFactory;
 		// 	const wallet = await accountStore.getWallet();
-		// 	if (wallet == null || accountStore.addressInput == null) return;
+		// 	if (wallet === null || accountStore.addressInput == null) return;
 		// 	const tokenFactoryContract = TokenAbi__factory.connect(tokenFactory, wallet);
 		//
 		// 	const token = TOKENS_BY_ASSET_ID[assetId];
