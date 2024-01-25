@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react-lite";
 
+import Button from "@components/Button";
 import Chip from "@components/Chip";
 import { Column, Row } from "@components/Flex";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { TOKENS_BY_SYMBOL } from "@src/constants";
+import { ARBITRUM_FAUCET_URL, TOKENS_BY_SYMBOL } from "@src/constants";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -50,7 +51,7 @@ const TableTitle = styled(Text)`
 `;
 
 const TableBody = styled(Column)`
-	overflow: scroll;
+	//overflow: scroll;
 	width: 100%;
 	box-sizing: border-box;
 `;
@@ -67,7 +68,9 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 				<TableTitle>Mint amount</TableTitle>
 				<TableTitle>My balance</TableTitle>
 				<TableTitle>
-					<Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
+					<Row justifyContent="flex-end">
+						<Button style={{ width: 120 }}>Mint all</Button>
+					</Row>
 				</TableTitle>
 			</StyledTableRow>
 			<TableBody>
@@ -83,39 +86,41 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 							{token.formatBalance?.toFormat(2)} &nbsp;<Chip>{token.symbol}</Chip>
 						</TableText>
 						<Row justifyContent="flex-end" style={{ flex: 1 }}>
-							{/*{(() => {*/}
-							{/*	if (!accountStore.isLoggedIn && token.symbol !== "ETH")*/}
-							{/*		return (*/}
-							{/*			<Button style={{ width: 120 }} green onClick={() => navigate("/")}>*/}
-							{/*				Connect wallet*/}
-							{/*			</Button>*/}
-							{/*		);*/}
-							{/*	if (!vm.initialized)*/}
-							{/*		return (*/}
-							{/*			<Button green disabled>*/}
-							{/*				Loading...*/}
-							{/*			</Button>*/}
-							{/*		);*/}
-							{/*	if (ethBalance?.eq(0) && token.symbol !== "ETH") return <Button disabled>Mint</Button>;*/}
-							{/*	return (*/}
-							{/*		<Button*/}
-							{/*			style={{ width: 120 }}*/}
-							{/*			disabled={vm.loading || !vm.initialized}*/}
-							{/*			onClick={() => {*/}
-							{/*				if (token.symbol === "ETH") {*/}
-							{/*					window.open(*/}
-							{/*						accountStore.address == null ? FAUCET_URL : `${FAUCET_URL}/?address=${accountStore.address}`,*/}
-							{/*						"blank",*/}
-							{/*					);*/}
-							{/*				} else {*/}
-							{/*					vm.mint(token.assetId);*/}
-							{/*				}*/}
-							{/*			}}*/}
-							{/*		>*/}
-							{/*			{vm.loading && vm.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}*/}
-							{/*		</Button>*/}
-							{/*	);*/}
-							{/*})()}*/}
+							{(() => {
+								if (token.symbol !== "ETH")
+									return (
+										<Button style={{ width: 120 }} green onClick={() => navigate("/")}>
+											Connect wallet
+										</Button>
+									);
+								if (!vm.initialized)
+									return (
+										<Button disabled green>
+											Loading...
+										</Button>
+									);
+								if (ethBalance?.eq(0) && token.symbol !== "ETH") return <Button disabled>Mint</Button>;
+								return (
+									<Button
+										disabled={vm.loading || !vm.initialized}
+										style={{ width: 120 }}
+										onClick={() => {
+											if (token.symbol === "ETH") {
+												window.open(
+													accountStore.address === null
+														? ARBITRUM_FAUCET_URL
+														: `${ARBITRUM_FAUCET_URL}/?address=${accountStore.address}`,
+													"blank",
+												);
+											} else {
+												vm.mint(token.assetId);
+											}
+										}}
+									>
+										{vm.loading && vm.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
+									</Button>
+								);
+							})()}
 						</Row>
 					</StyledTableRow>
 				))}

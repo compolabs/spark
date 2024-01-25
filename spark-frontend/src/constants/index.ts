@@ -19,7 +19,8 @@ export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
 );
 export const NODE_URL = "https://beta-4.fuel.network/graphql";
 export const EXPLORER_URL = "https://sepolia.arbiscan.io";
-export const FAUCET_URL = "https://faucet-beta-4.fuel.network";
+export const FUEL_FAUCET_URL = "https://faucet-beta-4.fuel.network";
+export const ARBITRUM_FAUCET_URL = "https://arbitrum-faucet.com/";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 export const SPOT_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/spot_market_indexer";

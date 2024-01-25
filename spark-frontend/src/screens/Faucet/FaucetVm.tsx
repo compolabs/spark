@@ -63,8 +63,11 @@ class FaucetVM {
 	setActionTokenAssetId = (l: string | null) => (this.actionTokenAssetId = l);
 
 	mint = async (assetId?: string) => {
-		// if (assetId == null) return;
-		// const { accountStore, notificationStore } = this.rootStore;
+		if (assetId === null) return;
+		const { accountStore, notificationStore } = this.rootStore;
+		await accountStore.init();
+		await accountStore.connectWallet();
+
 		// await accountStore.checkConnectionWithWallet();
 		// try {
 		// 	this._setLoading(true);
