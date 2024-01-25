@@ -21,11 +21,12 @@ export interface ISerializedAccountStore {
 
 const networks = [
 	{ name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
+	{ name: "Arbitrum Goerli", rpc: "wss://arbitrum-goerli.publicnode.com", chainId: "421613" },
 ];
 
 class AccountStore {
 	rootStore: RootStore;
-	network = networks[0]; //todo добавтиь функционал выбора сети
+	network = networks[1]; //todo добавтиь функционал выбора сети
 	provider: Nullable<ethers.Provider> = null;
 	signer: Nullable<ethers.JsonRpcSigner> = null;
 	loginType: Nullable<LOGIN_TYPE> = null;

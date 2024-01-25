@@ -59,6 +59,7 @@ const TableBody = styled(Column)`
 
 const TokensFaucetTable: React.FC<IProps> = observer(() => {
 	const { accountStore } = useStores();
+	console.log(`${FAUCETS.ARBITRUM_SEPOLIA}/?address=${accountStore.address}`);
 	const vm = useFaucetVM();
 	const navigate = useNavigate();
 	const ethBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId);
@@ -108,7 +109,9 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 										onClick={() => {
 											if (token.symbol === "ETH") {
 												window.open(
-													accountStore.address === null ? FAUCETS.ARBITRUM : `${FAUCETS.ARBITRUM}/?address=${accountStore.address}`,
+													accountStore.address === null
+														? FAUCETS.ARBITRUM_SEPOLIA
+														: `${FAUCETS.ARBITRUM_SEPOLIA}/?address=${accountStore.address}`,
 													"blank",
 												);
 											} else {

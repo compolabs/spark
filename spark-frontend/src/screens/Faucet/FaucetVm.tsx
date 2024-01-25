@@ -83,19 +83,19 @@ class FaucetVM {
 		console.log("Минтинг выполнен");
 	};
 
-	addAsset = async (assetId: string) => {
-		// const { fuel } = this.rootStore.accountStore;
-		// if (assetId === TOKENS_BY_SYMBOL.ETH.assetId || fuel == null) return;
-		// const token = TOKENS_BY_ASSET_ID[assetId];
-		// const asset = {
-		// 	name: token.name,
-		// 	assetId: token.assetId,
-		// 	imageUrl: window.location.origin + token.logo,
-		// 	symbol: token.symbol,
-		// 	isCustom: true,
-		// };
-		// return fuel.addAsset(asset);
-	};
+	// addAsset = async (assetId: string) => {
+	// 	const { fuel } = this.rootStore.accountStore;
+	// 	if (assetId === TOKENS_BY_SYMBOL.ETH.assetId || fuel == null) return;
+	// 	const token = TOKENS_BY_ASSET_ID[assetId];
+	// 	const asset = {
+	// 		name: token.name,
+	// 		assetId: token.assetId,
+	// 		imageUrl: window.location.origin + token.logo,
+	// 		symbol: token.symbol,
+	// 		isCustom: true,
+	// 	};
+	// 	return fuel.addAsset(asset);
+	// };
 
 	private _setLoading = (l: boolean) => (this.loading = l);
 }
