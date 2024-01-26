@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import styled from "@emotion/styled";
-import { Observer } from "mobx-react-lite";
+import { observer } from "mobx-react";
 
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
@@ -35,27 +35,21 @@ const Root = styled.div`
 	}
 `;
 
-const FaucetImpl: React.FC<IProps> = () => {
+const FaucetImpl: React.FC<IProps> = observer(() => {
 	const vm = useFaucetVM();
 	useEffect(() => {
 		document.title = `Spark | Faucet`;
 	}, []);
 	return (
-		<Observer>
-			{() => {
-				return (
-					<Root>
-						<Text type={TEXT_TYPES.H} primary>
-							Faucet for Fuel Network
-						</Text>
-						<SizedBox height={16} />
-						{vm.faucetTokens.length === 0 ? <Skeleton count={4} height={48} style={{ margin: 4 }} /> : <TokensFaucetTable />}
-					</Root>
-				);
-			}}
-		</Observer>
+		<Root>
+			<Text type={TEXT_TYPES.H} primary>
+				Faucet for Fuel Network
+			</Text>
+			<SizedBox height={16} />
+			{vm.faucetTokens.length === 0 ? <Skeleton count={4} height={48} style={{ margin: 4 }} /> : <TokensFaucetTable />}
+		</Root>
 	);
-};
+});
 
 const Faucet: React.FC<IProps> = () => (
 	<FaucetVMProvider>
