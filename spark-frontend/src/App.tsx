@@ -10,24 +10,24 @@ import TradeScreen from "@screens/TradeScreen";
 import { ROUTES } from "@src/constants";
 
 const Root = styled(Column)`
-	width: 100%;
-	align-items: center;
-	background: ${({ theme }) => theme.colors.bgPrimary};
-	height: 100vh;
-	max-height: 100vh;
+  width: 100%;
+  align-items: center;
+  background: ${({ theme }) => theme.colors.bgPrimary};
+  height: 100vh;
+  max-height: 100vh;
 `;
 
 const App: React.FC = observer(() => {
-	return (
-		<Root>
-			<Header />
-			<Routes>
-				<Route element={<TradeScreen />} path={ROUTES.TRADE} />
-				<Route element={<TradeScreen />} path={ROUTES.ROOT} />
-				{/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
-			</Routes>
-		</Root>
-	);
+  return (
+    <Root>
+      <Header />
+      <Routes>
+        <Route element={<TradeScreen />} path={ROUTES.TRADE} />
+        <Route element={<TradeScreen />} path={ROUTES.ROOT} />
+        {/*<Route path={ROUTES.FAUCET} element={<Faucet />} />*/}
+      </Routes>
+    </Root>
+  );
 });
 
 export default App;

@@ -5,45 +5,45 @@ import { observer } from "mobx-react-lite";
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
 interface IProps {
-	onClose: () => void;
-	opened: boolean;
+  onClose: () => void;
+  opened: boolean;
 }
 
 const Root = styled.div<{ opened: boolean }>`
-	z-index: 100;
-	background: ${({ theme }) => `${theme.colors.bgPrimary}`};
-	position: absolute;
-	top: 48px;
-	left: 0;
-	right: 0;
-	height: calc(100vh - 64px);
-	transition: 0.2s;
-	overflow: hidden;
+  z-index: 100;
+  background: ${({ theme }) => `${theme.colors.bgPrimary}`};
+  position: absolute;
+  top: 48px;
+  left: 0;
+  right: 0;
+  height: calc(100vh - 64px);
+  transition: 0.2s;
+  overflow: hidden;
 
-	${({ opened }) => !opened && `height: 0px;`};
-	box-sizing: border-box;
-	padding: 0 4px;
+  ${({ opened }) => !opened && `height: 0px;`};
+  box-sizing: border-box;
+  padding: 0 4px;
 `;
 
 const Body = styled.div`
-	display: flex;
-	width: 100%;
-	flex-direction: column;
-	background: ${({ theme }) => theme.colors.bgPrimary};
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  background: ${({ theme }) => theme.colors.bgPrimary};
 `;
 
 const MenuItem = styled.div<{ selected?: boolean }>`
-	cursor: pointer;
-	${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON_SECONDARY]};
-	color: ${({ theme, selected }) => (selected ? theme.colors.redLight : theme.colors.textSecondary)};
-	padding: 12px 32px;
+  cursor: pointer;
+  ${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON_SECONDARY]};
+  color: ${({ theme, selected }) => (selected ? theme.colors.redLight : theme.colors.textSecondary)};
+  padding: 12px 32px;
 `;
 
 const Container = styled.div`
-	display: flex;
-	flex-direction: column;
-	background: ${({ theme }) => `${theme.colors.bgSecondary}`};
-	border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  background: ${({ theme }) => `${theme.colors.bgSecondary}`};
+  border-radius: 10px;
 `;
 const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => null;
 // const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => {

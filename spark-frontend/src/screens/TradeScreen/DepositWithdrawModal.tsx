@@ -6,13 +6,13 @@ import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
 export interface IProps extends IDialogPropTypes {}
 
 const Root = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	box-sizing: border-box;
-	width: 100%;
-	padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
 `;
 
 const tokens = [{ title: "USDC", key: "usdc" }];

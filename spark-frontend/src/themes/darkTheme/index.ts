@@ -1,7 +1,7 @@
 import colors from "./colors";
 
 const darkTheme = {
-	colors,
+  colors,
 };
 
 export default darkTheme;
