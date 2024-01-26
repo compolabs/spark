@@ -2,8 +2,6 @@ import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import BN from "@src/utils/BN";
-
 import RootStore from "./RootStore";
 
 export enum LOGIN_TYPE {
@@ -31,9 +29,7 @@ class AccountStore {
 	address: Nullable<string> = null;
 	mnemonic: Nullable<string> = null;
 
-	tokenBalances: Record<string, BN> = {};
-
-	initialized: boolean = true;
+	initialized: boolean = false;
 
 	constructor(rootStore: RootStore, initState?: ISerializedAccountStore) {
 		this.rootStore = rootStore;
@@ -49,7 +45,7 @@ class AccountStore {
 
 	init = async () => {
 		this.provider = new ethers.JsonRpcProvider(this.network.rpc);
-		// await Promise.all([this.updateTokenBalances()]).then(() => this.setInitialized(true));
+		this.initialized = true;
 	};
 
 	connectWallet = async () => {
@@ -82,7 +78,6 @@ class AccountStore {
 		this.signer = null;
 		this.loginType = null;
 		this.mnemonic = null;
-		this.tokenBalances = {};
 	};
 
 	getAddress = () => {
@@ -98,8 +93,6 @@ class AccountStore {
 		loginType: this.loginType,
 		mnemonic: this.mnemonic,
 	});
-
-	// private setInitialized = (initialized: boolean) => (this.initialized = initialized);
 }
 
 export default AccountStore;
