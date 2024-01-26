@@ -131,7 +131,7 @@ const BALANCE_COLUMNS = [
 const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
 
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-	const { settingsStore, accountStore } = useStores();
+	const { settingsStore, accountStore, balanceStore } = useStores();
 	const vm = useBottomTablesInterfaceSpotVM();
 	const theme = useTheme();
 
@@ -152,25 +152,24 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 		}));
 
 	const getBalanceData = () =>
-		Object.entries(accountStore.tokenBalances)
-			.filter(([, balance]) => balance && balance.gt(0))
-			.map(([assetId, balance]) => {
-				const token = TOKENS_BY_ASSET_ID[assetId];
-				return {
-					asset: (
-						<Row alignItems="center">
-							<TokenIcon alt="market-icon" src={token.logo} />
-							<SizedBox width={4} />
-							{token.symbol}
-						</Row>
-					),
-					balance: BN.formatUnits(balance, token.decimals).toFormat(2),
-				};
-			});
+		balanceStore.nonZeroBalancesAssetIds.map((assetId) => {
+			const token = TOKENS_BY_ASSET_ID[assetId];
+			const balance = BN.formatUnits(balanceStore.getBalance(token.assetId), token.decimals).toFormat(2);
+			return {
+				asset: (
+					<Row alignItems="center">
+						<TokenIcon alt="market-icon" src={token.logo} />
+						<SizedBox width={4} />
+						{token.symbol}
+					</Row>
+				),
+				balance,
+			};
+		});
 
 	React.useEffect(() => {
 		setData(tabIndex === 0 ? getOrderData() : getBalanceData());
-	}, [tabIndex, vm.myOrders, accountStore.tokenBalances]);
+	}, [tabIndex, vm.myOrders, balanceStore.balances]);
 
 	return (
 		<Root size={tableSize}>

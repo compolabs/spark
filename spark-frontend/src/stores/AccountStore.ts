@@ -17,7 +17,7 @@ export interface ISerializedAccountStore {
 }
 
 const networks = [
-    { name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
+	{ name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
 ];
 
 class AccountStore {

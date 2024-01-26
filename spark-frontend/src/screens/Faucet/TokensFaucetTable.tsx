@@ -1,5 +1,4 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react-lite";
 
@@ -9,7 +8,7 @@ import { Column, Row } from "@components/Flex";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { networks, TOKENS_BY_SYMBOL } from "@src/constants";
+import { networks } from "@src/constants";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -60,8 +59,6 @@ const TableBody = styled(Column)`
 const TokensFaucetTable: React.FC<IProps> = observer(() => {
 	const { accountStore } = useStores();
 	const vm = useFaucetVM();
-	const navigate = useNavigate();
-	const ethBalance = accountStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId);
 	return (
 		<Root>
 			<StyledTableRow>
