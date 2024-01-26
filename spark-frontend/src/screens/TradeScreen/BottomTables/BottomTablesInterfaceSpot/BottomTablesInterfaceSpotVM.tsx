@@ -1,8 +1,9 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { makeAutoObservable, reaction, when } from "mobx";
 
+import { SpotMarketOrder } from "@src/entity";
 import useVM from "@src/hooks/useVM";
-import { fetchOrders, SpotMarketOrder } from "@src/services/SpotMarketService";
+import { fetchOrders } from "@src/services/SpotMarketService";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<BottomTablesInterfaceSpotVM | null>(null);

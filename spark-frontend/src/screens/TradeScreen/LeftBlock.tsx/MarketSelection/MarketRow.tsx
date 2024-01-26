@@ -8,7 +8,7 @@ import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import star from "@src/assets/icons/star.svg";
 import yellowStar from "@src/assets/icons/yellowStar.svg";
-import { SpotMarket } from "@src/stores/TradeStore";
+import { SpotMarket } from "@src/entity";
 import { useStores } from "@stores";
 
 interface IProps {

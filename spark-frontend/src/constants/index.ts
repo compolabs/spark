@@ -1,4 +1,6 @@
-import tokenLogos from "./tokenLogos";
+import { Token } from "@src/entity";
+
+import TOKEN_LOGOS from "./tokenLogos";
 import tokens from "./tokens.json";
 
 export const ROUTES = {
@@ -7,12 +9,18 @@ export const ROUTES = {
 	FAUCET: "/faucet",
 };
 
-export const TOKENS_LIST: Array<IToken> = Object.values(tokens).map((t) => ({
-	...t,
-	logo: tokenLogos[t.symbol],
-}));
-export const TOKENS_BY_SYMBOL: Record<string, IToken> = TOKENS_LIST.reduce((acc, t) => ({ ...acc, [t.symbol]: t }), {});
-export const TOKENS_BY_ASSET_ID: Record<string, IToken> = TOKENS_LIST.reduce(
+export const TOKENS_LIST: Array<Token> = Object.values(tokens).map(
+	({ name, symbol, decimals, assetId }) =>
+		new Token({
+			name,
+			symbol,
+			decimals,
+			assetId,
+			logo: TOKEN_LOGOS[symbol],
+		}),
+);
+export const TOKENS_BY_SYMBOL: Record<string, Token> = TOKENS_LIST.reduce((acc, t) => ({ ...acc, [t.symbol]: t }), {});
+export const TOKENS_BY_ASSET_ID: Record<string, Token> = TOKENS_LIST.reduce(
 	(acc, t) => ({ ...acc, [t.assetId]: t }),
 	{},
 );
@@ -40,11 +48,5 @@ export const CONTRACT_ADDRESSES = {
 	vault: "0xfa8f7e7b7ed37ce7b0b98ac832317298aadb1a3833c5eec7899429c75124762f",
 };
 
-//todo cделать классом и добавить в этот класс основные функции работы с токеном и методы работы с ним (с учетом сети)
-export interface IToken {
-	logo: string;
-	assetId: string;
-	name: string;
-	symbol: string;
-	decimals: number;
-}
+export const DEFAULT_DECIMALS = 9;
+export const USDC_DECIMALS = 6;

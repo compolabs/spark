@@ -1,10 +1,12 @@
 import React, { useMemo } from "react";
-import _ from "lodash";
-import { makeAutoObservable, when } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
+import { Nullable } from "tsdef";
 
+import { SpotMarketOrder } from "@src/entity";
 import useVM from "@src/hooks/useVM";
-import { fetchOrders, SpotMarketOrder } from "@src/services/SpotMarketService";
+import { fetchOrders } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
+import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<SpotOrderbookVM | null>(null);
@@ -28,6 +30,8 @@ type TOrderbookData = {
 	spreadPrice: string;
 };
 
+const UPDATE_INTERVAL = 10 * 1000;
+
 class SpotOrderbookVM {
 	rootStore: RootStore;
 
@@ -41,12 +45,24 @@ class SpotOrderbookVM {
 	orderFilter: number = 0;
 	amountOfOrders: number = 0;
 
+	private orderBookUpdater: IntervalUpdater;
+
 	constructor(rootStore: RootStore) {
 		this.rootStore = rootStore;
 		makeAutoObservable(this);
-		when(() => this.rootStore.initialized, this.updateOrderBook);
-		// todo reaction(() => this.rootStore.tradeStore.marketSymbol, this.updateOrderBook);
-		setInterval(this.updateOrderBook, 10000); // обновление каждые 10 секунд
+
+		reaction(
+			() => rootStore.initialized,
+			(initialized) => {
+				if (!initialized) return;
+
+				this.orderBookUpdater.update();
+			},
+		);
+
+		this.orderBookUpdater = new IntervalUpdater(this.updateOrderBook, UPDATE_INTERVAL);
+
+		this.orderBookUpdater.run();
 	}
 
 	get oneSizeOrders() {
@@ -100,24 +116,28 @@ class SpotOrderbookVM {
 	updateOrderBook = async () => {
 		const market = this.rootStore.tradeStore.market;
 		if (!this.rootStore.initialized || !market) return;
+
 		const [buy, sell] = await Promise.all([
 			fetchOrders({ baseToken: market.baseToken.assetId, type: "BUY", limit: 20 }),
 			fetchOrders({ baseToken: market.baseToken.assetId, type: "SELL", limit: 20 }),
 		]);
-		//todo спред не считается потому что эта хуйня не работает
-		const maxBuyPriceOrder = _.maxBy(buy, "orderPrice");
-		const minSellPriceOrder = _.minBy(sell, "orderPrice");
-		/*todo сделать order классом, добавть priceUnits и использоваь тут priceUnits*/
-		const spreadPercent =
-			maxBuyPriceOrder && minSellPriceOrder
-				? new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price).div(maxBuyPriceOrder.price).toFixed(2)
-				: "0.00";
-		const spreadPrice =
-			maxBuyPriceOrder && minSellPriceOrder
-				? BN.formatUnits(new BN(maxBuyPriceOrder.price).minus(minSellPriceOrder.price), 9).toFixed(2)
-				: "";
 
-		this.setOrderbook({ buy, sell, spreadPercent, spreadPrice });
+		const maxBuyPriceOrder = buy.reduce((max: Nullable<SpotMarketOrder>, current) => {
+			return max === null || current.price > max.price ? current : max;
+		}, null);
+
+		const minSellPriceOrder = sell.reduce((min: Nullable<SpotMarketOrder>, current) => {
+			return min === null || current.price < min.price ? current : min;
+		}, null);
+
+		if (maxBuyPriceOrder && minSellPriceOrder) {
+			const spreadPercent = maxBuyPriceOrder.getSpreadPercent(minSellPriceOrder);
+			const spreadPrice = maxBuyPriceOrder.getSpreadPrice(minSellPriceOrder);
+			this.setOrderbook({ buy, sell, spreadPercent, spreadPrice });
+			return;
+		}
+
+		this.setOrderbook({ buy, sell, spreadPercent: "0.00", spreadPrice: "" });
 	};
 
 	private setOrderbook = (orderbook: TOrderbookData) => (this.orderbook = orderbook);

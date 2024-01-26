@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
@@ -125,107 +125,80 @@ const TableSize = styled.div<{ active?: boolean }>`
 	}
 `;
 
-const tabs = [
+const TABS = [
 	{ title: "ORDERS", disabled: false },
 	{ title: "BALANCES", disabled: false },
 ];
 
-const tableSizesConfig = [
+const TABLE_SIZES_CONFIG = [
 	{ title: "Extra small", icon: tableSizeExtraSmall, size: "extraSmall" },
 	{ title: "Small", icon: tableSmallSize, size: "small" },
 	{ title: "Medium", icon: tableMediumSize, size: "medium" },
 	{ title: "Large", icon: tableLargeSize, size: "large" },
 ];
+
+const ORDER_COLUMNS = [
+	{ Header: "Date", accessor: "date" },
+	{ Header: "Pair", accessor: "pair" },
+	{ Header: "Type", accessor: "type" },
+	{ Header: "Amount", accessor: "amount" },
+	{ Header: "Price", accessor: "price" },
+	{ Header: "", accessor: "action" },
+];
+
+const BALANCE_COLUMNS = [
+	{ Header: "Asset", accessor: "asset" },
+	{ Header: "Balance", accessor: "balance" },
+];
+
+const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
+
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-	const orderColumns = React.useMemo(
-		() => [
-			{ Header: "Date", accessor: "date" },
-			{ Header: "Pair", accessor: "pair" },
-			// { Header: "Status", accessor: "status" },
-			{ Header: "Type", accessor: "type" },
-			{ Header: "Amount", accessor: "amount" },
-			// { Header: "Filled", accessor: "filled" },
-			{ Header: "Price", accessor: "price" },
-			{ Header: "", accessor: "action" },
-		],
-		[],
-	);
-
-	// const tradeColumns = React.useMemo(
-	// 	() => [
-	// 		{ Header: "Market", accessor: "market" },
-	// 		{ Header: "Size", accessor: "size" },
-	// 		{ Header: "Entry Price", accessor: "entry" },
-	// 		{ Header: "Notional", accessor: "notional" },
-	// 		{ Header: "Fee", accessor: "fee" },
-	// 		{ Header: "Date", accessor: "date" },
-	// 	],
-	// 	[],
-	// );
-	const balanceColumns = React.useMemo(
-		() => [
-			{ Header: "Asset", accessor: "asset" },
-			{ Header: "Balance", accessor: "balance" },
-		],
-		[],
-	);
-
 	const { settingsStore, accountStore } = useStores();
-	const columns = [orderColumns, balanceColumns];
 	const vm = useBottomTablesInterfaceSpotVM();
+	const theme = useTheme();
+
 	const [tableSize, setTableSize] = useState(settingsStore.tradeTableSize ?? "small");
 	const [tabIndex, setTabIndex] = useState(0);
 	const [data, setData] = useState<any>([]);
-	const theme = useTheme();
-	useMemo(() => {
-		switch (tabIndex) {
-			case 0:
-				setData(
-					vm.myOrders.map((order) => ({
-						date: order.timestamp.format("DD MMM YY, HH:mm"),
-						pair: order.marketSymbol,
-						// status: order.status,
-						type: (
-							<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-								{order.type}
-							</TableText>
-						),
-						amount: <TableText primary>{order.baseSizeUnits.toFormat(2)}</TableText>,
-						// filled: order.fulfilled0.div(order.amount0).times(100).toFormat(2),
-						price: order.priceUnits.toFormat(2),
-						action:
-							//todo починить Close Order
-							null,
-						// <CancelButton onClick={() => vm.cancelOrder(order.orderId)}>{vm.loading ? "Loading..." : "Close"}</CancelButton>
-					})),
-				);
-				break;
-			case 1:
-				setData(
-					Object.entries(accountStore.tokenBalances)
-						?.filter(([, balance]) => balance && balance.gt(0))
-						?.map(([assetId, balance]) => {
-							const token = TOKENS_BY_ASSET_ID[assetId];
-							return {
-								asset: (
-									<Row alignItems="center">
-										<TokenIcon alt="market-icon" src={token.logo} />
-										<SizedBox width={4} />
-										{token.symbol}
-									</Row>
-								),
-								balance: BN.formatUnits(balance, token.decimals).toFormat(2),
-							};
-						}),
-				);
-				break;
-		}
+
+	const getOrderData = () =>
+		vm.myOrders.map((order) => ({
+			date: order.timestamp.format("DD MMM YY, HH:mm"),
+			pair: order.marketSymbol,
+			type: (
+				<TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>{order.type}</TableText>
+			),
+			amount: <TableText primary>{order.baseSizeUnits.toFormat(2)}</TableText>,
+			price: order.priceUnits.toFormat(2),
+			action: null,
+		}));
+
+	const getBalanceData = () =>
+		Object.entries(accountStore.tokenBalances)
+			.filter(([, balance]) => balance && balance.gt(0))
+			.map(([assetId, balance]) => {
+				const token = TOKENS_BY_ASSET_ID[assetId];
+				return {
+					asset: (
+						<Row alignItems="center">
+							<TokenIcon alt="market-icon" src={token.logo} />
+							<SizedBox width={4} />
+							{token.symbol}
+						</Row>
+					),
+					balance: BN.formatUnits(balance, token.decimals).toFormat(2),
+				};
+			});
+
+	React.useEffect(() => {
+		setData(tabIndex === 0 ? getOrderData() : getBalanceData());
 	}, [tabIndex, vm.myOrders, accountStore.tokenBalances]);
 
 	return (
 		<Root size={tableSize}>
 			<TabContainer>
-				{tabs.map(({ title, disabled }, index) => (
+				{TABS.map(({ title, disabled }, index) => (
 					<Tab
 						key={title + index}
 						active={tabIndex === index}
@@ -241,7 +214,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 						config={{ placement: "bottom-start", trigger: "click" }}
 						content={
 							<Column crossAxisSize="max" style={{ zIndex: 500 }}>
-								{tableSizesConfig.map(({ size, icon, title }) => (
+								{TABLE_SIZES_CONFIG.map(({ size, icon, title }) => (
 									<TableSize
 										key={title}
 										active={size === tableSize}
@@ -266,7 +239,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 			</TabContainer>
 			<Column crossAxisSize="max" style={{ overflowY: "scroll" }}>
 				<Table
-					columns={columns[tabIndex]}
+					columns={COLUMNS[tabIndex]}
 					data={data}
 					style={{
 						whiteSpace: "nowrap",
@@ -284,4 +257,5 @@ const BottomTablesInterfaceSpot = () => (
 		<BottomTablesInterfaceSpotImpl />
 	</BottomTablesInterfaceSpotVMProvider>
 );
+
 export default BottomTablesInterfaceSpot;
