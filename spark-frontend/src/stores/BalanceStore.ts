@@ -11,7 +11,7 @@ import RootStore from "./RootStore";
 const UPDATE_INTERVAL = 10 * 1000;
 
 export class BalanceStore {
-  private balances: Map<string, BN> = new Map();
+  public balances: Map<string, BN> = new Map();
 
   private balancesUpdater: IntervalUpdater;
 

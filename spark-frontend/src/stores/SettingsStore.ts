@@ -4,7 +4,14 @@ import { THEME_TYPE } from "@src/themes/ThemeProvider";
 import RootStore from "@stores/RootStore";
 
 export interface ISerializedSettingStore {
-  tradeTableSize: string | null;
+  tradeTableSize: number;
+}
+
+export enum TRADE_TABLE_SIZE {
+  XS,
+  S,
+  M,
+  L,
 }
 
 class SettingsStore {
@@ -22,8 +29,8 @@ class SettingsStore {
   depositModalOpened: boolean = false;
   setDepositModal = (s: boolean) => (this.depositModalOpened = s);
 
-  tradeTableSize: string | null = null;
-  setTradeTableSize = (v: string | null) => (this.tradeTableSize = v);
+  tradeTableSize: TRADE_TABLE_SIZE = TRADE_TABLE_SIZE.S;
+  setTradeTableSize = (v: TRADE_TABLE_SIZE) => (this.tradeTableSize = v);
 
   serialize = (): ISerializedSettingStore => ({
     tradeTableSize: this.tradeTableSize,

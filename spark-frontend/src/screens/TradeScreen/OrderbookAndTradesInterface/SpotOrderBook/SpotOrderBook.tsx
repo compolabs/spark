@@ -12,7 +12,7 @@ import sell from "@src/assets/icons/sellOrderBookIcon.svg";
 import { Column, Row } from "@src/components/Flex";
 import BN from "@src/utils/BN";
 import hexToRgba from "@src/utils/hexToRgb";
-import useEventListener from "@src/utils/useEventListener";
+import { useEventListener } from "@src/utils/useEventListener";
 
 import { SpotOrderbookVMProvider, useSpotOrderbookVM } from "./SpotOrderbookVM";
 

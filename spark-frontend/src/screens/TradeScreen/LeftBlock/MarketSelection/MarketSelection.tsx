@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
@@ -8,8 +8,7 @@ import { Row } from "@components/Flex";
 import SearchInput from "@components/SearchInput";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
-import MarketRow from "@screens/TradeScreen/LeftBlock.tsx/MarketSelection/MarketRow";
-import useOnClickOutside from "@src/hooks/useOnClickOutside";
+import MarketRow from "@src/screens/TradeScreen/LeftBlock/MarketSelection/MarketRow";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -27,12 +26,10 @@ const Top = styled.div`
 const MarketSelection: React.FC<IProps> = observer(() => {
   const { tradeStore } = useStores();
   const [searchValue, setSearchValue] = useState<string>("");
-  const ref = useRef(null);
   const [isSpotMarket, setSpotMarket] = useState(true);
 
-  useOnClickOutside(ref, () => tradeStore.setMarketSelectionOpened(false));
   return (
-    <Root ref={ref}>
+    <Root>
       <Top>
         <ButtonGroup>
           <Button active={isSpotMarket} onClick={() => setSpotMarket(true)}>

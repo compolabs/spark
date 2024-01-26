@@ -11,9 +11,9 @@ import SizedBox from "@components/SizedBox";
 import Slider from "@components/Slider";
 import Text, { TEXT_TYPES } from "@components/Text";
 import TokenInput from "@components/TokenInput";
-import { ORDER_MODE, useCreateOrderSpotVM } from "@screens/TradeScreen/LeftBlock.tsx/CreateOrderSpot/CreateOrderSpotVM";
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import Button, { ButtonGroup } from "@src/components/Button";
+import { ORDER_MODE, useCreateOrderSpotVM } from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 
