@@ -54,10 +54,10 @@ const ActionRow = styled(Row)`
 	align-items: center;
 `;
 const ConnectedWallet: React.FC<IProps> = observer(() => {
-	const { accountStore, notificationStore } = useStores();
+	const { accountStore, notificationStore, balanceStore } = useStores();
 	const [focused, setFocused] = useState(false);
 	const ethBalance = BN.formatUnits(
-		accountStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId) ?? 0,
+		balanceStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId) ?? 0,
 		TOKENS_BY_SYMBOL.ETH.decimals,
 	)?.toFormat(4);
 	const handleCopy = (object: string) => {

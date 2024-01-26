@@ -1,7 +1,6 @@
 import axios from "axios";
-import dayjs, { Dayjs } from "dayjs";
 
-import { IToken, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { SpotMarketOrder } from "@src/entity";
 import BN from "@src/utils/BN";
 
 const API_URL = "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest";
@@ -14,46 +13,6 @@ type TOrderResponse = {
 	orderPrice: number;
 	blockTimestamp: number;
 };
-
-export class SpotMarketOrder {
-	//подразумевается что децимал цены = 9 и децимал quoteToken = 6 (USDC)
-	readonly id: string;
-	readonly timestamp: Dayjs;
-	readonly baseToken: IToken;
-	readonly quoteToken = TOKENS_BY_SYMBOL.USDC;
-	readonly trader: string;
-	readonly baseSize: BN;
-	readonly baseSizeUnits: BN;
-	readonly quoteSize: BN;
-	readonly quoteSizeUnits: BN;
-	readonly price: BN;
-	readonly priceUnits: BN;
-	readonly priceScale = 1e9;
-	readonly priceDecimals = 9;
-	readonly type: "BUY" | "SELL";
-
-	constructor(order: TOrderResponse) {
-		this.id = order.id;
-		this.baseToken = TOKENS_BY_ASSET_ID[order.baseToken]; //todo обработать случай если нет baseToken в TOKENS_BY_ASSET_ID
-		this.trader = order.trader;
-		this.type = order.baseSize < 0 ? "SELL" : "BUY";
-		this.baseSize = new BN(order.baseSize).abs();
-		this.baseSizeUnits = BN.formatUnits(this.baseSize, this.baseToken.decimals);
-		this.quoteSize = new BN(order.baseSize)
-			.abs()
-			.times(order.orderPrice)
-			.times(this.quoteToken.decimals)
-			.div(Math.pow(10, this.baseToken.decimals) * this.priceScale);
-		this.quoteSizeUnits = BN.formatUnits(this.quoteSize, this.quoteToken.decimals);
-		this.price = new BN(order.orderPrice);
-		this.priceUnits = BN.formatUnits(order.orderPrice, this.priceDecimals);
-		this.timestamp = dayjs.unix(order.blockTimestamp);
-	}
-
-	get marketSymbol() {
-		return `${this.baseToken.symbol}-${this.quoteToken.symbol}`;
-	}
-}
 
 type TFetchOrdersParams = {
 	baseToken: string;

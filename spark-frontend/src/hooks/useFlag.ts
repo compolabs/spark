@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 
-type useFlagReturns = [boolean, () => void, () => void];
+type FlagReturns = [boolean, () => void, () => void];
 
-const useFlag = (initial = false): useFlagReturns => {
+const useFlag = (initial = false): FlagReturns => {
 	const [value, setValue] = useState(initial);
 
 	const setTrue = useCallback(() => {

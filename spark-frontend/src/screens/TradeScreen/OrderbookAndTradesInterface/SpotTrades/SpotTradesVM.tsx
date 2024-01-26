@@ -1,8 +1,11 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { makeAutoObservable } from "mobx";
 
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
-import { fetchTrades, TSpotMarketTrade } from "@src/services/SpotMarketService";
+import { fetchTrades } from "@src/services/SpotMarketService";
+import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<SpotTradesVM | null>(null);
@@ -15,22 +18,38 @@ export const SpotTradesVMProvider: React.FC<PropsWithChildren> = ({ children }) 
 
 export const useSpotTradesVM = () => useVM(ctx);
 
+const UPDATE_INTERVAL = 10 * 1000;
+
 class SpotTradesVM {
-	public trades: Array<TSpotMarketTrade> = [];
+	public trades: Array<SpotMarketTrade> = [];
+
+	private tradesUpdater: IntervalUpdater;
 
 	constructor(private rootStore: RootStore) {
 		makeAutoObservable(this);
 		this.updateTrades().then();
-		// todo reaction(() => this.rootStore.tradeStore.marketSymbol, this.updateTrades);
-		setInterval(this.updateTrades, 10000); // обновление каждые 10 секунд
+
+		this.tradesUpdater = new IntervalUpdater(this.updateTrades, UPDATE_INTERVAL);
+
+		this.tradesUpdater.run();
 	}
 
-	public setTrades = (v: Array<TSpotMarketTrade>) => (this.trades = v);
-
 	updateTrades = async () => {
-		const market = this.rootStore.tradeStore.market;
-		if (!this.rootStore.initialized || !market) return;
-		const data = await fetchTrades(market.baseToken.assetId, 40);
-		this.setTrades(data);
+		const { tradeStore, initialized } = this.rootStore;
+
+		const market = tradeStore.market;
+
+		if (!initialized || !market) return;
+
+		try {
+			const data = await fetchTrades(market.baseToken.assetId, 40);
+
+			// todo: to think about TokenStore
+			const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
+
+			this.trades = data.map((t) => new SpotMarketTrade({ ...t, baseToken: token }));
+		} catch (error) {
+			console.error("Error with loading trades");
+		}
 	};
 }
