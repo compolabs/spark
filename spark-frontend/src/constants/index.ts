@@ -21,7 +21,7 @@ export const EXPLORER_URL = "https://sepolia.arbiscan.io";
 export const FAUCETS = {
 	FUEL: "https://faucet-beta-4.fuel.network",
 	ARBITRUM_GOERLI: "https://faucet.triangleplatform.com/arbitrum/goerli",
-	ARBITRUM_SEPOLIA: "https://arbitrum-faucet.com",
+	ARBITRUM_SEPOLIA: "https://faucet.triangleplatform.com/arbitrum/sepolia",
 };
 // export const FUEL_FAUCET_URL = "https://faucet-beta-4.fuel.network";
 // export const ARBITRUM_FAUCET_URL = "https://arbitrum-faucet.com/";

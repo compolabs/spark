@@ -27,7 +27,7 @@ const networks = [
 
 class AccountStore {
 	rootStore: RootStore;
-	network = networks[1]; //todo добавтиь функционал выбора сети
+	network = networks[0]; //todo добавтиь функционал выбора сети
 	provider: Nullable<ethers.Provider> = null;
 	signer: Nullable<ethers.JsonRpcSigner> = null;
 	loginType: Nullable<LOGIN_TYPE> = null;

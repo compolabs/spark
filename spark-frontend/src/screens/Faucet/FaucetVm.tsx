@@ -23,7 +23,7 @@ export const FaucetVMProvider: React.FC<IProps> = ({ children }) => {
 export const useFaucetVM = () => useVM(ctx);
 
 const faucetAmounts: Record<string, number> = {
-	ETH: 0.5,
+	ETH: 0.001,
 	USDC: 3000,
 	BTC: 0.01,
 	UNI: 50,
@@ -80,7 +80,7 @@ class FaucetVM {
 			notificationStore.toast(e.toString(), { type: "error" });
 		}
 
-		this._setLoading(true);
+		this._setLoading(false);
 		await this.rootStore.accountStore.updateTokenBalances();
 	};
 
