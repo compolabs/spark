@@ -107,8 +107,8 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 											if (token.symbol === "ETH") {
 												window.open(
 													accountStore.address === null
-														? networks[1].faucet
-														: `${networks[1].faucet}/?address=${accountStore.address}`,
+														? networks[0].faucet
+														: `${networks[0].faucet}/?address=${accountStore.address}`,
 													"blank",
 												);
 											} else {
