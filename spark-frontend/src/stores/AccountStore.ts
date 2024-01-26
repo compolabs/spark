@@ -3,7 +3,7 @@ import { makeAutoObservable, reaction } from "mobx";
 import { Nullable } from "tsdef";
 
 import ERC20_ABI from "@src/abi/ERC20_ABI.json";
-import { TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
+import { networks, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 
 import RootStore from "./RootStore";
@@ -19,15 +19,9 @@ export interface ISerializedAccountStore {
 	loginType: Nullable<LOGIN_TYPE>;
 	mnemonic: Nullable<string>;
 }
-
-const networks = [
-	{ name: "Arbitrum Sepolia", rpc: "https://sepolia-rollup.arbitrum.io/rpc", chainId: "421614" },
-	{ name: "Arbitrum Goerli", rpc: "https://goerli-rollup.arbitrum.io/rpc", chainId: "421613" },
-];
-
 class AccountStore {
 	rootStore: RootStore;
-	network = networks[0]; //todo добавтиь функционал выбора сети
+	network = networks[1]; //todo добавтиь функционал выбора сети
 	provider: Nullable<ethers.Provider> = null;
 	signer: Nullable<ethers.JsonRpcSigner> = null;
 	loginType: Nullable<LOGIN_TYPE> = null;

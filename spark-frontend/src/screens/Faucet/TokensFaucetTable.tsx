@@ -9,7 +9,7 @@ import { Column, Row } from "@components/Flex";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { FAUCETS, TOKENS_BY_SYMBOL } from "@src/constants";
+import { networks, TOKENS_BY_SYMBOL } from "@src/constants";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -107,8 +107,8 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
 											if (token.symbol === "ETH") {
 												window.open(
 													accountStore.address === null
-														? FAUCETS.ARBITRUM_SEPOLIA
-														: `${FAUCETS.ARBITRUM_SEPOLIA}/?address=${accountStore.address}`,
+														? networks[1].faucet
+														: `${networks[1].faucet}/?address=${accountStore.address}`,
 													"blank",
 												);
 											} else {
