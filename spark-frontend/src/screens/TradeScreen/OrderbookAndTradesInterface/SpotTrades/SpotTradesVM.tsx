@@ -11,9 +11,9 @@ import { RootStore, useStores } from "@stores";
 const ctx = React.createContext<SpotTradesVM | null>(null);
 
 export const SpotTradesVMProvider: React.FC<PropsWithChildren> = ({ children }) => {
-	const rootStore = useStores();
-	const store = useMemo(() => new SpotTradesVM(rootStore), [rootStore]);
-	return <ctx.Provider value={store}>{children}</ctx.Provider>;
+  const rootStore = useStores();
+  const store = useMemo(() => new SpotTradesVM(rootStore), [rootStore]);
+  return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
 export const useSpotTradesVM = () => useVM(ctx);
@@ -21,35 +21,35 @@ export const useSpotTradesVM = () => useVM(ctx);
 const UPDATE_INTERVAL = 10 * 1000;
 
 class SpotTradesVM {
-	public trades: Array<SpotMarketTrade> = [];
+  public trades: Array<SpotMarketTrade> = [];
 
-	private tradesUpdater: IntervalUpdater;
+  private tradesUpdater: IntervalUpdater;
 
-	constructor(private rootStore: RootStore) {
-		makeAutoObservable(this);
-		this.updateTrades().then();
+  constructor(private rootStore: RootStore) {
+    makeAutoObservable(this);
+    this.updateTrades().then();
 
-		this.tradesUpdater = new IntervalUpdater(this.updateTrades, UPDATE_INTERVAL);
+    this.tradesUpdater = new IntervalUpdater(this.updateTrades, UPDATE_INTERVAL);
 
-		this.tradesUpdater.run();
-	}
+    this.tradesUpdater.run();
+  }
 
-	updateTrades = async () => {
-		const { tradeStore, initialized } = this.rootStore;
+  updateTrades = async () => {
+    const { tradeStore, initialized } = this.rootStore;
 
-		const market = tradeStore.market;
+    const market = tradeStore.market;
 
-		if (!initialized || !market) return;
+    if (!initialized || !market) return;
 
-		try {
-			const data = await fetchTrades(market.baseToken.assetId, 40);
+    try {
+      const data = await fetchTrades(market.baseToken.assetId, 40);
 
-			// todo: to think about TokenStore
-			const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
+      // todo: to think about TokenStore
+      const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
 
-			this.trades = data.map((t) => new SpotMarketTrade({ ...t, baseToken: token }));
-		} catch (error) {
-			console.error("Error with loading trades");
-		}
-	};
+      this.trades = data.map((t) => new SpotMarketTrade({ ...t, baseToken: token }));
+    } catch (error) {
+      console.error("Error with loading trades");
+    }
+  };
 }

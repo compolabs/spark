@@ -9,13 +9,13 @@ import SettingsStore from "./SettingsStore";
 import TradeStore from "./TradeStore";
 
 export {
-	AccountStore,
-	NotificationStore,
-	RootStore,
-	SettingsStore,
-	// OracleStore,
-	storesContext,
-	// SpotOrdersStore,
-	TradeStore,
-	useStores,
+  AccountStore,
+  NotificationStore,
+  RootStore,
+  SettingsStore,
+  // OracleStore,
+  storesContext,
+  // SpotOrdersStore,
+  TradeStore,
+  useStores,
 };

@@ -23,35 +23,35 @@ const initState = loadState();
 
 const mobxStore = new RootStore(initState);
 autorun(
-	() => {
-		console.dir(mobxStore);
-		saveState(mobxStore.serialize());
-	},
-	{ delay: 1000 },
+  () => {
+    console.dir(mobxStore);
+    saveState(mobxStore.serialize());
+  },
+  { delay: 1000 },
 );
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
-	// <React.StrictMode>
-	<storesContext.Provider value={mobxStore}>
-		<ThemeWrapper>
-			<Router>
-				<App />
-			</Router>
-			<ToastContainer
-				autoClose={5000}
-				closeOnClick={false}
-				icon={<div />}
-				newestOnTop={true}
-				position="bottom-right"
-				rtl={false}
-				theme="dark"
-				draggable
-				pauseOnFocusLoss
-				pauseOnHover
-			/>
-			<GlobalStyles />
-		</ThemeWrapper>
-	</storesContext.Provider>,
-	// </React.StrictMode>,
+  // <React.StrictMode>
+  <storesContext.Provider value={mobxStore}>
+    <ThemeWrapper>
+      <Router>
+        <App />
+      </Router>
+      <ToastContainer
+        autoClose={5000}
+        closeOnClick={false}
+        icon={<div />}
+        newestOnTop={true}
+        position="bottom-right"
+        rtl={false}
+        theme="dark"
+        draggable
+        pauseOnFocusLoss
+        pauseOnHover
+      />
+      <GlobalStyles />
+    </ThemeWrapper>
+  </storesContext.Provider>,
+  // </React.StrictMode>,
 );
