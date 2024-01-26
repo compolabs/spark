@@ -61,7 +61,6 @@ const Root = styled.div<{ size: string }>`
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))
-
 const CancelButton = styled(Chip)`
   cursor: pointer;
   border: 1px solid ${({ theme }) => theme.colors.borderPrimary} !important;
@@ -131,7 +130,7 @@ const BALANCE_COLUMNS = [
 const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
 
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-  const { settingsStore, accountStore, balanceStore } = useStores();
+  const { settingsStore, balanceStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
   const theme = useTheme();
 
