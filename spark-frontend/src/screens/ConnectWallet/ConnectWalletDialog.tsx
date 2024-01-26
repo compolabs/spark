@@ -15,52 +15,52 @@ import { useStores } from "@src/stores";
 import { LOGIN_TYPE } from "@stores/AccountStore";
 
 type IProps = Omit<IDialogPropTypes, "onClose"> & {
-	onClose: () => void;
+  onClose: () => void;
 };
 
 const HeaderContainer = styled.div`
-	display: flex;
-	justify-content: space-between;
-	padding: 32px 24px 0 24px;
+  display: flex;
+  justify-content: space-between;
+  padding: 32px 24px 0 24px;
 `;
 
 const Root = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	padding-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 24px;
 `;
 
 const WalletContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	padding: 16px 0;
-	width: 100%;
-	gap: 4px;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  width: 100%;
+  gap: 4px;
 `;
 
 const WalletItem = styled.div`
-	display: flex;
-	align-items: center;
-	padding: 4px 24px;
-	gap: 4px;
-	cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px 24px;
+  gap: 4px;
+  cursor: pointer;
 `;
 
 const WalletIconContainer = styled.div`
-	display: flex;
+  display: flex;
 
-	svg {
-		height: 24px;
-		width: 24px;
-	}
+  svg {
+    height: 24px;
+    width: 24px;
+  }
 `;
 
 const FooterContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 `;
 
 const StyledLink = styled.a`
@@ -75,168 +75,168 @@ const StyledLink = styled.a`
 `;
 
 const AgreementContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	overflow: scroll;
-	height: 330px;
-	padding: 0 24px;
-	margin: 24px 0 16px;
+  display: flex;
+  flex-direction: column;
+  overflow: scroll;
+  height: 330px;
+  padding: 0 24px;
+  margin: 24px 0 16px;
 `;
 
 const CheckboxContainer = styled.div`
-	display: flex;
-	align-items: center;
-	gap: 6px;
-	cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
 `;
 
 const ButtonContainer = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
-	padding: 8px 24px;
-	width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 8px 24px;
+  width: 100%;
 `;
 
 const ArrowContainer = styled.div`
-	display: flex;
-	gap: 10px;
+  display: flex;
+  gap: 10px;
 `;
 
 const StyledArrowIcon = styled(ArrowIcon)`
-	transform: rotate(90deg);
+  transform: rotate(90deg);
 `;
 
 enum ActiveState {
-	SELECT_WALLET,
-	USER_AGREEMENT,
+  SELECT_WALLET,
+  USER_AGREEMENT,
 }
 
 interface Wallet {
-	name: string;
-	icon: React.FC;
-	type: LOGIN_TYPE;
-	isActive: boolean;
+  name: string;
+  icon: React.FC;
+  type: LOGIN_TYPE;
+  isActive: boolean;
 }
 
 const WALLETS: Wallet[] = [
-	{ name: "MetaMask", isActive: true, type: LOGIN_TYPE.METAMASK, icon: MetaMaskIcon },
-	{ name: "Fuel Wallet", isActive: true, type: LOGIN_TYPE.FUEL_WALLET, icon: FuelWalletIcon },
+  { name: "MetaMask", isActive: true, type: LOGIN_TYPE.METAMASK, icon: MetaMaskIcon },
+  { name: "Fuel Wallet", isActive: true, type: LOGIN_TYPE.FUEL_WALLET, icon: FuelWalletIcon },
 ];
 
 const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) => {
-	const { accountStore } = useStores();
-	const theme = useTheme();
+  const { accountStore } = useStores();
+  const theme = useTheme();
 
-	const activeWallets = useMemo(() => WALLETS.filter((w) => w.isActive), []);
+  const activeWallets = useMemo(() => WALLETS.filter((w) => w.isActive), []);
 
-	const [isUserAgreed, setIsUserAgreed] = useState(false);
-	const [activeState, setActiveState] = useState(ActiveState.SELECT_WALLET);
+  const [isUserAgreed, setIsUserAgreed] = useState(false);
+  const [activeState, setActiveState] = useState(ActiveState.SELECT_WALLET);
 
-	useEffect(() => {
-		if (rest.visible) return;
+  useEffect(() => {
+    if (rest.visible) return;
 
-		setIsUserAgreed(false);
-		setActiveState(ActiveState.SELECT_WALLET);
-	}, [rest.visible]);
+    setIsUserAgreed(false);
+    setActiveState(ActiveState.SELECT_WALLET);
+  }, [rest.visible]);
 
-	const handleWalletClick = () => {
-		// todo: Connect works only with metamask
-		accountStore.connectWallet();
-		onClose();
-	};
+  const handleWalletClick = () => {
+    // todo: Connect works only with metamask
+    accountStore.connectWallet();
+    onClose();
+  };
 
-	const renderHeader = () => {
-		if (activeState === ActiveState.SELECT_WALLET) {
-			return (
-				<HeaderContainer>
-					<Text color={theme.colors.textPrimary} type={TEXT_TYPES.H}>
-						Connect your wallet
-					</Text>
-					<Text color={theme.colors.textSecondary} type={TEXT_TYPES.BUTTON_SECONDARY} pointer onClick={onClose}>
-						Skip
-					</Text>
-				</HeaderContainer>
-			);
-		}
+  const renderHeader = () => {
+    if (activeState === ActiveState.SELECT_WALLET) {
+      return (
+        <HeaderContainer>
+          <Text color={theme.colors.textPrimary} type={TEXT_TYPES.H}>
+            Connect your wallet
+          </Text>
+          <Text color={theme.colors.textSecondary} type={TEXT_TYPES.BUTTON_SECONDARY} pointer onClick={onClose}>
+            Skip
+          </Text>
+        </HeaderContainer>
+      );
+    }
 
-		return (
-			<HeaderContainer>
-				<ArrowContainer>
-					<StyledArrowIcon onClick={() => setActiveState(ActiveState.SELECT_WALLET)} />
-					<Text color={theme.colors.textPrimary} type={TEXT_TYPES.H}>
-						Terms and conditions
-					</Text>
-				</ArrowContainer>
-			</HeaderContainer>
-		);
-	};
+    return (
+      <HeaderContainer>
+        <ArrowContainer>
+          <StyledArrowIcon onClick={() => setActiveState(ActiveState.SELECT_WALLET)} />
+          <Text color={theme.colors.textPrimary} type={TEXT_TYPES.H}>
+            Terms and conditions
+          </Text>
+        </ArrowContainer>
+      </HeaderContainer>
+    );
+  };
 
-	const renderWallets = () => {
-		return (
-			<>
-				<WalletContainer>
-					{activeWallets.map(({ name, icon: WalletIcon }) => (
-						<WalletItem key={name} onClick={() => setActiveState(ActiveState.USER_AGREEMENT)}>
-							<WalletIconContainer>
-								<WalletIcon />
-							</WalletIconContainer>
-							<Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
-								{name}
-							</Text>
-						</WalletItem>
-					))}
-				</WalletContainer>
-				<FooterContainer>
-					<Text type={TEXT_TYPES.BODY}>New to Fuel blockchain?</Text>
-					<StyledLink
-						href="https://stalkerairdrop.medium.com/fuel-testnet-swaylend-db9ce8d10cb4#f93f"
-						rel="noopener noreferrer"
-						target="_blank"
-					>
-						<Text type={TEXT_TYPES.BUTTON_SECONDARY}>Learn more about wallets</Text>
-					</StyledLink>
-				</FooterContainer>
-			</>
-		);
-	};
+  const renderWallets = () => {
+    return (
+      <>
+        <WalletContainer>
+          {activeWallets.map(({ name, icon: WalletIcon }) => (
+            <WalletItem key={name} onClick={() => setActiveState(ActiveState.USER_AGREEMENT)}>
+              <WalletIconContainer>
+                <WalletIcon />
+              </WalletIconContainer>
+              <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
+                {name}
+              </Text>
+            </WalletItem>
+          ))}
+        </WalletContainer>
+        <FooterContainer>
+          <Text type={TEXT_TYPES.BODY}>New to Fuel blockchain?</Text>
+          <StyledLink
+            href="https://stalkerairdrop.medium.com/fuel-testnet-swaylend-db9ce8d10cb4#f93f"
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            <Text type={TEXT_TYPES.BUTTON_SECONDARY}>Learn more about wallets</Text>
+          </StyledLink>
+        </FooterContainer>
+      </>
+    );
+  };
 
-	const toggleUserAgreement = () => {
-		setIsUserAgreed((isAgreed) => !isAgreed);
-	};
+  const toggleUserAgreement = () => {
+    setIsUserAgreed((isAgreed) => !isAgreed);
+  };
 
-	const renderAgreement = () => {
-		return (
-			<>
-				<AgreementContainer>
-					<Text>{AGREEMENT_TEXT}</Text>
-				</AgreementContainer>
-				<ButtonContainer>
-					<CheckboxContainer onClick={toggleUserAgreement}>
-						<Checkbox checked={isUserAgreed} />
-						<Text>I have read, understand and accept these terms</Text>
-					</CheckboxContainer>
-					<Button disabled={!isUserAgreed} green onClick={handleWalletClick}>
-						Agree and Continue
-					</Button>
-				</ButtonContainer>
-			</>
-		);
-	};
+  const renderAgreement = () => {
+    return (
+      <>
+        <AgreementContainer>
+          <Text>{AGREEMENT_TEXT}</Text>
+        </AgreementContainer>
+        <ButtonContainer>
+          <CheckboxContainer onClick={toggleUserAgreement}>
+            <Checkbox checked={isUserAgreed} />
+            <Text>I have read, understand and accept these terms</Text>
+          </CheckboxContainer>
+          <Button disabled={!isUserAgreed} green onClick={handleWalletClick}>
+            Agree and Continue
+          </Button>
+        </ButtonContainer>
+      </>
+    );
+  };
 
-	const renderContent = () => {
-		if (activeState === ActiveState.SELECT_WALLET) {
-			return renderWallets();
-		}
+  const renderContent = () => {
+    if (activeState === ActiveState.SELECT_WALLET) {
+      return renderWallets();
+    }
 
-		return renderAgreement();
-	};
+    return renderAgreement();
+  };
 
-	return (
-		<Dialog {...rest} title={renderHeader()}>
-			<Root>{renderContent()}</Root>
-		</Dialog>
-	);
+  return (
+    <Dialog {...rest} title={renderHeader()}>
+      <Root>{renderContent()}</Root>
+    </Dialog>
+  );
 });
 
 const AGREEMENT_TEXT = `This website-hosted user interface (this "Interface") is an open source frontend software portal to the Spark protocol, a decentralized and community-driven collection of blockchain-enabled smart contracts and tools (the "Spark Protocol"). This Interface and the Spark Protocol are made available by the Spark Holding Foundation, however all transactions conducted on the protocol are run by related permissionless smart contracts. As the Interface is open-sourced and the Spark Protocol and its related smart contracts are accessible by any user, entity or third party, there are a number of third party web and mobile user-interfaces that allow for interaction with the Spark Protocol.

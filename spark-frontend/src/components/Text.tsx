@@ -11,21 +11,21 @@ import styled from "@emotion/styled";
 */
 
 export enum TEXT_TYPES {
-	H = 1,
-	BODY = 2,
-	BUTTON = 3,
-	BUTTON_SECONDARY = 4,
-	SUPPORTING = 5,
+  H = 1,
+  BODY = 2,
+  BUTTON = 3,
+  BUTTON_SECONDARY = 4,
+  SUPPORTING = 5,
 }
 
 interface IProps {
-	type?: TEXT_TYPES;
-	primary?: boolean;
-	secondary?: boolean;
-	disabled?: boolean;
-	color?: string;
-	nowrap?: boolean;
-	pointer?: boolean;
+  type?: TEXT_TYPES;
+  primary?: boolean;
+  secondary?: boolean;
+  disabled?: boolean;
+  color?: string;
+  nowrap?: boolean;
+  pointer?: boolean;
 }
 
 export const hStyle = `
@@ -67,37 +67,37 @@ line-height: 10px;
 letter-spacing: 0.2px;
 `;
 export const TEXT_TYPES_MAP = {
-	[TEXT_TYPES.H]: hStyle,
-	[TEXT_TYPES.BODY]: bodyStyle,
-	[TEXT_TYPES.BUTTON]: buttonStyle,
-	[TEXT_TYPES.BUTTON_SECONDARY]: buttonSecondaryStyle,
-	[TEXT_TYPES.SUPPORTING]: supportStyle,
+  [TEXT_TYPES.H]: hStyle,
+  [TEXT_TYPES.BODY]: bodyStyle,
+  [TEXT_TYPES.BUTTON]: buttonStyle,
+  [TEXT_TYPES.BUTTON_SECONDARY]: buttonSecondaryStyle,
+  [TEXT_TYPES.SUPPORTING]: supportStyle,
 };
 
 const Text = styled.div<IProps>`
-	white-space: ${({ nowrap }) => (nowrap ? "nowrap" : "normal")};
-	${({ primary, secondary, disabled, theme, color }) =>
-		(() => {
-			switch (true) {
-				case primary:
-					return css`
-						color: ${theme.colors?.textPrimary};
-					`;
-				case secondary:
-					return css`
-						color: ${theme.colors?.textSecondary};
-					`;
-				case disabled:
-					return css`
-						color: ${theme.colors?.textDisabled};
-					`;
-				default:
-					return css`
-						color: ${color ?? theme.colors?.textSecondary};
-					`;
-			}
-		})()}
-	${({ type }) => (type ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY])}
+  white-space: ${({ nowrap }) => (nowrap ? "nowrap" : "normal")};
+  ${({ primary, secondary, disabled, theme, color }) =>
+    (() => {
+      switch (true) {
+        case primary:
+          return css`
+            color: ${theme.colors?.textPrimary};
+          `;
+        case secondary:
+          return css`
+            color: ${theme.colors?.textSecondary};
+          `;
+        case disabled:
+          return css`
+            color: ${theme.colors?.textDisabled};
+          `;
+        default:
+          return css`
+            color: ${color ?? theme.colors?.textSecondary};
+          `;
+      }
+    })()}
+  ${({ type }) => (type ? TEXT_TYPES_MAP[type] : TEXT_TYPES_MAP[TEXT_TYPES.BODY])}
 	cursor: ${({ pointer }) => (pointer ? "pointer" : "inherit")}
 `;
 export default Text;
