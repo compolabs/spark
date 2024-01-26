@@ -130,7 +130,18 @@ const ORDER_COLUMNS = [
   { Header: "Date", accessor: "date" },
   { Header: "Pair", accessor: "pair" },
   { Header: "Type", accessor: "type" },
-  { Header: "Amount", accessor: "amount" },
+  {
+    Header: "Amount",
+    accessor: "amount",
+    tooltip: (
+      <>
+        <Text type={TEXT_TYPES.BODY}>
+          Amount represents the quantity of cryptocurrency tokens bought or sold in a transaction on the exchange.
+        </Text>
+        <Text type={TEXT_TYPES.BODY}>For buys, it shows tokens acquired; for sells, tokens sold.</Text>
+      </>
+    ),
+  },
   { Header: "Price", accessor: "price" },
   { Header: "", accessor: "action" },
 ];
@@ -163,11 +174,15 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       ),
       amount: <TableText primary>{order.baseSizeUnits.toFormat(2)}</TableText>,
       price: order.priceUnits.toFormat(2),
-      action: null,
+      action: (
+        <CancelButton onClick={() => vm.cancelOrder(order.id)}>
+          {vm.isOrderCancelling ? "Loading..." : "Close"}
+        </CancelButton>
+      ),
     }));
 
   const getBalanceData = () =>
-    Object.entries(balanceStore.balances)
+    Array.from(balanceStore.balances)
       .filter(([, balance]) => balance && balance.gt(0))
       .map(([assetId, balance]) => {
         const token = TOKENS_BY_ASSET_ID[assetId];
@@ -201,7 +216,6 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           </Tab>
         ))}
         <TableSizeSelector>
-          {/*todo кнопка изменения высоты нижнего блока работает не правильно и при маленькой высоте тултип не влезает */}
           <Tooltip
             config={RESIZE_TOOLTIP_CONFIG}
             content={

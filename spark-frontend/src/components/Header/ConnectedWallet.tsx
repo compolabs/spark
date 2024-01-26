@@ -21,51 +21,22 @@ import { useStores } from "@stores";
 
 interface IProps {}
 
-const Root = styled(Button)<{
-  focused?: boolean;
-}>`
-  background: transparent;
-  padding: 0 8px;
-  color: ${({ theme }) => theme.colors.textPrimary};
-  ${TEXT_TYPES_MAP[TEXT_TYPES.BODY]};
-
-  :hover {
-    background: transparent;
-  }
-
-  .menu-arrow {
-    transition: 0.4s;
-    transform: ${({ focused }) => (focused ? "rotate(-180deg)" : "rotate(0deg)")};
-  }
-
-  :hover {
-    .menu-arrow {
-      transform: ${({ focused }) => (focused ? "rotate(-180)" : "rotate(-90deg)")};
-    }
-  }
-`;
-const Icon = styled.img`
-  width: 24px;
-  height: 24px;
-`;
-const ActionRow = styled(Row)`
-  padding: 8px 16px;
-  //justify-content: center;
-  align-items: center;
-`;
 const ConnectedWallet: React.FC<IProps> = observer(() => {
   const { accountStore, notificationStore, balanceStore } = useStores();
   const [focused, setFocused] = useState(false);
+
   const ethBalance = BN.formatUnits(
-    balanceStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId) ?? 0,
+    balanceStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId) ?? BN.ZERO,
     TOKENS_BY_SYMBOL.ETH.decimals,
   )?.toFormat(4);
+
   const handleCopy = (object: string) => {
     object === "address"
       ? accountStore.address && copy(accountStore.address)
       : accountStore.mnemonic && copy(accountStore.mnemonic);
     notificationStore.toast(`Your ${object} was copied`, { type: "info" });
   };
+
   const actions = [
     {
       icon: copyIcon,
@@ -93,6 +64,19 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
       active: true,
     },
   ];
+
+  const renderActions = () => {
+    return actions.map(
+      ({ title, action, active, icon }) =>
+        active && (
+          <ActionRow key={title} onClick={action}>
+            <Icon alt="ETH" src={icon} />
+            <Text type={TEXT_TYPES.BUTTON_SECONDARY}>{title}</Text>
+          </ActionRow>
+        ),
+    );
+  };
+
   return (
     <Tooltip
       config={{
@@ -101,7 +85,6 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
         onVisibleChange: setFocused,
       }}
       content={
-        //todo нет ховера у элементов меню
         <Column crossAxisSize="max">
           <ActionRow>
             <Icon alt="ETH" src={TOKENS_BY_SYMBOL.ETH.logo} />
@@ -109,16 +92,7 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
             <Text type={TEXT_TYPES.BUTTON_SECONDARY}>{`${ethBalance} ETH`}</Text>
           </ActionRow>
           <Divider />
-          {actions.map(
-            ({ title, action, active, icon }) =>
-              active && (
-                <ActionRow key={title} onClick={action}>
-                  <Icon alt="ETH" src={icon} />
-                  <SizedBox width={8} />
-                  <Text type={TEXT_TYPES.BUTTON_SECONDARY}>{title}</Text>
-                </ActionRow>
-              ),
-          )}
+          {renderActions()}
         </Column>
       }
     >
@@ -133,4 +107,47 @@ const ConnectedWallet: React.FC<IProps> = observer(() => {
     </Tooltip>
   );
 });
+
 export default ConnectedWallet;
+
+const Root = styled(Button)<{
+  focused?: boolean;
+}>`
+  background: transparent;
+  padding: 0 8px;
+  color: ${({ theme }) => theme.colors.textPrimary};
+  ${TEXT_TYPES_MAP[TEXT_TYPES.BODY]};
+
+  :hover {
+    background: transparent;
+  }
+
+  .menu-arrow {
+    transition: 0.4s;
+    transform: ${({ focused }) => (focused ? "rotate(-180deg)" : "rotate(0deg)")};
+  }
+
+  :hover {
+    .menu-arrow {
+      transform: ${({ focused }) => (focused ? "rotate(-180)" : "rotate(-90deg)")};
+    }
+  }
+`;
+
+const Icon = styled.img`
+  width: 24px;
+  height: 24px;
+`;
+
+const ActionRow = styled(Row)`
+  padding: 8px 16px;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  transition: background-color 150ms;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.borderPrimary};
+  }
+`;

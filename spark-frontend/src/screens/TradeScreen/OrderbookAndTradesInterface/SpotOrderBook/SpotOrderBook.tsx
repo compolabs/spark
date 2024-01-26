@@ -14,6 +14,8 @@ import BN from "@src/utils/BN";
 import hexToRgba from "@src/utils/hexToRgb";
 import { useEventListener } from "@src/utils/useEventListener";
 
+import { ORDER_MODE, useCreateOrderSpotVM } from "../../LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
+
 import { SpotOrderbookVMProvider, useSpotOrderbookVM } from "./SpotOrderbookVM";
 
 //todo отрефакторить и возможно перенесть часть логики в вью модель
@@ -152,6 +154,7 @@ const DECIMAL_OPTIONS = [2, 4, 5, 6];
 
 const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
   const vm = useSpotOrderbookVM();
+  const orderSpotVm = useCreateOrderSpotVM();
   const theme = useTheme();
   // 48 + 50 + 4 + 26 + (12 + 32 + 8 + 16 + 24); //220
   // 48 + 50 + 4 + 26 + (12 + 32 + 8 + 32 + 8 + 16 + 24); //260
@@ -159,6 +162,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
   useEffect(() => {
     vm.calcSize();
   }, [mobileMode]);
+
   const handleResize = useCallback(() => {
     vm.calcSize();
   }, []);
@@ -218,14 +222,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
               type="sell"
               volumePercent={o.baseSize.div(vm.totalSell).times(100).toNumber()}
               onClick={() => {
-                // todo при нажатии на строку устанавливать цену и количество в интерфейс создания заказа
-                // const price = BN.parseUnits(o.price, vm.token1.decimals);
-                // vm.setIsSell(false);
-                // vm.setBuyPrice(price, true);
-                // // vm.setSellAmpount(new BN(o.amount), true);
-                // vm.setSellPrice(BN.ZERO, true);
-                // vm.setSellAmount(BN.ZERO, true);
-                // vm.setSellTotal(BN.ZERO, true);
+                orderSpotVm.setOrderMode(ORDER_MODE.BUY);
+                orderSpotVm.setInputPrice(o.price);
+                orderSpotVm.setInputAmount(new BN(o.baseSize), true);
               }}
             >
               <span className="progress-bar" />
@@ -259,13 +258,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(({ mobileMode }) => {
               type="buy"
               volumePercent={o.quoteSize.div(vm.totalBuy).times(100).toNumber()}
               onClick={() => {
-                // todo при нажатии на строку устанавливать цену и количество в интерфейс создания заказа
-                // const price = BN.parseUnits(o.price, vm.token1.decimals);
-                // vm.setIsSell(true);
-                // vm.setSellPrice(price, true);
-                // vm.setBuyPrice(BN.ZERO, true);
-                // vm.setBuyAmount(BN.ZERO, true);
-                // vm.setBuyTotal(BN.ZERO, true);
+                orderSpotVm.setOrderMode(ORDER_MODE.SELL);
+                orderSpotVm.setInputPrice(o.price);
+                orderSpotVm.setInputAmount(new BN(o.baseSize), true);
               }}
             >
               <span className="progress-bar" />
