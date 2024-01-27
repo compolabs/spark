@@ -19,8 +19,6 @@ import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
 import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
 import { Column, Row } from "@src/components/Flex";
 import Table from "@src/components/Table";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
-import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -176,26 +174,27 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       action: null,
     }));
 
-  const getBalanceData = () =>
-    Object.entries(accountStore.tokenBalances)
-      .filter(([, balance]) => balance && balance.gt(0))
-      .map(([assetId, balance]) => {
-        const token = TOKENS_BY_ASSET_ID[assetId];
-        return {
-          asset: (
-            <Row alignItems="center">
-              <TokenIcon alt="market-icon" src={token.logo} />
-              <SizedBox width={4} />
-              {token.symbol}
-            </Row>
-          ),
-          balance: BN.formatUnits(balance, token.decimals).toFormat(2),
-        };
-      });
-
-  React.useEffect(() => {
-    setData(tabIndex === 0 ? getOrderData() : getBalanceData());
-  }, [tabIndex, vm.myOrders, accountStore.tokenBalances]);
+  //fixme после того как балансы переехали в balanceStore этот код не работает
+  // const getBalanceData = () =>
+  //   Object.entries(accountStore.tokenBalances)
+  //     .filter(([, balance]) => balance && balance.gt(0))
+  //     .map(([assetId, balance]) => {
+  //       const token = TOKENS_BY_ASSET_ID[assetId];
+  //       return {
+  //         asset: (
+  //           <Row alignItems="center">
+  //             <TokenIcon alt="market-icon" src={token.logo} />
+  //             <SizedBox width={4} />
+  //             {token.symbol}
+  //           </Row>
+  //         ),
+  //         balance: BN.formatUnits(balance, token.decimals).toFormat(2),
+  //       };
+  //     });
+  //
+  // React.useEffect(() => {
+  //   setData(tabIndex === 0 ? getOrderData() : getBalanceData());
+  // }, [tabIndex, vm.myOrders, accountStore.tokenBalances]);
 
   return (
     <Root size={tableSize}>
