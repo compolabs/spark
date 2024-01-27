@@ -2,9 +2,9 @@ import { PORT } from "./config";
 import { app } from "./app";
 import { schedule } from "node-cron";
 import { TOKENS_BY_SYMBOL } from "./constants";
-import { print } from "./utils";
 import { SpotMarketOrder } from "./entity/SpotMarketOrder";
 import { SpotMarket } from "./services/SpotMarketService";
+import { print } from "./utils/print";
 
 class SparkMatcher {
   spotMarket: SpotMarket;
