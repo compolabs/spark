@@ -1,7 +1,8 @@
 import React, { PropsWithChildren, useMemo } from "react";
-import { BigNumberish, ethers } from "ethers";
+import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 
+import { ERC20_ABI } from "@src/abi";
 import SPOT_MARKET_ABI from "@src/abi/SPOT_MARKET_ABI";
 import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
 import useVM from "@src/hooks/useVM";
@@ -134,22 +135,45 @@ class CreateOrderSpotVM {
     }
   };
 
-  //todo починить
   createOrder = async () => {
-    const { accountStore } = this.rootStore;
+    const { accountStore, tradeStore, notificationStore, balanceStore } = this.rootStore;
+    const { market } = tradeStore;
 
-    if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
+    if (!accountStore.signer || !market) return;
 
     this.setLoading(true);
 
-    const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
-    const baseToken = this.rootStore.tradeStore.market.baseToken.assetId;
+    try {
+      const baseToken = market.baseToken.assetId;
+      const quoteToken = market.quoteToken.assetId;
+      const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
+      const tokenToApprove = this.isSell ? quoteToken : baseToken;
+      const tokenToOrder = this.isSell ? baseToken : quoteToken;
 
-    const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
-    const transaction = await contract.openOrder(baseToken, baseSize.toString() as BigNumberish, this.inputPrice);
-    await transaction.wait();
-    //todo sync orderbook
-    //todo notifications
+      const approveAmount = BN.parseUnits(this.inputTotal, 12);
+      const tokenContract = new ethers.Contract(tokenToApprove, ERC20_ABI, accountStore.signer);
+      const approveTransaction = await tokenContract.approve(tokenToApprove, approveAmount.toString());
+      await approveTransaction.wait();
+
+      const spotMarketContract = new ethers.Contract(
+        CONTRACT_ADDRESSES.spotMarket,
+        SPOT_MARKET_ABI,
+        accountStore.signer,
+      );
+      const openOrderTransaction = await spotMarketContract.openOrder(
+        tokenToOrder,
+        baseSize.toString(),
+        this.inputPrice.toString(),
+      );
+      await openOrderTransaction.wait();
+      notificationStore.toast("Order Created");
+    } catch (error) {
+      console.log(error);
+      notificationStore.toast("We were unable to process your order at this time", { type: "warning" });
+    }
+
+    await balanceStore.update();
+
     this.setLoading(false);
   };
 
