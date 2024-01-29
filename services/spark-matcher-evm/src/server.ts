@@ -15,7 +15,6 @@ class SparkMatcher {
 
   run(cronExpression: string) {
     // this.doMatch().catch((error) => console.error("Error in initial doMatch call:", error));
-    console.log(print);
 
     schedule(cronExpression, async () => {
       await this.doMatch();
