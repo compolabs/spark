@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
-import { TOKENS_BY_SYMBOL } from "@src/constants";
+import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import { SpotMarket } from "@src/entity";
 import { fetchMarketCreateEvents } from "@src/services/SpotMarketService";
 import RootStore from "@stores/RootStore";
@@ -48,7 +48,9 @@ class TradeStore {
     this.loading = true;
 
     const fetchSpotMarketsPromise = fetchMarketCreateEvents(100).then((markets) => {
-      return markets.map((market) => new SpotMarket(market.assetId, TOKENS_BY_SYMBOL.USDC.assetId));
+      return markets
+        .filter((market) => TOKENS_BY_ASSET_ID[market.assetId] !== undefined)
+        .map((market) => new SpotMarket(market.assetId, TOKENS_BY_SYMBOL.USDC.assetId));
     });
 
     await Promise.all([fetchSpotMarketsPromise]).then(([spotMarkets]) => {
