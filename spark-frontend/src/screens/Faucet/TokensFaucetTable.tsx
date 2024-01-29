@@ -83,19 +83,12 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
             </TableText>
             <Row justifyContent="flex-end" style={{ flex: 1 }}>
               {(() => {
-                // if (token.symbol !== "ETH")
-                // 	return (
-                // 		<Button style={{ width: 120 }} green onClick={() => navigate("/")}>
-                // 			Connect wallet
-                // 		</Button>
-                // 	);
                 if (!vm.initialized)
                   return (
                     <Button disabled green>
                       Loading...
                     </Button>
                   );
-
                 return (
                   <Button
                     disabled={
