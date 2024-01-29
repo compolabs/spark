@@ -11,10 +11,7 @@ import { RootStore, storesContext } from "@stores";
 import GlobalStyles from "./themes/GlobalStyles";
 import App from "./App";
 
-// import GlobalStyles from "@src/themes/GlobalStyles";
-// css
 import "react-toastify/dist/ReactToastify.css";
-// import "react-loading-skeleton/dist/skeleton.css";
 import "rc-dialog/assets/index.css";
 import "./index.css";
 import "normalize.css";

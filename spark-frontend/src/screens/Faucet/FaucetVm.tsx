@@ -72,17 +72,18 @@ class FaucetVM {
       this._setLoading(true);
       const tx = await tokenContract.mint(accountStore.address, amount);
       await tx.wait();
-    } catch (e: any) {
-      notificationStore.toast(e.toString(), { type: "error" });
+      notificationStore.toast("Minting successful!", { type: "success" });
+    } catch (error: any) {
+      notificationStore.toast(error.toString(), { type: "error" });
+    } finally {
+      this._setLoading(false);
+      await balanceStore.update();
     }
-
-    this._setLoading(false);
-    await balanceStore.update();
   };
 
   // addAsset = async (assetId: string) => {
-  //   // const { fuel } = this.rootStore.accountStore;
-  //   if (assetId === TOKENS_BY_SYMBOL.ETH.assetId || fuel === null) return;
+  //   const { fuel } = this.rootStore.accountStore;
+  //   if (assetId === TOKENS_BY_SYMBOL.ETH.assetId) return;
   //   const token = TOKENS_BY_ASSET_ID[assetId];
   //   const asset = {
   //     name: token.name,
