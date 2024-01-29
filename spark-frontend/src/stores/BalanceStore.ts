@@ -73,6 +73,15 @@ export class BalanceStore {
     if (!accountStore.isConnected) return "0";
 
     if (assetId === TOKENS_BY_SYMBOL.ETH.assetId) {
+      //fixme при отключенном кошельке падает тут с такой ошибкой
+      // BalanceStore.ts:58 Error updating token balances: TypeError: Cannot read properties of null (reading 'provider')
+      // at BalanceStore.fetchBalance (BalanceStore.ts:85:1)
+      // at executeAction (action.ts:70:1)
+      // at BalanceStore@5.fetchBalance (action.ts:50:1)
+      // at BalanceStore.update (BalanceStore.ts:54:1)
+      // at executeAction (action.ts:70:1)
+      // at BalanceStore@5.update [as updater] (action.ts:50:1)
+      // at IntervalUpdater.update (IntervalUpdater.ts:13:1)
       const balance = await accountStore.signer!.provider.getBalance(accountStore.address!);
       return balance.toString();
     }
