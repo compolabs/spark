@@ -19,9 +19,9 @@ import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
 import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
 import { Column, Row } from "@src/components/Flex";
 import Table, { TableText } from "@src/components/Table";
-import { useStores } from "@stores";
-import {TOKENS_BY_ASSET_ID} from "@src/constants";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import BN from "@src/utils/BN";
+import { useStores } from "@stores";
 
 interface IProps {}
 
