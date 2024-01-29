@@ -8,15 +8,6 @@ import Text, { TEXT_TYPES } from "@components/Text";
 import { FaucetVMProvider, useFaucetVM } from "@screens/Faucet/FaucetVm";
 import TokensFaucetTable from "@screens/Faucet/TokensFaucetTable";
 
-//https://www.figma.com/file/n2x2dfjwCzE4Wy70J3rzti/Spark-redesign?type=design&node-id=961-73266&mode=design&t=aHi9eUyuPRcmd4sZ-11
-
-//todo
-// 1 закомментить все красное
-// перенести таблицу в отдельную папку и разрбораться че по таблицам
-// имплементировать функцию мината токена в vm
-// имплементировать добавление токена
-// * сделать кнопку mint all
-
 interface IProps {}
 
 const Root = styled.div`

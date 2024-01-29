@@ -27,8 +27,6 @@ const faucetAmounts: Record<string, number> = {
   USDC: 3000,
   BTC: 0.01,
   UNI: 50,
-  // LINK: 50,
-  // COMP: 5,
 };
 const availableToMint = ["ETH", "UNI", "USDC"];
 
@@ -74,26 +72,27 @@ class FaucetVM {
       this._setLoading(true);
       const tx = await tokenContract.mint(accountStore.address, amount);
       await tx.wait();
-    } catch (e: any) {
-      notificationStore.toast(e.toString(), { type: "error" });
+      notificationStore.toast("Minting successful!", { type: "success" });
+    } catch (error: any) {
+      notificationStore.toast(error.toString(), { type: "error" });
+    } finally {
+      this._setLoading(false);
+      await balanceStore.update();
     }
-
-    this._setLoading(false);
-    await balanceStore.update();
   };
 
   // addAsset = async (assetId: string) => {
-  // 	const { fuel } = this.rootStore.accountStore;
-  // 	if (assetId === TOKENS_BY_SYMBOL.ETH.assetId || fuel == null) return;
-  // 	const token = TOKENS_BY_ASSET_ID[assetId];
-  // 	const asset = {
-  // 		name: token.name,
-  // 		assetId: token.assetId,
-  // 		imageUrl: window.location.origin + token.logo,
-  // 		symbol: token.symbol,
-  // 		isCustom: true,
-  // 	};
-  // 	return fuel.addAsset(asset);
+  //   const { fuel } = this.rootStore.accountStore;
+  //   if (assetId === TOKENS_BY_SYMBOL.ETH.assetId) return;
+  //   const token = TOKENS_BY_ASSET_ID[assetId];
+  //   const asset = {
+  //     name: token.name,
+  //     assetId: token.assetId,
+  //     imageUrl: window.location.origin + token.logo,
+  //     symbol: token.symbol,
+  //     isCustom: true,
+  //   };
+  //   return fuel.addAsset(asset);
   // };
 
   private _setLoading = (l: boolean) => (this.loading = l);
