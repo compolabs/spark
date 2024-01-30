@@ -2,8 +2,7 @@ import React, { PropsWithChildren, useMemo } from "react";
 import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 
-import { ERC20_ABI } from "@src/abi";
-import SPOT_MARKET_ABI from "@src/abi/SPOT_MARKET_ABI";
+import { ERC20_ABI, SPOT_MARKET_ABI } from "@src/abi";
 import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
 import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
@@ -135,6 +134,9 @@ class CreateOrderSpotVM {
     }
   };
 
+  // todo: Проблема с отправкой (buy), нужно посмотреть контракт
+  // todo: Что-то странное, нужно проверить не должны ли меняться местами поля
+  // todo: Ошибка с процентами для биткоина. Возможно из-за проблемы выше
   createOrder = async () => {
     const { accountStore, tradeStore, notificationStore, balanceStore } = this.rootStore;
     const { market } = tradeStore;
@@ -144,15 +146,13 @@ class CreateOrderSpotVM {
     this.setLoading(true);
 
     try {
-      const baseToken = market.baseToken.assetId;
-      const quoteToken = market.quoteToken.assetId;
+      const baseToken = market.baseToken;
+      const quoteToken = market.quoteToken;
       const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
-      const tokenToApprove = this.isSell ? quoteToken : baseToken;
-      const tokenToOrder = this.isSell ? baseToken : quoteToken;
+      const activeToken = this.isSell ? baseToken : quoteToken;
 
-      const approveAmount = BN.parseUnits(this.inputTotal, 12);
-      const tokenContract = new ethers.Contract(tokenToApprove, ERC20_ABI, accountStore.signer);
-      const approveTransaction = await tokenContract.approve(tokenToApprove, approveAmount.toString());
+      const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
+      const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, this.inputTotal.toString());
       await approveTransaction.wait();
 
       const spotMarketContract = new ethers.Contract(
@@ -161,7 +161,7 @@ class CreateOrderSpotVM {
         accountStore.signer,
       );
       const openOrderTransaction = await spotMarketContract.openOrder(
-        tokenToOrder,
+        activeToken.assetId,
         baseSize.toString(),
         this.inputPrice.toString(),
       );
