@@ -1,0 +1,51 @@
+name: Deploy
+
+env:
+  PORT: 5000
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js 14.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - run: npm ci
+      - run: npm run build --if-present
+
+  deploy:
+    env:
+      HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      HEROKU_EMAIL: lidia.zhabo99@gmail.com
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Stage to PROD
+        if: endsWith(github.ref, '/master')
+        run: |
+          echo "HEROKU_APP_NAME=spark-matcher" >> $GITHUB_ENV
+          echo "TOKEN=${{secrets.TOKEN}}" >> $GITHUB_ENV
+          echo "MONGO_URL=${{secrets.MONGO_URL}}" >> $GITHUB_ENV
+      - name: Set env
+        run: echo ${{env.MONGO_URL }}
+      - run: heroku config:set PORT="${{env.PORT}}" -a ${{ env.HEROKU_APP_NAME }}
+      - run: heroku config:set MONGO_URL="${{secrets.MONGO_URL}}" -a ${{ env.HEROKU_APP_NAME }}
+      - run: heroku config:set PRIVATE_KEY="${{secrets.PRIVATE_KEY}}" -a ${{ env.HEROKU_APP_NAME }}
+      - run: heroku config:set CONTRACT_ADDRESS="${{secrets.CONTRACT_ADDRESS}}" -a ${{ env.HEROKU_APP_NAME }}
+      - run: heroku config:set NODE_URL="${{secrets.NODE_URL}}" -a ${{ env.HEROKU_APP_NAME }}
+      - name: Deploy to ${{ env.HEROKU_APP_NAME }}
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: ${{ env.HEROKU_APP_NAME }}
+          heroku_email: "lidia.zhabo99@gmail.com"
+          buildpack: https://github.com/heroku/heroku-buildpack-nodejs.git

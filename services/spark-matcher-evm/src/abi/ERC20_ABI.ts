@@ -11,11 +11,6 @@ export default [
         name: "symbol",
         type: "string",
       },
-      {
-        internalType: "uint8",
-        name: "decimals_",
-        type: "uint8",
-      },
     ],
     stateMutability: "nonpayable",
     type: "constructor",
