@@ -9,7 +9,7 @@ import RootStore from "./RootStore";
 export enum LOGIN_TYPE {
   METAMASK = "metamask",
   FUEL_WALLET = "fuel_wallet",
-  GENERATE_SEED = "generate_seed",
+  // GENERATE_SEED = "generate_seed",
 }
 
 export interface ISerializedAccountStore {
@@ -49,7 +49,6 @@ class AccountStore {
   connectWallet = async () => {
     if (!window.ethereum) {
       console.error("Ethereum wallet not found");
-      this.rootStore.notificationStore.toast("Ethereum wallet not found", { type: "warning" });
       return;
     }
 
@@ -59,22 +58,44 @@ class AccountStore {
       this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
 
       const network = await this.signer.provider.getNetwork();
-      const targetChainId = networks[0].chainId;
-
-      if (network.chainId.toString() !== targetChainId) {
+      const targetChainId = parseInt(networks[0].chainId, 10).toString(16);
+      const currentChainId = parseInt(network.chainId.toString(), 10).toString(16);
+      if (currentChainId !== targetChainId) {
         try {
           await ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: targetChainId }],
+            method: "wallet_addEthereumChain",
+            params: [
+              {
+                chainId: `0x${targetChainId}`,
+                chainName: networks[0].name,
+                rpcUrls: [networks[0].rpc],
+                nativeCurrency: {
+                  name: "ETH",
+                  symbol: "ETH",
+                  decimals: 18,
+                },
+              },
+            ],
           });
-          this.network = networks[0];
-        } catch (switchError) {
-          console.error("Error switching Ethereum chain:", switchError);
-          this.rootStore.notificationStore.toast("Failed to switch to the target network", { type: "error" });
+        } catch (addError) {
+          console.error("Error adding Arbitrum Sepolia:", addError);
+          this.rootStore.notificationStore.toast("Error adding Arbitrum Sepolia", { type: "error" });
           this.disconnect();
           return;
         }
-      }
+      } else
+        try {
+          await ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: `0x${targetChainId}` }],
+          });
+          this.rootStore.notificationStore.toast("Switched to the Arbitrum Sepolia", { type: "success" });
+        } catch (switchError) {
+          console.error("Error switching to the Arbitrum Sepolia", switchError);
+          this.rootStore.notificationStore.toast("Failed to switch to the Arbitrum Sepolia", { type: "error" });
+          this.disconnect();
+          return;
+        }
 
       this.address = await this.signer.getAddress();
     } catch (error) {
@@ -89,9 +110,9 @@ class AccountStore {
     this.mnemonic = null;
   };
 
-  getAddress = () => {
-    return this.address;
-  };
+  // getAddress = () => {
+  //   return this.address;
+  // };
 
   isConnected = () => {
     return !!this.address;
