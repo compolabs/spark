@@ -2,6 +2,8 @@ import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
+import { networks } from "@src/constants";
+
 import RootStore from "./RootStore";
 
 export enum LOGIN_TYPE {
@@ -15,10 +17,6 @@ export interface ISerializedAccountStore {
   loginType: Nullable<LOGIN_TYPE>;
   mnemonic: Nullable<string>;
 }
-
-const networks = [
-  { name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
-];
 
 class AccountStore {
   rootStore: RootStore;
@@ -65,7 +63,6 @@ class AccountStore {
 
       if (network.chainId.toString() !== targetChainId) {
         try {
-          // Попытка изменить сеть через ethereum.request
           await ethereum.request({
             method: "wallet_switchEthereumChain",
             params: [{ chainId: targetChainId }],
