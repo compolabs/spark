@@ -22,7 +22,7 @@ const networks = [
 
 class AccountStore {
   rootStore: RootStore;
-  network = networks[0]; //todo добавтиь функционал выбора сети
+  network = networks[0];
   provider: Nullable<ethers.Provider> = null;
   signer: Nullable<ethers.JsonRpcSigner> = null;
   loginType: Nullable<LOGIN_TYPE> = null;
@@ -51,6 +51,7 @@ class AccountStore {
   connectWallet = async () => {
     if (!window.ethereum) {
       console.error("Ethereum wallet not found");
+      this.rootStore.notificationStore.toast("Ethereum wallet not found", { type: "warning" });
       return;
     }
 
@@ -61,7 +62,6 @@ class AccountStore {
 
       const network = await this.signer.provider.getNetwork();
       if (network.chainId.toString() !== this.network.chainId) {
-        //todo запросить переключение сети на нужную
         this.rootStore.notificationStore.toast("Connected to the wrong network", { type: "warning" });
         this.disconnect();
         return;
