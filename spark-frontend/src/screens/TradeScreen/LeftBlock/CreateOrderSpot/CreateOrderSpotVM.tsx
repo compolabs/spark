@@ -1,8 +1,8 @@
 import React, { PropsWithChildren, useMemo } from "react";
-import { BigNumberish, ethers } from "ethers";
+import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 
-import SPOT_MARKET_ABI from "@src/abi/SPOT_MARKET_ABI";
+import { ERC20_ABI, SPOT_MARKET_ABI } from "@src/abi";
 import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
 import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
@@ -134,22 +134,46 @@ class CreateOrderSpotVM {
     }
   };
 
-  //todo починить
+  // todo: Проблема с отправкой (buy), нужно посмотреть контракт
+  // todo: Что-то странное, нужно проверить не должны ли меняться местами поля
+  // todo: Ошибка с процентами для биткоина. Возможно из-за проблемы выше
   createOrder = async () => {
-    const { accountStore } = this.rootStore;
+    const { accountStore, tradeStore, notificationStore, balanceStore } = this.rootStore;
+    const { market } = tradeStore;
 
-    if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
+    if (!accountStore.signer || !market) return;
 
     this.setLoading(true);
 
-    const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
-    const baseToken = this.rootStore.tradeStore.market.baseToken.assetId;
+    try {
+      const baseToken = market.baseToken;
+      const quoteToken = market.quoteToken;
+      const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
+      const activeToken = this.isSell ? baseToken : quoteToken;
 
-    const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
-    const transaction = await contract.openOrder(baseToken, baseSize.toString() as BigNumberish, this.inputPrice);
-    await transaction.wait();
-    //todo sync orderbook
-    //todo notifications
+      const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
+      const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, this.inputTotal.toString());
+      await approveTransaction.wait();
+
+      const spotMarketContract = new ethers.Contract(
+        CONTRACT_ADDRESSES.spotMarket,
+        SPOT_MARKET_ABI,
+        accountStore.signer,
+      );
+      const openOrderTransaction = await spotMarketContract.openOrder(
+        activeToken.assetId,
+        baseSize.toString(),
+        this.inputPrice.toString(),
+      );
+      await openOrderTransaction.wait();
+      notificationStore.toast("Order Created");
+    } catch (error) {
+      console.log(error);
+      notificationStore.toast("We were unable to process your order at this time", { type: "warning" });
+    }
+
+    await balanceStore.update();
+
     this.setLoading(false);
   };
 

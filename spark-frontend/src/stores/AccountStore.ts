@@ -61,10 +61,22 @@ class AccountStore {
       this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
 
       const network = await this.signer.provider.getNetwork();
-      if (network.chainId.toString() !== this.network.chainId) {
-        this.rootStore.notificationStore.toast("Connected to the wrong network", { type: "warning" });
-        this.disconnect();
-        return;
+      const targetChainId = networks[0].chainId;
+
+      if (network.chainId.toString() !== targetChainId) {
+        try {
+          // Попытка изменить сеть через ethereum.request
+          await ethereum.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: targetChainId }],
+          });
+          this.network = networks[0];
+        } catch (switchError) {
+          console.error("Error switching Ethereum chain:", switchError);
+          this.rootStore.notificationStore.toast("Failed to switch to the target network", { type: "error" });
+          this.disconnect();
+          return;
+        }
       }
 
       this.address = await this.signer.getAddress();
