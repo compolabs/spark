@@ -19,12 +19,17 @@ export interface ISerializedAccountStore {
 }
 
 export const networks = [
-  { name: "Arbitrum Sepolia", rpc: "https://sepolia-rollup.arbitrum.io/rpc", chainId: "421614" },
+  // { name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
+  {
+    name: "Arbitrum Sepolia",
+    rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
+    chainId: "421614",
+  },
 ];
 
 class AccountStore {
   rootStore: RootStore;
-  network = networks[0];
+  network = networks[0]; //todo добавтиь функционал выбора сети
   provider: Nullable<ethers.Provider> = null;
   signer: Nullable<ethers.JsonRpcSigner> = null;
   loginType: Nullable<LOGIN_TYPE> = null;
