@@ -11,14 +11,16 @@ import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
 import { ReactComponent as Menu } from "@src/assets/icons/menu.svg";
 import { MENU_ITEMS } from "@src/constants";
 import useFlag from "@src/hooks/useFlag";
-import { useWindowSize } from "@src/hooks/useWindowSize";
+import { useMedia } from "@src/hooks/useMedia";
 import ConnectWalletDialog from "@src/screens/ConnectWallet";
 import { media } from "@src/themes/breakpoints";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import { useStores } from "@stores";
 
+import { AccountInfoSheet } from "../Modal";
 import { SmartFlex } from "../SmartFlex";
 
+import ConnectedWalletButton from "./ConnectedWalletButton";
 import MobileMenu from "./MobileMenu";
 
 interface IProps {}
@@ -26,10 +28,11 @@ interface IProps {}
 const Header: React.FC<IProps> = observer(() => {
   const { accountStore } = useStores();
   const location = useLocation();
-  const width = useWindowSize().width;
+  const media = useMedia();
 
   const [isMobileMenuOpen, openMobileMenu, closeMobileMenu] = useFlag();
   const [isConnectDialogVisible, openConnectDialog, closeConnectDialog] = useFlag();
+  const [isAccountInfoSheetOpen, openAccountInfo, closeAccountInfo] = useFlag();
 
   const toggleMenu = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -42,15 +45,31 @@ const Header: React.FC<IProps> = observer(() => {
     }
   };
 
-  const isMobile = width && width < 880;
-
   const renderWallet = () => {
-    return accountStore.address ? (
-      <ConnectedWallet />
-    ) : (
-      <Button fitContent green onClick={openConnectDialog}>
-        Connect wallet
-      </Button>
+    const openAction = media.mobile ? openAccountInfo : openConnectDialog;
+
+    if (!accountStore.address) {
+      return (
+        <WalletContainer>
+          <Button fitContent green onClick={openConnectDialog}>
+            Connect wallet
+          </Button>
+        </WalletContainer>
+      );
+    }
+
+    if (media.mobile) {
+      return (
+        <WalletContainer>
+          <ConnectedWalletButton onClick={openAccountInfo} />
+        </WalletContainer>
+      );
+    }
+
+    return (
+      <WalletContainer>
+        <ConnectedWallet />
+      </WalletContainer>
     );
   };
 
@@ -119,10 +138,11 @@ const Header: React.FC<IProps> = observer(() => {
 
   return (
     <Root>
-      {isMobile ? renderMobile() : renderDesktop()}
+      {media.mobile ? renderMobile() : renderDesktop()}
 
       <MobileMenu isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
       <ConnectWalletDialog visible={isConnectDialogVisible} onClose={closeConnectDialog} />
+      <AccountInfoSheet isOpen={isAccountInfoSheetOpen} onClose={closeAccountInfo} />
     </Root>
   );
 });
@@ -138,7 +158,7 @@ const Root = styled(SmartFlex)`
   ${media.mobile} {
     height: 42px;
     padding: 0 8px;
-    margin-bottom: 8px;
+    margin: 4px 0;
   }
 `;
 
@@ -155,4 +175,12 @@ const MenuContainer = styled(SmartFlex)`
   border: 1px solid ${({ theme }) => theme.colors.borderPrimary};
   border-radius: 100%;
   padding: 4px;
+`;
+
+const WalletContainer = styled(SmartFlex)`
+  ${media.mobile} {
+    ${Button} {
+      height: 32px;
+    }
+  }
 `;

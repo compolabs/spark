@@ -10,6 +10,7 @@ const globalModalStyles = (theme: Theme) => css`
     text-decoration: none;
   }
 
+  // BEGIN rc-dialog
   .rc-dialog-mask {
     background: rgba(5, 5, 5, 0.5);
     backdrop-filter: blur(5px);
@@ -61,6 +62,27 @@ const globalModalStyles = (theme: Theme) => css`
       right: 0;
     }
   }
+  // END rc-dialog
+
+  // BEGIN react-modal-sheet
+  .react-modal-sheet-backdrop {
+    background: rgba(5, 5, 5, 0.5);
+    backdrop-filter: blur(5px);
+  }
+
+  .react-modal-sheet-container {
+    border-radius: 20px 20px 0 0 !important;
+    background-color: ${theme.colors.bgSecondary} !important;
+  }
+
+  .react-modal-sheet-drag-indicator {
+    background-color: ${theme.colors.iconSecondary} !important;
+  }
+
+  .react-modal-sheet-content {
+    // background-color: ${theme.colors.bgSecondary};
+  }
+  // END react-modal-sheet
 `;
 
 const GlobalStyles: React.FC = () => {

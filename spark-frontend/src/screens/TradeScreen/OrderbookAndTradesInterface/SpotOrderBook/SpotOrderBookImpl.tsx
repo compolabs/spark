@@ -7,11 +7,13 @@ import sellAndBuyIcon from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
 import buyIcon from "@src/assets/icons/buyOrderBookIcon.svg";
 import sellIcon from "@src/assets/icons/sellOrderBookIcon.svg";
 import { Row } from "@src/components/Flex";
+import { SpotOrderSettingsSheet } from "@src/components/Modal";
 import Select from "@src/components/Select";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Text, { TEXT_TYPES } from "@src/components/Text";
 import { SpotMarketOrder } from "@src/entity";
 import { useEventListener } from "@src/hooks/useEventListener";
+import useFlag from "@src/hooks/useFlag";
 import { useMedia } from "@src/hooks/useMedia";
 import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
@@ -25,14 +27,16 @@ import { useSpotOrderbookVM } from "./SpotOrderbookVM";
 //todo добавить лоадер
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
-const DECIMAL_OPTIONS = [2, 4, 5, 6];
-const SETTINGS_ICONS = [sellAndBuyIcon, sellIcon, buyIcon];
+export const SPOT_DECIMAL_OPTIONS = [2, 4, 5, 6];
+export const SPOT_SETTINGS_ICONS = [sellAndBuyIcon, sellIcon, buyIcon];
 
 const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
   const vm = useSpotOrderbookVM();
   const orderSpotVm = useCreateOrderSpotVM();
   const media = useMedia();
   const theme = useTheme();
+
+  const [isSettingsOpen, openSettings, closeSettings] = useFlag();
 
   useEffect(() => {
     vm.calcSize(media.mobile);
@@ -54,10 +58,10 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
 
   const renderSettingsIcons = () => {
     if (media.mobile) {
-      return <SettingIcon alt="filter" src={sellAndBuyIcon} />;
+      return <SettingIcon alt="filter" src={sellAndBuyIcon} onClick={openSettings} />;
     }
 
-    return SETTINGS_ICONS.map((image, index) => (
+    return SPOT_SETTINGS_ICONS.map((image, index) => (
       <SettingIcon
         key={index}
         alt="filter"
@@ -70,8 +74,6 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
 
   const renderSpread = () => {
     const isSpreadPositive = +vm.orderbook.spreadPercent > 0;
-
-    console.log(vm.orderbook.spreadPrice.length);
 
     if (media.mobile) {
       return (
@@ -114,9 +116,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
         }}
       >
         <VolumeBar type={type} volumePercent={volumePercent(o).times(100).toNumber()} />
-        <Text primary>{o.baseSizeUnits.toFormat(DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
-        <Text primary>{o.quoteSizeUnits.toFormat(DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
-        <Text color={color}>{BN.formatUnits(o.price, 9).toFormat(DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
+        <Text primary>{o.baseSizeUnits.toFormat(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
+        <Text primary>{o.quoteSizeUnits.toFormat(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
+        <Text color={color}>{BN.formatUnits(o.price, 9).toFormat(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
       </OrderRow>
     ));
   };
@@ -125,7 +127,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
     <Root>
       <SettingsContainer>
         <Select
-          options={DECIMAL_OPTIONS.map((v, index) => ({
+          options={SPOT_DECIMAL_OPTIONS.map((v, index) => ({
             title: new BN(10).pow(-v).toString(),
             key: index.toString(),
           }))}
@@ -163,6 +165,17 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
           <Plug length={vm.buyOrders.length < +vm.oneSizeOrders ? +vm.oneSizeOrders - 1 - vm.buyOrders.length : 0} />
         )}
       </Container>
+
+      <SpotOrderSettingsSheet
+        decimals={SPOT_DECIMAL_OPTIONS}
+        filterIcons={SPOT_SETTINGS_ICONS}
+        isOpen={isSettingsOpen}
+        selectedDecimal={vm.decimalKey}
+        selectedFilter={vm.orderFilter}
+        onClose={closeSettings}
+        onDecimalSelect={vm.setDecimalKey}
+        onFilterSelect={vm.setOrderFilter}
+      />
     </Root>
   );
 });
