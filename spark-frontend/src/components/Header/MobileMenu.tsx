@@ -11,19 +11,42 @@ import isRoutesEquals from "@src/utils/isRoutesEquals";
 
 import Button from "../Button";
 import SizedBox from "../SizedBox";
+import { SmartFlex } from "../SmartFlex";
 
-import ConnectedWallet from "./ConnectedWallet";
+import ConnectedWalletButton from "./ConnectedWalletButton";
 
 interface IProps {
-  onClose: () => void;
   isOpen: boolean;
+  onAccountClick: () => void;
+  onWalletConnect: () => void;
+  onClose: () => void;
 }
 
-const MobileMenu: React.FC<IProps> = ({ isOpen, onClose }) => {
+const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect, onClose }) => {
   const { settingsStore, accountStore } = useStores();
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
+
+  const handleAccountClick = () => {
+    onAccountClick();
+    onClose();
+  };
+
+  const handleConnectWallet = () => {
+    onWalletConnect();
+    onClose();
+  };
+
+  const renderWalletButton = () => {
+    return accountStore.address ? (
+      <ConnectedWalletButtonStyled onClick={handleAccountClick} />
+    ) : (
+      <Button green onClick={handleConnectWallet}>
+        Connect wallet
+      </Button>
+    );
+  };
 
   return (
     <Root isOpen={isOpen}>
@@ -48,30 +71,9 @@ const MobileMenu: React.FC<IProps> = ({ isOpen, onClose }) => {
               </Text>
             </MenuItem>
           ))}
-          <SizedBox height={92} />
         </Container>
         <SizedBox height={8} />
-
-        {accountStore.address ? (
-          <>
-            <Button color="primary" onClick={() => settingsStore.setDepositModal(true)}>
-              Deposit / Withdraw
-            </Button>
-            <SizedBox height={4} />
-            <ConnectedWallet />
-          </>
-        ) : (
-          <Button
-            green
-            onClick={() => {
-              //
-              // navigate(ROUTES.CONNECT);
-              onClose();
-            }}
-          >
-            Connect wallet
-          </Button>
-        )}
+        <FooterContainer>{renderWalletButton()}</FooterContainer>
       </Body>
     </Root>
   );
@@ -83,10 +85,10 @@ const Root = styled.div<{ isOpen: boolean }>`
   z-index: 100;
   background: ${({ theme }) => `${theme.colors.bgPrimary}`};
   position: absolute;
-  top: 48px;
+  top: 50px;
   left: 0;
   right: 0;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 50px);
   transition: 0.2s;
   overflow: hidden;
 
@@ -98,6 +100,7 @@ const Root = styled.div<{ isOpen: boolean }>`
 const Body = styled.div`
   display: flex;
   width: 100%;
+  height: 100%;
   flex-direction: column;
   background: ${({ theme }) => theme.colors.bgPrimary};
 `;
@@ -114,4 +117,15 @@ const Container = styled.div`
   flex-direction: column;
   background: ${({ theme }) => `${theme.colors.bgSecondary}`};
   border-radius: 10px;
+  height: 100%;
+`;
+
+const FooterContainer = styled(SmartFlex)`
+  margin-bottom: 48px;
+  width: 100%;
+`;
+
+const ConnectedWalletButtonStyled = styled(ConnectedWalletButton)`
+  width: 100%;
+  height: 40px;
 `;

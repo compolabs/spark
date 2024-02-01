@@ -12,14 +12,15 @@ import { TEXT_TYPES, TEXT_TYPES_MAP } from "../Text";
 
 interface Props {
   isFocused?: boolean;
+  className?: string;
   onClick?: () => void;
 }
 
-const ConnectedWalletButton: React.FC<Props> = observer(({ isFocused, onClick }) => {
+const ConnectedWalletButton: React.FC<Props> = observer(({ isFocused, className, onClick }) => {
   const { accountStore } = useStores();
 
   return (
-    <Root gap="8px" isFocused={isFocused} center onClick={onClick}>
+    <Root className={className} gap="8px" isFocused={isFocused} center onClick={onClick}>
       <img alt="User" src={userIcon} />
       {/*<img src={healthIcon} alt="health" />*/}
       {centerEllipsis(accountStore.address ?? "", 10)}

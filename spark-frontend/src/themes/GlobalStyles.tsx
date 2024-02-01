@@ -2,6 +2,10 @@ import React from "react";
 import { css, Global, Theme, useTheme } from "@emotion/react";
 
 const globalModalStyles = (theme: Theme) => css`
+  #root {
+    filter: invert(1);
+  }
+
   * {
     box-sizing: border-box;
   }

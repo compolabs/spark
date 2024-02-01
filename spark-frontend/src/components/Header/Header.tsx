@@ -46,8 +46,6 @@ const Header: React.FC<IProps> = observer(() => {
   };
 
   const renderWallet = () => {
-    const openAction = media.mobile ? openAccountInfo : openConnectDialog;
-
     if (!accountStore.address) {
       return (
         <WalletContainer>
@@ -60,7 +58,7 @@ const Header: React.FC<IProps> = observer(() => {
 
     if (media.mobile) {
       return (
-        <WalletContainer>
+        <WalletContainer isVisible={!isMobileMenuOpen}>
           <ConnectedWalletButton onClick={openAccountInfo} />
         </WalletContainer>
       );
@@ -140,7 +138,12 @@ const Header: React.FC<IProps> = observer(() => {
     <Root>
       {media.mobile ? renderMobile() : renderDesktop()}
 
-      <MobileMenu isOpen={isMobileMenuOpen} onClose={closeMobileMenu} />
+      <MobileMenu
+        isOpen={isMobileMenuOpen}
+        onAccountClick={openAccountInfo}
+        onClose={closeMobileMenu}
+        onWalletConnect={openConnectDialog}
+      />
       <ConnectWalletDialog visible={isConnectDialogVisible} onClose={closeConnectDialog} />
       <AccountInfoSheet isOpen={isAccountInfoSheetOpen} onClose={closeAccountInfo} />
     </Root>
@@ -177,7 +180,10 @@ const MenuContainer = styled(SmartFlex)`
   padding: 4px;
 `;
 
-const WalletContainer = styled(SmartFlex)`
+const WalletContainer = styled(SmartFlex)<{ isVisible?: boolean }>`
+  opacity: ${({ isVisible = true }) => (isVisible ? "1" : "0")};
+  transition: opacity 150ms;
+
   ${media.mobile} {
     ${Button} {
       height: 32px;

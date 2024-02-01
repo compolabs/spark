@@ -15,6 +15,7 @@ import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
 import tableSizeExtraSmall from "@src/assets/icons/tableSizeExtraSmall.svg";
 import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
 import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
+import Button from "@src/components/Button";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
@@ -189,45 +190,48 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   }, [tabIndex, vm.myOrders, balanceStore.balances]);
 
   return (
-    <Root size={settingsStore.tradeTableSize}>
-      <TabContainer>
-        {TABS.map(({ title, disabled }, index) => (
-          <Tab
-            key={title + index}
-            active={tabIndex === index}
-            disabled={disabled}
-            onClick={() => !disabled && setTabIndex(index)}
-          >
-            {title}
-          </Tab>
-        ))}
-        <TableSizeSelector>
-          <Tooltip
-            config={RESIZE_TOOLTIP_CONFIG}
-            content={
-              <div>
-                {TABLE_SIZES_CONFIG.map(({ size, icon, title }) => (
-                  <TableSize
-                    key={title}
-                    active={settingsStore.tradeTableSize === size}
-                    onClick={() => settingsStore.setTradeTableSize(size)}
-                  >
-                    <img alt={title} src={icon} />
-                    <SizedBox width={4} />
-                    <Text type={TEXT_TYPES.BUTTON} nowrap>
-                      {title.toUpperCase()}
-                    </Text>
-                  </TableSize>
-                ))}
-              </div>
-            }
-          >
-            <img alt="tableSizeSelector" src={tableSizeSelector} style={{ cursor: "pointer" }} />
-          </Tooltip>
-        </TableSizeSelector>
-      </TabContainer>
-      <TableContainer>{renderTable()}</TableContainer>
-    </Root>
+    <SmartFlex gap="16px" column>
+      <Root size={settingsStore.tradeTableSize}>
+        <TabContainer>
+          {TABS.map(({ title, disabled }, index) => (
+            <Tab
+              key={title + index}
+              active={tabIndex === index}
+              disabled={disabled}
+              onClick={() => !disabled && setTabIndex(index)}
+            >
+              {title}
+            </Tab>
+          ))}
+          <TableSizeSelector>
+            <Tooltip
+              config={RESIZE_TOOLTIP_CONFIG}
+              content={
+                <div>
+                  {TABLE_SIZES_CONFIG.map(({ size, icon, title }) => (
+                    <TableSize
+                      key={title}
+                      active={settingsStore.tradeTableSize === size}
+                      onClick={() => settingsStore.setTradeTableSize(size)}
+                    >
+                      <img alt={title} src={icon} />
+                      <SizedBox width={4} />
+                      <Text type={TEXT_TYPES.BUTTON} nowrap>
+                        {title.toUpperCase()}
+                      </Text>
+                    </TableSize>
+                  ))}
+                </div>
+              }
+            >
+              <img alt="tableSizeSelector" src={tableSizeSelector} style={{ cursor: "pointer" }} />
+            </Tooltip>
+          </TableSizeSelector>
+        </TabContainer>
+        <TableContainer>{renderTable()}</TableContainer>
+      </Root>
+      {vm.myOrders.length && <CancelAllButton>Cancel all orders</CancelAllButton>}
+    </SmartFlex>
   );
 });
 
@@ -365,4 +369,8 @@ const TokenBadge = styled(SmartFlex)`
   ${Text} {
     line-height: 10px;
   }
+`;
+
+const CancelAllButton = styled(Button)`
+  text-transform: uppercase;
 `;

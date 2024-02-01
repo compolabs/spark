@@ -9,7 +9,6 @@ import arrow from "@src/assets/icons/arrowUp.svg";
 import { ReactComponent as SwitchIcon } from "@src/assets/icons/switch.svg";
 import { Column, DesktopRow, Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
-import { useOnClickOutside } from "@src/hooks/useOnClickOutside";
 import { media } from "@src/themes/breakpoints";
 import { useStores } from "@stores";
 
@@ -29,14 +28,11 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
     { title: "24h Low", value: "$ 0.00" },
   ];
 
-  useOnClickOutside(rootRef, () => tradeStore.setMarketSelectionOpened(false));
-
   const renderMarketSelector = () => {
     if (!tradeStore.market) return;
 
     return (
       <MarketSelect
-        className="marketSelect"
         focused={tradeStore.marketSelectionOpened}
         style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B", borderRadius: "10px 0 0 10px" } : {}}
         onClick={() => tradeStore.setMarketSelectionOpened(!tradeStore.marketSelectionOpened)}
@@ -66,13 +62,6 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
       <MarketStatistics>
         <PriceRow alignItems="center">
           <Column alignItems="flex-end">
-            {/*todo добавить изменение цены*/}
-            {/*<Text*/}
-            {/*	type={TEXT_TYPES.BODY}*/}
-            {/*	style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}*/}
-            {/*>*/}
-            {/*	{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}*/}
-            {/*</Text>*/}
             <Text type={TEXT_TYPES.H} primary>
               $ {tradeStore.market?.priceUnits.toFormat(2)}
             </Text>
@@ -134,6 +123,7 @@ const MarketSelect = styled.div<{
   max-width: 280px;
   height: 100%;
   gap: 4px;
+  cursor: pointer;
 
   .menu-arrow {
     cursor: pointer;

@@ -7,7 +7,6 @@ import BottomTables from "@screens/TradeScreen/BottomTables";
 import Chart from "@screens/TradeScreen/Chart";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import StatusBar from "@screens/TradeScreen/StatusBar";
-import Button from "@src/components/Button";
 import { Column } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import { useMedia } from "@src/hooks/useMedia";
@@ -17,6 +16,7 @@ import { media } from "@src/themes/breakpoints";
 import { useStores } from "@stores";
 
 import CreateOrderSpot from "./LeftBlock/CreateOrderSpot";
+import MarketSelection from "./LeftBlock/MarketSelection";
 import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/OrderbookAndTradesInterface";
 import SpotOrderBook from "./OrderbookAndTradesInterface/SpotOrderBook";
 
@@ -42,15 +42,10 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
             <CreateOrderSpot />
           </ContentWrapper>
         </MobileContent>
-        <SmartFlex gap="16px" column>
-          <BottomTables />
-          <CancelButton>Cancel all orders</CancelButton>
-        </SmartFlex>
-        {/* <ContentContainer> */}
-        {/* <OrderbookAndTradesInterface /> */}
-        {/* </ContentContainer> */}
-        {/* <BottomTables /> */}
-        {/* <StatusBar /> */}
+        <BottomTables />
+        <Something isOpen={tradeStore.marketSelectionOpened}>
+          <MarketSelection />
+        </Something>
       </Root>
     );
   }
@@ -96,6 +91,8 @@ const Root = styled.div`
   padding: 0 12px;
   gap: 4px;
 
+  position: relative;
+
   ${media.mobile} {
     padding: 0 4px;
     gap: 8px;
@@ -116,14 +113,28 @@ const MobileContent = styled.div`
   grid-template-columns: 140px 1fr;
   gap: 8px;
   width: 100%;
-  min-height: 400px;
+  min-height: 418px;
 `;
 
 const ContentWrapper = styled(SmartFlex)`
   background-color: ${({ theme }) => theme.colors.bgSecondary};
   border-radius: 10px;
+  height: fit-content;
+
+  &:first-of-type {
+    height: 100%;
+  }
 `;
 
-const CancelButton = styled(Button)`
-  text-transform: uppercase;
+const Something = styled(SmartFlex)<{ isOpen?: boolean }>`
+  position: absolute;
+  top: 40px;
+  right: 0;
+  z-index: 100;
+  padding: 0 4px;
+  background: ${({ theme }) => `${theme.colors.bgPrimary}`};
+  height: ${({ isOpen }) => (isOpen ? "calc(100vh - 40px)" : "0")};
+  width: 100%;
+  overflow: hidden;
+  transition: 0.2s;
 `;

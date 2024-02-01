@@ -8,4 +8,5 @@ interface IProps {}
 const BottomTables: React.FC<IProps> = () => {
   return <BottomTablesInterfaceSpot />;
 };
+
 export default BottomTables;
