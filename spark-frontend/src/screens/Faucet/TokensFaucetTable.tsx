@@ -9,7 +9,6 @@ import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useFaucetVM } from "@screens/Faucet/FaucetVm";
 import { ARBITRUM_SEPOLIA_FAUCET } from "@src/constants";
-// import { networks } from "@src/constants";
 import { useStores } from "@stores";
 
 interface IProps {}

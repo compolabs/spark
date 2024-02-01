@@ -82,18 +82,35 @@ class FaucetVM {
   };
 
   // addAsset = async (assetId: string) => {
-  //   const { fuel } = this.rootStore.accountStore;
-  //   if (assetId === TOKENS_BY_SYMBOL.ETH.assetId) return;
+  //   if (!window.ethereum || assetId === TOKENS_BY_SYMBOL.ETH.assetId) return;
   //   const token = TOKENS_BY_ASSET_ID[assetId];
   //   const asset = {
-  //     name: token.name,
-  //     assetId: token.assetId,
-  //     imageUrl: window.location.origin + token.logo,
-  //     symbol: token.symbol,
-  //     isCustom: true,
+  //     type: "ERC20",
+  //     options: {
+  //       address: assetId,
+  //       symbol: token.symbol,
+  //       decimals: token.decimals,
+  //       image: window.location.origin + token.logo,
+  //     },
   //   };
-  //   return fuel.addAsset(asset);
+  //
+  //   try {
+  //     const success = await window.ethereum.request({
+  //       method: "wallet_watchAsset",
+  //       params: asset,
+  //     });
+  //
+  //     if (success) {
+  //       // Токен успешно добавлен в кошелек
+  //       console.log(`Token ${token.symbol} added to wallet`);
+  //     } else {
+  //       // Возможно, пользователь отклонил запрос на добавление токена
+  //       console.log(`User rejected adding token ${token.symbol} to wallet`);
+  //     }
+  //   } catch (error) {
+  //     // Обработка ошибок при вызове метода
+  //     console.error("Error adding token to wallet:", error);
+  //   }
   // };
-
   private _setLoading = (l: boolean) => (this.loading = l);
 }
