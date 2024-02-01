@@ -11,8 +11,8 @@ import {
   SpotTradesVMProvider,
   useSpotTradesVM,
 } from "@screens/TradeScreen/OrderbookAndTradesInterface/SpotTrades/SpotTradesVM";
+import { useEventListener } from "@src/hooks/useEventListener";
 import BN from "@src/utils/BN";
-import { useEventListener } from "@src/utils/useEventListener";
 
 //todo отрефакторить и перенесть часть логики в вью модель (amountOfOrders и calcSize, например)
 //todo добавить лоадер

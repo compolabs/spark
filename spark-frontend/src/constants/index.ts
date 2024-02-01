@@ -50,3 +50,16 @@ export const CONTRACT_ADDRESSES = {
 
 export const DEFAULT_DECIMALS = 9;
 export const USDC_DECIMALS = 6;
+
+type TMenuItem = {
+  title: string;
+  route?: string;
+  link?: string;
+};
+
+export const MENU_ITEMS: Array<TMenuItem> = [
+  { title: "TRADE", route: ROUTES.ROOT },
+  { title: "FAUCET", route: ROUTES.FAUCET },
+  { title: "DOCS", link: "https://docs.sprk.fi" },
+  { title: "GITHUB", link: "https://github.com/compolabs/spark" },
+];

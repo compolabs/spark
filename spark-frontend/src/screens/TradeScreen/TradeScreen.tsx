@@ -3,56 +3,54 @@ import { useParams } from "react-router-dom";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
-import Text, { TEXT_TYPES } from "@components/Text";
 import BottomTables from "@screens/TradeScreen/BottomTables";
 import Chart from "@screens/TradeScreen/Chart";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
 import StatusBar from "@screens/TradeScreen/StatusBar";
+import Button from "@src/components/Button";
 import { Column } from "@src/components/Flex";
-import useWindowSize from "@src/hooks/useWindowSize";
+import { SmartFlex } from "@src/components/SmartFlex";
+import { useMedia } from "@src/hooks/useMedia";
 import LeftBlock from "@src/screens/TradeScreen/LeftBlock";
 import { CreateOrderSpotVMProvider } from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
+import { media } from "@src/themes/breakpoints";
 import { useStores } from "@stores";
 
+import CreateOrderSpot from "./LeftBlock/CreateOrderSpot";
 import OrderbookAndTradesInterface from "./OrderbookAndTradesInterface/OrderbookAndTradesInterface";
+import SpotOrderBook from "./OrderbookAndTradesInterface/SpotOrderBook";
 
 interface IProps {}
 
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  flex: 1;
-  box-sizing: border-box;
-  padding: 0 12px;
-  gap: 4px;
-`;
-
-const ContentContainer = styled.div`
-  display: grid;
-  grid-template-columns: minmax(min-content, 280px) minmax(300px, 1fr) minmax(100px, 280px);
-  width: 100%;
-  height: 100%;
-  gap: 4px;
-`;
-
 const TradeScreenImpl: React.FC<IProps> = observer(() => {
-  const width = useWindowSize().width;
   const { tradeStore } = useStores();
+  const media = useMedia();
 
   useEffect(() => {
     document.title = `Spark | ${tradeStore.marketSymbol}`;
   }, [tradeStore.marketSymbol]);
 
-  const isMobile = width && width < 880;
-
-  if (isMobile) {
+  if (media.mobile) {
     return (
       <Root>
-        <Text type={TEXT_TYPES.BUTTON_SECONDARY}>Page under construction. Please use a desktop device.</Text>
+        <MarketStatisticsBar />
+        <MobileContent>
+          <ContentWrapper>
+            <SpotOrderBook />
+          </ContentWrapper>
+          <ContentWrapper>
+            <CreateOrderSpot />
+          </ContentWrapper>
+        </MobileContent>
+        <SmartFlex gap="16px" column>
+          <BottomTables />
+          <CancelButton>Cancel all orders</CancelButton>
+        </SmartFlex>
+        {/* <ContentContainer> */}
+        {/* <OrderbookAndTradesInterface /> */}
+        {/* </ContentContainer> */}
+        {/* <BottomTables /> */}
+        {/* <StatusBar /> */}
       </Root>
     );
   }
@@ -86,4 +84,46 @@ const TradeScreen: React.FC<IProps> = observer(() => {
     </CreateOrderSpotVMProvider>
   );
 });
+
 export default TradeScreen;
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  padding: 0 12px;
+  gap: 4px;
+
+  ${media.mobile} {
+    padding: 0 4px;
+    gap: 8px;
+  }
+`;
+
+const ContentContainer = styled.div`
+  display: grid;
+  grid-template-columns: minmax(min-content, 280px) minmax(300px, 1fr) minmax(100px, 280px);
+  width: 100%;
+  height: 100%;
+  gap: 4px;
+`;
+
+const MobileContent = styled.div`
+  display: grid;
+  grid-template-areas: "orderbook .";
+  grid-template-columns: 140px 1fr;
+  gap: 8px;
+  width: 100%;
+  min-height: 400px;
+`;
+
+const ContentWrapper = styled(SmartFlex)`
+  background-color: ${({ theme }) => theme.colors.bgSecondary};
+  border-radius: 10px;
+`;
+
+const CancelButton = styled(Button)`
+  text-transform: uppercase;
+`;

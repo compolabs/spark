@@ -6,6 +6,10 @@ const globalModalStyles = (theme: Theme) => css`
     box-sizing: border-box;
   }
 
+  a {
+    text-decoration: none;
+  }
+
   .rc-dialog-mask {
     background: rgba(5, 5, 5, 0.5);
     backdrop-filter: blur(5px);

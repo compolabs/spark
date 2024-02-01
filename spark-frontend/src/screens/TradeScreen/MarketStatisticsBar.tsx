@@ -6,8 +6,11 @@ import { observer } from "mobx-react";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import arrow from "@src/assets/icons/arrowUp.svg";
+import { ReactComponent as SwitchIcon } from "@src/assets/icons/switch.svg";
 import { Column, DesktopRow, Row } from "@src/components/Flex";
+import { SmartFlex } from "@src/components/SmartFlex";
 import { useOnClickOutside } from "@src/hooks/useOnClickOutside";
+import { media } from "@src/themes/breakpoints";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -28,34 +31,38 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
 
   useOnClickOutside(rootRef, () => tradeStore.setMarketSelectionOpened(false));
 
-  return (
-    <Root ref={rootRef}>
+  const renderMarketSelector = () => {
+    if (!tradeStore.market) return;
+
+    return (
       <MarketSelect
         className="marketSelect"
         focused={tradeStore.marketSelectionOpened}
         style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B", borderRadius: "10px 0 0 10px" } : {}}
         onClick={() => tradeStore.setMarketSelectionOpened(!tradeStore.marketSelectionOpened)}
       >
-        <Row alignItems="center">
-          {/*todo добавить скелетон лоадер*/}
-          {tradeStore.market && (
-            <>
-              <Icon alt="token0" src={tradeStore.market?.baseToken.logo} style={{ width: 24, height: 24 }} />
-              <Icon
-                alt="token1"
-                src={tradeStore.market?.quoteToken.logo}
-                style={{ width: 24, height: 24, marginLeft: -8 }}
-              />
-              <SizedBox width={8} />
-              <Text type={TEXT_TYPES.H} primary>
-                {tradeStore.market?.symbol}
-              </Text>
-            </>
-          )}
-        </Row>
-        <SizedBox width={10} />
-        <img alt="arrow" className="menu-arrow" src={arrow} style={{ width: 24, height: 24, marginLeft: -8 }} />
+        {/*todo добавить скелетон лоадер*/}
+        <SmartFlex gap="8px" center>
+          <Icon alt="token0" src={tradeStore.market?.baseToken.logo} style={{ width: 24, height: 24 }} />
+          <Icon
+            alt="token1"
+            src={tradeStore.market?.quoteToken.logo}
+            style={{ width: 24, height: 24, marginLeft: -16 }}
+          />
+          <SmartFlex gap="4px" center>
+            <StyledText type={TEXT_TYPES.H} primary>
+              {tradeStore.market?.symbol}
+            </StyledText>
+            <img alt="arrow" className="menu-arrow" src={arrow} style={{ width: 24, height: 24 }} />
+          </SmartFlex>
+        </SmartFlex>
       </MarketSelect>
+    );
+  };
+
+  return (
+    <Root ref={rootRef}>
+      {renderMarketSelector()}
       <MarketStatistics>
         <PriceRow alignItems="center">
           <Column alignItems="flex-end">
@@ -86,7 +93,9 @@ const MarketStatisticsBar: React.FC<IProps> = observer(() => {
           </DesktopRow>
         </PriceRow>
       </MarketStatistics>
-      <div />
+      <SwitchContainer>
+        <SwitchIcon />
+      </SwitchContainer>
     </Root>
   );
 });
@@ -104,6 +113,11 @@ const Root = styled.div`
   width: 100%;
   background: ${({ theme }) => theme.colors.bgSecondary};
   border-radius: 10px;
+
+  ${media.mobile} {
+    grid-template-columns: 1fr 1fr;
+    height: 40px;
+  }
 `;
 const Icon = styled.img`
   border-radius: 50%;
@@ -119,6 +133,7 @@ const MarketSelect = styled.div<{
   padding: 0 12px;
   max-width: 280px;
   height: 100%;
+  gap: 4px;
 
   .menu-arrow {
     cursor: pointer;
@@ -140,12 +155,41 @@ const MarketStatistics = styled.div`
   justify-content: space-between;
   padding: 0 8px;
   width: 100%;
+
+  ${media.mobile} {
+    display: none;
+  }
+`;
+
+const StyledText = styled(Text)`
+  width: max-content;
 `;
 
 const PriceRow = styled(Row)`
   align-items: center;
   justify-content: flex-end;
-  @media (min-width: 880px) {
+
+  ${media.desktop} {
     justify-content: flex-start;
+  }
+`;
+
+const SwitchContainer = styled(SmartFlex)`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  align-self: center;
+  justify-self: flex-end;
+  margin-right: 8px;
+
+  border-radius: 100%;
+  border: 1px solid ${({ theme }) => theme.colors.borderPrimary};
+
+  ${media.desktop} {
+    display: none;
   }
 `;

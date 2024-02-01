@@ -13,6 +13,7 @@ import Text, { TEXT_TYPES } from "@components/Text";
 import TokenInput from "@components/TokenInput";
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import Button, { ButtonGroup } from "@src/components/Button";
+import { useMedia } from "@src/hooks/useMedia";
 import { ORDER_MODE, useCreateOrderSpotVM } from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
@@ -45,6 +46,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   const vm = useCreateOrderSpotVM();
   const [percent, setPercent] = useState(0);
   const market = tradeStore.market;
+
+  const media = useMedia();
 
   const isButtonDisabled = vm.loading || !vm.canProceed;
 
@@ -94,7 +97,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           <Row alignItems="center">
             <StyledInfoIcon />
             <Text type={TEXT_TYPES.SUPPORTING} disabled>
-              About order type
+              {media.desktop ? "About order type" : "Info"}
             </Text>
           </Row>
         </Column>
@@ -148,7 +151,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
         </Row>
       </Row>
       {/*<Button onClick={vm.setupMarketMakingAlgorithm}>Setup market making algorithm</Button>*/}
-      <SizedBox height={28} />
+      <SizedBox height={media.desktop ? 28 : 8} />
       <Slider
         max={100}
         min={0}
@@ -157,7 +160,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
         value={percent}
         onChange={(v) => handlePercentChange(v as number)}
       />
-      <SizedBox height={28} />
+      <SizedBox height={media.desktop ? 28 : 8} />
       <Accordion transitionTimeout={400} transition>
         <AccordionItem
           header={

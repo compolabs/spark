@@ -103,8 +103,10 @@ class SpotOrderbookVM {
     return this.sellOrders.reduce((acc, order) => acc.plus(order.baseSize), BN.ZERO);
   }
 
-  calcSize = () => {
-    this.setAmountOfOrders(+new BN(window.innerHeight - 260).div(17).toFixed(0));
+  calcSize = (isMobile: boolean) => {
+    const orderbookHeight = isMobile ? 390 : window.innerHeight - 260;
+    const rowHeight = isMobile ? 16 : 17;
+    this.setAmountOfOrders(Math.floor((orderbookHeight - 24) / rowHeight));
   };
 
   setAmountOfOrders = (value: number) => (this.amountOfOrders = value);

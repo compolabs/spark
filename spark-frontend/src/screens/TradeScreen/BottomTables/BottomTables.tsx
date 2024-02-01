@@ -1,6 +1,6 @@
 import React from "react";
 
-import BottomTablesInterfaceSpot from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot";
+import BottomTablesInterfaceSpot from "./BottomTablesInterfaceSpot";
 
 interface IProps {}
 
