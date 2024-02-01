@@ -1,6 +1,9 @@
 import React, { PropsWithChildren, useMemo } from "react";
+import { ethers } from "ethers";
 import { makeAutoObservable, reaction, when } from "mobx";
 
+import { SPOT_MARKET_ABI } from "@src/abi";
+import { CONTRACT_ADDRESSES } from "@src/constants";
 import { SpotMarketOrder } from "@src/entity";
 import useVM from "@src/hooks/useVM";
 import { fetchOrders } from "@src/services/SpotMarketService";
@@ -19,6 +22,9 @@ export const useBottomTablesInterfaceSpotVM = () => useVM(ctx);
 class BottomTablesInterfaceSpotVM {
   myOrders: SpotMarketOrder[] = [];
   initialized: boolean = false;
+
+  isOrderCancelling = false;
+
   private readonly rootStore: RootStore;
 
   constructor(rootStore: RootStore) {
@@ -41,6 +47,20 @@ class BottomTablesInterfaceSpotVM {
   };
 
   private setMySpotOrders = (myOrders: SpotMarketOrder[]) => (this.myOrders = myOrders);
+
+  cancelOrder = async (orderId: string) => {
+    const { accountStore } = this.rootStore;
+
+    if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
+
+    this.isOrderCancelling = true;
+
+    const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
+    const transaction = await contract.removeOrder(orderId);
+    await transaction.wait();
+
+    this.isOrderCancelling = false;
+  };
 
   private setInitialized = (l: boolean) => (this.initialized = l);
 }

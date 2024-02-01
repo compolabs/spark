@@ -62,7 +62,7 @@ class SpotOrderbookVM {
 
     this.orderBookUpdater = new IntervalUpdater(this.updateOrderBook, UPDATE_INTERVAL);
 
-    this.orderBookUpdater.run();
+    this.orderBookUpdater.run(true);
   }
 
   get oneSizeOrders() {
