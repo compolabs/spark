@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { ethers } from "ethers";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 
 import { ERC20_ABI, SPOT_MARKET_ABI } from "@src/abi";
 import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
@@ -37,6 +37,11 @@ class CreateOrderSpotVM {
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
+    //todo обработать маркет и лимит типы заказов в селекторе
+    reaction(
+      () => this.rootStore.tradeStore.market?.price,
+      () => this.inputPrice === BN.ZERO && this.setInputPrice(this.rootStore.tradeStore.market?.price ?? BN.ZERO),
+    );
   }
 
   get canProceed() {

@@ -1,4 +1,4 @@
-import { runInAction } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { fetchMarketPrice } from "@src/services/SpotMarketService";
@@ -14,6 +14,7 @@ export class SpotMarket {
   constructor(baseToken: string, quoteToken: string) {
     this.baseToken = TOKENS_BY_ASSET_ID[baseToken];
     this.quoteToken = TOKENS_BY_ASSET_ID[quoteToken];
+    makeAutoObservable(this);
   }
 
   get symbol(): string {
@@ -21,7 +22,7 @@ export class SpotMarket {
   }
 
   get priceUnits(): BN {
-    return BN.formatUnits(BN.ZERO, 9);
+    return BN.formatUnits(this.price, 9);
   }
 
   get change24(): BN {

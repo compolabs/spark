@@ -58,10 +58,10 @@ class TradeStore {
       this._setLoading(false);
       this.setInitialized(true);
       //todo обновлять цену надо тут, не стоит делать setInterval внутри класса SpotMarket
-      // this.spotMarkets.forEach((market) => {
-      // 	market.fetchPrice();
-      // 	setInterval(market.fetchPrice, 10000);
-      // }); // Запуск обновлений цены после инициализации
+      this.spotMarkets.forEach((market) => {
+        market.fetchPrice();
+        setInterval(market.fetchPrice, 10000);
+      });
     });
   };
 
