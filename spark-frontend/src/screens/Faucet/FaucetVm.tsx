@@ -73,6 +73,7 @@ class FaucetVM {
       const tx = await tokenContract.mint(accountStore.address, amount);
       await tx.wait();
       notificationStore.toast("Minting successful!", { type: "success" });
+      await this.rootStore.accountStore.addAsset(assetId);
     } catch (error: any) {
       notificationStore.toast(error.toString(), { type: "error" });
     } finally {
@@ -80,37 +81,5 @@ class FaucetVM {
       await balanceStore.update();
     }
   };
-
-  // addAsset = async (assetId: string) => {
-  //   if (!window.ethereum || assetId === TOKENS_BY_SYMBOL.ETH.assetId) return;
-  //   const token = TOKENS_BY_ASSET_ID[assetId];
-  //   const asset = {
-  //     type: "ERC20",
-  //     options: {
-  //       address: assetId,
-  //       symbol: token.symbol,
-  //       decimals: token.decimals,
-  //       image: window.location.origin + token.logo,
-  //     },
-  //   };
-  //
-  //   try {
-  //     const success = await window.ethereum.request({
-  //       method: "wallet_watchAsset",
-  //       params: asset,
-  //     });
-  //
-  //     if (success) {
-  //       // Токен успешно добавлен в кошелек
-  //       console.log(`Token ${token.symbol} added to wallet`);
-  //     } else {
-  //       // Возможно, пользователь отклонил запрос на добавление токена
-  //       console.log(`User rejected adding token ${token.symbol} to wallet`);
-  //     }
-  //   } catch (error) {
-  //     // Обработка ошибок при вызове метода
-  //     console.error("Error adding token to wallet:", error);
-  //   }
-  // };
   private _setLoading = (l: boolean) => (this.loading = l);
 }

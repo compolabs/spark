@@ -2,6 +2,8 @@ import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
+
 import RootStore from "./RootStore";
 
 export enum LOGIN_TYPE {
@@ -104,7 +106,80 @@ class AccountStore {
       console.error("Error connecting to wallet:", error);
     }
   };
+  addAsset = async (assetId: string) => {
+    const { accountStore, notificationStore, balanceStore } = this.rootStore;
+    if (!accountStore.isConnected || !accountStore.address) {
+      notificationStore.toast("Not connected to a wallet.", { type: "error" });
+      return;
+    }
+    const token = TOKENS_BY_ASSET_ID[assetId];
+    if (!token) {
+      notificationStore.toast("Invalid token.", { type: "error" });
+      return;
+    }
 
+    try {
+      const isTokenAdded = await this.isTokenAddedToWallet(assetId);
+      if (isTokenAdded) {
+        // Token is already added, update its balance
+        await balanceStore.update();
+        notificationStore.toast("Token already added to MetaMask. Balance updated.", { type: "success" });
+      } else {
+        const success = await window.ethereum?.request({
+          method: "wallet_watchAsset",
+          params: {
+            type: "ERC20",
+            options: {
+              address: assetId,
+              symbol: token.symbol,
+              decimals: token.decimals,
+              image: token.logo,
+            },
+          },
+        });
+
+        if (success) {
+          await this.refreshTokenList();
+          notificationStore.toast("Token added to MetaMask.", { type: "success" });
+        } else {
+          notificationStore.toast("Failed to add token to MetaMask.", { type: "error" });
+        }
+      }
+    } catch (error) {
+      console.error("Error adding or updating token in MetaMask:", error);
+      notificationStore.toast("Error adding or updating token in MetaMask.", { type: "error" });
+    }
+  };
+
+  refreshTokenList = async () => {
+    await window.ethereum?.request({
+      method: "wallet_watchAsset",
+      params: { type: "CLEAR" },
+    });
+  };
+
+  isTokenAddedToWallet = async (assetId: string): Promise<boolean> => {
+    const { accountStore } = this.rootStore;
+    if (!accountStore.isConnected || !accountStore.address) {
+      return false;
+    }
+    const token = TOKENS_BY_ASSET_ID[assetId];
+    if (!token) {
+      return false;
+    }
+
+    try {
+      const tokenContract = new ethers.Contract(
+        assetId,
+        ["function balanceOf(address) view returns (uint256)"],
+        accountStore.provider,
+      );
+      return await tokenContract.balanceOf(accountStore.address);
+    } catch (error) {
+      console.error("Error checking token balance:", error);
+      return false;
+    }
+  };
   disconnect = () => {
     this.address = null;
     this.signer = null;
