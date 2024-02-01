@@ -2,14 +2,12 @@ import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { networks } from "@src/constants";
-
 import RootStore from "./RootStore";
 
 export enum LOGIN_TYPE {
   METAMASK = "metamask",
   FUEL_WALLET = "fuel_wallet",
-  // GENERATE_SEED = "generate_seed",
+  GENERATE_SEED = "generate_seed",
 }
 
 export interface ISerializedAccountStore {
@@ -17,6 +15,10 @@ export interface ISerializedAccountStore {
   loginType: Nullable<LOGIN_TYPE>;
   mnemonic: Nullable<string>;
 }
+
+export const networks = [
+  { name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
+];
 
 class AccountStore {
   rootStore: RootStore;
@@ -110,9 +112,9 @@ class AccountStore {
     this.mnemonic = null;
   };
 
-  // getAddress = () => {
-  //   return this.address;
-  // };
+  getAddress = () => {
+    return this.address;
+  };
 
   isConnected = () => {
     return !!this.address;
