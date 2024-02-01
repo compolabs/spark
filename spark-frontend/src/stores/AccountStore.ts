@@ -16,7 +16,7 @@ export interface ISerializedAccountStore {
   mnemonic: Nullable<string>;
 }
 
-const networks = [
+export const networks = [
   { name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
 ];
 

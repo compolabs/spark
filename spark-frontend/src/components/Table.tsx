@@ -137,3 +137,9 @@ const HeaderWithTooltip = styled.div`
 `;
 
 export default Table;
+
+export const TableText = styled(Text)`
+  flex: 1;
+  display: flex;
+  align-items: center;
+`;
