@@ -113,11 +113,14 @@ class AccountStore {
   };
   addAsset = async (assetId: string) => {
     const { accountStore, notificationStore, balanceStore } = this.rootStore;
+
     if (!accountStore.isConnected || !accountStore.address) {
       notificationStore.toast("Not connected to a wallet.", { type: "error" });
       return;
     }
+
     const token = TOKENS_BY_ASSET_ID[assetId];
+
     if (!token) {
       notificationStore.toast("Invalid token.", { type: "error" });
       return;
@@ -125,12 +128,11 @@ class AccountStore {
 
     try {
       const isTokenAdded = await this.isTokenAddedToWallet(assetId);
+
       if (isTokenAdded) {
-        // Token is already added, update its balance
         await balanceStore.update();
-        notificationStore.toast("Token already added to MetaMask. Balance updated.", { type: "success" });
+        notificationStore.toast("Balance updated.", { type: "success" });
       } else {
-        // Token is not added, request to add it
         const success = await window.ethereum?.request({
           method: "wallet_watchAsset",
           params: {
@@ -148,26 +150,13 @@ class AccountStore {
           await this.refreshTokenList();
           notificationStore.toast("Token added to MetaMask.", { type: "success" });
         } else {
-          const error = new Error("Failed to add token to MetaMask");
-          console.error("Failed to add token to MetaMask. Error:", error);
-          notificationStore.toast("Failed to add token to MetaMask. Check the console for details.", { type: "error" });
+          notificationStore.toast("Failed to add token to MetaMask.", { type: "error" });
         }
       }
     } catch (error) {
       console.error("Error adding or updating token in MetaMask:", error);
       notificationStore.toast("Error adding or updating token in MetaMask.", { type: "error" });
     }
-  };
-
-  refreshTokenList = async () => {
-    await window.ethereum
-      ?.request({
-        method: "wallet_watchAsset",
-        params: { type: "CLEAR" },
-      })
-      .catch((error) => {
-        console.error("Error refreshing token list:", error);
-      });
   };
 
   isTokenAddedToWallet = async (assetId: string): Promise<boolean> => {
@@ -197,6 +186,17 @@ class AccountStore {
       console.error("Error checking if token is added to wallet:", error);
       return false;
     }
+  };
+
+  refreshTokenList = async () => {
+    await window.ethereum
+      ?.request({
+        method: "wallet_watchAsset",
+        params: { type: "CLEAR" },
+      })
+      .catch((error) => {
+        console.error("Error refreshing token list:", error);
+      });
   };
 
   disconnect = () => {

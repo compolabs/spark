@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { makeAutoObservable, reaction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 
 import { ERC20_ABI } from "@src/abi";
 import { TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
@@ -52,7 +52,9 @@ export class BalanceStore {
     try {
       for (const token of TOKENS_LIST) {
         const balance = await this.fetchBalance(token.assetId);
-        this.balances.set(token.assetId, new BN(balance));
+        runInAction(() => {
+          this.balances.set(token.assetId, new BN(balance));
+        });
       }
     } catch (error) {
       console.error("Error updating token balances:", error);
