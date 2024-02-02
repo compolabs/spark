@@ -3,6 +3,8 @@ import styled from "@emotion/styled";
 
 import { ChartVMProvider } from "@screens/TradeScreen/Chart/ChartVm";
 
+import TradingViewWidget from "./TradingViewWidget";
+
 interface IProps {}
 
 const Root = styled.div`
@@ -25,7 +27,7 @@ const Chart: React.FC<IProps> = () => {
     <Root>
       <ChartVMProvider>
         {/*{process.env.NODE_ENV === "production" && <TradingViewWidget />}*/}
-        {/* <TradingViewWidget /> */}
+        <TradingViewWidget />
         {/* <TVChartContainer /> */}
       </ChartVMProvider>
     </Root>

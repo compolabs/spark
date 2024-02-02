@@ -190,8 +190,8 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   }, [tabIndex, vm.myOrders, balanceStore.balances]);
 
   return (
-    <SmartFlex gap="16px" column>
-      <Root size={settingsStore.tradeTableSize}>
+    <Root gap="16px" size={settingsStore.tradeTableSize} column>
+      <TableRoot>
         <TabContainer>
           {TABS.map(({ title, disabled }, index) => (
             <Tab
@@ -229,15 +229,15 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           </TableSizeSelector>
         </TabContainer>
         <TableContainer>{renderTable()}</TableContainer>
-      </Root>
-      {vm.myOrders.length && <CancelAllButton>Cancel all orders</CancelAllButton>}
-    </SmartFlex>
+      </TableRoot>
+      {!!vm.myOrders.length && <CancelAllButton>Cancel all orders</CancelAllButton>}
+    </Root>
   );
 });
 
 export default BottomTablesInterfaceSpotImpl;
 
-const Root = styled.div<{ size: TRADE_TABLE_SIZE }>`
+const TableRoot = styled.div`
   background: ${({ theme }) => theme.colors.bgSecondary};
   display: flex;
   width: 100%;
@@ -247,11 +247,16 @@ const Root = styled.div<{ size: TRADE_TABLE_SIZE }>`
   border-radius: 10px;
   max-width: 100%;
   overflow-x: scroll;
-  max-height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
 
   ${media.mobile} {
     flex: initial;
   }
+`;
+
+const Root = styled(SmartFlex)<{ size: TRADE_TABLE_SIZE }>`
+  max-height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
+  width: 100%;
+  height: 100%;
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))
@@ -373,4 +378,8 @@ const TokenBadge = styled(SmartFlex)`
 
 const CancelAllButton = styled(Button)`
   text-transform: uppercase;
+
+  ${media.desktop} {
+    display: none;
+  }
 `;
