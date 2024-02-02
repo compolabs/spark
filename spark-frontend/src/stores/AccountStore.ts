@@ -130,6 +130,7 @@ class AccountStore {
         await balanceStore.update();
         notificationStore.toast("Token already added to MetaMask. Balance updated.", { type: "success" });
       } else {
+        // Token is not added, request to add it
         const success = await window.ethereum?.request({
           method: "wallet_watchAsset",
           params: {
@@ -147,7 +148,9 @@ class AccountStore {
           await this.refreshTokenList();
           notificationStore.toast("Token added to MetaMask.", { type: "success" });
         } else {
-          notificationStore.toast("Failed to add token to MetaMask.", { type: "error" });
+          const error = new Error("Failed to add token to MetaMask");
+          console.error("Failed to add token to MetaMask. Error:", error);
+          notificationStore.toast("Failed to add token to MetaMask. Check the console for details.", { type: "error" });
         }
       }
     } catch (error) {
@@ -157,18 +160,25 @@ class AccountStore {
   };
 
   refreshTokenList = async () => {
-    await window.ethereum?.request({
-      method: "wallet_watchAsset",
-      params: { type: "CLEAR" },
-    });
+    await window.ethereum
+      ?.request({
+        method: "wallet_watchAsset",
+        params: { type: "CLEAR" },
+      })
+      .catch((error) => {
+        console.error("Error refreshing token list:", error);
+      });
   };
 
   isTokenAddedToWallet = async (assetId: string): Promise<boolean> => {
     const { accountStore } = this.rootStore;
+
     if (!accountStore.isConnected || !accountStore.address) {
       return false;
     }
+
     const token = TOKENS_BY_ASSET_ID[assetId];
+
     if (!token) {
       return false;
     }
@@ -179,12 +189,16 @@ class AccountStore {
         ["function balanceOf(address) view returns (uint256)"],
         accountStore.provider,
       );
-      return await tokenContract.balanceOf(accountStore.address);
+
+      const balance: bigint = await tokenContract.balanceOf(accountStore.address.toString());
+
+      return balance > BigInt(0);
     } catch (error) {
-      console.error("Error checking token balance:", error);
+      console.error("Error checking if token is added to wallet:", error);
       return false;
     }
   };
+
   disconnect = () => {
     this.address = null;
     this.signer = null;

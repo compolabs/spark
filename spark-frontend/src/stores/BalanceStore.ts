@@ -67,7 +67,7 @@ export class BalanceStore {
     return BN.formatUnits(this.getBalance(assetId), decimals).toFormat(2) ?? "-";
   };
 
-  fetchBalance = async (assetId: string): Promise<string> => {
+  private fetchBalance = async (assetId: string): Promise<string> => {
     const { accountStore } = this.rootStore;
 
     if (!accountStore.isConnected) return "0";
