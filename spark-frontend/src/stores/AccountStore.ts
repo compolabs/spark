@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import { Nullable } from "tsdef";
 
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
@@ -92,7 +92,7 @@ class AccountStore {
           this.disconnect();
           return;
         }
-      } else
+      } else {
         try {
           await ethereum.request({
             method: "wallet_switchEthereumChain",
@@ -105,8 +105,12 @@ class AccountStore {
           this.disconnect();
           return;
         }
+      }
 
-      this.address = await this.signer.getAddress();
+      const address = await this.signer.getAddress();
+      runInAction(() => {
+        this.address = address;
+      });
     } catch (error) {
       console.error("Error connecting to wallet:", error);
     }
@@ -115,6 +119,7 @@ class AccountStore {
     const { accountStore, notificationStore, balanceStore } = this.rootStore;
 
     if (!accountStore.isConnected || !accountStore.address) {
+      console.log("Not connected to a wallet.");
       notificationStore.toast("Not connected to a wallet.", { type: "error" });
       return;
     }
@@ -122,6 +127,7 @@ class AccountStore {
     const token = TOKENS_BY_ASSET_ID[assetId];
 
     if (!token) {
+      console.log("Invalid token.");
       notificationStore.toast("Invalid token.", { type: "error" });
       return;
     }
@@ -131,6 +137,7 @@ class AccountStore {
 
       if (isTokenAdded) {
         await balanceStore.update();
+        console.log("Token already added to wallet.");
         notificationStore.toast("Balance updated.", { type: "success" });
       } else {
         const success = await window.ethereum?.request({
@@ -148,8 +155,10 @@ class AccountStore {
 
         if (success) {
           await this.refreshTokenList();
+          console.log("Token added to MetaMask.");
           notificationStore.toast("Token added to MetaMask.", { type: "success" });
         } else {
+          console.error("Failed to add token to MetaMask. MetaMask response:", success);
           notificationStore.toast("Failed to add token to MetaMask.", { type: "error" });
         }
       }
