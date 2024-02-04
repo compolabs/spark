@@ -29,9 +29,19 @@ export class BalanceStore {
       (isConnected) => {
         if (!isConnected) return;
 
-        this.balancesUpdater.update();
+        this.balancesUpdater.update().then(() => console.log("balances: ", this.balances.size));
       },
     );
+  }
+
+  get nonZeroBalancesAssetIds() {
+    const nonZeroBalances: string[] = [];
+    this.balances.forEach((balance, assetId) => {
+      if (balance && balance.gt(BN.ZERO)) {
+        nonZeroBalances.push(assetId);
+      }
+    });
+    return nonZeroBalances;
   }
 
   update = async () => {
