@@ -73,7 +73,7 @@ class FaucetVM {
       const tx = await tokenContract.mint(accountStore.address, amount);
       await tx.wait();
       notificationStore.toast("Minting successful!", { type: "success" });
-      await this.rootStore.accountStore.addAsset(assetId);
+      await accountStore.addAsset(assetId);
     } catch (error: any) {
       notificationStore.toast(error.toString(), { type: "error" });
     } finally {

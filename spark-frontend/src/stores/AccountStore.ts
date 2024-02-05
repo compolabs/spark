@@ -2,6 +2,7 @@ import { ethers } from "ethers";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Nullable } from "tsdef";
 
+import { ERC20_ABI } from "@src/abi";
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 
 import RootStore from "./RootStore";
@@ -56,11 +57,11 @@ class AccountStore {
   };
 
   connectWallet = async () => {
+    const { notificationStore } = this.rootStore;
     if (!window.ethereum) {
       console.error("Ethereum wallet not found");
       return;
     }
-
     try {
       const ethereum = window.ethereum;
       await ethereum.request({ method: "eth_requestAccounts" });
@@ -88,7 +89,7 @@ class AccountStore {
           });
         } catch (addError) {
           console.error("Error adding Arbitrum Sepolia:", addError);
-          this.rootStore.notificationStore.toast("Error adding Arbitrum Sepolia", { type: "error" });
+          notificationStore.toast("Error adding Arbitrum Sepolia", { type: "error" });
           this.disconnect();
           return;
         }
@@ -98,10 +99,10 @@ class AccountStore {
             method: "wallet_switchEthereumChain",
             params: [{ chainId: `0x${targetChainId}` }],
           });
-          this.rootStore.notificationStore.toast("Switched to the Arbitrum Sepolia", { type: "success" });
+          notificationStore.toast("Switched to the Arbitrum Sepolia", { type: "success" });
         } catch (switchError) {
           console.error("Error switching to the Arbitrum Sepolia", switchError);
-          this.rootStore.notificationStore.toast("Failed to switch to the Arbitrum Sepolia", { type: "error" });
+          notificationStore.toast("Failed to switch to the Arbitrum Sepolia", { type: "error" });
           this.disconnect();
           return;
         }
@@ -119,7 +120,7 @@ class AccountStore {
     const { accountStore, notificationStore, balanceStore } = this.rootStore;
 
     if (!accountStore.isConnected || !accountStore.address) {
-      console.log("Not connected to a wallet.");
+      console.warn("Not connected to a wallet.");
       notificationStore.toast("Not connected to a wallet.", { type: "error" });
       return;
     }
@@ -127,7 +128,7 @@ class AccountStore {
     const token = TOKENS_BY_ASSET_ID[assetId];
 
     if (!token) {
-      console.log("Invalid token.");
+      console.warn("Invalid token.");
       notificationStore.toast("Invalid token.", { type: "error" });
       return;
     }
@@ -137,7 +138,7 @@ class AccountStore {
 
       if (isTokenAdded) {
         await balanceStore.update();
-        console.log("Token already added to wallet.");
+        console.warn("Token already added to wallet.");
         notificationStore.toast("Balance updated.", { type: "success" });
       } else {
         const success = await window.ethereum?.request({
@@ -155,7 +156,7 @@ class AccountStore {
 
         if (success) {
           await this.refreshTokenList();
-          console.log("Token added to MetaMask.");
+          console.warn("Token added to MetaMask.");
           notificationStore.toast("Token added to MetaMask.", { type: "success" });
         } else {
           console.error("Failed to add token to MetaMask. MetaMask response:", success);
@@ -182,11 +183,7 @@ class AccountStore {
     }
 
     try {
-      const tokenContract = new ethers.Contract(
-        assetId,
-        ["function balanceOf(address) view returns (uint256)"],
-        accountStore.provider,
-      );
+      const tokenContract = new ethers.Contract(assetId, ERC20_ABI, accountStore.signer);
 
       const balance: bigint = await tokenContract.balanceOf(accountStore.address.toString());
 
