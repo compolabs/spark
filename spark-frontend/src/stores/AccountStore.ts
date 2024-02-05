@@ -1,6 +1,8 @@
 import { ethers } from "ethers";
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, runInAction } from "mobx";
 import { Nullable } from "tsdef";
+
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
 
 import RootStore from "./RootStore";
 
@@ -54,6 +56,7 @@ class AccountStore {
   };
 
   connectWallet = async () => {
+    const { notificationStore } = this.rootStore;
     if (!window.ethereum) {
       console.error("Ethereum wallet not found");
       return;
@@ -61,20 +64,85 @@ class AccountStore {
 
     try {
       const ethereum = window.ethereum;
-      await ethereum.request({ method: "eth_requestAccounts" });
       this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
-
       const network = await this.signer.provider.getNetwork();
-      if (network.chainId.toString() !== this.network.chainId) {
-        //todo запросить переключение сети на нужную
-        this.rootStore.notificationStore.toast("Connected to the wrong network", { type: "warning" });
-        this.disconnect();
-        return;
-      }
+      const targetChainId = parseInt(networks[0].chainId, 10).toString(16);
+      const currentChainId = parseInt(network.chainId.toString(), 10).toString(16);
 
-      this.address = await this.signer.getAddress();
-    } catch (error) {
+      if (currentChainId !== targetChainId) {
+        await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: `0x${targetChainId}`,
+              chainName: networks[0].name,
+              rpcUrls: [networks[0].rpc],
+              nativeCurrency: {
+                name: "ETH",
+                symbol: "ETH",
+                decimals: 18,
+              },
+            },
+          ],
+        });
+      } else {
+        await ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${targetChainId}` }],
+        });
+      }
+      const address = await this.signer.getAddress();
+      runInAction(() => {
+        this.address = address;
+      });
+    } catch (error: any) {
       console.error("Error connecting to wallet:", error);
+      if (notificationStore) {
+        if (typeof error === "object" && error.message && typeof error.message === "string") {
+          if (error.message.includes("wallet_addEthereumChain")) {
+            notificationStore.toast("Error adding Arbitrum Sepolia", { type: "error" });
+          } else if (error.message.includes("wallet_switchEthereumChain")) {
+            notificationStore.toast("Failed to switch to the Arbitrum Sepolia", { type: "error" });
+          } else {
+            notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
+          }
+        } else {
+          notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
+        }
+      }
+      this.disconnect();
+    }
+  };
+
+  addAsset = async (assetId: string) => {
+    const { accountStore, notificationStore } = this.rootStore;
+
+    if (!accountStore.isConnected || !accountStore.address) {
+      console.warn("Not connected to a wallet.");
+      notificationStore.toast("Not connected to a wallet.", { type: "error" });
+      return;
+    }
+
+    const token = TOKENS_BY_ASSET_ID[assetId];
+
+    if (!token) {
+      console.warn("Invalid token.");
+      notificationStore.toast("Invalid token.", { type: "error" });
+      return;
+    }
+
+    try {
+      await window.ethereum?.request({
+        method: "wallet_watchAsset",
+        params: {
+          type: "ERC20",
+          options: {
+            address: assetId,
+          },
+        },
+      });
+    } catch (error) {
+      notificationStore.toast("Balance updated", { type: "success" });
     }
   };
 

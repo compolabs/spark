@@ -73,6 +73,7 @@ class FaucetVM {
       const tx = await tokenContract.mint(accountStore.address, amount);
       await tx.wait();
       notificationStore.toast("Minting successful!", { type: "success" });
+      await accountStore.addAsset(assetId);
     } catch (error: any) {
       notificationStore.toast(error.toString(), { type: "error" });
     } finally {
@@ -80,20 +81,5 @@ class FaucetVM {
       await balanceStore.update();
     }
   };
-
-  // addAsset = async (assetId: string) => {
-  //   const { fuel } = this.rootStore.accountStore;
-  //   if (assetId === TOKENS_BY_SYMBOL.ETH.assetId) return;
-  //   const token = TOKENS_BY_ASSET_ID[assetId];
-  //   const asset = {
-  //     name: token.name,
-  //     assetId: token.assetId,
-  //     imageUrl: window.location.origin + token.logo,
-  //     symbol: token.symbol,
-  //     isCustom: true,
-  //   };
-  //   return fuel.addAsset(asset);
-  // };
-
   private _setLoading = (l: boolean) => (this.loading = l);
 }
