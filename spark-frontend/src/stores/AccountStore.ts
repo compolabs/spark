@@ -90,9 +90,6 @@ class AccountStore {
           method: "wallet_switchEthereumChain",
           params: [{ chainId: `0x${targetChainId}` }],
         });
-        if (notificationStore) {
-          notificationStore.toast("Switched to the Arbitrum Sepolia", { type: "success" });
-        }
       }
       const address = await this.signer.getAddress();
       runInAction(() => {
