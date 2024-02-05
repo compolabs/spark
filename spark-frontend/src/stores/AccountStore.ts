@@ -2,7 +2,6 @@ import { ethers } from "ethers";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Nullable } from "tsdef";
 
-import { ERC20_ABI } from "@src/abi";
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 
 import RootStore from "./RootStore";
@@ -117,7 +116,7 @@ class AccountStore {
     }
   };
   addAsset = async (assetId: string) => {
-    const { accountStore, notificationStore, balanceStore } = this.rootStore;
+    const { accountStore, notificationStore } = this.rootStore;
 
     if (!accountStore.isConnected || !accountStore.address) {
       console.warn("Not connected to a wallet.");
@@ -134,75 +133,18 @@ class AccountStore {
     }
 
     try {
-      const isTokenAdded = await this.isTokenAddedToWallet(assetId);
-
-      if (isTokenAdded) {
-        await balanceStore.update();
-        console.warn("Token already added to wallet.");
-        notificationStore.toast("Balance updated.", { type: "success" });
-      } else {
-        const success = await window.ethereum?.request({
-          method: "wallet_watchAsset",
-          params: {
-            type: "ERC20",
-            options: {
-              address: assetId,
-              symbol: token.symbol,
-              decimals: token.decimals,
-              image: token.logo,
-            },
-          },
-        });
-
-        if (success) {
-          await this.refreshTokenList();
-          console.warn("Token added to MetaMask.");
-          notificationStore.toast("Token added to MetaMask.", { type: "success" });
-        } else {
-          console.error("Failed to add token to MetaMask. MetaMask response:", success);
-          notificationStore.toast("Failed to add token to MetaMask.", { type: "error" });
-        }
-      }
-    } catch (error) {
-      console.error("Error adding or updating token in MetaMask:", error);
-      notificationStore.toast("Error adding or updating token in MetaMask.", { type: "error" });
-    }
-  };
-
-  isTokenAddedToWallet = async (assetId: string): Promise<boolean> => {
-    const { accountStore } = this.rootStore;
-
-    if (!accountStore.isConnected || !accountStore.address) {
-      return false;
-    }
-
-    const token = TOKENS_BY_ASSET_ID[assetId];
-
-    if (!token) {
-      return false;
-    }
-
-    try {
-      const tokenContract = new ethers.Contract(assetId, ERC20_ABI, accountStore.signer);
-
-      const balance: bigint = await tokenContract.balanceOf(accountStore.address.toString());
-
-      return balance > BigInt(0);
-    } catch (error) {
-      console.error("Error checking if token is added to wallet:", error);
-      return false;
-    }
-  };
-
-  refreshTokenList = async () => {
-    await window.ethereum
-      ?.request({
+      await window.ethereum?.request({
         method: "wallet_watchAsset",
-        params: { type: "CLEAR" },
-      })
-      .catch((error) => {
-        console.error("Error refreshing token list:", error);
+        params: {
+          type: "ERC20",
+          options: {
+            address: assetId,
+          },
+        },
       });
+    } catch (error) {
+      notificationStore.toast("Balance updated", { type: "success" });
+    }
   };
 
   disconnect = () => {
