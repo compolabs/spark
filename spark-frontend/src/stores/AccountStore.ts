@@ -61,60 +61,62 @@ class AccountStore {
       console.error("Ethereum wallet not found");
       return;
     }
+
     try {
       const ethereum = window.ethereum;
-      await ethereum.request({ method: "eth_requestAccounts" });
       this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
-
       const network = await this.signer.provider.getNetwork();
       const targetChainId = parseInt(networks[0].chainId, 10).toString(16);
       const currentChainId = parseInt(network.chainId.toString(), 10).toString(16);
+
       if (currentChainId !== targetChainId) {
-        try {
-          await ethereum.request({
-            method: "wallet_addEthereumChain",
-            params: [
-              {
-                chainId: `0x${targetChainId}`,
-                chainName: networks[0].name,
-                rpcUrls: [networks[0].rpc],
-                nativeCurrency: {
-                  name: "ETH",
-                  symbol: "ETH",
-                  decimals: 18,
-                },
+        await ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: `0x${targetChainId}`,
+              chainName: networks[0].name,
+              rpcUrls: [networks[0].rpc],
+              nativeCurrency: {
+                name: "ETH",
+                symbol: "ETH",
+                decimals: 18,
               },
-            ],
-          });
-        } catch (addError) {
-          console.error("Error adding Arbitrum Sepolia:", addError);
-          notificationStore.toast("Error adding Arbitrum Sepolia", { type: "error" });
-          this.disconnect();
-          return;
-        }
+            },
+          ],
+        });
       } else {
-        try {
-          await ethereum.request({
-            method: "wallet_switchEthereumChain",
-            params: [{ chainId: `0x${targetChainId}` }],
-          });
+        await ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: `0x${targetChainId}` }],
+        });
+        if (notificationStore) {
           notificationStore.toast("Switched to the Arbitrum Sepolia", { type: "success" });
-        } catch (switchError) {
-          console.error("Error switching to the Arbitrum Sepolia", switchError);
-          notificationStore.toast("Failed to switch to the Arbitrum Sepolia", { type: "error" });
-          this.disconnect();
-          return;
         }
       }
-
       const address = await this.signer.getAddress();
       runInAction(() => {
         this.address = address;
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error connecting to wallet:", error);
+      if (notificationStore) {
+        if (typeof error === "object" && error.message && typeof error.message === "string") {
+          if (error.message.includes("wallet_addEthereumChain")) {
+            notificationStore.toast("Error adding Arbitrum Sepolia", { type: "error" });
+          } else if (error.message.includes("wallet_switchEthereumChain")) {
+            notificationStore.toast("Failed to switch to the Arbitrum Sepolia", { type: "error" });
+          } else {
+            notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
+          }
+        } else {
+          notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
+        }
+      }
+      this.disconnect();
     }
   };
+
   addAsset = async (assetId: string) => {
     const { accountStore, notificationStore } = this.rootStore;
 
