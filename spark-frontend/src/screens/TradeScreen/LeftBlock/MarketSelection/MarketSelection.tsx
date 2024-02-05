@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
@@ -13,23 +13,17 @@ import { useStores } from "@stores";
 
 interface IProps {}
 
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-const Top = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 12px;
-`;
-
 const MarketSelection: React.FC<IProps> = observer(() => {
   const { tradeStore } = useStores();
   const [searchValue, setSearchValue] = useState<string>("");
   const [isSpotMarket, setSpotMarket] = useState(true);
+  const rootRef = useRef(null);
+
+  // todo: Придумать решение, предыдущий фикс не помог. Проблема в том что одновременно срабатывает useOnClickOutside и наоборот открытие.
+  // useOnClickOutside(rootRef, () => tradeStore.setMarketSelectionOpened(false));
 
   return (
-    <Root>
+    <Root ref={rootRef}>
       <Top>
         <ButtonGroup>
           <Button active={isSpotMarket} onClick={() => setSpotMarket(true)}>
@@ -74,3 +68,14 @@ const MarketSelection: React.FC<IProps> = observer(() => {
 });
 
 export default MarketSelection;
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+`;
+const Top = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+`;

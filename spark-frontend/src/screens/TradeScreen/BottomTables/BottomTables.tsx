@@ -1,6 +1,6 @@
 import React from "react";
 
-import BottomTablesInterfaceSpot from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot";
+import BottomTablesInterfaceSpot from "./BottomTablesInterfaceSpot";
 
 interface IProps {}
 
@@ -8,4 +8,5 @@ interface IProps {}
 const BottomTables: React.FC<IProps> = () => {
   return <BottomTablesInterfaceSpot />;
 };
+
 export default BottomTables;

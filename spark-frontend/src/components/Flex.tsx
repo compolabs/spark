@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
 
+import { media } from "@src/themes/breakpoints";
+
 export interface IFlexProps {
   justifyContent?: "start" | "flex-end" | "space-around" | "space-between" | "center";
   alignItems?: "start" | "end" | "center" | "inherit" | "unset" | "flex-end" | "flex-start" | "baseline";
@@ -30,7 +32,8 @@ export const DesktopRow = styled(Row)`
   align-items: center;
   width: fit-content;
   display: none;
-  @media (min-width: 880px) {
+
+  ${media.desktop} {
     display: flex;
   }
 `;
@@ -39,7 +42,8 @@ export const MobileRow = styled(Row)`
   display: flex;
   align-items: center;
   width: fit-content;
-  @media (min-width: 880px) {
+
+  ${media.desktop} {
     display: none;
   }
 `;

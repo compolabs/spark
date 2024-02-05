@@ -1,92 +1,78 @@
-import React, { useRef } from "react";
-import { useTheme } from "@emotion/react";
+import React from "react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
-import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
-import arrow from "@src/assets/icons/arrowUp.svg";
-import { Column, DesktopRow, Row } from "@src/components/Flex";
-import { useOnClickOutside } from "@src/hooks/useOnClickOutside";
+import arrowLeft from "@src/assets/icons/arrowLeft.svg";
+import arrowUp from "@src/assets/icons/arrowUp.svg";
+import { ReactComponent as SwitchIcon } from "@src/assets/icons/switch.svg";
+import { SmartFlex } from "@src/components/SmartFlex";
+import { useMedia } from "@src/hooks/useMedia";
+import { media } from "@src/themes/breakpoints";
 import { useStores } from "@stores";
 
-interface IProps {}
+import MarketStatistics from "./MarketStatistics";
 
-const MarketStatisticsBar: React.FC<IProps> = observer(() => {
+interface IProps {
+  isChartOpen?: boolean;
+  onSwitchClick?: () => void;
+}
+
+const MarketStatisticsBar: React.FC<IProps> = observer(({ isChartOpen, onSwitchClick }) => {
   const { tradeStore } = useStores();
-  const theme = useTheme();
+  const media = useMedia();
 
-  const rootRef = useRef(null);
+  const handleBack = (e: React.MouseEvent<HTMLImageElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onSwitchClick?.();
+  };
 
-  //todo исправить значения
-  const spotStatsArr = [
-    { title: "Index price", value: tradeStore.market?.priceUnits.toFormat(2) },
-    { title: "24h volume", value: "$ 0.00" },
-    { title: "24h High", value: "$ 0.00" },
-    { title: "24h Low", value: "$ 0.00" },
-  ];
+  const renderLeftIcons = () => {
+    if (isChartOpen) {
+      return <Icon alt="token0" src={arrowLeft} onClick={handleBack} />;
+    }
 
-  useOnClickOutside(rootRef, () => tradeStore.setMarketSelectionOpened(false));
+    return (
+      <>
+        <Icon alt="token0" src={tradeStore.market?.baseToken.logo} />
+        <Icon alt="token1" src={tradeStore.market?.quoteToken.logo} style={{ marginLeft: -16 }} />
+      </>
+    );
+  };
 
-  return (
-    <Root ref={rootRef}>
+  const renderMarketSelector = () => {
+    if (!tradeStore.market) return;
+
+    return (
       <MarketSelect
-        className="marketSelect"
         focused={tradeStore.marketSelectionOpened}
         style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B", borderRadius: "10px 0 0 10px" } : {}}
         onClick={() => tradeStore.setMarketSelectionOpened(!tradeStore.marketSelectionOpened)}
       >
-        <Row alignItems="center">
-          {/*todo добавить скелетон лоадер*/}
-          {tradeStore.market && (
-            <>
-              <Icon alt="token0" src={tradeStore.market?.baseToken.logo} style={{ width: 24, height: 24 }} />
-              <Icon
-                alt="token1"
-                src={tradeStore.market?.quoteToken.logo}
-                style={{ width: 24, height: 24, marginLeft: -8 }}
-              />
-              <SizedBox width={8} />
-              <Text type={TEXT_TYPES.H} primary>
-                {tradeStore.market?.symbol}
-              </Text>
-            </>
-          )}
-        </Row>
-        <SizedBox width={10} />
-        <img alt="arrow" className="menu-arrow" src={arrow} style={{ width: 24, height: 24, marginLeft: -8 }} />
+        {/*todo добавить скелетон лоадер*/}
+        <SmartFlex gap="8px" center>
+          {renderLeftIcons()}
+          <SmartFlex gap="4px" center>
+            <StyledText type={TEXT_TYPES.H} primary>
+              {tradeStore.market?.symbol}
+            </StyledText>
+            <img alt="arrow" className="menu-arrow" src={arrowUp} style={{ width: 24, height: 24 }} />
+          </SmartFlex>
+        </SmartFlex>
       </MarketSelect>
-      <MarketStatistics>
-        <PriceRow alignItems="center">
-          <Column alignItems="flex-end">
-            {/*todo добавить изменение цены*/}
-            {/*<Text*/}
-            {/*	type={TEXT_TYPES.BODY}*/}
-            {/*	style={{ color: state.priceChange?.gt(0) ? theme.colors.greenLight : theme.colors.redLight }}*/}
-            {/*>*/}
-            {/*	{tradeStore.isMarketPerp ? perpStats?.priceChange?.toFormat(2) : spotStats?.priceChange?.toFormat(2)}*/}
-            {/*</Text>*/}
-            <Text type={TEXT_TYPES.H} primary>
-              $ {tradeStore.market?.priceUnits.toFormat(2)}
-            </Text>
-          </Column>
-          <DesktopRow>
-            {spotStatsArr.map(({ title, value }) => (
-              <React.Fragment key={title}>
-                <SizedBox height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} width={1} />
-                <Column>
-                  <Text type={TEXT_TYPES.SUPPORTING}>{title}</Text>
-                  <SizedBox height={4} />
-                  <Text type={TEXT_TYPES.BODY} primary>
-                    {value}
-                  </Text>
-                </Column>
-              </React.Fragment>
-            ))}
-          </DesktopRow>
-        </PriceRow>
-      </MarketStatistics>
-      <div />
+    );
+  };
+
+  return (
+    <Root>
+      {renderMarketSelector()}
+      {media.desktop && <MarketStatistics />}
+      {!isChartOpen && (
+        <SwitchContainer onClick={onSwitchClick}>
+          <SwitchIcon />
+        </SwitchContainer>
+      )}
     </Root>
   );
 });
@@ -104,9 +90,16 @@ const Root = styled.div`
   width: 100%;
   background: ${({ theme }) => theme.colors.bgSecondary};
   border-radius: 10px;
+
+  ${media.mobile} {
+    grid-template-columns: 1fr 1fr;
+    height: 40px;
+  }
 `;
 const Icon = styled.img`
   border-radius: 50%;
+  height: 24px;
+  width: 24px;
 `;
 
 const MarketSelect = styled.div<{
@@ -119,6 +112,8 @@ const MarketSelect = styled.div<{
   padding: 0 12px;
   max-width: 280px;
   height: 100%;
+  gap: 4px;
+  cursor: pointer;
 
   .menu-arrow {
     cursor: pointer;
@@ -134,18 +129,26 @@ const MarketSelect = styled.div<{
   }
 `;
 
-const MarketStatistics = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 8px;
-  width: 100%;
+const StyledText = styled(Text)`
+  width: max-content;
 `;
 
-const PriceRow = styled(Row)`
+const SwitchContainer = styled(SmartFlex)`
+  display: flex;
   align-items: center;
-  justify-content: flex-end;
-  @media (min-width: 880px) {
-    justify-content: flex-start;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  align-self: center;
+  justify-self: flex-end;
+  margin-right: 8px;
+
+  border-radius: 100%;
+  border: 1px solid ${({ theme }) => theme.colors.borderPrimary};
+
+  ${media.desktop} {
+    display: none;
   }
 `;

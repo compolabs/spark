@@ -2,6 +2,7 @@ import { css } from "@emotion/react";
 import styled from "@emotion/styled";
 
 import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { media } from "@src/themes/breakpoints";
 
 const Button = styled.button<{
   green?: boolean;
@@ -26,7 +27,8 @@ const Button = styled.button<{
   transition: 0.4s;
   width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
   color: ${({ theme }) => theme.colors.textPrimary};
-  @media (min-width: 880px) {
+
+  ${media.desktop} {
     padding: 0 12px;
     height: 32px;
   }

@@ -1,25 +1,26 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "@emotion/styled";
 import copy from "copy-to-clipboard";
-import { observer } from "mobx-react";
 
-import Divider from "@components/Divider";
-import { Column, Row } from "@components/Flex";
-import SizedBox from "@components/SizedBox";
-import Text, { TEXT_TYPES } from "@components/Text";
-import Tooltip from "@components/Tooltip";
 import copyIcon from "@src/assets/icons/copy.svg";
 import linkIcon from "@src/assets/icons/link.svg";
 import logoutIcon from "@src/assets/icons/logout.svg";
 import { EXPLORER_URL, TOKENS_BY_SYMBOL } from "@src/constants";
+import { useStores } from "@src/stores";
 import BN from "@src/utils/BN";
-import { useStores } from "@stores";
 
-import ConnectedWalletButton from "./ConnectedWalletButton";
+import Divider from "../Divider";
+import Sheet from "../Sheet";
+import { SmartFlex } from "../SmartFlex";
+import Text, { TEXT_TYPES } from "../Text";
 
-const ConnectedWallet: React.FC = observer(() => {
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+const AccountInfoSheet: React.FC<Props> = ({ isOpen, onClose }) => {
   const { accountStore, notificationStore, balanceStore } = useStores();
-  const [isFocused, setIsFocused] = useState(false);
 
   const ethBalance = BN.formatUnits(
     balanceStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId) ?? BN.ZERO,
@@ -31,6 +32,12 @@ const ConnectedWallet: React.FC = observer(() => {
       ? accountStore.address && copy(accountStore.address)
       : accountStore.mnemonic && copy(accountStore.mnemonic);
     notificationStore.toast(`Your ${object} was copied`, { type: "info" });
+    onClose();
+  };
+
+  const handleDisconnect = () => {
+    accountStore.disconnect();
+    onClose();
   };
 
   const actions = [
@@ -52,66 +59,71 @@ const ConnectedWallet: React.FC = observer(() => {
       title: "View in Explorer",
       active: true,
     },
-    {
-      icon: logoutIcon,
-      action: () => accountStore.disconnect(),
-      title: "Disconnect",
-      active: true,
-    },
   ];
 
   const renderActions = () => {
     return actions.map(
       ({ title, action, active, icon }) =>
         active && (
-          <ActionRow key={title} onClick={action}>
+          <ActionItem key={title} center="y" onClick={action}>
             <Icon alt="ETH" src={icon} />
-            <Text type={TEXT_TYPES.BUTTON_SECONDARY}>{title}</Text>
-          </ActionRow>
+            <Text type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              {title}
+            </Text>
+          </ActionItem>
         ),
     );
   };
 
   return (
-    <Tooltip
-      config={{
-        placement: "bottom-start",
-        trigger: "click",
-        onVisibleChange: setIsFocused,
-      }}
-      content={
-        <Column crossAxisSize="max">
-          <ActionRow>
-            <Icon alt="ETH" src={TOKENS_BY_SYMBOL.ETH.logo} />
-            <SizedBox width={8} />
-            <Text type={TEXT_TYPES.BUTTON_SECONDARY}>{`${ethBalance} ETH`}</Text>
-          </ActionRow>
-          <Divider />
+    <Sheet isOpen={isOpen} onClose={onClose}>
+      <SmartFlex column>
+        <TokenContainer center="y" gap="8px">
+          <Icon alt="ETH" src={TOKENS_BY_SYMBOL.ETH.logo} />
+          <Text type={TEXT_TYPES.H} primary>{`${ethBalance} ETH`}</Text>
+        </TokenContainer>
+        <Divider />
+        <SmartFlex center="y" column>
           {renderActions()}
-        </Column>
-      }
-    >
-      <ConnectedWalletButton isFocused={isFocused} />
-    </Tooltip>
+        </SmartFlex>
+        <Divider />
+        <FooterContainer>
+          <ActionItem center="y" onClick={handleDisconnect}>
+            <Icon alt="ETH" src={logoutIcon} />
+            <Text type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              Disconnect
+            </Text>
+          </ActionItem>
+        </FooterContainer>
+      </SmartFlex>
+    </Sheet>
   );
-});
+};
 
-export default ConnectedWallet;
+export default AccountInfoSheet;
+
+const TokenContainer = styled(SmartFlex)`
+  padding: 8px 16px;
+`;
+
+const ActionItem = styled(SmartFlex)`
+  padding: 8px 16px;
+  gap: 4px;
+  width: 100%;
+
+  transition: background-color 150ms;
+
+  &:hover,
+  &:focus {
+    background-color: ${({ theme }) => theme.colors.borderPrimary};
+  }
+`;
 
 const Icon = styled.img`
   width: 24px;
   height: 24px;
 `;
 
-const ActionRow = styled(Row)`
-  padding: 8px 16px;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-
-  transition: background-color 150ms;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.borderPrimary};
-  }
+const FooterContainer = styled(SmartFlex)`
+  margin-bottom: 40px;
 `;

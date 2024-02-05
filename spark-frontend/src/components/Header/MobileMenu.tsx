@@ -1,26 +1,98 @@
 import React from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react-lite";
 
-import { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import { MENU_ITEMS } from "@src/constants";
+import { useStores } from "@src/stores";
+import isRoutesEquals from "@src/utils/isRoutesEquals";
+
+import Button from "../Button";
+import SizedBox from "../SizedBox";
+import { SmartFlex } from "../SmartFlex";
+
+import ConnectedWalletButton from "./ConnectedWalletButton";
 
 interface IProps {
+  isOpen: boolean;
+  onAccountClick: () => void;
+  onWalletConnect: () => void;
   onClose: () => void;
-  opened: boolean;
 }
 
-const Root = styled.div<{ opened: boolean }>`
+const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect, onClose }) => {
+  const { settingsStore, accountStore } = useStores();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const theme = useTheme();
+
+  const handleAccountClick = () => {
+    onAccountClick();
+    onClose();
+  };
+
+  const handleConnectWallet = () => {
+    onWalletConnect();
+    onClose();
+  };
+
+  const renderWalletButton = () => {
+    return accountStore.address ? (
+      <ConnectedWalletButtonStyled onClick={handleAccountClick} />
+    ) : (
+      <Button green onClick={handleConnectWallet}>
+        Connect wallet
+      </Button>
+    );
+  };
+
+  return (
+    <Root isOpen={isOpen}>
+      <Body>
+        <Container>
+          <SizedBox height={8} />
+          {MENU_ITEMS.map(({ title, link, route }) => (
+            <MenuItem
+              key={title}
+              selected={isRoutesEquals(title, location.pathname)}
+              onClick={() => {
+                navigate(title);
+                onClose();
+              }}
+            >
+              <Text
+                color={
+                  isRoutesEquals(link ?? "", location.pathname) ? theme.colors.textPrimary : theme.colors.textSecondary
+                }
+              >
+                {title}
+              </Text>
+            </MenuItem>
+          ))}
+        </Container>
+        <SizedBox height={8} />
+        <FooterContainer>{renderWalletButton()}</FooterContainer>
+      </Body>
+    </Root>
+  );
+};
+
+export default observer(MobileMenu);
+
+const Root = styled.div<{ isOpen: boolean }>`
   z-index: 100;
   background: ${({ theme }) => `${theme.colors.bgPrimary}`};
   position: absolute;
-  top: 48px;
+  top: 50px;
   left: 0;
   right: 0;
-  height: calc(100vh - 64px);
+  height: calc(100vh - 50px);
   transition: 0.2s;
   overflow: hidden;
 
-  ${({ opened }) => !opened && `height: 0px;`};
+  ${({ isOpen }) => !isOpen && `height: 0px;`};
   box-sizing: border-box;
   padding: 0 4px;
 `;
@@ -28,6 +100,7 @@ const Root = styled.div<{ opened: boolean }>`
 const Body = styled.div`
   display: flex;
   width: 100%;
+  height: 100%;
   flex-direction: column;
   background: ${({ theme }) => theme.colors.bgPrimary};
 `;
@@ -44,76 +117,15 @@ const Container = styled.div`
   flex-direction: column;
   background: ${({ theme }) => `${theme.colors.bgSecondary}`};
   border-radius: 10px;
+  height: 100%;
 `;
-const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => null;
-// const MobileMenu: React.FC<IProps> = ({ opened, onClose }) => {
-// 	const { settingsStore, accountStore } = useStores();
-// 	const navigate = useNavigate();
-// 	const location = useLocation();
-// 	const theme = useTheme();
-//
-// 	const menuItems = [
-// 		{
-// 			name: "TRADE SPOT",
-// 			link: `/BTC-USDC`,
-// 		},
-// 		{
-// 			name: "TRADE PERP",
-// 			link: "/BTC-PERP",
-// 		},
-// 		{
-// 			name: "FAUCET",
-// 			link: ROUTES.FAUCET,
-// 		},
-// 		{
-// 			name: "DOCS",
-// 			link: "https://docs.sprk.fi/",
-// 		},
-// 	];
-// 	return (
-// 		<Root {...{ opened }}>
-// 			<Body>
-// 				<Container>
-// 					<SizedBox height={8} />
-// 					{menuItems.map(({ name, link }) => (
-// 						<MenuItem
-// 							key={name}
-// 							selected={isRoutesEquals(link, location.pathname)}
-// 							onClick={() => {
-// 								navigate(link);
-// 								onClose();
-// 							}}
-// 						>
-// 							<Text color={isRoutesEquals(link, location.pathname) ? theme.colors.textPrimary : theme.colors.textSecondary}>
-// 								{name}
-// 							</Text>
-// 						</MenuItem>
-// 					))}
-// 					<SizedBox height={92} />
-// 				</Container>
-// 				<SizedBox height={8} />
-//
-// 				{accountStore.address != null ? (
-// 					<>
-// 						<Button color="primary" onClick={() => settingsStore.setDepositModal(true)}>
-// 							Deposit / Withdraw
-// 						</Button>
-// 						<SizedBox height={4} />
-// 						<ConnectedWallet />
-// 					</>
-// 				) : (
-// 					<Button
-// 						green
-// 						onClick={() => {
-// 							navigate(ROUTES.CONNECT);
-// 							onClose();
-// 						}}
-// 					>
-// 						Connect wallet
-// 					</Button>
-// 				)}
-// 			</Body>
-// 		</Root>
-// 	);
-// };
-export default observer(MobileMenu);
+
+const FooterContainer = styled(SmartFlex)`
+  margin-bottom: 48px;
+  width: 100%;
+`;
+
+const ConnectedWalletButtonStyled = styled(ConnectedWalletButton)`
+  width: 100%;
+  height: 40px;
+`;
