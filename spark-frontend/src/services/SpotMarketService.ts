@@ -26,7 +26,7 @@ export async function fetchOrders(params: TFetchOrdersParams): Promise<Array<Spo
   const baseSizeFilter = type ? `baseSize_${type === "BUY" ? "gt" : "lt"}: 0,` : "";
   const traderFilter = trader ? `trader: "${trader.toLowerCase()}",` : "";
   const filter = `first: ${limit}, where: { baseToken: "${baseToken}", ${baseSizeFilter} ${traderFilter}}`;
-
+  //todo add isActive
   const query = `
    		query {
    			orders(${filter}) {

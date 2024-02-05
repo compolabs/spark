@@ -38,16 +38,6 @@ class BottomTablesInterfaceSpotVM {
     reaction(() => this.rootStore.accountStore.address, this.sync);
   }
 
-  private sync = async () => {
-    const { accountStore, tradeStore } = this.rootStore;
-    if (!tradeStore.market || !accountStore.address) return;
-    return fetchOrders({ baseToken: tradeStore.market.baseToken.assetId, limit: 100, trader: accountStore.address })
-      .then(this.setMySpotOrders)
-      .catch(console.error);
-  };
-
-  private setMySpotOrders = (myOrders: SpotMarketOrder[]) => (this.myOrders = myOrders);
-
   cancelOrder = async (orderId: string) => {
     const { accountStore } = this.rootStore;
 
@@ -61,6 +51,17 @@ class BottomTablesInterfaceSpotVM {
 
     this.isOrderCancelling = false;
   };
+
+  private sync = async () => {
+    const { accountStore, tradeStore } = this.rootStore;
+    if (!tradeStore.market || !accountStore.address) return;
+    //todo запрашивать только активные заказы
+    return fetchOrders({ baseToken: tradeStore.market.baseToken.assetId, limit: 100, trader: accountStore.address })
+      .then(this.setMySpotOrders)
+      .catch(console.error);
+  };
+
+  private setMySpotOrders = (myOrders: SpotMarketOrder[]) => (this.myOrders = myOrders);
 
   private setInitialized = (l: boolean) => (this.initialized = l);
 }
