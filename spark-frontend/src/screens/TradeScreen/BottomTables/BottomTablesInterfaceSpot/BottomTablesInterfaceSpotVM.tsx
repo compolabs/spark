@@ -36,6 +36,15 @@ class BottomTablesInterfaceSpotVM {
     );
     setInterval(this.sync, 10000);
     reaction(() => this.rootStore.accountStore.address, this.sync);
+
+    reaction(
+      () => this.rootStore.accountStore.isConnected(),
+      (isConnected) => {
+        if (!isConnected) {
+          this.setMySpotOrders([]);
+        }
+      },
+    );
   }
 
   cancelOrder = async (orderId: string) => {
@@ -54,11 +63,20 @@ class BottomTablesInterfaceSpotVM {
 
   private sync = async () => {
     const { accountStore, tradeStore } = this.rootStore;
+
     if (!tradeStore.market || !accountStore.address) return;
-    //todo запрашивать только активные заказы
-    return fetchOrders({ baseToken: tradeStore.market.baseToken.assetId, limit: 100, trader: accountStore.address })
-      .then(this.setMySpotOrders)
-      .catch(console.error);
+
+    try {
+      const orders = await fetchOrders({
+        baseToken: tradeStore.market.baseToken.assetId,
+        limit: 100,
+        trader: accountStore.address,
+        isActive: true,
+      });
+      this.setMySpotOrders(orders);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   private setMySpotOrders = (myOrders: SpotMarketOrder[]) => (this.myOrders = myOrders);

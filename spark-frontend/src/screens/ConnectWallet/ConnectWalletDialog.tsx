@@ -86,7 +86,6 @@ const AgreementContainer = styled.div`
 const CheckboxContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 6px;
   cursor: pointer;
 `;
 
@@ -212,9 +211,10 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
           <Text>{AGREEMENT_TEXT}</Text>
         </AgreementContainer>
         <ButtonContainer>
-          <CheckboxContainer onClick={toggleUserAgreement}>
-            <Checkbox checked={isUserAgreed} />
-            <Text>I have read, understand and accept these terms</Text>
+          <CheckboxContainer>
+            <Checkbox checked={isUserAgreed} onChange={toggleUserAgreement}>
+              <Text>I have read, understand and accept these terms</Text>
+            </Checkbox>
           </CheckboxContainer>
           <Button disabled={!isUserAgreed} green onClick={handleWalletClick}>
             Agree and Continue

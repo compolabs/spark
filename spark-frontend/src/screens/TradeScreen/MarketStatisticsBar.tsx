@@ -81,7 +81,7 @@ export default MarketStatisticsBar;
 
 const Root = styled.div`
   display: grid;
-  grid-template-columns: minmax(min-content, 280px) minmax(300px, 1fr) minmax(100px, 280px);
+  grid-template-columns: minmax(min-content, 280px) minmax(300px, 1fr) 0;
   grid-template-rows: 1fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
