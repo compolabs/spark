@@ -9,6 +9,7 @@ import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import Tooltip from "@components/Tooltip";
+import { useFaucetVM } from "@screens/Faucet/FaucetVm";
 import { useBottomTablesInterfaceSpotVM } from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot/BottomTablesInterfaceSpotVM";
 import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
 import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
@@ -19,7 +20,7 @@ import Button from "@src/components/Button";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { useMedia } from "@src/hooks/useMedia";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
@@ -77,10 +78,11 @@ const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
 const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "click" };
 
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-  const { settingsStore, balanceStore } = useStores();
+  const { settingsStore, balanceStore, accountStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
   const theme = useTheme();
   const media = useMedia();
+  const vmfaucet = useFaucetVM();
 
   const [tabIndex, setTabIndex] = useState(0);
   const [data, setData] = useState<any>([]);
@@ -103,8 +105,8 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       ),
     }));
 
-  const getBalanceData = () =>
-    Array.from(balanceStore.balances)
+  const getBalanceData = () => {
+    return Array.from(balanceStore.balances)
       .filter(([, balance]) => balance && balance.gt(0))
       .map(([assetId, balance]) => {
         const token = TOKENS_BY_ASSET_ID[assetId];
@@ -117,8 +119,43 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             </Row>
           ),
           balance: BN.formatUnits(balance, token.decimals).toFormat(2),
+          buttons: (
+            <Row justifyContent="flex-end" style={{ flex: 1 }}>
+              {(() => {
+                if (!vmfaucet.initialized)
+                  return (
+                    <Button disabled green>
+                      Loading...
+                    </Button>
+                  );
+                return (
+                  <Button
+                    disabled={
+                      vmfaucet.loading || !vm.initialized || (token.symbol !== "ETH" && accountStore.address === null)
+                    }
+                    style={{ width: 120 }}
+                    onClick={() => {
+                      if (token.symbol === "ETH") {
+                        window.open(
+                          accountStore.address === null
+                            ? ARBITRUM_SEPOLIA_FAUCET
+                            : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
+                          "blank",
+                        );
+                      } else {
+                        vmfaucet.mint(token.assetId);
+                      }
+                    }}
+                  >
+                    {vmfaucet.loading && vmfaucet.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
+                  </Button>
+                );
+              })()}
+            </Row>
+          ),
         };
       });
+  };
 
   const renderMobileRows = () => {
     const data = getOrderData().map((ord, i) => (
