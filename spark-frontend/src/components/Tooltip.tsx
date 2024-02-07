@@ -1,4 +1,4 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { usePopperTooltip } from "react-popper-tooltip";
 import { Config } from "react-popper-tooltip/dist/types";
@@ -11,6 +11,41 @@ interface IProps {
   containerStyles?: CSSProperties;
   children: React.ReactNode;
 }
+
+const Tooltip: React.FC<IProps> = ({ containerStyles, children, content, config }) => {
+  const { getTooltipProps, setTooltipRef, setTriggerRef, tooltipRef, triggerRef, visible } = usePopperTooltip({
+    ...config,
+  });
+
+  const [triggerWidth, setTriggerWidth] = useState(0);
+
+  useEffect(() => {
+    if (visible && triggerRef) {
+      setTriggerWidth(triggerRef.offsetWidth);
+    }
+  }, [visible, triggerRef]);
+
+  const modifiedTooltipProps = getTooltipProps({
+    style: { width: `${triggerWidth}px` },
+  });
+
+  const tooltipElement = visible ? (
+    <Root ref={setTooltipRef} {...getTooltipProps(modifiedTooltipProps)}>
+      {content}
+    </Root>
+  ) : null;
+
+  return (
+    <Container>
+      <Children ref={setTriggerRef} style={{ ...containerStyles }}>
+        {children}
+      </Children>
+      {tooltipElement && ReactDOM.createPortal(tooltipElement, document.getElementById("portal-root")!)}
+    </Container>
+  );
+};
+
+export default Tooltip;
 
 const Root = styled.div`
   display: flex;
@@ -35,24 +70,3 @@ const Children = styled.div`
   cursor: pointer;
   position: relative;
 `;
-
-const Tooltip: React.FC<IProps> = ({ containerStyles, children, content, config }) => {
-  const { getTooltipProps, setTooltipRef, setTriggerRef, visible } = usePopperTooltip({ ...config });
-
-  const tooltipElement = visible ? (
-    <Root ref={setTooltipRef} {...getTooltipProps()}>
-      {content}
-    </Root>
-  ) : null;
-
-  return (
-    <Container>
-      <Children ref={setTriggerRef} style={{ ...containerStyles }}>
-        {children}
-      </Children>
-      {tooltipElement && ReactDOM.createPortal(tooltipElement, document.getElementById("portal-root")!)}
-    </Container>
-  );
-};
-
-export default Tooltip;

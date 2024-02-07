@@ -84,6 +84,13 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 
   const [tabIndex, setTabIndex] = useState(0);
   const [data, setData] = useState<any>([]);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+
+  const tooltipConfig: Config = {
+    ...RESIZE_TOOLTIP_CONFIG,
+    visible: isTooltipVisible,
+    onVisibleChange: setIsTooltipVisible,
+  };
 
   const getOrderData = () =>
     vm.myOrders.map((order) => ({
@@ -167,6 +174,11 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
     );
   };
 
+  const handleTableSize = (size: TRADE_TABLE_SIZE) => {
+    settingsStore.setTradeTableSize(size);
+    setIsTooltipVisible(false);
+  };
+
   const renderTable = () => {
     if (media.mobile) {
       return renderMobileRows();
@@ -205,14 +217,14 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           ))}
           <TableSizeSelector>
             <Tooltip
-              config={RESIZE_TOOLTIP_CONFIG}
+              config={tooltipConfig}
               content={
                 <div>
                   {TABLE_SIZES_CONFIG.map(({ size, icon, title }) => (
                     <TableSize
                       key={title}
                       active={settingsStore.tradeTableSize === size}
-                      onClick={() => settingsStore.setTradeTableSize(size)}
+                      onClick={() => handleTableSize(size)}
                     >
                       <img alt={title} src={icon} />
                       <SizedBox width={4} />
@@ -224,7 +236,12 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
                 </div>
               }
             >
-              <img alt="tableSizeSelector" src={tableSizeSelector} style={{ cursor: "pointer" }} />
+              <img
+                alt="tableSizeSelector"
+                src={tableSizeSelector}
+                style={{ cursor: "pointer" }}
+                onClick={() => setIsTooltipVisible(true)}
+              />
             </Tooltip>
           </TableSizeSelector>
         </TabContainer>
@@ -254,9 +271,9 @@ const TableRoot = styled.div`
 `;
 
 const Root = styled(SmartFlex)<{ size: TRADE_TABLE_SIZE }>`
-  max-height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
   width: 100%;
-  height: 100%;
+  height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
+  transition: height 200ms;
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))

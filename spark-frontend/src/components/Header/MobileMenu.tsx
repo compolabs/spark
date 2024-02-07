@@ -82,7 +82,7 @@ const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect,
 export default observer(MobileMenu);
 
 const Root = styled.div<{ isOpen: boolean }>`
-  z-index: 100;
+  z-index: 200;
   background: ${({ theme }) => `${theme.colors.bgPrimary}`};
   position: absolute;
   top: 50px;

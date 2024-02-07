@@ -21,6 +21,44 @@ interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
   label?: string;
 }
 
+const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
+  const [focused, setFocused] = useState(false);
+  const selectedOption = options.find(({ key }) => selected === key);
+  return (
+    <Tooltip
+      config={{
+        placement: "bottom-start",
+        trigger: "click",
+        onVisibleChange: setFocused,
+      }}
+      content={
+        <Column crossAxisSize="max">
+          {options.map((v, index) => {
+            const active = selected === v.key;
+            return (
+              <Option key={v.key + "_option"} active={active} disabled={v.disabled} onClick={() => onSelect(v, index)}>
+                {v.title}
+              </Option>
+            );
+          })}
+        </Column>
+      }
+    >
+      <Wrap focused={focused}>
+        <Text>{label}</Text>
+        <SizedBox height={2} />
+        <Root onBlur={() => setFocused(false)} onClick={() => setFocused(true)} {...rest}>
+          {selectedOption?.title ?? options[0]?.title}
+          {/*<SizedBox width={10}/>*/}
+          <img alt="arrow" className="menu-arrow" src={arrowIcon} />
+        </Root>
+      </Wrap>
+    </Tooltip>
+  );
+};
+
+export default Select;
+
 const Root = styled.div<{
   focused?: boolean;
   disabled?: boolean;
@@ -87,40 +125,3 @@ const Wrap = styled.div<{
     }
   }
 `;
-
-const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
-  const [focused, setFocused] = useState(false);
-  const selectedOption = options.find(({ key }) => selected === key);
-  return (
-    <Tooltip
-      config={{
-        placement: "bottom-start",
-        trigger: "click",
-        onVisibleChange: setFocused,
-      }}
-      content={
-        <Column crossAxisSize="max">
-          {options.map((v, index) => {
-            const active = selected === v.key;
-            return (
-              <Option key={v.key + "_option"} active={active} disabled={v.disabled} onClick={() => onSelect(v, index)}>
-                {v.title}
-              </Option>
-            );
-          })}
-        </Column>
-      }
-    >
-      <Wrap focused={focused}>
-        <Text>{label}</Text>
-        <SizedBox height={2} />
-        <Root onBlur={() => setFocused(false)} onClick={() => setFocused(true)} {...rest}>
-          {selectedOption?.title ?? options[0]?.title}
-          {/*<SizedBox width={10}/>*/}
-          <img alt="arrow" className="menu-arrow" src={arrowIcon} />
-        </Root>
-      </Wrap>
-    </Tooltip>
-  );
-};
-export default Select;

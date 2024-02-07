@@ -139,8 +139,6 @@ class CreateOrderSpotVM {
     }
   };
 
-  // todo: Что-то странное, нужно проверить не должны ли меняться местами поля
-  // todo: Ошибка с процентами для биткоина. Возможно из-за проблемы выше
   createOrder = async () => {
     const { accountStore, tradeStore, notificationStore, balanceStore } = this.rootStore;
     const { market } = tradeStore;
@@ -156,8 +154,7 @@ class CreateOrderSpotVM {
       const activeToken = this.isSell ? baseToken : quoteToken;
 
       const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
-      const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, this.inputPrice.toString());
-      await approveTransaction.wait(2);
+      await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, this.inputTotal.toString());
 
       const spotMarketContract = new ethers.Contract(
         CONTRACT_ADDRESSES.spotMarket,
@@ -165,7 +162,7 @@ class CreateOrderSpotVM {
         accountStore.signer,
       );
       const openOrderTransaction = await spotMarketContract.openOrder(
-        activeToken.assetId,
+        baseToken.assetId,
         baseSize.toString(),
         this.inputPrice.toString(),
       );

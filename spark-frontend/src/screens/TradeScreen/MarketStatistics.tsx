@@ -1,6 +1,7 @@
 import React from "react";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
+import { observer } from "mobx-react";
 
 import { Column, DesktopRow, Row } from "@src/components/Flex";
 import SizedBox from "@src/components/SizedBox";
@@ -11,10 +12,12 @@ import { useStores } from "@src/stores";
 import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
 
-const MarketStatistics: React.FC = () => {
+const MarketStatistics: React.FC = observer(() => {
   const { tradeStore } = useStores();
   const theme = useTheme();
   const media = useMedia();
+
+  console.log(tradeStore.market?.priceUnits.toString());
 
   //todo исправить значения
   const spotStatsArr = [
@@ -93,7 +96,7 @@ const MarketStatistics: React.FC = () => {
   };
 
   return media.mobile ? renderMobile() : renderDesktop();
-};
+});
 
 export default MarketStatistics;
 
