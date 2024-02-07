@@ -1,4 +1,3 @@
-import { UdfQuotesResponse, IQuotesProvider } from './iquotes-provider';
 import { QuoteData } from '../../../charting_library/datafeed-api';
 
 import {
@@ -6,6 +5,7 @@ import {
 	logMessage,
 	UdfErrorResponse,
 } from './helpers';
+import { IQuotesProvider,UdfQuotesResponse } from './iquotes-provider';
 import { IRequester } from './irequester';
 
 export class QuotesProvider implements IQuotesProvider {

@@ -12,7 +12,6 @@ import {
 	UdfOkResponse,
 	UdfResponse,
 } from './helpers';
-
 import { IRequester } from './irequester';
 // tslint:disable: no-any
 interface HistoryPartialDataResponse extends UdfOkResponse {

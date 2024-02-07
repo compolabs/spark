@@ -7,7 +7,6 @@ import {
 	getErrorMessage,
 	logMessage,
 } from './helpers';
-
 import { IQuotesProvider } from './iquotes-provider';
 
 interface QuoteSubscriber {

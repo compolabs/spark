@@ -1,7 +1,7 @@
 import {
 	LibrarySymbolInfo,
-	SearchSymbolResultItem,
 	ResolutionString,
+	SearchSymbolResultItem,
 	VisiblePlotsSet,
 } from '../../../charting_library/datafeed-api';
 
@@ -9,7 +9,6 @@ import {
 	getErrorMessage,
 	logMessage,
 } from './helpers';
-
 import { IRequester } from './irequester';
 
 interface SymbolInfoMap {
