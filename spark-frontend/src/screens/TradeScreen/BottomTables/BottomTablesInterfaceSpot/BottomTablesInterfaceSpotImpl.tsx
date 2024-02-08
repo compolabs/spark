@@ -5,6 +5,7 @@ import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
 import Chip from "@components/Chip";
+import MintButtons from "@components/MintButtons";
 import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
@@ -19,7 +20,7 @@ import Button from "@src/components/Button";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
-import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { useMedia } from "@src/hooks/useMedia";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
@@ -125,38 +126,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             </Row>
           ),
           balance: BN.formatUnits(balance, token.decimals).toFormat(2),
-          buttons: (
-            <Row justifyContent="flex-end" style={{ flex: 1 }}>
-              {!faucetStore.initialized ? (
-                <Button disabled green>
-                  Loading...
-                </Button>
-              ) : (
-                <Button
-                  disabled={
-                    faucetStore.loading ||
-                    !faucetStore.initialized ||
-                    (token.symbol !== "ETH" && accountStore.address === null)
-                  }
-                  style={{ width: 120 }}
-                  onClick={() => {
-                    if (token.symbol === "ETH") {
-                      window.open(
-                        accountStore.address === null
-                          ? ARBITRUM_SEPOLIA_FAUCET
-                          : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
-                        "blank",
-                      );
-                    } else {
-                      faucetStore.mint(token.assetId);
-                    }
-                  }}
-                >
-                  {faucetStore.loading && faucetStore.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
-                </Button>
-              )}
-            </Row>
-          ),
+          buttons: <MintButtons assetId={assetId} />,
         };
       });
 
