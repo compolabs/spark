@@ -7,24 +7,9 @@ import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { FaucetVMProvider, useFaucetVM } from "@screens/Faucet/FaucetVm";
 import TokensFaucetTable from "@screens/Faucet/TokensFaucetTable";
+import { media } from "@src/themes/breakpoints";
 
 interface IProps {}
-
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  padding: 0 16px;
-  width: 100%;
-  min-height: 100%;
-  margin-bottom: 24px;
-  margin-top: 40px;
-  text-align: left;
-
-  @media (min-width: 880px) {
-    margin-top: 56px;
-  }
-`;
 
 const FaucetImpl: React.FC<IProps> = observer(() => {
   const vm = useFaucetVM();
@@ -47,4 +32,20 @@ const Faucet: React.FC<IProps> = () => (
     <FaucetImpl />
   </FaucetVMProvider>
 );
+
 export default Faucet;
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 16px;
+  width: 100%;
+  margin-bottom: 24px;
+  margin-top: 40px;
+  text-align: left;
+
+  ${media.desktop} {
+    margin-top: 56px;
+  }
+`;

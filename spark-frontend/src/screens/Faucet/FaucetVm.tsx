@@ -22,13 +22,13 @@ export const FaucetVMProvider: React.FC<IProps> = ({ children }) => {
 
 export const useFaucetVM = () => useVM(ctx);
 
-const faucetAmounts: Record<string, number> = {
+const FAUCET_AMOUNTS: Record<string, number> = {
   ETH: 0.001,
   USDC: 3000,
   BTC: 0.01,
   UNI: 50,
 };
-const availableToMint = ["ETH", "UNI", "USDC"];
+const AVAILABLE_TOKENS = ["ETH", "UNI", "USDC"];
 
 class FaucetVM {
   public rootStore: RootStore;
@@ -47,14 +47,14 @@ class FaucetVM {
 
     return TOKENS_LIST.map((v) => {
       const balance = balanceStore.getBalance(v.assetId);
-      const mintAmount = new BN(faucetAmounts[v.symbol] ?? 0);
+      const mintAmount = new BN(FAUCET_AMOUNTS[v.symbol] ?? 0);
       const formatBalance = BN.formatUnits(balance ?? BN.ZERO, v.decimals);
       return {
         ...TOKENS_BY_ASSET_ID[v.assetId],
         ...balance,
         formatBalance,
         mintAmount,
-        disabled: !availableToMint.includes(v.symbol),
+        disabled: !AVAILABLE_TOKENS.includes(v.symbol),
       };
     });
   }
@@ -67,9 +67,9 @@ class FaucetVM {
     const token = TOKENS_BY_ASSET_ID[assetId];
     const tokenContract = new ethers.Contract(assetId, ERC20_ABI, accountStore.signer);
 
-    const amount = ethers.parseUnits(faucetAmounts[token.symbol].toString(), token.decimals);
+    const amount = ethers.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
     try {
-      this._setLoading(true);
+      this.setLoading(true);
       const tx = await tokenContract.mint(accountStore.address, amount);
       await tx.wait();
       notificationStore.toast("Minting successful!", { type: "success" });
@@ -77,9 +77,10 @@ class FaucetVM {
     } catch (error: any) {
       notificationStore.toast(error.toString(), { type: "error" });
     } finally {
-      this._setLoading(false);
+      this.setLoading(false);
       await balanceStore.update();
     }
   };
-  private _setLoading = (l: boolean) => (this.loading = l);
+
+  private setLoading = (l: boolean) => (this.loading = l);
 }

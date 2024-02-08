@@ -59,6 +59,7 @@ class AccountStore {
     const { notificationStore } = this.rootStore;
     if (!window.ethereum) {
       console.error("Ethereum wallet not found");
+      notificationStore.toast("Ethereum wallet not found", { type: "error" });
       return;
     }
 
@@ -157,9 +158,9 @@ class AccountStore {
     return this.address;
   };
 
-  isConnected = () => {
+  get isConnected() {
     return !!this.address;
-  };
+  }
 
   serialize = (): ISerializedAccountStore => ({
     address: this.address,

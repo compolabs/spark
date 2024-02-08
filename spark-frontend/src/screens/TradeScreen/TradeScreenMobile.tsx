@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import BottomTables from "@screens/TradeScreen/BottomTables";
 import Chart from "@screens/TradeScreen/Chart";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
+import MenuOverlay from "@src/components/MenuOverlay";
 import { SmartFlex } from "@src/components/SmartFlex";
 import { media } from "@src/themes/breakpoints";
 import { useStores } from "@stores";
@@ -55,9 +56,9 @@ const TradeScreenMobile: React.FC = observer(() => {
       <MarketStatisticsBar isChartOpen={isChartOpen} onSwitchClick={handleToggleChart} />
       {renderContent()}
       <BottomTables />
-      <OverlayContainer isOpen={tradeStore.marketSelectionOpened}>
+      <MenuOverlay isOpen={tradeStore.marketSelectionOpened} offsetTop={50} top={40}>
         <MarketSelection />
-      </OverlayContainer>
+      </MenuOverlay>
     </Root>
   );
 });
@@ -87,7 +88,7 @@ const MobileContent = styled.div`
   grid-template-columns: 140px 1fr;
   gap: 8px;
   width: 100%;
-  min-height: 418px;
+  height: 418px;
 `;
 
 const ContentWrapper = styled(SmartFlex)`
@@ -98,17 +99,4 @@ const ContentWrapper = styled(SmartFlex)`
   &:first-of-type {
     height: 100%;
   }
-`;
-
-const OverlayContainer = styled(SmartFlex)<{ isOpen?: boolean }>`
-  position: absolute;
-  top: 40px;
-  right: 0;
-  z-index: 100;
-  padding: 0 4px;
-  background: ${({ theme }) => `${theme.colors.bgPrimary}`};
-  height: ${({ isOpen }) => (isOpen ? "calc(100vh - 40px)" : "0")};
-  width: 100%;
-  overflow: hidden;
-  transition: 0.2s;
 `;

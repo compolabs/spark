@@ -17,8 +17,6 @@ const MarketStatistics: React.FC = observer(() => {
   const theme = useTheme();
   const media = useMedia();
 
-  console.log(tradeStore.market?.priceUnits.toString());
-
   //todo исправить значения
   const spotStatsArr = [
     { title: "Index price", value: tradeStore.market?.priceUnits.toFormat(2) },

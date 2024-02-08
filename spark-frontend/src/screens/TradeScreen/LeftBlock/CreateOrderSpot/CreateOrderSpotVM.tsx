@@ -169,7 +169,6 @@ class CreateOrderSpotVM {
       await openOrderTransaction.wait();
       notificationStore.toast("Order Created");
     } catch (error) {
-      console.log(error);
       notificationStore.toast("We were unable to process your order at this time", { type: "warning" });
     }
 
