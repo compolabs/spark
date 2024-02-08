@@ -1,26 +1,10 @@
-import React, { useMemo } from "react";
 import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 
 import { ERC20_ABI } from "@src/abi";
 import { TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
-import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
-import { RootStore, useStores } from "@stores";
-
-const ctx = React.createContext<FaucetVM | null>(null);
-
-interface IProps {
-  children: React.ReactNode;
-}
-
-export const FaucetVMProvider: React.FC<IProps> = ({ children }) => {
-  const rootStore = useStores();
-  const store = useMemo(() => new FaucetVM(rootStore), [rootStore]);
-  return <ctx.Provider value={store}>{children}</ctx.Provider>;
-};
-
-export const useFaucetVM = () => useVM(ctx);
+import RootStore from "@stores/RootStore";
 
 const faucetAmounts: Record<string, number> = {
   ETH: 0.001,
@@ -30,7 +14,7 @@ const faucetAmounts: Record<string, number> = {
 };
 const availableToMint = ["ETH", "UNI", "USDC"];
 
-class FaucetVM {
+class FaucetStore {
   public rootStore: RootStore;
 
   loading: boolean = false;
@@ -83,3 +67,5 @@ class FaucetVM {
   };
   private _setLoading = (l: boolean) => (this.loading = l);
 }
+
+export default FaucetStore;
