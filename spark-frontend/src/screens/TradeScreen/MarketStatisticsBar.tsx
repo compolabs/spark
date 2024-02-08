@@ -28,6 +28,12 @@ const MarketStatisticsBar: React.FC<IProps> = observer(({ isChartOpen, onSwitchC
     onSwitchClick?.();
   };
 
+  const handleSwitchClick = () => {
+    if (isChartOpen || tradeStore.marketSelectionOpened) return;
+
+    onSwitchClick?.();
+  };
+
   const renderLeftIcons = () => {
     if (isChartOpen) {
       return <Icon alt="token0" src={arrowLeft} onClick={handleBack} />;
@@ -47,7 +53,6 @@ const MarketStatisticsBar: React.FC<IProps> = observer(({ isChartOpen, onSwitchC
     return (
       <MarketSelect
         focused={tradeStore.marketSelectionOpened}
-        style={tradeStore.marketSelectionOpened ? { background: "#1B1B1B", borderRadius: "10px 0 0 10px" } : {}}
         onClick={() => tradeStore.setMarketSelectionOpened(!tradeStore.marketSelectionOpened)}
       >
         {/*todo добавить скелетон лоадер*/}
@@ -68,11 +73,9 @@ const MarketStatisticsBar: React.FC<IProps> = observer(({ isChartOpen, onSwitchC
     <Root>
       {renderMarketSelector()}
       {media.desktop && <MarketStatistics />}
-      {!isChartOpen && (
-        <SwitchContainer onClick={onSwitchClick}>
-          <SwitchIcon />
-        </SwitchContainer>
-      )}
+      <SwitchContainer isVisible={!isChartOpen && !tradeStore.marketSelectionOpened} onClick={handleSwitchClick}>
+        <SwitchIcon />
+      </SwitchContainer>
     </Root>
   );
 });
@@ -94,6 +97,7 @@ const Root = styled.div`
   ${media.mobile} {
     grid-template-columns: 1fr 0;
     height: 40px;
+    min-height: 40px;
   }
 `;
 const Icon = styled.img`
@@ -120,6 +124,12 @@ const MarketSelect = styled.div<{
   gap: 4px;
   cursor: pointer;
 
+  ${({ focused }) =>
+    focused && {
+      background: "#1B1B1B",
+      borderRadius: "10px 0 0 10px",
+    }}
+
   ${StyledArrow} {
     cursor: pointer;
     transition: 0.4s;
@@ -135,6 +145,7 @@ const MarketSelect = styled.div<{
 
   ${media.mobile} {
     max-width: unset;
+    border-radius: ${({ focused }) => (focused ? "10px" : "unset")};
   }
 `;
 
@@ -142,7 +153,7 @@ const StyledText = styled(Text)`
   width: max-content;
 `;
 
-const SwitchContainer = styled(SmartFlex)`
+const SwitchContainer = styled(SmartFlex)<{ isVisible?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -159,5 +170,10 @@ const SwitchContainer = styled(SmartFlex)`
 
   ${media.desktop} {
     display: none;
+  }
+
+  ${media.mobile} {
+    opacity: ${({ isVisible }) => (isVisible ? "1" : "0")};
+    transition: opacity 250ms;
   }
 `;

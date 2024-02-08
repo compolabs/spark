@@ -85,7 +85,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   const media = useMedia();
 
   const [tabIndex, setTabIndex] = useState(0);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any[]>([]);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   const tooltipConfig: Config = {
@@ -183,6 +183,16 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   };
 
   const renderTable = () => {
+    if (!data.length) {
+      return (
+        <SmartFlex height="100%" padding={media.mobile ? "16px" : "32px"} width="100%" center>
+          <Text type={TEXT_TYPES.BUTTON_SECONDARY} secondary>
+            No Data
+          </Text>
+        </SmartFlex>
+      );
+    }
+
     if (media.mobile) {
       return renderMobileRows();
     }
@@ -277,6 +287,10 @@ const Root = styled(SmartFlex)<{ size: TRADE_TABLE_SIZE }>`
   width: 100%;
   height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
   transition: height 200ms;
+
+  ${media.mobile} {
+    height: fit-content;
+  }
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))

@@ -36,7 +36,6 @@ const Header: React.FC<IProps> = observer(() => {
 
   const toggleMenu = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-    document.body.classList.toggle("noscroll", !isMobileMenuOpen);
 
     if (isMobileMenuOpen) {
       closeMobileMenu();
@@ -156,10 +155,12 @@ const Root = styled(SmartFlex)`
   justify-content: space-between;
   width: 100%;
   height: 48px;
+  min-height: 48px;
   padding: 0 12px;
 
   ${media.mobile} {
     height: 42px;
+    min-height: 42px;
     padding: 0 8px;
     margin: 4px 0;
   }

@@ -14,7 +14,7 @@ const Root = styled(Column)`
   align-items: center;
   background: ${({ theme }) => theme.colors.bgPrimary};
   height: 100vh;
-  max-height: 100vh;
+  height: 100dvh;
 `;
 
 const App: React.FC = observer(() => {

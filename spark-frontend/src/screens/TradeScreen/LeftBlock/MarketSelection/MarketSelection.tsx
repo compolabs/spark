@@ -74,6 +74,7 @@ const Root = styled.div`
   flex-direction: column;
   width: 100%;
 `;
+
 const Top = styled.div`
   display: flex;
   flex-direction: column;

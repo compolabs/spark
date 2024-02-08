@@ -1,6 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useTheme } from "@emotion/react";
+import { Link, useLocation } from "react-router-dom";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react-lite";
 
@@ -10,6 +9,7 @@ import { useStores } from "@src/stores";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 
 import Button from "../Button";
+import MenuOverlay from "../MenuOverlay";
 import SizedBox from "../SizedBox";
 import { SmartFlex } from "../SmartFlex";
 
@@ -23,10 +23,8 @@ interface IProps {
 }
 
 const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect, onClose }) => {
-  const { settingsStore, accountStore } = useStores();
-  const navigate = useNavigate();
+  const { accountStore } = useStores();
   const location = useLocation();
-  const theme = useTheme();
 
   const handleAccountClick = () => {
     onAccountClick();
@@ -49,53 +47,46 @@ const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect,
   };
 
   return (
-    <Root isOpen={isOpen}>
+    <MenuOverlay isOpen={isOpen} top={50}>
       <Body>
         <Container>
           <SizedBox height={8} />
-          {MENU_ITEMS.map(({ title, link, route }) => (
-            <MenuItem
-              key={title}
-              selected={isRoutesEquals(title, location.pathname)}
-              onClick={() => {
-                navigate(title);
-                onClose();
-              }}
-            >
-              <Text
-                color={
-                  isRoutesEquals(link ?? "", location.pathname) ? theme.colors.textPrimary : theme.colors.textSecondary
-                }
-              >
-                {title}
-              </Text>
-            </MenuItem>
-          ))}
+          {MENU_ITEMS.map(({ title, link, route }) => {
+            if (!link && !route) {
+              return (
+                <MenuItem key={title}>
+                  <Text>{title}</Text>
+                </MenuItem>
+              );
+            } else if (route) {
+              return (
+                <Link key={title} to={route} onClick={onClose}>
+                  <MenuItem key={title} isSelected={isRoutesEquals(route, location.pathname)}>
+                    <Text>{title}</Text>
+                  </MenuItem>
+                </Link>
+              );
+            } else if (link) {
+              return (
+                <a key={title} href={link} rel="noopener noreferrer" target="_blank">
+                  <MenuItem key={title}>
+                    <Text>{title}</Text>
+                  </MenuItem>
+                </a>
+              );
+            }
+
+            return null;
+          })}
         </Container>
         <SizedBox height={8} />
         <FooterContainer>{renderWalletButton()}</FooterContainer>
       </Body>
-    </Root>
+    </MenuOverlay>
   );
 };
 
 export default observer(MobileMenu);
-
-const Root = styled.div<{ isOpen: boolean }>`
-  z-index: 200;
-  background: ${({ theme }) => `${theme.colors.bgPrimary}`};
-  position: absolute;
-  top: 50px;
-  left: 0;
-  right: 0;
-  height: calc(100vh - 50px);
-  transition: 0.2s;
-  overflow: hidden;
-
-  ${({ isOpen }) => !isOpen && `height: 0px;`};
-  box-sizing: border-box;
-  padding: 0 4px;
-`;
 
 const Body = styled.div`
   display: flex;
@@ -105,11 +96,14 @@ const Body = styled.div`
   background: ${({ theme }) => theme.colors.bgPrimary};
 `;
 
-const MenuItem = styled.div<{ selected?: boolean }>`
+const MenuItem = styled.div<{ isSelected?: boolean }>`
   cursor: pointer;
   ${TEXT_TYPES_MAP[TEXT_TYPES.BUTTON_SECONDARY]};
-  color: ${({ theme, selected }) => (selected ? theme.colors.redLight : theme.colors.textSecondary)};
   padding: 12px 32px;
+
+  ${Text} {
+    color: ${({ theme, isSelected }) => (isSelected ? theme.colors.textPrimary : theme.colors.textSecondary)};
+  }
 `;
 
 const Container = styled.div`
