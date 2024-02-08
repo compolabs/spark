@@ -19,7 +19,7 @@ import Button from "@src/components/Button";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { useMedia } from "@src/hooks/useMedia";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
@@ -70,6 +70,7 @@ const ORDER_COLUMNS = [
 const BALANCE_COLUMNS = [
   { Header: "Asset", accessor: "asset" },
   { Header: "Balance", accessor: "balance" },
+  { Header: "", accessor: "buttons" },
 ];
 
 const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
@@ -77,7 +78,7 @@ const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
 const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "click" };
 
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-  const { settingsStore, balanceStore } = useStores();
+  const { settingsStore, balanceStore, faucetStore, accountStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
   const theme = useTheme();
   const media = useMedia();
@@ -124,6 +125,38 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             </Row>
           ),
           balance: BN.formatUnits(balance, token.decimals).toFormat(2),
+          buttons: (
+            <Row justifyContent="flex-end" style={{ flex: 1 }}>
+              {!faucetStore.initialized ? (
+                <Button disabled green>
+                  Loading...
+                </Button>
+              ) : (
+                <Button
+                  disabled={
+                    faucetStore.loading ||
+                    !faucetStore.initialized ||
+                    (token.symbol !== "ETH" && accountStore.address === null)
+                  }
+                  style={{ width: 120 }}
+                  onClick={() => {
+                    if (token.symbol === "ETH") {
+                      window.open(
+                        accountStore.address === null
+                          ? ARBITRUM_SEPOLIA_FAUCET
+                          : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
+                        "blank",
+                      );
+                    } else {
+                      faucetStore.mint(token.assetId);
+                    }
+                  }}
+                >
+                  {faucetStore.loading && faucetStore.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
+                </Button>
+              )}
+            </Row>
+          ),
         };
       });
 
