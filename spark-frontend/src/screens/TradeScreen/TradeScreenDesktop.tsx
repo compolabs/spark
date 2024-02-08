@@ -5,7 +5,6 @@ import { observer } from "mobx-react";
 import BottomTables from "@screens/TradeScreen/BottomTables";
 import Chart from "@screens/TradeScreen/Chart";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
-import StatusBar from "@screens/TradeScreen/StatusBar";
 import { Column } from "@src/components/Flex";
 import LeftBlock from "@src/screens/TradeScreen/LeftBlock";
 import { media } from "@src/themes/breakpoints";
@@ -24,7 +23,6 @@ const TradeScreenDesktop: React.FC = observer(() => {
         </Column>
         <OrderbookAndTradesInterface />
       </ContentContainer>
-      <StatusBar />
     </Root>
   );
 });

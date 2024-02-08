@@ -38,7 +38,7 @@ class BottomTablesInterfaceSpotVM {
     reaction(() => this.rootStore.accountStore.address, this.sync);
 
     reaction(
-      () => this.rootStore.accountStore.isConnected(),
+      () => this.rootStore.accountStore.isConnected,
       (isConnected) => {
         if (!isConnected) {
           this.setMySpotOrders([]);

@@ -116,9 +116,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
         }}
       >
         <VolumeBar type={type} volumePercent={volumePercent(o).times(100).toNumber()} />
-        <Text primary>{o.baseSizeUnits.toFormat(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
-        <Text primary>{o.quoteSizeUnits.toFormat(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
-        <Text color={color}>{BN.formatUnits(o.price, 9).toFormat(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
+        <Text primary>{o.baseSizeUnits.toSignificant(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
+        <Text primary>{o.quoteSizeUnits.toSignificant(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
+        <Text color={color}>{BN.formatUnits(o.price, 9).toSignificant(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
       </OrderRow>
     ));
   };
