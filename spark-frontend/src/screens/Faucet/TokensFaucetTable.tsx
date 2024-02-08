@@ -2,13 +2,11 @@ import React from "react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react-lite";
 
-import Button from "@components/Button";
 import Chip from "@components/Chip";
 import { Column, Row } from "@components/Flex";
+import MintButtons from "@components/MintButtons";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { ARBITRUM_SEPOLIA_FAUCET } from "@src/constants";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -56,9 +54,8 @@ const TableBody = styled(Column)`
   box-sizing: border-box;
 `;
 
-const TokensFaucetTable: React.FC<IProps> = observer(() => {
-  const { accountStore } = useStores();
-  const vm = useFaucetVM();
+const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
+  const { accountStore, faucetStore } = useStores();
   return (
     <Root>
       <StyledTableRow>
@@ -70,7 +67,7 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
         </TableTitle>
       </StyledTableRow>
       <TableBody>
-        {vm.faucetTokens.map((token) => (
+        {faucetStore.faucetTokens.map((token) => (
           <StyledTableRow key={token.assetId}>
             <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
               {token.name}
@@ -81,38 +78,7 @@ const TokensFaucetTable: React.FC<IProps> = observer(() => {
             <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
               {token.formatBalance?.toFormat(2)} &nbsp;<Chip>{token.symbol}</Chip>
             </TableText>
-            <Row justifyContent="flex-end" style={{ flex: 1 }}>
-              {(() => {
-                if (!vm.initialized)
-                  return (
-                    <Button disabled green>
-                      Loading...
-                    </Button>
-                  );
-                return (
-                  <Button
-                    disabled={
-                      vm.loading || !vm.initialized || (token.symbol !== "ETH" && accountStore.address === null)
-                    }
-                    style={{ width: 120 }}
-                    onClick={() => {
-                      if (token.symbol === "ETH") {
-                        window.open(
-                          accountStore.address === null
-                            ? ARBITRUM_SEPOLIA_FAUCET
-                            : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
-                          "blank",
-                        );
-                      } else {
-                        vm.mint(token.assetId);
-                      }
-                    }}
-                  >
-                    {vm.loading && vm.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
-                  </Button>
-                );
-              })()}
-            </Row>
+            <MintButtons assetId={token.assetId} />
           </StyledTableRow>
         ))}
       </TableBody>

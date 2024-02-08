@@ -28,6 +28,16 @@ const SpotOrderSettingsSheet: React.FC<Props> = ({
   isOpen,
   onClose,
 }) => {
+  const handleFilterSelect = (index: number) => {
+    onFilterSelect(index);
+    onClose();
+  };
+
+  const handleDecimalsSelect = (index: string) => {
+    onDecimalSelect(index);
+    onClose();
+  };
+
   const renderButtons = () => {
     return filterIcons.map((icon, index) => (
       <SettingIcon
@@ -35,7 +45,7 @@ const SpotOrderSettingsSheet: React.FC<Props> = ({
         alt="filter"
         isActive={selectedFilter === index}
         src={icon}
-        onClick={() => onFilterSelect(index)}
+        onClick={() => handleFilterSelect(index)}
       />
     ));
   };
@@ -45,7 +55,7 @@ const SpotOrderSettingsSheet: React.FC<Props> = ({
       <DecimalItem
         key={index}
         isActive={selectedDecimal === index.toString()}
-        onClick={() => onDecimalSelect(index.toString())}
+        onClick={() => handleDecimalsSelect(index.toString())}
       >
         <Text primary>{new BN(10).pow(-decimal).toString()}</Text>
       </DecimalItem>

@@ -57,7 +57,7 @@ const MarketStatisticsBar: React.FC<IProps> = observer(({ isChartOpen, onSwitchC
             <StyledText type={TEXT_TYPES.H} primary>
               {tradeStore.market?.symbol}
             </StyledText>
-            <img alt="arrow" className="menu-arrow" src={arrowUp} style={{ width: 24, height: 24 }} />
+            <StyledArrow alt="arrow" src={arrowUp} />
           </SmartFlex>
         </SmartFlex>
       </MarketSelect>
@@ -81,7 +81,7 @@ export default MarketStatisticsBar;
 
 const Root = styled.div`
   display: grid;
-  grid-template-columns: minmax(min-content, 280px) minmax(300px, 1fr) minmax(100px, 280px);
+  grid-template-columns: minmax(min-content, 280px) minmax(300px, 1fr) 0;
   grid-template-rows: 1fr;
   grid-column-gap: 0px;
   grid-row-gap: 0px;
@@ -92,7 +92,7 @@ const Root = styled.div`
   border-radius: 10px;
 
   ${media.mobile} {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr 0;
     height: 40px;
   }
 `;
@@ -100,6 +100,11 @@ const Icon = styled.img`
   border-radius: 50%;
   height: 24px;
   width: 24px;
+`;
+
+const StyledArrow = styled.img`
+  width: 24;
+  height: 24;
 `;
 
 const MarketSelect = styled.div<{
@@ -115,17 +120,21 @@ const MarketSelect = styled.div<{
   gap: 4px;
   cursor: pointer;
 
-  .menu-arrow {
+  ${StyledArrow} {
     cursor: pointer;
     transition: 0.4s;
     transform: ${({ focused }) => (focused ? "rotate(-180deg)" : "rotate(0deg)")};
   }
 
   :hover {
-    .menu-arrow {
+    ${StyledArrow} {
       transform: ${({ focused, disabled }) =>
         focused ? "rotate(-180)" : disabled ? "rotate(0deg)" : "rotate(-90deg)"};
     }
+  }
+
+  ${media.mobile} {
+    max-width: unset;
   }
 `;
 

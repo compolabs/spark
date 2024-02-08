@@ -20,18 +20,6 @@ import { useStores } from "@stores";
 
 interface IProps extends ComponentProps<any> {}
 
-const Root = styled.div`
-  padding: 12px;
-`;
-
-const StyledInfoIcon = styled(InfoIcon)`
-  margin-right: 2px;
-
-  path {
-    fill: ${({ theme }) => theme.colors.textDisabled};
-  }
-`;
-
 const orderTypes = [
   { title: "Market", key: "market", disabled: true },
   { title: "Limit", key: "limit" },
@@ -209,4 +197,18 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
     </Root>
   );
 });
+
 export default CreateOrderSpot;
+
+const Root = styled.div`
+  padding: 12px;
+  width: 100%;
+`;
+
+const StyledInfoIcon = styled(InfoIcon)`
+  margin-right: 2px;
+
+  path {
+    fill: ${({ theme }) => theme.colors.textDisabled};
+  }
+`;

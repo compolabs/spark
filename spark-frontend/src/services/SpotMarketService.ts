@@ -19,25 +19,34 @@ type TFetchOrdersParams = {
   type?: "BUY" | "SELL";
   limit: number;
   trader?: string;
+  isActive?: boolean;
 };
 
-export async function fetchOrders(params: TFetchOrdersParams): Promise<Array<SpotMarketOrder>> {
-  const { baseToken, type, limit, trader } = params;
+export async function fetchOrders({
+  baseToken,
+  type,
+  limit,
+  trader,
+  isActive,
+}: TFetchOrdersParams): Promise<Array<SpotMarketOrder>> {
   const baseSizeFilter = type ? `baseSize_${type === "BUY" ? "gt" : "lt"}: 0,` : "";
   const traderFilter = trader ? `trader: "${trader.toLowerCase()}",` : "";
-  const filter = `first: ${limit}, where: { baseToken: "${baseToken}", ${baseSizeFilter} ${traderFilter}}`;
-  //todo add isActive
+  const baseTokenFilter = `baseToken: "${baseToken}",`;
+  const isActiveFilter = isActive ? `isActive: ${isActive},` : "";
+  const filter = `first: ${limit}, where: { ${baseTokenFilter} ${baseSizeFilter} ${traderFilter} ${isActiveFilter}}`;
+
   const query = `
-   		query {
-   			orders(${filter}) {
-   				id
-   				trader
-   				baseToken
-   				baseSize
-   				orderPrice
-   				blockTimestamp
-  			}
-   		}
+    query {
+      orders(${filter}) {
+        id
+        trader
+        baseToken
+        baseSize
+        orderPrice
+        blockTimestamp
+        isActive
+      }
+    }
   `;
   try {
     const response = await axios.post(API_URL, { query });
@@ -57,13 +66,13 @@ export type TMarketCreateEvent = {
 export async function fetchMarketCreateEvents(limit: number): Promise<Array<TMarketCreateEvent>> {
   const filter = `first: ${limit}`;
   const query = `
-    	query {
-    	  marketCreateEvents(${filter}) {
-    	    id
-    	    assetId
-    	    decimal
-    	  }
-    	}
+      query {
+        marketCreateEvents(${filter}) {
+          id
+          assetId
+          decimal
+        }
+      }
   `;
 
   try {
@@ -78,11 +87,11 @@ export async function fetchMarketCreateEvents(limit: number): Promise<Array<TMar
 export async function fetchMarketPrice(baseToken: string): Promise<BN> {
   const filter = `first: 1, where: {baseToken: "${baseToken}"}`;
   const query = `
-		query {
-			tradeEvents(${filter}) {
-    			price
-			}
-		}
+    query {
+      tradeEvents(${filter}) {
+          price
+      }
+    }
 `;
   try {
     const response = await axios.post(API_URL, { query });
@@ -106,16 +115,16 @@ export type TSpotMarketTrade = {
 export async function fetchTrades(baseToken: string, limit: number): Promise<Array<TSpotMarketTrade>> {
   const filter = `first: ${limit}, where: {baseToken: "${baseToken}"}`;
   const query = `
-		query {
-			tradeEvents(${filter}) {
-    			id
-    			matcher
-    			baseToken
-    			tradeAmount
-    			price
-    			blockTimestamp
-			}
-		}
+    query {
+      tradeEvents(${filter}) {
+          id
+          matcher
+          baseToken
+          tradeAmount
+          price
+          blockTimestamp
+      }
+    }
 `;
   try {
     const response = await axios.post(API_URL, { query });

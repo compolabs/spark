@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 
 import AccountStore, { ISerializedAccountStore } from "@stores/AccountStore";
+import FaucetStore from "@stores/FaucetStore";
 import NotificationStore from "@stores/NotificationStore";
 import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 // import OracleStore from "@stores/OracleStore";
@@ -16,6 +17,7 @@ export interface ISerializedRootStore {
 
 export default class RootStore {
   public accountStore: AccountStore;
+  public faucetStore: FaucetStore;
   // public oracleStore: OracleStore;
   public settingsStore: SettingsStore;
   public notificationStore: NotificationStore;
@@ -25,6 +27,7 @@ export default class RootStore {
 
   constructor(initState?: ISerializedRootStore) {
     this.accountStore = new AccountStore(this, initState?.accountStore);
+    this.faucetStore = new FaucetStore(this);
     // this.spotOrdersStore = new SpotOrdersStore(this);
     this.settingsStore = new SettingsStore(this, initState?.settingStore);
     this.notificationStore = new NotificationStore(this);

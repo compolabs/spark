@@ -5,11 +5,11 @@ import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
 import Chip from "@components/Chip";
+import MintButtons from "@components/MintButtons";
 import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import Tooltip from "@components/Tooltip";
-import { useFaucetVM } from "@screens/Faucet/FaucetVm";
 import { useBottomTablesInterfaceSpotVM } from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot/BottomTablesInterfaceSpotVM";
 import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
 import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
@@ -20,7 +20,7 @@ import Button from "@src/components/Button";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
-import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { useMedia } from "@src/hooks/useMedia";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
@@ -71,6 +71,7 @@ const ORDER_COLUMNS = [
 const BALANCE_COLUMNS = [
   { Header: "Asset", accessor: "asset" },
   { Header: "Balance", accessor: "balance" },
+  { Header: "", accessor: "buttons" },
 ];
 
 const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
@@ -78,14 +79,20 @@ const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
 const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "click" };
 
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-  const { settingsStore, balanceStore, accountStore } = useStores();
+  const { settingsStore, balanceStore, faucetStore, accountStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
   const theme = useTheme();
   const media = useMedia();
-  const vmfaucet = useFaucetVM();
 
   const [tabIndex, setTabIndex] = useState(0);
   const [data, setData] = useState<any>([]);
+  const [isTooltipVisible, setIsTooltipVisible] = useState(false);
+
+  const tooltipConfig: Config = {
+    ...RESIZE_TOOLTIP_CONFIG,
+    visible: isTooltipVisible,
+    onVisibleChange: setIsTooltipVisible,
+  };
 
   const getOrderData = () =>
     vm.myOrders.map((order) => ({
@@ -105,8 +112,8 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       ),
     }));
 
-  const getBalanceData = () => {
-    return Array.from(balanceStore.balances)
+  const getBalanceData = () =>
+    Array.from(balanceStore.balances)
       .filter(([, balance]) => balance && balance.gt(0))
       .map(([assetId, balance]) => {
         const token = TOKENS_BY_ASSET_ID[assetId];
@@ -119,43 +126,9 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             </Row>
           ),
           balance: BN.formatUnits(balance, token.decimals).toFormat(2),
-          buttons: (
-            <Row justifyContent="flex-end" style={{ flex: 1 }}>
-              {(() => {
-                if (!vmfaucet.initialized)
-                  return (
-                    <Button disabled green>
-                      Loading...
-                    </Button>
-                  );
-                return (
-                  <Button
-                    disabled={
-                      vmfaucet.loading || !vm.initialized || (token.symbol !== "ETH" && accountStore.address === null)
-                    }
-                    style={{ width: 120 }}
-                    onClick={() => {
-                      if (token.symbol === "ETH") {
-                        window.open(
-                          accountStore.address === null
-                            ? ARBITRUM_SEPOLIA_FAUCET
-                            : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
-                          "blank",
-                        );
-                      } else {
-                        vmfaucet.mint(token.assetId);
-                      }
-                    }}
-                  >
-                    {vmfaucet.loading && vmfaucet.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
-                  </Button>
-                );
-              })()}
-            </Row>
-          ),
+          buttons: <MintButtons assetId={assetId} />,
         };
       });
-  };
 
   const renderMobileRows = () => {
     const data = getOrderData().map((ord, i) => (
@@ -204,6 +177,11 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
     );
   };
 
+  const handleTableSize = (size: TRADE_TABLE_SIZE) => {
+    settingsStore.setTradeTableSize(size);
+    setIsTooltipVisible(false);
+  };
+
   const renderTable = () => {
     if (media.mobile) {
       return renderMobileRows();
@@ -242,14 +220,14 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           ))}
           <TableSizeSelector>
             <Tooltip
-              config={RESIZE_TOOLTIP_CONFIG}
+              config={tooltipConfig}
               content={
                 <div>
                   {TABLE_SIZES_CONFIG.map(({ size, icon, title }) => (
                     <TableSize
                       key={title}
                       active={settingsStore.tradeTableSize === size}
-                      onClick={() => settingsStore.setTradeTableSize(size)}
+                      onClick={() => handleTableSize(size)}
                     >
                       <img alt={title} src={icon} />
                       <SizedBox width={4} />
@@ -261,7 +239,12 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
                 </div>
               }
             >
-              <img alt="tableSizeSelector" src={tableSizeSelector} style={{ cursor: "pointer" }} />
+              <img
+                alt="tableSizeSelector"
+                src={tableSizeSelector}
+                style={{ cursor: "pointer" }}
+                onClick={() => setIsTooltipVisible(true)}
+              />
             </Tooltip>
           </TableSizeSelector>
         </TabContainer>
@@ -291,9 +274,9 @@ const TableRoot = styled.div`
 `;
 
 const Root = styled(SmartFlex)<{ size: TRADE_TABLE_SIZE }>`
-  max-height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
   width: 100%;
-  height: 100%;
+  height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
+  transition: height 200ms;
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))

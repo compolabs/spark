@@ -25,9 +25,12 @@ export class BalanceStore {
     const { accountStore } = rootStore;
 
     reaction(
-      () => accountStore.isConnected,
+      () => accountStore.isConnected(),
       (isConnected) => {
-        if (!isConnected) return;
+        if (!isConnected) {
+          this.balances = new Map();
+          return;
+        }
 
         this.balancesUpdater.update().then(() => console.log("balances: ", this.balances.size));
       },

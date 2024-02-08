@@ -42,10 +42,13 @@ const HiddenCheckbox = styled.input`
 
 const StyledCheckbox = styled.div<{ checked: boolean }>`
   display: flex;
+  align-items: center;
+  justify-content: center;
   width: 12px;
   height: 12px;
   border-radius: 4px;
   border: 1px solid ${({ checked, theme }) => (checked ? theme.colors.greenLight : theme.colors.iconSecondary)};
+  margin-right: 6px;
 
   ${CheckedIcon} {
     visibility: ${({ checked }) => (checked ? "visible" : "hidden")};
