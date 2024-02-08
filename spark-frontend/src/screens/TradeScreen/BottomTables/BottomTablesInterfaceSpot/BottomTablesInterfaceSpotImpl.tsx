@@ -5,11 +5,11 @@ import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
 import Chip from "@components/Chip";
-import MintButtons from "@components/MintButtons";
 import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import Tooltip from "@components/Tooltip";
+import MintButtons from "@screens/Faucet/MintButtons";
 import { useBottomTablesInterfaceSpotVM } from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot/BottomTablesInterfaceSpotVM";
 import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
 import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
