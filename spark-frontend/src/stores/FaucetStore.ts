@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 
 import { ERC20_ABI } from "@src/abi";
-import { TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
+import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import RootStore from "@stores/RootStore";
 
@@ -63,6 +63,31 @@ class FaucetStore {
     } finally {
       this.setLoading(false);
       await balanceStore.update();
+    }
+  };
+
+  disabled = (assetId: string) => {
+    const token = TOKENS_BY_ASSET_ID[assetId];
+    const { accountStore, faucetStore } = this.rootStore;
+    return (
+      faucetStore.loading ||
+      !faucetStore.initialized ||
+      (token && token.symbol !== "ETH" && accountStore.address === null)
+    );
+  };
+
+  handleClick = (assetId: string) => {
+    const { accountStore, faucetStore } = this.rootStore;
+    const token = TOKENS_BY_ASSET_ID[assetId];
+    if (token && token.symbol === "ETH") {
+      window.open(
+        accountStore.address === null
+          ? ARBITRUM_SEPOLIA_FAUCET
+          : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
+        "blank",
+      );
+    } else if (token) {
+      faucetStore.mint(assetId);
     }
   };
 

@@ -55,13 +55,13 @@ const TableBody = styled(Column)`
 `;
 
 const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
-  const { accountStore, faucetStore } = useStores();
+  const { faucetStore } = useStores();
   return (
     <Root>
       <StyledTableRow>
-        <TableTitle>Asset</TableTitle>
-        <TableTitle>Mint amount</TableTitle>
-        <TableTitle>My balance</TableTitle>
+        {["Asset", "Mint amount", "My balance"].map((title, index) => (
+          <TableTitle key={index}>{title}</TableTitle>
+        ))}
         <TableTitle>
           <Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
         </TableTitle>
