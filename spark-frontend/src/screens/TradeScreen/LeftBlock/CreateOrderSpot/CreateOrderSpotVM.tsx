@@ -3,6 +3,7 @@ import { ethers } from "ethers";
 import { makeAutoObservable, reaction } from "mobx";
 
 import { ERC20_ABI, SPOT_MARKET_ABI } from "@src/abi";
+import Toast from "@src/components/Toast";
 import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
 import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
@@ -38,9 +39,12 @@ class CreateOrderSpotVM {
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
     //todo обработать маркет и лимит типы заказов в селекторе
+
+    const { tradeStore, notificationStore } = this.rootStore;
+
     reaction(
-      () => this.rootStore.tradeStore.market?.price,
-      () => this.inputPrice === BN.ZERO && this.setInputPrice(this.rootStore.tradeStore.market?.price ?? BN.ZERO),
+      () => tradeStore.market?.price,
+      (price) => this.setInputPrice(price ?? BN.ZERO),
     );
   }
 
@@ -70,6 +74,11 @@ class CreateOrderSpotVM {
       balance = balance.minus(HALF_GWEI);
     }
 
+    if (this.isSell) {
+      this.setInputAmount(balance, true);
+      return;
+    }
+
     this.setInputTotal(balance, true);
   };
 
@@ -82,33 +91,39 @@ class CreateOrderSpotVM {
       return;
     }
 
-    if (this.inputAmount.gt(0) && price.gt(0) && sync) {
-      const formattedPrice = BN.formatUnits(price, DEFAULT_DECIMALS);
-      const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market!.baseToken.decimals);
+    if (!sync) return;
 
-      const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
-      this.setInputTotal(total);
-    }
+    const formattedPrice = BN.formatUnits(price, DEFAULT_DECIMALS);
+    const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market!.baseToken.decimals);
+
+    const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
+    this.setInputTotal(total);
   };
 
   setInputAmount = (amount: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
     this.inputAmount = amount;
 
-    if (this.inputPrice.gt(0) && amount.gt(0) && sync) {
-      const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
-      const formattedAmount = BN.formatUnits(amount, tradeStore.market!.baseToken.decimals);
+    if (!sync) return;
 
-      const total = BN.parseUnits(formattedAmount.times(formattedInputPrice), tradeStore.market!.quoteToken.decimals);
-      this.setInputTotal(total);
+    const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
+    const formattedAmount = BN.formatUnits(amount, tradeStore.market!.baseToken.decimals);
 
-      const balance = balanceStore.getBalance(tradeStore.market!.quoteToken.assetId);
-      if (!balance) return;
+    const total = BN.parseUnits(formattedAmount.times(formattedInputPrice), tradeStore.market!.quoteToken.decimals);
+    this.setInputTotal(total);
 
-      const percentageOfTotal = total.times(100).div(balance);
-      const inputPercent = percentageOfTotal.gt(100) ? 100 : +percentageOfTotal.toFormat(0);
-      this.setInputPercent(inputPercent);
+    const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
+    const balance = balanceStore.getBalance(relativeToken.assetId);
+    if (!balance) return;
+
+    let percentageOfTotal = BN.ratioOf(total, balance);
+
+    if (this.isSell) {
+      percentageOfTotal = BN.ratioOf(amount, balance);
     }
+
+    const inputPercent = percentageOfTotal.gt(100) ? 100 : percentageOfTotal.toDecimalPlaces(0).toNumber();
+    this.setInputPercent(inputPercent);
   };
 
   setInputPercent = (value: number | number[]) => (this.inputPercent = new BN(value.toString()));
@@ -117,20 +132,26 @@ class CreateOrderSpotVM {
     const { tradeStore, balanceStore } = this.rootStore;
     this.inputTotal = total;
 
-    if (this.inputPrice.gt(0) && sync) {
-      const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
-      const formattedTotal = BN.formatUnits(total, tradeStore.market!.quoteToken.decimals);
+    if (!sync) return;
 
-      const inputAmount = BN.parseUnits(formattedTotal.div(formattedInputPrice), tradeStore.market!.baseToken.decimals);
-      this.setInputAmount(inputAmount);
+    const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
+    const formattedTotal = BN.formatUnits(total, tradeStore.market!.quoteToken.decimals);
 
-      const balance = balanceStore.getBalance(tradeStore.market!.quoteToken.assetId);
-      if (!balance) return;
+    const inputAmount = BN.parseUnits(formattedTotal.div(formattedInputPrice), tradeStore.market!.baseToken.decimals);
+    this.setInputAmount(inputAmount);
 
-      const percentageOfBalance = total.times(100).div(balance);
-      const inputPercent = percentageOfBalance.gt(100) ? 100 : percentageOfBalance.toDecimalPlaces(0).toNumber();
-      this.setInputPercent(inputPercent);
+    const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
+    const balance = balanceStore.getBalance(relativeToken.assetId);
+    if (!balance) return;
+
+    let percentageOfTotal = BN.ratioOf(total, balance);
+
+    if (this.isSell) {
+      percentageOfTotal = BN.ratioOf(this.inputAmount, balance);
     }
+
+    const inputPercent = percentageOfTotal.gt(100) ? 100 : percentageOfTotal.toDecimalPlaces(0).toNumber();
+    this.setInputPercent(inputPercent);
   };
 
   createOrder = async () => {
@@ -161,7 +182,7 @@ class CreateOrderSpotVM {
         this.inputPrice.toString(),
       );
       await openOrderTransaction.wait();
-      notificationStore.toast("Order Created");
+      notificationStore.toast(<Toast hash={openOrderTransaction.hash} text="Order Created" />);
     } catch (error) {
       notificationStore.toast("We were unable to process your order at this time", { type: "warning" });
     }

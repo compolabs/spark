@@ -39,6 +39,7 @@ const MAX_TABLE_HEIGHT = {
 const TABS = [
   { title: "ORDERS", disabled: false },
   { title: "BALANCES", disabled: false },
+  { title: "HISTORY", disabled: false },
 ];
 
 const TABLE_SIZES_CONFIG = [
@@ -68,15 +69,18 @@ const ORDER_COLUMNS = [
   { Header: "", accessor: "action" },
 ];
 
+const HISTORY_COLUMNS = [...ORDER_COLUMNS.slice(0, ORDER_COLUMNS.length - 1), { Header: "Filled", accessor: "filled" }];
+
 const BALANCE_COLUMNS = [
   { Header: "Asset", accessor: "asset" },
   { Header: "Balance", accessor: "balance" },
 ];
 
-const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
+const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS, HISTORY_COLUMNS];
 
 const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "click" };
 
+// todo: Упростить логику разделить формирование данных и рендер для декстопа и мобилок
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   const { settingsStore, balanceStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
@@ -118,6 +122,27 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       ),
     }));
 
+  const getHistoryData = () =>
+    vm.myOrdersHistory.map((order) => ({
+      date: order.timestamp.format("DD MMM YY, HH:mm"),
+      pair: order.marketSymbol,
+      type: (
+        <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+          {order.type}
+        </TableText>
+      ),
+      amount: (
+        <SmartFlex center="y" gap="4px">
+          <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
+          <TokenBadge>
+            <Text>{order.baseToken.symbol}</Text>
+          </TokenBadge>
+        </SmartFlex>
+      ),
+      price: toCurrency(order.priceUnits.toSignificant(2)),
+      filled: BN.ZERO,
+    }));
+
   const getBalanceData = () =>
     Array.from(balanceStore.balances)
       .filter(([, balance]) => balance && balance.gt(0))
@@ -136,8 +161,8 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       });
 
   const renderMobileRows = () => {
-    const data = vm.myOrders.map((ord, i) => (
-      <MobileTableRow key={i + "mobile-row"}>
+    const orderData = vm.myOrders.map((ord, i) => (
+      <MobileTableOrderRow key={i + "mobile-row"}>
         <MobileTableRowColumn>
           <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
             {ord.marketSymbol}
@@ -176,12 +201,77 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
           </SmartFlex>
         </MobileTableRowColumn>
-      </MobileTableRow>
+      </MobileTableOrderRow>
     ));
+
+    const orderHistoryData = vm.myOrdersHistory.map((ord, i) => (
+      <MobileTableOrderRow key={i + "mobile-row"}>
+        <MobileTableRowColumn>
+          <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
+            {ord.marketSymbol}
+          </Text>
+          <SmartFlex gap="2px" column>
+            <Text type={TEXT_TYPES.SUPPORTING}>Amount</Text>
+            <SmartFlex center="y" gap="4px">
+              <Text color={theme.colors.textPrimary}>{ord.baseSizeUnits.toSignificant(2)}</Text>
+              <TokenBadge>
+                <Text>{ord.baseToken.symbol}</Text>
+              </TokenBadge>
+            </SmartFlex>
+          </SmartFlex>
+        </MobileTableRowColumn>
+        <MobileTableRowColumn>
+          <Text color={theme.colors.textPrimary}>Active</Text>
+          <SmartFlex gap="2px" column>
+            <SmartFlex center="y" gap="4px">
+              <Text type={TEXT_TYPES.SUPPORTING}>Side:</Text>
+              <TableText color={ord.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+                {ord.type}
+              </TableText>
+            </SmartFlex>
+            <SmartFlex center="y">
+              <Text type={TEXT_TYPES.SUPPORTING}>Filled:</Text>
+              <Text color={theme.colors.textPrimary}>-</Text>
+            </SmartFlex>
+          </SmartFlex>
+        </MobileTableRowColumn>
+        <MobileTableRowColumn>
+          <SmartFlex alignItems="flex-end" gap="2px" column>
+            <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
+            <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
+          </SmartFlex>
+        </MobileTableRowColumn>
+      </MobileTableOrderRow>
+    ));
+
+    const balanceData = Array.from(balanceStore.balances)
+      .filter(([, balance]) => balance && balance.gt(0))
+      .map(([assetId, balance], i) => {
+        const token = TOKENS_BY_ASSET_ID[assetId];
+        return (
+          <MobileTableBalanceRow key={i + "mobile-row"}>
+            <MobileTableRowColumn>
+              <Text type={TEXT_TYPES.SUPPORTING}>Token</Text>
+              <SmartFlex center="y" gap="4px">
+                <TokenIcon alt="market-icon" src={token.logo} />
+                <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
+                  {token.symbol}
+                </Text>
+              </SmartFlex>
+            </MobileTableRowColumn>
+            <MobileTableRowColumnBalance>
+              <Text type={TEXT_TYPES.SUPPORTING}>Balance</Text>
+              <Text color={theme.colors.textPrimary}>{BN.formatUnits(balance, token.decimals).toSignificant(2)}</Text>
+            </MobileTableRowColumnBalance>
+          </MobileTableBalanceRow>
+        );
+      });
+
+    const tabToData = [orderData, balanceData, orderHistoryData];
 
     return (
       <SmartFlex width="100%" column>
-        {data}
+        {tabToData[tabIndex]}
       </SmartFlex>
     );
   };
@@ -220,7 +310,8 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   };
 
   useEffect(() => {
-    setData(tabIndex === 0 ? getOrderData() : getBalanceData());
+    const tabToData = [getOrderData, getBalanceData, getHistoryData];
+    setData(tabToData[tabIndex]());
   }, [tabIndex, vm.myOrders, balanceStore.balances]);
 
   return (
@@ -378,9 +469,30 @@ const TableContainer = styled(SmartFlex)`
   overflow-y: scroll;
 `;
 
-const MobileTableRow = styled(SmartFlex)`
+const MobileTableOrderRow = styled(SmartFlex)`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  width: 100%;
+  padding: 11px 7px 14px 7px;
+  background: ${({ theme }) => theme.colors.bgPrimary};
+
+  position: relative;
+
+  &:not(:last-of-type)::after {
+    content: "";
+
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
+    height: 1px;
+    box-shadow: inset 0 1px 0 0 ${({ theme }) => theme.colors.bgSecondary};
+  }
+`;
+
+const MobileTableBalanceRow = styled(SmartFlex)`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   width: 100%;
   padding: 11px 7px 14px 7px;
   background: ${({ theme }) => theme.colors.bgPrimary};
@@ -405,6 +517,12 @@ const MobileTableRowColumn = styled(SmartFlex)`
 
   &:last-of-type {
     align-items: flex-end;
+  }
+`;
+
+const MobileTableRowColumnBalance = styled(MobileTableRowColumn)`
+  &:last-of-type {
+    align-items: initial;
   }
 `;
 

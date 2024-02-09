@@ -32,7 +32,7 @@ export async function fetchOrders({
   const baseSizeFilter = type ? `baseSize_${type === "BUY" ? "gt" : "lt"}: 0,` : "";
   const traderFilter = trader ? `trader: "${trader.toLowerCase()}",` : "";
   const baseTokenFilter = `baseToken: "${baseToken}",`;
-  const isActiveFilter = isActive ? `isActive: ${isActive},` : "";
+  const isActiveFilter = isActive !== undefined ? `isActive: ${isActive},` : "";
   const filter = `first: ${limit}, where: { ${baseTokenFilter} ${baseSizeFilter} ${traderFilter} ${isActiveFilter}}`;
 
   const query = `

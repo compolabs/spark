@@ -21,6 +21,7 @@ export const useBottomTablesInterfaceSpotVM = () => useVM(ctx);
 
 class BottomTablesInterfaceSpotVM {
   myOrders: SpotMarketOrder[] = [];
+  myOrdersHistory: SpotMarketOrder[] = [];
   initialized: boolean = false;
 
   isOrderCancelling = false;
@@ -78,12 +79,22 @@ class BottomTablesInterfaceSpotVM {
         isActive: true,
       });
       this.setMySpotOrders(orders);
+
+      const ordersHistory = await fetchOrders({
+        baseToken: tradeStore.market.baseToken.assetId,
+        limit: 100,
+        trader: accountStore.address,
+        isActive: false,
+      });
+      this.setMySpotOrdersHistory(ordersHistory);
     } catch (error) {
       console.error(error);
     }
   };
 
   private setMySpotOrders = (myOrders: SpotMarketOrder[]) => (this.myOrders = myOrders);
+
+  private setMySpotOrdersHistory = (myOrdersHistory: SpotMarketOrder[]) => (this.myOrdersHistory = myOrdersHistory);
 
   private setInitialized = (l: boolean) => (this.initialized = l);
 }

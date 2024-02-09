@@ -111,7 +111,6 @@ class AccountStore {
     const { accountStore, notificationStore } = this.rootStore;
 
     if (!accountStore.isConnected || !accountStore.address) {
-      console.warn("Not connected to a wallet.");
       notificationStore.toast("Not connected to a wallet.", { type: "error" });
       return;
     }
@@ -119,7 +118,6 @@ class AccountStore {
     const token = TOKENS_BY_ASSET_ID[assetId];
 
     if (!token) {
-      console.warn("Invalid token.");
       notificationStore.toast("Invalid token.", { type: "error" });
       return;
     }
