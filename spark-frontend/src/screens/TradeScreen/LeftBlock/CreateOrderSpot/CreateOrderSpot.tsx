@@ -63,8 +63,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 
     if (!balance) return;
 
-    const value = balance.times(v / 100).toNumber();
-    vm.setInputTotal(new BN(value), true);
+    const value = BN.percentOf(balance, v);
+    vm.setInputTotal(value, true);
   };
 
   return (
@@ -93,7 +93,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
         <TokenInput
           amount={vm.inputPrice}
           decimals={9}
-          label="Market price"
+          label="Limit price"
           setAmount={(v) => vm.setInputPrice(v, true)}
         />
       </Row>

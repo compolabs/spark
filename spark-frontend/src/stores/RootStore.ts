@@ -1,9 +1,9 @@
-import { makeAutoObservable } from "mobx";
+import { autorun, makeAutoObservable } from "mobx";
 
+import { saveState } from "@src/utils/localStorage";
 import AccountStore, { ISerializedAccountStore } from "@stores/AccountStore";
 import NotificationStore from "@stores/NotificationStore";
 import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
-// import OracleStore from "@stores/OracleStore";
 import TradeStore, { ISerializedTradeStore } from "@stores/TradeStore";
 
 import { BalanceStore } from "./BalanceStore";
@@ -15,24 +15,37 @@ export interface ISerializedRootStore {
 }
 
 export default class RootStore {
-  public accountStore: AccountStore;
-  // public oracleStore: OracleStore;
-  public settingsStore: SettingsStore;
-  public notificationStore: NotificationStore;
-  // public spotOrdersStore: SpotOrdersStore;
-  public tradeStore: TradeStore;
-  public balanceStore: BalanceStore;
+  static instance?: RootStore;
 
-  constructor(initState?: ISerializedRootStore) {
+  accountStore: AccountStore;
+  settingsStore: SettingsStore;
+  notificationStore: NotificationStore;
+  tradeStore: TradeStore;
+  balanceStore: BalanceStore;
+
+  private constructor(initState?: ISerializedRootStore) {
     this.accountStore = new AccountStore(this, initState?.accountStore);
-    // this.spotOrdersStore = new SpotOrdersStore(this);
     this.settingsStore = new SettingsStore(this, initState?.settingStore);
     this.notificationStore = new NotificationStore(this);
-    // this.oracleStore = new OracleStore(this);
     this.tradeStore = new TradeStore(this, initState?.tradeStore);
     this.balanceStore = new BalanceStore(this);
     makeAutoObservable(this);
+
+    autorun(
+      () => {
+        saveState(this.serialize());
+      },
+      { delay: 1000 },
+    );
   }
+
+  static create = (initState?: ISerializedRootStore) => {
+    if (!RootStore.instance) {
+      RootStore.instance = new RootStore(initState);
+    }
+
+    return RootStore.instance;
+  };
 
   get initialized() {
     return this.accountStore.initialized && this.tradeStore.initialized;
@@ -40,7 +53,7 @@ export default class RootStore {
 
   serialize = (): ISerializedRootStore => ({
     accountStore: this.accountStore.serialize(),
-    // tradeStore: this.tradeStore.serialize(),
+    tradeStore: this.tradeStore.serialize(),
     settingStore: this.settingsStore.serialize(),
   });
 }

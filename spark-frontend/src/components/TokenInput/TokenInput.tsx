@@ -10,7 +10,7 @@ import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import BN from "@src/utils/BN";
 
 import AmountInput from "./AmountInput";
-import BigNumberInput from "./BigNumberInput";
+import { BigNumberInput } from "./BigNumberInput";
 
 interface IProps {
   assetId?: string;
@@ -103,14 +103,14 @@ const TokenInput: React.FC<IProps> = (props) => {
           autofocus={focused}
           decimals={props.decimals}
           disabled={props.disabled}
+          displayDecimals={2}
           max={props.max?.toString()}
           placeholder="0.00"
-          readOnly={!props.setAmount}
           renderInput={(props, ref) => (
             <AmountInput
               {...props}
-              ref={ref}
-              disabled={props.disabled}
+              inputRef={ref}
+              // disabled={props.disabled}
               onBlur={(e) => {
                 props.onBlur && props.onBlur(e);
                 setFocused(false);

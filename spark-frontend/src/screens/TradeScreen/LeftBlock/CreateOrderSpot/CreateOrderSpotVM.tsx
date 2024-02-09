@@ -45,13 +45,7 @@ class CreateOrderSpotVM {
   }
 
   get canProceed() {
-    return (
-      this.rootStore.accountStore.provider &&
-      this.inputAmount.gt(0) &&
-      this.inputPrice.gt(0) &&
-      this.inputTotal.gt(0) &&
-      !this.inputTotalError
-    );
+    return this.inputAmount.gt(0) && this.inputPrice.gt(0) && this.inputTotal.gt(0) && !this.inputTotalError;
   }
 
   get inputTotalError(): boolean {
@@ -134,7 +128,7 @@ class CreateOrderSpotVM {
       if (!balance) return;
 
       const percentageOfBalance = total.times(100).div(balance);
-      const inputPercent = percentageOfBalance.gt(100) ? 100 : +percentageOfBalance.toFormat(0);
+      const inputPercent = percentageOfBalance.gt(100) ? 100 : percentageOfBalance.toDecimalPlaces(0).toNumber();
       this.setInputPercent(inputPercent);
     }
   };

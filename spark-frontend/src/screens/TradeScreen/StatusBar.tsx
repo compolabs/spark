@@ -41,9 +41,9 @@ const StatusBar: React.FC<IProps> = observer(() => {
   return (
     <Root>
       <Row alignItems="center" mainAxisSize="fit-content">
-        <Indicator error={!accountStore.provider || !accountStore.signer} />
+        <Indicator error={!accountStore.signer} />
         <SizedBox width={8} />
-        <Text type={TEXT_TYPES.SUPPORTING}> Stable Connection</Text>
+        <Text type={TEXT_TYPES.SUPPORTING}>Stable Connection</Text>
       </Row>
       <Divider />
       <Row alignItems="center" mainAxisSize="fit-content">

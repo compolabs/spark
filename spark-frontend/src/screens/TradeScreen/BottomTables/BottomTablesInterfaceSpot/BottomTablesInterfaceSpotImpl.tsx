@@ -24,6 +24,7 @@ import { useMedia } from "@src/hooks/useMedia";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
+import { toCurrency } from "@src/utils/toCurrency";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -101,8 +102,15 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           {order.type}
         </TableText>
       ),
-      amount: <TableText primary>{order.baseSizeUnits.toFormat(2)}</TableText>,
-      price: order.priceUnits.toFormat(2),
+      amount: (
+        <SmartFlex center="y" gap="4px">
+          <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
+          <TokenBadge>
+            <Text>{order.baseToken.symbol}</Text>
+          </TokenBadge>
+        </SmartFlex>
+      ),
+      price: toCurrency(order.priceUnits.toSignificant(2)),
       action: (
         <CancelButton onClick={() => vm.cancelOrder(order.id)}>
           {vm.isOrderCancelling ? "Loading..." : "Close"}
@@ -123,23 +131,23 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
               {token.symbol}
             </Row>
           ),
-          balance: BN.formatUnits(balance, token.decimals).toFormat(2),
+          balance: BN.formatUnits(balance, token.decimals).toSignificant(2),
         };
       });
 
   const renderMobileRows = () => {
-    const data = getOrderData().map((ord, i) => (
+    const data = vm.myOrders.map((ord, i) => (
       <MobileTableRow key={i + "mobile-row"}>
         <MobileTableRowColumn>
           <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
-            {ord.pair}
+            {ord.marketSymbol}
           </Text>
           <SmartFlex gap="2px" column>
             <Text type={TEXT_TYPES.SUPPORTING}>Amount</Text>
             <SmartFlex center="y" gap="4px">
-              <Text color={theme.colors.textPrimary}>20,980.00</Text>
+              <Text color={theme.colors.textPrimary}>{ord.baseSizeUnits.toSignificant(2)}</Text>
               <TokenBadge>
-                <Text>ETH</Text>
+                <Text>{ord.baseToken.symbol}</Text>
               </TokenBadge>
             </SmartFlex>
           </SmartFlex>
@@ -149,19 +157,23 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           <SmartFlex gap="2px" column>
             <SmartFlex center="y" gap="4px">
               <Text type={TEXT_TYPES.SUPPORTING}>Side:</Text>
-              <Text color={theme.colors.redLight}>Sell</Text>
+              <TableText color={ord.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+                {ord.type}
+              </TableText>
             </SmartFlex>
             <SmartFlex center="y">
               <Text type={TEXT_TYPES.SUPPORTING}>Filled:</Text>
-              <Text color={theme.colors.textPrimary}>1%</Text>
+              <Text color={theme.colors.textPrimary}>-</Text>
             </SmartFlex>
           </SmartFlex>
         </MobileTableRowColumn>
         <MobileTableRowColumn>
-          <CancelButton>Cancel</CancelButton>
+          <CancelButton onClick={() => vm.cancelOrder(ord.id)}>
+            {vm.isOrderCancelling ? "Loading..." : "Close"}
+          </CancelButton>
           <SmartFlex alignItems="flex-end" gap="2px" column>
             <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
-            <Text color={theme.colors.textPrimary}>$9,999,000.00</Text>
+            <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
           </SmartFlex>
         </MobileTableRowColumn>
       </MobileTableRow>
@@ -298,7 +310,6 @@ export const TableTitle = styled(Text)`
 `;
 
 export const TableText = styled(Text)`
-  flex: 1;
   display: flex;
   align-items: center;
 `;

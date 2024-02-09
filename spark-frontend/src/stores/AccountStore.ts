@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Nullable } from "tsdef";
 
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { NETWORKS, TOKENS_BY_ASSET_ID } from "@src/constants";
 
 import RootStore from "./RootStore";
 
@@ -18,19 +18,8 @@ export interface ISerializedAccountStore {
   mnemonic: Nullable<string>;
 }
 
-export const networks = [
-  // { name: "Arbitrum Sepolia", rpc: "https://arbitrum-sepolia-rpc.gateway.pokt.network", chainId: "421614" },
-  {
-    name: "Arbitrum Sepolia",
-    rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
-    chainId: "421614",
-  },
-];
-
 class AccountStore {
-  rootStore: RootStore;
-  network = networks[0]; //todo добавтиь функционал выбора сети
-  provider: Nullable<ethers.Provider> = null;
+  network = NETWORKS[0];
   signer: Nullable<ethers.JsonRpcSigner> = null;
   loginType: Nullable<LOGIN_TYPE> = null;
   address: Nullable<string> = null;
@@ -38,20 +27,23 @@ class AccountStore {
 
   initialized: boolean = false;
 
-  constructor(rootStore: RootStore, initState?: ISerializedAccountStore) {
-    this.rootStore = rootStore;
+  constructor(
+    private rootStore: RootStore,
+    initState?: ISerializedAccountStore,
+  ) {
     makeAutoObservable(this);
+
     if (initState) {
       this.loginType = initState.loginType;
       this.address = initState.address;
       this.mnemonic = initState.mnemonic;
       this.address && this.connectWallet();
     }
+
     this.init();
   }
 
   init = async () => {
-    this.provider = new ethers.JsonRpcProvider(this.network.rpc);
     this.initialized = true;
   };
 
@@ -67,7 +59,7 @@ class AccountStore {
       const ethereum = window.ethereum;
       this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
       const network = await this.signer.provider.getNetwork();
-      const targetChainId = parseInt(networks[0].chainId, 10).toString(16);
+      const targetChainId = parseInt(this.network.chainId, 10).toString(16);
       const currentChainId = parseInt(network.chainId.toString(), 10).toString(16);
 
       if (currentChainId !== targetChainId) {
@@ -76,8 +68,8 @@ class AccountStore {
           params: [
             {
               chainId: `0x${targetChainId}`,
-              chainName: networks[0].name,
-              rpcUrls: [networks[0].rpc],
+              chainName: this.network.name,
+              rpcUrls: [this.network.rpc],
               nativeCurrency: {
                 name: "ETH",
                 symbol: "ETH",

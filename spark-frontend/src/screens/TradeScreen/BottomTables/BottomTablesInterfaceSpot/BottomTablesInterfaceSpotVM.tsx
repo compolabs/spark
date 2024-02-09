@@ -54,9 +54,13 @@ class BottomTablesInterfaceSpotVM {
 
     this.isOrderCancelling = true;
 
-    const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
-    const transaction = await contract.removeOrder(orderId);
-    await transaction.wait();
+    try {
+      const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
+      const transaction = await contract.removeOrder(orderId);
+      await transaction.wait();
+    } catch (error) {
+      console.error(error);
+    }
 
     this.isOrderCancelling = false;
   };
