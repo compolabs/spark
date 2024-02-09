@@ -79,16 +79,16 @@ class FaucetStore {
   handleClick = (assetId: string) => {
     const { accountStore, faucetStore } = this.rootStore;
     const token = TOKENS_BY_ASSET_ID[assetId];
-    if (token && token.symbol === "ETH") {
+    if (!token) return;
+    if (token.symbol === "ETH") {
       window.open(
         accountStore.address === null
           ? ARBITRUM_SEPOLIA_FAUCET
           : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
         "blank",
       );
-    } else if (token) {
-      faucetStore.mint(assetId);
     }
+    faucetStore.mint(assetId);
   };
 
   private setLoading = (l: boolean) => (this.loading = l);

@@ -49,21 +49,22 @@ const TableTitle = styled(Text)`
 `;
 
 const TableBody = styled(Column)`
-  //overflow: scroll;
   width: 100%;
   box-sizing: border-box;
 `;
+
+const tableTitles = ["Asset", "Mint amount", "My balance"];
 
 const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
   const { faucetStore } = useStores();
   return (
     <Root>
       <StyledTableRow>
-        {["Asset", "Mint amount", "My balance"].map((title, index) => (
+        {tableTitles.map((title, index) => (
           <TableTitle key={index}>{title}</TableTitle>
         ))}
         <TableTitle>
-          <Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
+          <Row justifyContent="flex-end"></Row>
         </TableTitle>
       </StyledTableRow>
       <TableBody>
