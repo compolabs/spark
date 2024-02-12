@@ -24,11 +24,9 @@ export default class RootStore {
   tradeStore: TradeStore;
   balanceStore: BalanceStore;
 
-
   private constructor(initState?: ISerializedRootStore) {
     this.accountStore = new AccountStore(this, initState?.accountStore);
     this.faucetStore = new FaucetStore(this);
-    // this.spotOrdersStore = new SpotOrdersStore(this);
     this.settingsStore = new SettingsStore(this, initState?.settingStore);
     this.notificationStore = new NotificationStore(this);
     this.tradeStore = new TradeStore(this, initState?.tradeStore);
