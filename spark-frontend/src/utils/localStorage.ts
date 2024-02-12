@@ -6,7 +6,7 @@ export const loadState = (): ISerializedRootStore | undefined => {
     const state = JSON.parse(raw as string);
     return state || undefined;
   } catch (error) {
-    console.dir(error);
+    console.error(error);
     return undefined;
   }
 };

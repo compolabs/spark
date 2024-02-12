@@ -1,3 +1,5 @@
+import { JsonRpcProvider } from "ethers";
+
 import { Token } from "@src/entity";
 
 import TOKEN_LOGOS from "./tokenLogos";
@@ -63,3 +65,24 @@ export const MENU_ITEMS: Array<TMenuItem> = [
   { title: "DOCS", link: "https://docs.sprk.fi" },
   { title: "GITHUB", link: "https://github.com/compolabs/spark" },
 ];
+
+interface Network {
+  name: string;
+  rpc: string;
+  chainId: string;
+}
+
+export const NETWORKS: Network[] = [
+  {
+    name: "Arbitrum Sepolia",
+    rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
+    chainId: "421614",
+  },
+];
+
+export const PROVIDERS: Record<string, JsonRpcProvider> = NETWORKS.reduce((providers, network) => {
+  return {
+    ...providers,
+    [network.chainId]: new JsonRpcProvider(network.rpc),
+  };
+}, {});

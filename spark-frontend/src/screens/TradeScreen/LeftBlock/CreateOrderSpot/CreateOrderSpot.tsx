@@ -1,4 +1,4 @@
-import React, { ComponentProps, useEffect, useState } from "react";
+import React, { ComponentProps } from "react";
 import styled from "@emotion/styled";
 import { Accordion } from "@szhsin/react-accordion";
 import { observer } from "mobx-react";
@@ -32,39 +32,28 @@ const orderTypes = [
 const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   const { balanceStore, tradeStore } = useStores();
   const vm = useCreateOrderSpotVM();
-  const [percent, setPercent] = useState(0);
   const market = tradeStore.market;
 
   const media = useMedia();
 
   const isButtonDisabled = vm.loading || !vm.canProceed;
 
-  useEffect(() => {
-    if (!market) return;
-
-    const balance = balanceStore.getBalance(vm.isSell ? market.baseToken.assetId : market.quoteToken.assetId);
-
-    if (!balance) return;
-
-    if (balance.eq(0)) {
-      setPercent(0);
-    } else {
-      setPercent(vm.inputTotal.div(balance).times(100).toNumber());
-    }
-  }, [balanceStore, vm.inputTotal, vm.isSell, vm.inputAmount]);
-
   if (!market) return null;
 
   const { baseToken, quoteToken } = market;
 
   const handlePercentChange = (v: number) => {
-    setPercent(v);
     const balance = balanceStore.getBalance(vm.isSell ? baseToken.assetId : quoteToken.assetId);
 
     if (!balance) return;
 
-    const value = balance.times(v / 100).toNumber();
-    vm.setInputTotal(new BN(value), true);
+    const value = BN.percentOf(balance, v);
+    if (vm.isSell) {
+      vm.setInputAmount(value, true);
+      return;
+    }
+
+    vm.setInputTotal(value, true);
   };
 
   return (
@@ -90,12 +79,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           </Row>
         </Column>
         <SizedBox width={8} />
-        <TokenInput
-          amount={vm.inputPrice}
-          decimals={9}
-          label="Market price"
-          setAmount={(v) => vm.setInputPrice(v, true)}
-        />
+        <TokenInput amount={vm.inputPrice} decimals={9} label="Price" disabled />
       </Row>
       <SizedBox height={2} />
       <Row alignItems="flex-end">
@@ -110,7 +94,6 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
         />
         <SizedBox width={8} />
         <Column alignItems="flex-end" crossAxisSize="max">
-          {/*todo починить функционал кнопки max*/}
           <MaxButton fitContent onClick={vm.onMaxClick}>
             MAX
           </MaxButton>
@@ -143,9 +126,9 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
       <Slider
         max={100}
         min={0}
-        percent={percent}
+        percent={vm.inputPercent.toNumber()}
         step={1}
-        value={percent}
+        value={vm.inputPercent.toNumber()}
         onChange={(v) => handlePercentChange(v as number)}
       />
       <SizedBox height={media.desktop ? 28 : 8} />
@@ -166,7 +149,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           initialEntered
         >
           <Row alignItems="center" justifyContent="space-between">
-            <Text nowrap>Max buy</Text>
+            <Text nowrap>Max {vm.isSell ? "sell" : "buy"}</Text>
             <Row alignItems="center" justifyContent="flex-end">
               <Text primary>{BN.formatUnits(vm.inputTotal, quoteToken.decimals).toFormat(2)}</Text>
               <Text>&nbsp;{quoteToken.symbol}</Text>

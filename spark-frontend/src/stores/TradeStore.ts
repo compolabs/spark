@@ -22,6 +22,12 @@ class TradeStore {
   constructor(rootStore: RootStore, initState?: ISerializedTradeStore) {
     this.rootStore = rootStore;
     makeAutoObservable(this);
+
+    if (initState) {
+      const favMarkets = initState.favMarkets?.split(",").filter(Boolean);
+      favMarkets && this.setFavMarkets(favMarkets);
+    }
+
     this.init();
   }
 
@@ -69,7 +75,7 @@ class TradeStore {
 
   private setSpotMarkets = (v: SpotMarket[]) => (this.spotMarkets = v);
 
-  private serialize = (): ISerializedTradeStore => ({
+  serialize = (): ISerializedTradeStore => ({
     favMarkets: this.favMarkets.join(","),
   });
 
