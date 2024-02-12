@@ -25,6 +25,7 @@ import { useMedia } from "@src/hooks/useMedia";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
+import { toCurrency } from "@src/utils/toCurrency";
 import { useStores } from "@stores";
 
 interface IProps {}
