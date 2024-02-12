@@ -2,83 +2,14 @@ import React from "react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react-lite";
 
-import Button from "@components/Button";
 import Chip from "@components/Chip";
 import { Column, Row } from "@components/Flex";
+import MintButtons from "@components/MintButtons";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import { useFaucetVM } from "@screens/Faucet/FaucetVm";
-import { ARBITRUM_SEPOLIA_FAUCET } from "@src/constants";
 import { useStores } from "@stores";
 
 interface IProps {}
-
-const TokensFaucetTable: React.FC<IProps> = observer(() => {
-  const { accountStore } = useStores();
-  const vm = useFaucetVM();
-
-  return (
-    <Root>
-      <StyledTableRow>
-        <TableTitle>Asset</TableTitle>
-        <TableTitle>Mint amount</TableTitle>
-        <TableTitle>My balance</TableTitle>
-        <TableTitle>
-          <Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
-        </TableTitle>
-      </StyledTableRow>
-      <TableBody>
-        {vm.faucetTokens.map((token) => (
-          <StyledTableRow key={token.assetId}>
-            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.name}
-            </TableText>
-            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.mintAmount.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
-            </TableText>
-            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.formatBalance?.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
-            </TableText>
-            <Row justifyContent="flex-end" style={{ flex: 1 }}>
-              {(() => {
-                if (!vm.initialized)
-                  return (
-                    <Button disabled green>
-                      Loading...
-                    </Button>
-                  );
-                return (
-                  <Button
-                    disabled={
-                      vm.loading || !vm.initialized || (token.symbol !== "ETH" && accountStore.address === null)
-                    }
-                    style={{ width: 120 }}
-                    onClick={() => {
-                      if (token.symbol === "ETH") {
-                        window.open(
-                          accountStore.address === null
-                            ? ARBITRUM_SEPOLIA_FAUCET
-                            : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
-                          "blank",
-                        );
-                      } else {
-                        vm.mint(token.assetId);
-                      }
-                    }}
-                  >
-                    {vm.loading && vm.actionTokenAssetId === token.assetId ? "Loading..." : "Mint"}
-                  </Button>
-                );
-              })()}
-            </Row>
-          </StyledTableRow>
-        ))}
-      </TableBody>
-    </Root>
-  );
-});
-
-export default TokensFaucetTable;
 
 const Root = styled.div`
   background: ${({ theme }) => theme.colors.bgSecondary};
@@ -118,6 +49,40 @@ const TableTitle = styled(Text)`
 `;
 
 const TableBody = styled(Column)`
+  //overflow: scroll;
   width: 100%;
   box-sizing: border-box;
 `;
+
+const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
+  const { accountStore, faucetStore } = useStores();
+  return (
+    <Root>
+      <StyledTableRow>
+        <TableTitle>Asset</TableTitle>
+        <TableTitle>Mint amount</TableTitle>
+        <TableTitle>My balance</TableTitle>
+        <TableTitle>
+          <Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
+        </TableTitle>
+      </StyledTableRow>
+      <TableBody>
+        {faucetStore.faucetTokens.map((token) => (
+          <StyledTableRow key={token.assetId}>
+            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              {token.name}
+            </TableText>
+            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              {token.mintAmount.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
+            </TableText>
+            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              {token.formatBalance?.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
+            </TableText>
+            <MintButtons assetId={token.assetId} />
+          </StyledTableRow>
+        ))}
+      </TableBody>
+    </Root>
+  );
+});
+export default TokensFaucetTable;

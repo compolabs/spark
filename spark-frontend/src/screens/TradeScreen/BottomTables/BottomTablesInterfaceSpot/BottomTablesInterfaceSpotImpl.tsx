@@ -9,6 +9,7 @@ import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import Tooltip from "@components/Tooltip";
+import MintButtons from "@screens/Faucet/MintButtons";
 import { useBottomTablesInterfaceSpotVM } from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot/BottomTablesInterfaceSpotVM";
 import tableLargeSize from "@src/assets/icons/tableLargeSize.svg";
 import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
@@ -74,6 +75,7 @@ const HISTORY_COLUMNS = [...ORDER_COLUMNS.slice(0, ORDER_COLUMNS.length - 1), { 
 const BALANCE_COLUMNS = [
   { Header: "Asset", accessor: "asset" },
   { Header: "Balance", accessor: "balance" },
+  { Header: "", accessor: "buttons" },
 ];
 
 const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS, HISTORY_COLUMNS];
@@ -82,7 +84,7 @@ const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "cli
 
 // todo: Упростить логику разделить формирование данных и рендер для декстопа и мобилок
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-  const { settingsStore, balanceStore } = useStores();
+  const { settingsStore, balanceStore, faucetStore, accountStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
   const theme = useTheme();
   const media = useMedia();
@@ -157,6 +159,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             </Row>
           ),
           balance: BN.formatUnits(balance, token.decimals).toSignificant(2),
+          buttons: <MintButtons assetId={assetId} />,
         };
       });
 
@@ -271,7 +274,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 
     return (
       <SmartFlex width="100%" column>
-        {tabToData[tabIndex]}
+        {data}
       </SmartFlex>
     );
   };

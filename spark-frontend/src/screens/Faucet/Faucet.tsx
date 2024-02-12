@@ -5,14 +5,15 @@ import { observer } from "mobx-react";
 
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
-import { FaucetVMProvider, useFaucetVM } from "@screens/Faucet/FaucetVm";
 import TokensFaucetTable from "@screens/Faucet/TokensFaucetTable";
 import { media } from "@src/themes/breakpoints";
+import { useStores } from "@stores";
 
 interface IProps {}
 
-const FaucetImpl: React.FC<IProps> = observer(() => {
-  const vm = useFaucetVM();
+const Faucet: React.FC<IProps> = observer(() => {
+  const { faucetStore } = useStores();
+
   useEffect(() => {
     document.title = `Spark | Faucet`;
   }, []);
@@ -22,16 +23,14 @@ const FaucetImpl: React.FC<IProps> = observer(() => {
         Faucet for Fuel Network
       </Text>
       <SizedBox height={16} />
-      {vm.faucetTokens.length === 0 ? <Skeleton count={4} height={48} style={{ margin: 4 }} /> : <TokensFaucetTable />}
+      {faucetStore.faucetTokens.length === 0 ? (
+        <Skeleton count={4} height={48} style={{ margin: 4 }} />
+      ) : (
+        <TokensFaucetTable />
+      )}
     </Root>
   );
 });
-
-const Faucet: React.FC<IProps> = () => (
-  <FaucetVMProvider>
-    <FaucetImpl />
-  </FaucetVMProvider>
-);
 
 export default Faucet;
 

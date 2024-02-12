@@ -1,26 +1,10 @@
-import React, { useMemo } from "react";
 import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 
 import { ERC20_ABI } from "@src/abi";
-import { TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
-import useVM from "@src/hooks/useVM";
+import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
-import { RootStore, useStores } from "@stores";
-
-const ctx = React.createContext<FaucetVM | null>(null);
-
-interface IProps {
-  children: React.ReactNode;
-}
-
-export const FaucetVMProvider: React.FC<IProps> = ({ children }) => {
-  const rootStore = useStores();
-  const store = useMemo(() => new FaucetVM(rootStore), [rootStore]);
-  return <ctx.Provider value={store}>{children}</ctx.Provider>;
-};
-
-export const useFaucetVM = () => useVM(ctx);
+import RootStore from "@stores/RootStore";
 
 const FAUCET_AMOUNTS: Record<string, number> = {
   ETH: 0.001,
@@ -30,7 +14,7 @@ const FAUCET_AMOUNTS: Record<string, number> = {
 };
 const AVAILABLE_TOKENS = ["ETH", "UNI", "USDC"];
 
-class FaucetVM {
+class FaucetStore {
   public rootStore: RootStore;
 
   loading: boolean = false;
@@ -82,5 +66,32 @@ class FaucetVM {
     }
   };
 
+  disabled = (assetId: string) => {
+    const token = TOKENS_BY_ASSET_ID[assetId];
+    const { accountStore, faucetStore } = this.rootStore;
+    return (
+      faucetStore.loading ||
+      !faucetStore.initialized ||
+      (token && token.symbol !== "ETH" && accountStore.address === null)
+    );
+  };
+
+  handleClick = (assetId: string) => {
+    const { accountStore, faucetStore } = this.rootStore;
+    const token = TOKENS_BY_ASSET_ID[assetId];
+    if (!token) return;
+    if (token.symbol === "ETH") {
+      window.open(
+        accountStore.address === null
+          ? ARBITRUM_SEPOLIA_FAUCET
+          : `${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`,
+        "blank",
+      );
+    }
+    faucetStore.mint(assetId);
+  };
+
   private setLoading = (l: boolean) => (this.loading = l);
 }
+
+export default FaucetStore;
