@@ -1,9 +1,8 @@
 import axios from "axios";
 
+import { INDEXER_URL } from "@src/constants";
 import { SpotMarketOrder } from "@src/entity";
 import BN from "@src/utils/BN";
-
-const API_URL = "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest";
 
 type TOrderResponse = {
   id: string;
@@ -49,7 +48,7 @@ export async function fetchOrders({
     }
   `;
   try {
-    const response = await axios.post(API_URL, { query });
+    const response = await axios.post(INDEXER_URL, { query });
     return response.data.data.orders.map((order: TOrderResponse) => new SpotMarketOrder(order));
   } catch (error) {
     console.error("Error during Orders request:", error);
@@ -76,7 +75,7 @@ export async function fetchMarketCreateEvents(limit: number): Promise<Array<TMar
   `;
 
   try {
-    const response = await axios.post(API_URL, { query });
+    const response = await axios.post(INDEXER_URL, { query });
     return response.data.data.marketCreateEvents as TMarketCreateEvent[];
   } catch (error) {
     console.error("Error during MarketCreateEvents request:", error);
@@ -94,7 +93,7 @@ export async function fetchMarketPrice(baseToken: string): Promise<BN> {
     }
 `;
   try {
-    const response = await axios.post(API_URL, { query });
+    const response = await axios.post(INDEXER_URL, { query });
     const tradeEvents = response.data.data.tradeEvents;
     return tradeEvents.length > 0 ? new BN(tradeEvents[0].price) : BN.ZERO;
   } catch (error) {
@@ -127,7 +126,7 @@ export async function fetchTrades(baseToken: string, limit: number): Promise<Arr
     }
 `;
   try {
-    const response = await axios.post(API_URL, { query });
+    const response = await axios.post(INDEXER_URL, { query });
     return response.data.data.tradeEvents.map((trade: any) => ({
       ...trade,
       tradeAmount: new BN(trade.tradeAmount),

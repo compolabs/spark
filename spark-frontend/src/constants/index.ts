@@ -31,12 +31,8 @@ export const EXPLORER_URL = "https://sepolia.arbiscan.io";
 export const ARBITRUM_SEPOLIA_FAUCET = "https://faucet.triangleplatform.com/arbitrum/sepolia";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
-export const SPOT_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/spot_market_indexer";
-export const CLEARING_HOUSE_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/clearing_house_indexer";
-export const VAULT_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/vault_indexer";
-export const PERP_MARKET_INDEXER = "https://indexer.spark-defi.com/api/sql/composabilitylabs/perp_market_indexer";
-export const ACCOUNT_BALANCE_INDEXER =
-  "https://indexer.spark-defi.com/api/sql/composabilitylabs/account_balance_indexer";
+
+export const INDEXER_URL = "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest";
 
 export const CONTRACT_ADDRESSES = {
   spotMarket: "0xE57B37774D718ED379157CDd356492232FA9aE7e",
@@ -75,8 +71,7 @@ interface Network {
 export const NETWORKS: Network[] = [
   {
     name: "Arbitrum Sepolia",
-    rpc: "https://sepolia-rollup.arbitrum.io/rpc",
-    // rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
+    rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
     chainId: "421614",
   },
 ];
