@@ -136,6 +136,4 @@ class BN extends BigNumber {
   }
 }
 
-export type TEtherBigNumber = EthersBigNumber;
-
 export default BN;

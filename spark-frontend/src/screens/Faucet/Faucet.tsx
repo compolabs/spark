@@ -31,6 +31,7 @@ const Faucet: React.FC<IProps> = observer(() => {
     </Root>
   );
 });
+
 export default Faucet;
 
 const Root = styled.div`

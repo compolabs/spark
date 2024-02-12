@@ -26,8 +26,7 @@ const Chart: React.FC<IProps> = () => {
   return (
     <Root>
       <ChartVMProvider>
-        {process.env.NODE_ENV === "production" && <TradingViewWidget />}
-        {/* <TVChartContainer /> */}
+        <TradingViewWidget />
       </ChartVMProvider>
     </Root>
   );

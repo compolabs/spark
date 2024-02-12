@@ -4,9 +4,9 @@ import { observer } from "mobx-react-lite";
 
 import Chip from "@components/Chip";
 import { Column, Row } from "@components/Flex";
+import MintButtons from "@components/MintButtons";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import MintButtons from "@screens/Faucet/MintButtons";
 import { useStores } from "@stores";
 
 interface IProps {}
@@ -49,22 +49,21 @@ const TableTitle = styled(Text)`
 `;
 
 const TableBody = styled(Column)`
+  //overflow: scroll;
   width: 100%;
   box-sizing: border-box;
 `;
 
-const tableTitles = ["Asset", "Mint amount", "My balance"];
-
 const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
-  const { faucetStore } = useStores();
+  const { accountStore, faucetStore } = useStores();
   return (
     <Root>
       <StyledTableRow>
-        {tableTitles.map((title, index) => (
-          <TableTitle key={index}>{title}</TableTitle>
-        ))}
+        <TableTitle>Asset</TableTitle>
+        <TableTitle>Mint amount</TableTitle>
+        <TableTitle>My balance</TableTitle>
         <TableTitle>
-          <Row justifyContent="flex-end"></Row>
+          <Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
         </TableTitle>
       </StyledTableRow>
       <TableBody>
