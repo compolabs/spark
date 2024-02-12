@@ -75,7 +75,8 @@ interface Network {
 export const NETWORKS: Network[] = [
   {
     name: "Arbitrum Sepolia",
-    rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
+    rpc: "https://sepolia-rollup.arbitrum.io/rpc",
+    // rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
     chainId: "421614",
   },
 ];

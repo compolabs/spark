@@ -4,10 +4,11 @@ import { observer } from "mobx-react-lite";
 
 import Chip from "@components/Chip";
 import { Column, Row } from "@components/Flex";
-import MintButtons from "@components/MintButtons";
 import { TableText } from "@components/Table";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { useStores } from "@stores";
+
+import MintButtons from "./MintButtons";
 
 interface IProps {}
 
