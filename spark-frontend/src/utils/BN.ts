@@ -118,17 +118,22 @@ class BN extends BigNumber {
     return super.toFormat(decimalPlaces);
   }
 
-  toSignificant(significantDigits: number, roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN): BN {
-    return this.gte(1)
-      ? this.toDecimalPlaces(significantDigits)
-      : new BN(super.precision(significantDigits, roundingMode));
-  }
+  /**
+   * @example
+   * new BN('1234.5678').toSignificant(2) === 1,234.56
+   * new BN('1234.506').toSignificant(2) === 1,234.5
+   * new BN('123.0000').toSignificant(2) === 123
+   * new BN('0.001234').toSignificant(2) === 0.0012
+   */
+  toSignificant = (significantDigits: number, roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN): string => {
+    return this.gte(1) || significantDigits === 0
+      ? this.toFormat(significantDigits, roundingMode).replace(/(\.[0-9]*[1-9])0+$|\.0+$/, "$1")
+      : super.precision(significantDigits, roundingMode).toString();
+  };
 
   clamp(min: TValue, max: TValue): BN {
     return BN.min(BN.max(this, min), max);
   }
 }
-
-export type TEtherBigNumber = EthersBigNumber;
 
 export default BN;

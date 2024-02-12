@@ -2,7 +2,7 @@ import { Contract } from "ethers";
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 
 import { ERC20_ABI } from "@src/abi";
-import { TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
+import { PROVIDERS, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 
@@ -25,15 +25,16 @@ export class BalanceStore {
     const { accountStore } = rootStore;
 
     reaction(
-      () => accountStore.isConnected(),
+      () => accountStore.isConnected,
       (isConnected) => {
         if (!isConnected) {
           this.balances = new Map();
           return;
         }
 
-        this.balancesUpdater.update().then(() => console.log("balances: ", this.balances.size));
+        this.balancesUpdater.update();
       },
+      { fireImmediately: true },
     );
   }
 
@@ -77,21 +78,14 @@ export class BalanceStore {
 
     if (!accountStore.isConnected) return "0";
 
+    const provider = PROVIDERS[accountStore.network.chainId];
+
     if (assetId === TOKENS_BY_SYMBOL.ETH.assetId) {
-      //fixme при отключенном кошельке падает тут с такой ошибкой
-      // BalanceStore.ts:58 Error updating token balances: TypeError: Cannot read properties of null (reading 'provider')
-      // at BalanceStore.fetchBalance (BalanceStore.ts:85:1)
-      // at executeAction (action.ts:70:1)
-      // at BalanceStore@5.fetchBalance (action.ts:50:1)
-      // at BalanceStore.update (BalanceStore.ts:54:1)
-      // at executeAction (action.ts:70:1)
-      // at BalanceStore@5.update [as updater] (action.ts:50:1)
-      // at IntervalUpdater.update (IntervalUpdater.ts:13:1)
-      const balance = await accountStore.signer!.provider.getBalance(accountStore.address!);
+      const balance = await provider.getBalance(accountStore.address!);
       return balance.toString();
     }
 
-    const contract = new Contract(assetId, ERC20_ABI, accountStore.signer!);
+    const contract = new Contract(assetId, ERC20_ABI, provider);
     const balance = await contract.balanceOf(accountStore.address!);
     return balance;
   };

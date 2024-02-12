@@ -39,6 +39,7 @@ const MAX_TABLE_HEIGHT = {
 const TABS = [
   { title: "ORDERS", disabled: false },
   { title: "BALANCES", disabled: false },
+  { title: "HISTORY", disabled: false },
 ];
 
 const TABLE_SIZES_CONFIG = [
@@ -68,16 +69,19 @@ const ORDER_COLUMNS = [
   { Header: "", accessor: "action" },
 ];
 
+const HISTORY_COLUMNS = [...ORDER_COLUMNS.slice(0, ORDER_COLUMNS.length - 1), { Header: "Filled", accessor: "filled" }];
+
 const BALANCE_COLUMNS = [
   { Header: "Asset", accessor: "asset" },
   { Header: "Balance", accessor: "balance" },
   { Header: "", accessor: "buttons" },
 ];
 
-const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS];
+const COLUMNS = [ORDER_COLUMNS, BALANCE_COLUMNS, HISTORY_COLUMNS];
 
 const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "click" };
 
+// todo: Упростить логику разделить формирование данных и рендер для декстопа и мобилок
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   const { settingsStore, balanceStore, faucetStore, accountStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
@@ -85,7 +89,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   const media = useMedia();
 
   const [tabIndex, setTabIndex] = useState(0);
-  const [data, setData] = useState<any>([]);
+  const [data, setData] = useState<any[]>([]);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   const tooltipConfig: Config = {
@@ -103,13 +107,41 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           {order.type}
         </TableText>
       ),
-      amount: <TableText primary>{order.baseSizeUnits.toFormat(2)}</TableText>,
-      price: order.priceUnits.toFormat(2),
+      amount: (
+        <SmartFlex center="y" gap="4px">
+          <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
+          <TokenBadge>
+            <Text>{order.baseToken.symbol}</Text>
+          </TokenBadge>
+        </SmartFlex>
+      ),
+      price: toCurrency(order.priceUnits.toSignificant(2)),
       action: (
         <CancelButton onClick={() => vm.cancelOrder(order.id)}>
           {vm.isOrderCancelling ? "Loading..." : "Close"}
         </CancelButton>
       ),
+    }));
+
+  const getHistoryData = () =>
+    vm.myOrdersHistory.map((order) => ({
+      date: order.timestamp.format("DD MMM YY, HH:mm"),
+      pair: order.marketSymbol,
+      type: (
+        <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+          {order.type}
+        </TableText>
+      ),
+      amount: (
+        <SmartFlex center="y" gap="4px">
+          <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
+          <TokenBadge>
+            <Text>{order.baseToken.symbol}</Text>
+          </TokenBadge>
+        </SmartFlex>
+      ),
+      price: toCurrency(order.priceUnits.toSignificant(2)),
+      filled: BN.ZERO,
     }));
 
   const getBalanceData = () =>
@@ -125,24 +157,24 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
               {token.symbol}
             </Row>
           ),
-          balance: BN.formatUnits(balance, token.decimals).toFormat(2),
+          balance: BN.formatUnits(balance, token.decimals).toSignificant(2),
           buttons: <MintButtons assetId={assetId} />,
         };
       });
 
   const renderMobileRows = () => {
-    const data = getOrderData().map((ord, i) => (
-      <MobileTableRow key={i + "mobile-row"}>
+    const orderData = vm.myOrders.map((ord, i) => (
+      <MobileTableOrderRow key={i + "mobile-row"}>
         <MobileTableRowColumn>
           <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
-            {ord.pair}
+            {ord.marketSymbol}
           </Text>
           <SmartFlex gap="2px" column>
             <Text type={TEXT_TYPES.SUPPORTING}>Amount</Text>
             <SmartFlex center="y" gap="4px">
-              <Text color={theme.colors.textPrimary}>20,980.00</Text>
+              <Text color={theme.colors.textPrimary}>{ord.baseSizeUnits.toSignificant(2)}</Text>
               <TokenBadge>
-                <Text>ETH</Text>
+                <Text>{ord.baseToken.symbol}</Text>
               </TokenBadge>
             </SmartFlex>
           </SmartFlex>
@@ -152,23 +184,92 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
           <SmartFlex gap="2px" column>
             <SmartFlex center="y" gap="4px">
               <Text type={TEXT_TYPES.SUPPORTING}>Side:</Text>
-              <Text color={theme.colors.redLight}>Sell</Text>
+              <TableText color={ord.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+                {ord.type}
+              </TableText>
             </SmartFlex>
             <SmartFlex center="y">
               <Text type={TEXT_TYPES.SUPPORTING}>Filled:</Text>
-              <Text color={theme.colors.textPrimary}>1%</Text>
+              <Text color={theme.colors.textPrimary}>-</Text>
             </SmartFlex>
           </SmartFlex>
         </MobileTableRowColumn>
         <MobileTableRowColumn>
-          <CancelButton>Cancel</CancelButton>
+          <CancelButton onClick={() => vm.cancelOrder(ord.id)}>
+            {vm.isOrderCancelling ? "Loading..." : "Close"}
+          </CancelButton>
           <SmartFlex alignItems="flex-end" gap="2px" column>
             <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
-            <Text color={theme.colors.textPrimary}>$9,999,000.00</Text>
+            <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
           </SmartFlex>
         </MobileTableRowColumn>
-      </MobileTableRow>
+      </MobileTableOrderRow>
     ));
+
+    const orderHistoryData = vm.myOrdersHistory.map((ord, i) => (
+      <MobileTableOrderRow key={i + "mobile-row"}>
+        <MobileTableRowColumn>
+          <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
+            {ord.marketSymbol}
+          </Text>
+          <SmartFlex gap="2px" column>
+            <Text type={TEXT_TYPES.SUPPORTING}>Amount</Text>
+            <SmartFlex center="y" gap="4px">
+              <Text color={theme.colors.textPrimary}>{ord.baseSizeUnits.toSignificant(2)}</Text>
+              <TokenBadge>
+                <Text>{ord.baseToken.symbol}</Text>
+              </TokenBadge>
+            </SmartFlex>
+          </SmartFlex>
+        </MobileTableRowColumn>
+        <MobileTableRowColumn>
+          <Text color={theme.colors.textPrimary}>Active</Text>
+          <SmartFlex gap="2px" column>
+            <SmartFlex center="y" gap="4px">
+              <Text type={TEXT_TYPES.SUPPORTING}>Side:</Text>
+              <TableText color={ord.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+                {ord.type}
+              </TableText>
+            </SmartFlex>
+            <SmartFlex center="y">
+              <Text type={TEXT_TYPES.SUPPORTING}>Filled:</Text>
+              <Text color={theme.colors.textPrimary}>-</Text>
+            </SmartFlex>
+          </SmartFlex>
+        </MobileTableRowColumn>
+        <MobileTableRowColumn>
+          <SmartFlex alignItems="flex-end" gap="2px" column>
+            <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
+            <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
+          </SmartFlex>
+        </MobileTableRowColumn>
+      </MobileTableOrderRow>
+    ));
+
+    const balanceData = Array.from(balanceStore.balances)
+      .filter(([, balance]) => balance && balance.gt(0))
+      .map(([assetId, balance], i) => {
+        const token = TOKENS_BY_ASSET_ID[assetId];
+        return (
+          <MobileTableBalanceRow key={i + "mobile-row"}>
+            <MobileTableRowColumn>
+              <Text type={TEXT_TYPES.SUPPORTING}>Token</Text>
+              <SmartFlex center="y" gap="4px">
+                <TokenIcon alt="market-icon" src={token.logo} />
+                <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
+                  {token.symbol}
+                </Text>
+              </SmartFlex>
+            </MobileTableRowColumn>
+            <MobileTableRowColumnBalance>
+              <Text type={TEXT_TYPES.SUPPORTING}>Balance</Text>
+              <Text color={theme.colors.textPrimary}>{BN.formatUnits(balance, token.decimals).toSignificant(2)}</Text>
+            </MobileTableRowColumnBalance>
+          </MobileTableBalanceRow>
+        );
+      });
+
+    const tabToData = [orderData, balanceData, orderHistoryData];
 
     return (
       <SmartFlex width="100%" column>
@@ -183,6 +284,16 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   };
 
   const renderTable = () => {
+    if (!data.length) {
+      return (
+        <SmartFlex height="100%" padding={media.mobile ? "16px" : "32px"} width="100%" center>
+          <Text type={TEXT_TYPES.BUTTON_SECONDARY} secondary>
+            No Data
+          </Text>
+        </SmartFlex>
+      );
+    }
+
     if (media.mobile) {
       return renderMobileRows();
     }
@@ -201,7 +312,8 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   };
 
   useEffect(() => {
-    setData(tabIndex === 0 ? getOrderData() : getBalanceData());
+    const tabToData = [getOrderData, getBalanceData, getHistoryData];
+    setData(tabToData[tabIndex]());
   }, [tabIndex, vm.myOrders, balanceStore.balances]);
 
   return (
@@ -277,6 +389,10 @@ const Root = styled(SmartFlex)<{ size: TRADE_TABLE_SIZE }>`
   width: 100%;
   height: ${({ size }) => MAX_TABLE_HEIGHT[size]};
   transition: height 200ms;
+
+  ${media.mobile} {
+    height: fit-content;
+  }
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))
@@ -287,7 +403,6 @@ export const TableTitle = styled(Text)`
 `;
 
 export const TableText = styled(Text)`
-  flex: 1;
   display: flex;
   align-items: center;
 `;
@@ -356,7 +471,7 @@ const TableContainer = styled(SmartFlex)`
   overflow-y: scroll;
 `;
 
-const MobileTableRow = styled(SmartFlex)`
+const MobileTableOrderRow = styled(SmartFlex)`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   width: 100%;
@@ -377,12 +492,22 @@ const MobileTableRow = styled(SmartFlex)`
   }
 `;
 
+const MobileTableBalanceRow = styled(MobileTableOrderRow)`
+  grid-template-columns: repeat(2, 1fr);
+`;
+
 const MobileTableRowColumn = styled(SmartFlex)`
   flex-direction: column;
   gap: 7px;
 
   &:last-of-type {
     align-items: flex-end;
+  }
+`;
+
+const MobileTableRowColumnBalance = styled(MobileTableRowColumn)`
+  &:last-of-type {
+    align-items: initial;
   }
 `;
 

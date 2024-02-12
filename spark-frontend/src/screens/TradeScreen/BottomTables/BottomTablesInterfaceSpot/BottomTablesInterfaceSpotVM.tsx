@@ -21,6 +21,7 @@ export const useBottomTablesInterfaceSpotVM = () => useVM(ctx);
 
 class BottomTablesInterfaceSpotVM {
   myOrders: SpotMarketOrder[] = [];
+  myOrdersHistory: SpotMarketOrder[] = [];
   initialized: boolean = false;
 
   isOrderCancelling = false;
@@ -38,7 +39,7 @@ class BottomTablesInterfaceSpotVM {
     reaction(() => this.rootStore.accountStore.address, this.sync);
 
     reaction(
-      () => this.rootStore.accountStore.isConnected(),
+      () => this.rootStore.accountStore.isConnected,
       (isConnected) => {
         if (!isConnected) {
           this.setMySpotOrders([]);
@@ -54,9 +55,13 @@ class BottomTablesInterfaceSpotVM {
 
     this.isOrderCancelling = true;
 
-    const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
-    const transaction = await contract.removeOrder(orderId);
-    await transaction.wait();
+    try {
+      const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
+      const transaction = await contract.removeOrder(orderId);
+      await transaction.wait();
+    } catch (error) {
+      console.error(error);
+    }
 
     this.isOrderCancelling = false;
   };
@@ -74,12 +79,22 @@ class BottomTablesInterfaceSpotVM {
         isActive: true,
       });
       this.setMySpotOrders(orders);
+
+      const ordersHistory = await fetchOrders({
+        baseToken: tradeStore.market.baseToken.assetId,
+        limit: 100,
+        trader: accountStore.address,
+        isActive: false,
+      });
+      this.setMySpotOrdersHistory(ordersHistory);
     } catch (error) {
       console.error(error);
     }
   };
 
   private setMySpotOrders = (myOrders: SpotMarketOrder[]) => (this.myOrders = myOrders);
+
+  private setMySpotOrdersHistory = (myOrdersHistory: SpotMarketOrder[]) => (this.myOrdersHistory = myOrdersHistory);
 
   private setInitialized = (l: boolean) => (this.initialized = l);
 }

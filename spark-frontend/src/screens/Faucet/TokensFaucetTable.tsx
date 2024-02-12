@@ -73,10 +73,10 @@ const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
               {token.name}
             </TableText>
             <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.mintAmount.toFormat()} &nbsp;<Chip>{token.symbol}</Chip>
+              {token.mintAmount.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
             </TableText>
             <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.formatBalance?.toFormat(2)} &nbsp;<Chip>{token.symbol}</Chip>
+              {token.formatBalance?.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
             </TableText>
             <MintButtons assetId={token.assetId} />
           </StyledTableRow>

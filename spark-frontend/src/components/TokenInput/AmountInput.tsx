@@ -36,14 +36,14 @@ type TProps = React.InputHTMLAttributes<HTMLInputElement> & {
   onWheel?: React.WheelEventHandler<HTMLInputElement>;
   onBlur?: React.FocusEventHandler<HTMLInputElement>;
   onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement>;
 };
 
-const AmountInput = React.forwardRef<HTMLInputElement, TProps>(({ onWheel, ...props }, ref) => (
+const AmountInput: React.FC<TProps> = ({ onWheel, inputRef, ...props }) => (
   <Root
     {...props}
-    ref={ref}
+    ref={inputRef}
     small={props.small}
-    type="number"
     onBlur={props.onBlur}
     onFocus={props.onFocus}
     onWheel={(e) => {
@@ -51,8 +51,6 @@ const AmountInput = React.forwardRef<HTMLInputElement, TProps>(({ onWheel, ...pr
       onWheel && onWheel(e);
     }}
   />
-));
-
-AmountInput.displayName = "AmountInput";
+);
 
 export default AmountInput;
