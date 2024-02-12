@@ -490,25 +490,8 @@ const MobileTableOrderRow = styled(SmartFlex)`
   }
 `;
 
-const MobileTableBalanceRow = styled(SmartFlex)`
-  display: grid;
+const MobileTableBalanceRow = styled(MobileTableOrderRow)`
   grid-template-columns: repeat(2, 1fr);
-  width: 100%;
-  padding: 11px 7px 14px 7px;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-
-  position: relative;
-
-  &:not(:last-of-type)::after {
-    content: "";
-
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-
-    height: 1px;
-    box-shadow: inset 0 1px 0 0 ${({ theme }) => theme.colors.bgSecondary};
-  }
 `;
 
 const MobileTableRowColumn = styled(SmartFlex)`

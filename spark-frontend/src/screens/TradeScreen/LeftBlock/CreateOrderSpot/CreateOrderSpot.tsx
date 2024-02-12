@@ -32,33 +32,17 @@ const orderTypes = [
 const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   const { balanceStore, tradeStore } = useStores();
   const vm = useCreateOrderSpotVM();
-  // const [percent, setPercent] = useState(0);
   const market = tradeStore.market;
 
   const media = useMedia();
 
   const isButtonDisabled = vm.loading || !vm.canProceed;
 
-  // useEffect(() => {
-  //   if (!market) return;
-
-  //   const balance = balanceStore.getBalance(vm.isSell ? market.baseToken.assetId : market.quoteToken.assetId);
-
-  //   if (!balance) return;
-
-  //   if (balance.eq(0)) {
-  //     setPercent(0);
-  //   } else {
-  //     setPercent(vm.inputTotal.div(balance).times(100).toNumber());
-  //   }
-  // }, [balanceStore, vm.inputTotal, vm.isSell, vm.inputAmount]);
-
   if (!market) return null;
 
   const { baseToken, quoteToken } = market;
 
   const handlePercentChange = (v: number) => {
-    // setPercent(v);
     const balance = balanceStore.getBalance(vm.isSell ? baseToken.assetId : quoteToken.assetId);
 
     if (!balance) return;
