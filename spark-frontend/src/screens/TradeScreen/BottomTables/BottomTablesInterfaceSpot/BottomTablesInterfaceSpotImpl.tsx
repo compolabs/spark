@@ -274,7 +274,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 
     return (
       <SmartFlex width="100%" column>
-        {data}
+        {data[tabIndex]}
       </SmartFlex>
     );
   };
