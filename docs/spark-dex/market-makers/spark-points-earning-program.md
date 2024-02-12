@@ -10,14 +10,14 @@
 
 ```makefile
 makefileCopy code
-LP_Spark_Points = (Liquidity_USDC * Days * LP_Weight) / 1000
+LP_Spark_Points = (Liquidity_USDC * Days * LP_Weight) / X
 ```
 
-**Example:** Suppose a user provides $8,000 in USDC liquidity for 30 days with an LP\_Weight of 0.001. The Spark Points calculation would be:
+**Example:** Suppose a user provides $X in USDC liquidity for 30 days with an LP\_Weight of Y. The Spark Points calculation would be:
 
 ```bash
 bashCopy code
-LP_Spark_Points = ($8,000 * 30 * 0.001) / 1000 = 24 Spark Points
+LP_Spark_Points = ($X * Y * Z) / N = X Spark Points
 ```
 
 #### **Trading Program:**
@@ -29,11 +29,11 @@ makefileCopy code
 Trader_Spark_Points = (Trading_Volume * Trades * Trader_Weight) / 1000
 ```
 
-**Example:** If a trader executes $50,000 in trading volume with a frequency of 20 trades and a Trader\_Weight of 0.002, the Spark Points calculation would be:
+**Example:** If a trader executes $X in trading volume with a frequency of 20 trades and a Trader\_Weight of Y, the Spark Points calculation would be:
 
 ```bash
 bashCopy code
-Trader_Spark_Points = ($50,000 * 20 * 0.002) / 1000 = 2,000 Spark Points
+Trader_Spark_Points = ($X * Y * N) / 1000 = X Spark Points
 ```
 
 #### **Market Program:**
@@ -45,11 +45,11 @@ makefileCopy code
 Market_Spark_Points = (Total_Liquidity * Market_Weight) / 1000
 ```
 
-**Example:** Suppose the total liquidity across supported pairs reaches $1,000,000 with a Market\_Weight of 0.001. The Spark Points calculation for the Market Program would be:
+**Example:** Suppose the total liquidity across supported pairs reaches $X with a Market\_Weight of N. The Spark Points calculation for the Market Program would be:
 
 ```bash
 bashCopy code
-Market_Spark_Points = ($1,000,000 * 0.001) / 1000 = 1,000 Spark Points
+Market_Spark_Points = ($X * N) / 1000 = X Spark Points
 ```
 
 ***
@@ -65,9 +65,9 @@ In addition to liquidity provision and trading, the Spark Points Earning Program
 
 **Conversion to Spark and Fuel Tokens:**
 
-* Users can convert Spark Points to Spark Tokens at a 1:1 ratio.
-* 1 Spark Point = 1 Spark Token.
-* Users can further convert Spark Tokens to Fuel Tokens at a rate of 300 Spark Tokens for 1 Fuel Token.
+* Users can convert Spark Points to Spark Tokens at a some ratio.
+* 1 Spark Point = X Spark Token.
+* Users can further convert Spark Tokens to Fuel Tokens at a rate of X Spark Tokens for 1 Fuel Token.
 
 These conversion mechanisms provide flexibility and additional benefits for users within the ecosystem.
 

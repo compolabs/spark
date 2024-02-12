@@ -12,8 +12,8 @@
 
 * **Description:** Participate in our liquidity mining program to receive additional rewards based on your liquidity provision.
 * **Reward Calculation:** Earn Spark Points using the formula: LP\_Spark\_Points = Liquidity Provided \* Days \* LP\_Weight
-* **Conversion Rate:** 30 Spark Point = 1 Fuel token.
-* **Example:** If you provide $1,000 in liquidity for 30 days with an LP\_Weight of 0.001, you earn 30 Spark Points, equivalent to 1 Fuel tokens.
+* **Conversion Rate:** X Spark Point = Y Fuel token.
+* **Example:** If you provide $X in liquidity for 30 days with an LP\_Weight of N, you earn Y Spark Points, equivalent to Y Fuel tokens.
 
 **3. VIP Market Maker Program:**
 
@@ -32,9 +32,9 @@
     | Volume Tier | Trading Volume (USDC)                     | Fee Discount | Fuel Token Bonus |
     | ----------- | ----------------------------------------- | ------------ | ---------------- |
     | 1           | Up to 100,000 USDC within 30 days         | Standard Fee | -                |
-    | 2           | 100,001 - 500,000 USDC within 30 days     | 25%          | 100 Fuel tokens  |
-    | 3           | 500,001 - 1,000,000 USDC within 30 days   | 30%          | 250 Fuel tokens  |
-    | 4           | 1,000,001 - 5,000,000 USDC within 30 days | 40%          | 500 Fuel tokens  |
+    | 2           | 100,001 - 500,000 USDC within 30 days     | X%           | X Fuel tokens    |
+    | 3           | 500,001 - 1,000,000 USDC within 30 days   | X%           | X Fuel tokens    |
+    | 4           | 1,000,001 - 5,000,000 USDC within 30 days | X%           | X Fuel tokens    |
 
 **Standard Fees:**
 
@@ -74,15 +74,15 @@ The minimum depth and maximum spreads per market are as follows:
 
 **Depth:**
 
-* $25K for stables.
-* $5K for core markets (BTC & ETH).
-* $2.5K for alt markets (non-BTC & non-ETH).
+* $X for stables.
+* $X for core markets (BTC & ETH).
+* $X for alt markets (non-BTC & non-ETH).
 
 **Spreads:**
 
-* 10 bps for stable.
-* 30 bps for core markets (BTC & ETH).
-* 50 bps for alt markets (non-BTC & non-ETH).
+* X bps for stable.
+* X bps for core markets (BTC & ETH).
+* X bps for alt markets (non-BTC & non-ETH).
 
 #### 2. Liquidity Provision
 
@@ -107,10 +107,10 @@ Where `Position Size` is the size of the open position in the perpetual market, 
 
 **Volume SLA (USDC) within 30 days:**
 
-* Tier 1: Up to 100,000 USDC&#x20;
-* Tier 2: 100,001 - 500,000 USDC&#x20;
-* Tier 3: 500,001 - 1,000,000 USDC&#x20;
-* Tier 4: 1,000,001 - 5,000,000 USDC&#x20;
-* Tier 5: 5,000,001 - 10,000,000 USDC&#x20;
+* Tier 1: Up to X USDC&#x20;
+* Tier 2: X USDC&#x20;
+* Tier 3: X USDC&#x20;
+* Tier 4: X USDC&#x20;
+* Tier 5: X USDC&#x20;
 
 **Note:** All rewards are provided in Fuel tokens. Fuel tokens can be redeemed for trading fee discounts, access to exclusive features, or exchanged for other project tokens on the sprk.fi platform. This comprehensive rewards program ensures that market makers on sprk.fi are not only compensated for their contributions but also have the flexibility to redeem their Fuel tokens for a variety of benefits tailored to their preferences.
