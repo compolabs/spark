@@ -45,7 +45,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   const handlePercentChange = (v: number) => {
     const balance = balanceStore.getBalance(vm.isSell ? baseToken.assetId : quoteToken.assetId);
 
-    if (!balance) return;
+    if (balance.eq(BN.ZERO)) return;
 
     const value = BN.percentOf(balance, v);
     if (vm.isSell) {
