@@ -114,7 +114,7 @@ class CreateOrderSpotVM {
 
     const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
     const balance = balanceStore.getBalance(relativeToken.assetId);
-    if (!balance) return;
+    if (balance.eq(BN.ZERO)) return;
 
     let percentageOfTotal = BN.ratioOf(total, balance);
 
@@ -142,7 +142,7 @@ class CreateOrderSpotVM {
 
     const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
     const balance = balanceStore.getBalance(relativeToken.assetId);
-    if (!balance) return;
+    if (balance.eq(BN.ZERO)) return;
 
     let percentageOfTotal = BN.ratioOf(total, balance);
 

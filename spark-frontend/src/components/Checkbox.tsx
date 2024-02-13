@@ -10,12 +10,10 @@ export const Checkbox: React.FC<Props> = ({ checked, children, ...props }) => {
     <Root>
       <HiddenCheckbox checked={checked} type="checkbox" {...props} />
       <StyledCheckbox checked={checked}>
-        <CheckedIcon height="12" viewBox="0 0 12 12" width="12" xmlns="http://www.w3.org/2000/svg">
+        <CheckedIcon height="7" viewBox="0 0 8 7" width="8" xmlns="http://www.w3.org/2000/svg">
           <path
-            clipRule="evenodd"
-            d="M2 0C0.895431 0 0 0.895431 0 2V10C0 11.1046 0.895431 12 2 12H10C11.1046 12 12 11.1046 12 10V2C12 0.895431 11.1046 0 10 0H2ZM2 5.40673L3.18626 4.82915L5.42857 8.33229L8.78481 2.5L10 3.07758L6.16637 9.5H4.69078L2 5.40673Z"
-            fill="#00E388"
-            fillRule="evenodd"
+            d="M1.18626 2.32915L0 2.90673L2.69078 7H4.16637L8 0.577578L6.78481 -2.55301e-07L3.42857 5.83229L1.18626 2.32915Z"
+            fill="currentColor"
           />
         </CheckedIcon>
       </StyledCheckbox>
@@ -38,6 +36,8 @@ const CheckedIcon = styled.svg`
 
 const HiddenCheckbox = styled.input`
   appearance: none;
+  width: 0;
+  height: 0;
 `;
 
 const StyledCheckbox = styled.div<{ checked: boolean }>`
@@ -50,7 +50,10 @@ const StyledCheckbox = styled.div<{ checked: boolean }>`
   border: 1px solid ${({ checked, theme }) => (checked ? theme.colors.greenLight : theme.colors.iconSecondary)};
   margin-right: 6px;
 
+  background-color: ${({ checked, theme }) => (checked ? theme.colors.greenLight : "unset")};
+
   ${CheckedIcon} {
     visibility: ${({ checked }) => (checked ? "visible" : "hidden")};
+    color: ${({ theme }) => theme.colors.bgSecondary};
   }
 `;

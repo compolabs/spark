@@ -208,7 +208,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
     ));
 
     const orderHistoryData = vm.myOrdersHistory.map((ord, i) => (
-      <MobileTableOrderRow key={i + "mobile-row"}>
+      <MobileTableOrderRow key={i + "mobile-history-row"}>
         <MobileTableRowColumn>
           <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
             {ord.marketSymbol}
@@ -274,7 +274,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
 
     return (
       <SmartFlex width="100%" column>
-        {data}
+        {tabToData[tabIndex]}
       </SmartFlex>
     );
   };
