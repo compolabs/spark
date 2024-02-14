@@ -1,8 +1,8 @@
-import { ethers } from "ethers";
+import { ethers, JsonRpcSigner } from "ethers";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Nullable } from "tsdef";
 
-import { NETWORKS, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { NETWORKS, PROVIDERS, TOKENS_BY_ASSET_ID } from "@src/constants";
 
 import RootStore from "./RootStore";
 
@@ -15,7 +15,6 @@ export enum LOGIN_TYPE {
 export interface ISerializedAccountStore {
   address: Nullable<string>;
   loginType: Nullable<LOGIN_TYPE>;
-  mnemonic: Nullable<string>;
 }
 
 class AccountStore {
@@ -23,7 +22,6 @@ class AccountStore {
   signer: Nullable<ethers.JsonRpcSigner> = null;
   loginType: Nullable<LOGIN_TYPE> = null;
   address: Nullable<string> = null;
-  mnemonic: Nullable<string> = null;
 
   initialized: boolean = false;
 
@@ -36,8 +34,10 @@ class AccountStore {
     if (initState) {
       this.loginType = initState.loginType;
       this.address = initState.address;
-      this.mnemonic = initState.mnemonic;
-      this.address && this.connectWallet();
+
+      if (!this.address?.length || this.loginType === LOGIN_TYPE.GENERATE_SEED) return;
+
+      this.connectWallet();
     }
 
     this.init();
@@ -58,6 +58,7 @@ class AccountStore {
     try {
       const ethereum = window.ethereum;
       this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
+      this.loginType = LOGIN_TYPE.METAMASK;
       const network = await this.signer.provider.getNetwork();
       const targetChainId = parseInt(this.network.chainId, 10).toString(16);
       const currentChainId = parseInt(network.chainId.toString(), 10).toString(16);
@@ -107,6 +108,21 @@ class AccountStore {
     }
   };
 
+  connectWalletByPrivateKey = async (privateKey: string) => {
+    const { notificationStore } = this.rootStore;
+
+    try {
+      const wallet = new ethers.Wallet(privateKey, PROVIDERS[this.network.chainId]);
+      const address = await wallet.getAddress();
+      this.signer = wallet as any as JsonRpcSigner;
+      this.address = address;
+      this.loginType = LOGIN_TYPE.GENERATE_SEED;
+      console.log(this.signer);
+    } catch (error: any) {
+      notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
+    }
+  };
+
   addAsset = async (assetId: string) => {
     const { accountStore, notificationStore } = this.rootStore;
 
@@ -141,7 +157,6 @@ class AccountStore {
     this.address = null;
     this.signer = null;
     this.loginType = null;
-    this.mnemonic = null;
   };
 
   getAddress = () => {
@@ -155,7 +170,6 @@ class AccountStore {
   serialize = (): ISerializedAccountStore => ({
     address: this.address,
     loginType: this.loginType,
-    mnemonic: this.mnemonic,
   });
 }
 

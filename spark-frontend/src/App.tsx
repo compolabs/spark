@@ -9,6 +9,8 @@ import Faucet from "@screens/Faucet/Faucet";
 import TradeScreen from "@screens/TradeScreen";
 import { ROUTES } from "@src/constants";
 
+import { usePrivateKeyAsAuth } from "./hooks/usePrivateKeyAsAuth";
+
 const Root = styled(Column)`
   width: 100%;
   align-items: center;
@@ -18,6 +20,8 @@ const Root = styled(Column)`
 `;
 
 const App: React.FC = observer(() => {
+  usePrivateKeyAsAuth();
+
   return (
     <Root>
       <Header />

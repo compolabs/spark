@@ -27,11 +27,9 @@ const AccountInfoSheet: React.FC<Props> = ({ isOpen, onClose }) => {
     TOKENS_BY_SYMBOL.ETH.decimals,
   )?.toFormat(4);
 
-  const handleCopy = (object: string) => {
-    object === "address"
-      ? accountStore.address && copy(accountStore.address)
-      : accountStore.mnemonic && copy(accountStore.mnemonic);
-    notificationStore.toast(`Your ${object} was copied`, { type: "info" });
+  const handleAddressCopy = () => {
+    accountStore.address && copy(accountStore.address);
+    notificationStore.toast(`Your address was copied`, { type: "info" });
     onClose();
   };
 
@@ -43,15 +41,9 @@ const AccountInfoSheet: React.FC<Props> = ({ isOpen, onClose }) => {
   const actions = [
     {
       icon: copyIcon,
-      action: () => handleCopy("address"),
+      action: handleAddressCopy,
       title: "Copy address",
       active: true,
-    },
-    {
-      icon: copyIcon,
-      action: () => handleCopy("seed"),
-      title: "Copy seed",
-      active: !!accountStore.mnemonic,
     },
     {
       icon: linkIcon,

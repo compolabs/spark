@@ -226,6 +226,7 @@ const Root = styled(SmartFlex)`
   grid-area: orderbook;
   flex-direction: column;
   width: 100%;
+  height: 100%;
   gap: 8px;
 
   ${media.mobile} {
