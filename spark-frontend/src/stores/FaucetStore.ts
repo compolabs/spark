@@ -5,6 +5,7 @@ import { Nullable } from "tsdef";
 import { ERC20_ABI } from "@src/abi";
 import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
+import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import RootStore from "@stores/RootStore";
 
 export const FAUCET_AMOUNTS: Record<string, number> = {
@@ -64,10 +65,7 @@ class FaucetStore {
       notificationStore.toast("Minting successful!", { type: "success" });
       await accountStore.addAsset(assetId);
     } catch (error: any) {
-      if (error.message.includes("user rejected action")) {
-        return;
-      }
-      notificationStore.toast(error.toString(), { type: "error" });
+      handleEvmErrors(notificationStore, error, "We were unable to mint tokens at this time");
     } finally {
       this.setLoading(false);
       await balanceStore.update();

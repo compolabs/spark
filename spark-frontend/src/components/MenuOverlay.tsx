@@ -7,10 +7,11 @@ interface IProps {
   isOpen: boolean;
   top?: number;
   offsetTop?: number;
+  zIndex?: number;
   children?: React.ReactNode;
 }
 
-const MenuOverlay: React.FC<IProps> = ({ isOpen, children, top = 0, offsetTop = 0 }) => {
+const MenuOverlay: React.FC<IProps> = ({ isOpen, children, top = 0, offsetTop = 0, zIndex = 200 }) => {
   const fullOffset = top + offsetTop;
 
   useLayoutEffect(() => {
@@ -22,7 +23,7 @@ const MenuOverlay: React.FC<IProps> = ({ isOpen, children, top = 0, offsetTop = 
   }, [isOpen]);
 
   return (
-    <Root fullOffset={fullOffset} isOpen={isOpen} top={top}>
+    <Root fullOffset={fullOffset} isOpen={isOpen} top={top} zIndex={zIndex}>
       {children}
     </Root>
   );
@@ -30,8 +31,8 @@ const MenuOverlay: React.FC<IProps> = ({ isOpen, children, top = 0, offsetTop = 
 
 export default MenuOverlay;
 
-const Root = styled(SmartFlex)<{ isOpen: boolean; top: number; fullOffset: number }>`
-  z-index: 200;
+const Root = styled(SmartFlex)<{ zIndex: number; isOpen: boolean; top: number; fullOffset: number }>`
+  z-index: ${({ zIndex }) => zIndex};
   background: ${({ theme }) => `${theme.colors.bgPrimary}`};
   position: absolute;
   top: ${({ top }) => `${top}px`};

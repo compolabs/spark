@@ -47,7 +47,7 @@ const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect,
   };
 
   return (
-    <MenuOverlay isOpen={isOpen} top={50}>
+    <MenuOverlay isOpen={isOpen} top={50} zIndex={300}>
       <Body>
         <Container>
           <SizedBox height={8} />
