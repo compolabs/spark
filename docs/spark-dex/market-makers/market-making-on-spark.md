@@ -5,8 +5,8 @@
 **1. Maker Rebates:**
 
 * **Description:** By placing limit orders and contributing liquidity to the order book, you qualify for maker rebates.
-* **Rebate Calculation:** 0.01%-0.02% of the maker trading volume.
-* **Reward:** Earned in Spark Points, convertible to Fuel tokens at a rate of 30 Spark Point to 1 Fuel token.
+* **Rebate Calculation:** -0.005% of the maker trading volume.
+* **Reward:** Earned in Spark Points, convertible to Fuel tokens at a rate of X Spark Point to 1 Fuel token.
 
 **2. Liquidity Mining Program:**
 
@@ -46,15 +46,15 @@
 
 **VIP Market Maker Fees:**
 
-| Fee Type     | Spot     | Perp     |
-| ------------ | -------- | -------- |
-| Stables      | 0,5 bps  | 0,25 bps |
-| Core Markets | 0,75 bps | 0,5 bps  |
-| Alt Markets  | 0,75 bps | 0,75 bps |
+| Fee Type     | Spot  | Perp     |
+| ------------ | ----- | -------- |
+| Stables      | X bps | 0,25 bps |
+| Core Markets | X bps | 0,5 bps  |
+| Alt Markets  | X bps | 0,75 bps |
 
-**Rebate Calculation Formula:** $$Rebate=0.2%×Trading VolumeRebate=0.05%×Trading Volume$$
+**Rebate Calculation Formula:** $$Rebate=0.005%×Trading VolumeRebate=0.05%×Trading Volume$$
 
-Rebate=0.02%×Trading VolumeRebate=0.05%×Trading Volume
+Rebate=-0.005%×Trading Volume
 
 #### 1. Managing Buy/Sell Pressure
 
