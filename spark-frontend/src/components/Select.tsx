@@ -25,8 +25,6 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
   const [isVisible, setIsVisible] = useState(false);
   const selectedOption = options.find(({ key }) => selected === key);
 
-  console.log(isVisible);
-
   const handleSelectClick = (v: IOption, index: number) => {
     onSelect(v, index);
     setIsVisible(false);
