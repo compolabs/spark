@@ -1,8 +1,8 @@
-import { ethers } from "ethers";
+import { ethers, JsonRpcSigner, NonceManager } from "ethers";
 import { makeAutoObservable, runInAction } from "mobx";
 import { Nullable } from "tsdef";
 
-import { NETWORKS, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { NETWORKS, PROVIDERS, TOKENS_BY_ASSET_ID } from "@src/constants";
 
 import RootStore from "./RootStore";
 
@@ -15,7 +15,7 @@ export enum LOGIN_TYPE {
 export interface ISerializedAccountStore {
   address: Nullable<string>;
   loginType: Nullable<LOGIN_TYPE>;
-  mnemonic: Nullable<string>;
+  privateKey: Nullable<string>;
 }
 
 class AccountStore {
@@ -23,7 +23,7 @@ class AccountStore {
   signer: Nullable<ethers.JsonRpcSigner> = null;
   loginType: Nullable<LOGIN_TYPE> = null;
   address: Nullable<string> = null;
-  mnemonic: Nullable<string> = null;
+  privateKey: Nullable<string> = null;
 
   initialized: boolean = false;
 
@@ -36,7 +36,13 @@ class AccountStore {
     if (initState) {
       this.loginType = initState.loginType;
       this.address = initState.address;
-      this.mnemonic = initState.mnemonic;
+      this.privateKey = initState.privateKey;
+
+      if (this.privateKey?.length) {
+        this.connectWalletByPrivateKey(this.privateKey);
+        return;
+      }
+
       this.address && this.connectWallet();
     }
 
@@ -107,8 +113,27 @@ class AccountStore {
     }
   };
 
+  connectWalletByPrivateKey = async (privateKey: string) => {
+    const { notificationStore } = this.rootStore;
+
+    try {
+      const wallet = new ethers.Wallet(privateKey, PROVIDERS[this.network.chainId]);
+      const address = await wallet.getAddress();
+      this.signer = new NonceManager(wallet) as any as JsonRpcSigner;
+      this.address = address;
+      this.privateKey = privateKey;
+    } catch (error: any) {
+      notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
+    }
+  };
+
   addAsset = async (assetId: string) => {
     const { accountStore, notificationStore } = this.rootStore;
+
+    // Не добавляем, если авторизированы по приватному ключу
+    if (this.privateKey?.length) {
+      return;
+    }
 
     if (!accountStore.isConnected || !accountStore.address) {
       notificationStore.toast("Not connected to a wallet.", { type: "error" });
@@ -141,7 +166,7 @@ class AccountStore {
     this.address = null;
     this.signer = null;
     this.loginType = null;
-    this.mnemonic = null;
+    this.privateKey = null;
   };
 
   getAddress = () => {
@@ -155,7 +180,7 @@ class AccountStore {
   serialize = (): ISerializedAccountStore => ({
     address: this.address,
     loginType: this.loginType,
-    mnemonic: this.mnemonic,
+    privateKey: this.privateKey,
   });
 }
 

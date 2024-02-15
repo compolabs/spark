@@ -59,6 +59,10 @@ class FaucetStore {
       notificationStore.toast("Minting successful!", { type: "success" });
       await accountStore.addAsset(assetId);
     } catch (error: any) {
+      if (error.message.includes("insufficient funds for intrinsic transaction cost")) {
+        notificationStore.toast("Not enough funds to pay gas", { type: "error" });
+        return;
+      }
       notificationStore.toast(error.toString(), { type: "error" });
     } finally {
       this.setLoading(false);
