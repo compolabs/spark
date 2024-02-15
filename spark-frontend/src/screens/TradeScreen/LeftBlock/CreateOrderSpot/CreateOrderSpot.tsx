@@ -21,8 +21,8 @@ import { useStores } from "@stores";
 interface IProps extends ComponentProps<any> {}
 
 const orderTypes = [
-  { title: "Market", key: "market", disabled: true },
-  { title: "Limit", key: "limit" },
+  { title: "Market", key: "market" },
+  { title: "Limit", key: "limit", disabled: true },
   { title: "Stop Market", key: "stopmarket", disabled: true },
   { title: "Stop Limit", key: "stoplimit", disabled: true },
   { title: "Take Profit", key: "takeprofit", disabled: true },
@@ -69,7 +69,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
       <SizedBox height={16} />
       <Row>
         <Column crossAxisSize="max">
-          <Select label="Order type" options={orderTypes} selected={orderTypes[1].key} onSelect={() => null} />
+          <Select label="Order type" options={orderTypes} selected={orderTypes[0].key} onSelect={() => null} />
           <SizedBox height={2} />
           <Row alignItems="center">
             <StyledInfoIcon />

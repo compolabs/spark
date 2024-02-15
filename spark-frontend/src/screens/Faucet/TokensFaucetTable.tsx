@@ -12,6 +12,40 @@ import MintButtons from "./MintButtons";
 
 interface IProps {}
 
+const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
+  const { faucetStore } = useStores();
+  return (
+    <Root>
+      <StyledTableRow>
+        <TableTitle>Asset</TableTitle>
+        <TableTitle>Mint amount</TableTitle>
+        <TableTitle>My balance</TableTitle>
+        <TableTitle>
+          <Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
+        </TableTitle>
+      </StyledTableRow>
+      <TableBody>
+        {faucetStore.faucetTokens.map((token) => (
+          <StyledTableRow key={token.assetId}>
+            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              {token.name}
+            </TableText>
+            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              {token.mintAmount.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
+            </TableText>
+            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
+              {token.formatBalance?.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
+            </TableText>
+            <MintButtons assetId={token.assetId} />
+          </StyledTableRow>
+        ))}
+      </TableBody>
+    </Root>
+  );
+});
+
+export default TokensFaucetTable;
+
 const Root = styled.div`
   background: ${({ theme }) => theme.colors.bgSecondary};
   display: flex;
@@ -54,36 +88,3 @@ const TableBody = styled(Column)`
   width: 100%;
   box-sizing: border-box;
 `;
-
-const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
-  const { accountStore, faucetStore } = useStores();
-  return (
-    <Root>
-      <StyledTableRow>
-        <TableTitle>Asset</TableTitle>
-        <TableTitle>Mint amount</TableTitle>
-        <TableTitle>My balance</TableTitle>
-        <TableTitle>
-          <Row justifyContent="flex-end">{/*<Button style={{ width: 120 }}>Mint all</Button>*/}</Row>
-        </TableTitle>
-      </StyledTableRow>
-      <TableBody>
-        {faucetStore.faucetTokens.map((token) => (
-          <StyledTableRow key={token.assetId}>
-            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.name}
-            </TableText>
-            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.mintAmount.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
-            </TableText>
-            <TableText type={TEXT_TYPES.BUTTON_SECONDARY} primary>
-              {token.formatBalance?.toSignificant(3)} &nbsp;<Chip>{token.symbol}</Chip>
-            </TableText>
-            <MintButtons assetId={token.assetId} />
-          </StyledTableRow>
-        ))}
-      </TableBody>
-    </Root>
-  );
-});
-export default TokensFaucetTable;

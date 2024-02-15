@@ -22,21 +22,35 @@ interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
 }
 
 const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
-  const [focused, setFocused] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
   const selectedOption = options.find(({ key }) => selected === key);
+
+  console.log(isVisible);
+
+  const handleSelectClick = (v: IOption, index: number) => {
+    onSelect(v, index);
+    setIsVisible(false);
+  };
+
   return (
     <Tooltip
       config={{
         placement: "bottom-start",
         trigger: "click",
-        onVisibleChange: setFocused,
+        visible: isVisible,
+        onVisibleChange: setIsVisible,
       }}
       content={
         <Column crossAxisSize="max">
           {options.map((v, index) => {
             const active = selected === v.key;
             return (
-              <Option key={v.key + "_option"} active={active} disabled={v.disabled} onClick={() => onSelect(v, index)}>
+              <Option
+                key={v.key + "_option"}
+                active={active}
+                disabled={v.disabled}
+                onClick={() => handleSelectClick(v, index)}
+              >
                 {v.title}
               </Option>
             );
@@ -44,10 +58,10 @@ const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest 
         </Column>
       }
     >
-      <Wrap focused={focused}>
+      <Wrap focused={isVisible}>
         <Text>{label}</Text>
         <SizedBox height={2} />
-        <Root onBlur={() => setFocused(false)} onClick={() => setFocused(true)} {...rest}>
+        <Root onBlur={() => setIsVisible(false)} onClick={() => setIsVisible(true)} {...rest}>
           {selectedOption?.title ?? options[0]?.title}
           {/*<SizedBox width={10}/>*/}
           <img alt="arrow" className="menu-arrow" src={arrowIcon} />
