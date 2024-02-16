@@ -7,6 +7,7 @@ import Toast from "@src/components/Toast";
 import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
 import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
+import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<CreateOrderSpotVM | null>(null);
@@ -183,8 +184,8 @@ class CreateOrderSpotVM {
       );
       await openOrderTransaction.wait();
       notificationStore.toast(<Toast hash={openOrderTransaction.hash} text="Order Created" />);
-    } catch (error) {
-      notificationStore.toast("We were unable to process your order at this time", { type: "warning" });
+    } catch (error: any) {
+      handleEvmErrors(notificationStore, error, "We were unable to process your order at this time");
     }
 
     await balanceStore.update();

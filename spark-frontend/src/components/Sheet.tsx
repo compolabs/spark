@@ -9,7 +9,7 @@ const Sheet: React.FC<SheetProps> = ({ children, detent = "content-height", ...r
         <SheetModal.Header />
         <SheetModal.Content>{children}</SheetModal.Content>
       </SheetModal.Container>
-      <SheetModal.Backdrop />
+      <SheetModal.Backdrop onTap={rest.onClose} />
     </SheetModal>
   );
 };

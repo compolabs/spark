@@ -252,7 +252,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       .map(([assetId, balance], i) => {
         const token = TOKENS_BY_ASSET_ID[assetId];
         return (
-          <MobileTableBalanceRow key={i + "mobile-row"}>
+          <MobileTableOrderRow key={i + "mobile-row"}>
             <MobileTableRowColumn>
               <Text type={TEXT_TYPES.SUPPORTING}>Token</Text>
               <SmartFlex center="y" gap="4px">
@@ -262,11 +262,16 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
                 </Text>
               </SmartFlex>
             </MobileTableRowColumn>
-            <MobileTableRowColumnBalance>
+            <MobileTableRowColumn>
               <Text type={TEXT_TYPES.SUPPORTING}>Balance</Text>
               <Text color={theme.colors.textPrimary}>{BN.formatUnits(balance, token.decimals).toSignificant(2)}</Text>
-            </MobileTableRowColumnBalance>
-          </MobileTableBalanceRow>
+            </MobileTableRowColumn>
+            <MobileTableRowColumn>
+              <CancelButton onClick={() => faucetStore.mintByAssetId(assetId)}>
+                {faucetStore.loading && faucetStore.actionTokenAssetId === assetId ? "Loading..." : "Mint"}
+              </CancelButton>
+            </MobileTableRowColumn>
+          </MobileTableOrderRow>
         );
       });
 
@@ -363,7 +368,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
         </TabContainer>
         <TableContainer>{renderTable()}</TableContainer>
       </TableRoot>
-      {!!vm.myOrders.length && <CancelAllButton>Cancel all orders</CancelAllButton>}
+      {!!vm.myOrders.length && tabIndex === 0 && <CancelAllButton>Cancel all orders</CancelAllButton>}
     </Root>
   );
 });
@@ -493,22 +498,12 @@ const MobileTableOrderRow = styled(SmartFlex)`
   }
 `;
 
-const MobileTableBalanceRow = styled(MobileTableOrderRow)`
-  grid-template-columns: repeat(2, 1fr);
-`;
-
 const MobileTableRowColumn = styled(SmartFlex)`
   flex-direction: column;
   gap: 7px;
 
   &:last-of-type {
     align-items: flex-end;
-  }
-`;
-
-const MobileTableRowColumnBalance = styled(MobileTableRowColumn)`
-  &:last-of-type {
-    align-items: initial;
   }
 `;
 

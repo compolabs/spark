@@ -26,7 +26,6 @@ const MarketSelection: React.FC<IProps> = observer(() => {
   const spotMarketsFiltered = useMemo(
     () =>
       tradeStore.spotMarkets.filter((market) => {
-        console.log(searchValue, market.symbol!);
         return searchValue.length ? market.symbol.includes(searchValue) : true;
       }),
     [tradeStore.spotMarkets, searchValue],

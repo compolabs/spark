@@ -7,6 +7,7 @@ import { CONTRACT_ADDRESSES } from "@src/constants";
 import { SpotMarketOrder } from "@src/entity";
 import useVM from "@src/hooks/useVM";
 import { fetchOrders } from "@src/services/SpotMarketService";
+import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<BottomTablesInterfaceSpotVM | null>(null);
@@ -49,7 +50,7 @@ class BottomTablesInterfaceSpotVM {
   }
 
   cancelOrder = async (orderId: string) => {
-    const { accountStore } = this.rootStore;
+    const { accountStore, notificationStore } = this.rootStore;
 
     if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
 
@@ -60,7 +61,7 @@ class BottomTablesInterfaceSpotVM {
       const transaction = await contract.removeOrder(orderId);
       await transaction.wait();
     } catch (error) {
-      console.error(error);
+      handleEvmErrors(notificationStore, error, "We were unable to cancel your order at this time");
     }
 
     this.isOrderCancelling = false;
