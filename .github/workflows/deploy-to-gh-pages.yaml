@@ -3,7 +3,7 @@ name: Build and Deploy to GitHub Pages
 on:
   push:
     branches:
-      - master # Set this to your default branch if it's not master
+      - master
 
 jobs:
   build-and-deploy:
@@ -15,16 +15,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "14" # Set this to your project's node version
+          node-version: "16"
 
       - name: Install Dependencies
-        run: npm install # or use yarn
-
+        run: |
+          cd spark-frontend
+          npm install
+        
       - name: Build Project
-        run: npm run build # Replace with your build command
+        run: |
+          cd spark-frontend
+          npm run build
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build # Set this to your build output directory
+          publish_dir: ./spark-frontend/build
