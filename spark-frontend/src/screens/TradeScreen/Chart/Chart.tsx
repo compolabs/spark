@@ -23,11 +23,11 @@ const Root = styled.div`
 `;
 
 const Chart: React.FC<IProps> = () => {
+  const isChartExcluded = process.env.REACT_APP_IS_CHART_LIBRARY_EXCLUDED === "true";
+
   return (
     <Root>
-      <ChartVMProvider>
-        <TradingViewWidget />
-      </ChartVMProvider>
+      <ChartVMProvider>{!isChartExcluded && <TradingViewWidget />}</ChartVMProvider>
     </Root>
   );
 };
