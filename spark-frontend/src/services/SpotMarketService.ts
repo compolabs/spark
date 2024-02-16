@@ -69,13 +69,13 @@ export async function fetchMarketCreateEvents(limit: number): Promise<Array<TMar
         marketCreateEvents(${filter}) {
           id
           assetId
-          decimal
         }
       }
   `;
 
   try {
     const response = await axios.post(INDEXER_URL, { query });
+    console.log(response);
     return response.data.data.marketCreateEvents as TMarketCreateEvent[];
   } catch (error) {
     console.error("Error during MarketCreateEvents request:", error);

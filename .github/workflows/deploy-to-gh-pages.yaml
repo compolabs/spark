@@ -26,8 +26,6 @@ jobs:
         run: |
           cd spark-frontend
           npm run build
-        env:
-          REACT_APP_IS_CHART_LIBRARY_EXCLUDED: true
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
