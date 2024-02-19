@@ -24,15 +24,38 @@ class SparkMatcher {
   public doMatch = async () => {
     const market = TOKENS_BY_SYMBOL.BTC.assetId;
 
-    const [buyOrders, sellOrders]: [SpotMarketOrder[], SpotMarketOrder[]] = await Promise.all([
+    let [buyOrders, sellOrders]: [SpotMarketOrder[], SpotMarketOrder[]] = await Promise.all([
       this.spotMarket.getOrders({ market, limit: 100, type: "BUY" }),
       this.spotMarket.getOrders({ market, limit: 100, type: "SELL" }),
     ]);
 
-    for (let sellOrder of sellOrders) {
-      for (let buyOrder of buyOrders) {
-        if (sellOrder.baseToken === buyOrder.baseToken && sellOrder.price.lte(buyOrder.price)) {
-          await this.spotMarket.matchOrders(sellOrder.id, buyOrder.id).catch(console.log);
+    for (let i = 0; i < sellOrders.length; ++i) {
+      let sellOrder = sellOrders[i];
+      if (sellOrder.baseSize.eq(0)) continue;
+      for (let j = 0; j < buyOrders.length; ++j) {
+        let buyOrder = buyOrders[j];
+        if (buyOrder.baseSize.eq(0)) continue;
+        if (
+          sellOrder.baseToken === buyOrder.baseToken &&
+          sellOrder.price.lte(buyOrder.price) &&
+          sellOrder.type === "SELL" &&
+          buyOrder.type === "BUY" &&
+          sellOrder.baseSize.gt(0) &&
+          buyOrder.baseSize.gt(0)
+        ) {
+          await this.spotMarket
+            .matchOrders(sellOrder.id, buyOrder.id)
+            .then(() => {
+              const amount =
+                sellOrder.baseSize > buyOrder.baseSize ? buyOrder.baseSize : sellOrder.baseSize;
+
+              sellOrder.baseSize = sellOrder.baseSize.minus(amount);
+              sellOrders[i].baseSize = sellOrder.baseSize;
+
+              buyOrder.baseSize = buyOrder.baseSize.minus(amount);
+              buyOrders[i].baseSize = buyOrder.baseSize;
+            })
+            .catch((e) => console.log(e.reason));
         }
       }
     }

@@ -22,7 +22,7 @@ export class SpotMarketOrder {
   readonly baseToken: Token;
   readonly quoteToken = TOKENS_BY_SYMBOL.USDC;
   readonly trader: string;
-  readonly baseSize: BN;
+  baseSize: BN;
   readonly baseSizeUnits: BN;
   readonly quoteSize: BN;
   readonly quoteSizeUnits: BN;

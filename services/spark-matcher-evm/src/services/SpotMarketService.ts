@@ -1,8 +1,9 @@
 import axios from "axios";
 import { SpotMarketOrder } from "../entity/SpotMarketOrder";
 import { ethers } from "ethers";
-import { CONTRACT_ADDRESS, INDEXER_URL, NODE_URL, PRIVATE_KEY } from "../config";
+import { CONTRACT_ADDRESS, NODE_URL, PRIVATE_KEY } from "../config";
 import { SPOT_MARKET_ABI } from "../abi";
+import { fetchIndexer } from "../utils/fetchIndexer";
 
 type TOrderType = "BUY" | "SELL";
 type TOrderResponse = {
@@ -21,6 +22,18 @@ export class SpotMarket {
   constructor() {
     const provider = new ethers.JsonRpcProvider(NODE_URL);
     this.signer = new ethers.Wallet(PRIVATE_KEY, provider);
+
+    this.signer
+      .getAddress()
+      .then(async (address) => ({
+        balance: await provider.getBalance(address),
+        address,
+      }))
+      .then(({ balance, address }) =>
+        console.log(
+          `🕺 Matcher address: ${address}\n   Balance: ${ethers.formatUnits(balance)} ETH\n`
+        )
+      );
     this.contract = new ethers.Contract(CONTRACT_ADDRESS, SPOT_MARKET_ABI, this.signer);
   }
 
@@ -46,7 +59,7 @@ export class SpotMarket {
     }
   `;
     try {
-      const response = await axios.post(INDEXER_URL, { query });
+      const response = await fetchIndexer(query);
       return response.data.data.orders.map((order: TOrderResponse) => new SpotMarketOrder(order));
     } catch (error) {
       console.error("Error during Orders request:", error);
@@ -59,9 +72,9 @@ export class SpotMarket {
       const tx = await this.contract.matchOrders(sellOrder, buyOrder);
       await tx.wait();
 
-      console.log("✅ Orders matched:", sellOrder, buyOrder);
-    } catch (error) {
-      console.log("❌Error matching orders:", error);
+      console.log("✅ Orders matched:", sellOrder, buyOrder, "\n");
+    } catch (error: any) {
+      console.log("❌ Error matching orders:", error.toString(), "\n");
     }
   };
 }

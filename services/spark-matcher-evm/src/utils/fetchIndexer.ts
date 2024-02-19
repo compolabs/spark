@@ -1,16 +1,19 @@
-import { INDEXER_URL } from "../config";
 import axios from "axios";
 
-export default async function fetchIndexer<T>(query: string) {
-  const config = {
-    method: "POST",
-    url: INDEXER_URL,
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    data: { query },
-  };
-  const result: T = await axios
-    .request(config)
-    .then((result) => result.data.data[0])
-    .catch((e) => console.error(`❌ Indexer call: ${e.toString()}\nQuery: ${config.data.query}`));
-  return result;
-}
+export const INDEXER_URLS = [
+  "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest",
+  "https://api.studio.thegraph.com/query/63182/spark-arbitrum-spor-market/version/latest",
+];
+
+export const fetchIndexer = async (query: string) => {
+  for (const i in INDEXER_URLS) {
+    const indexer = INDEXER_URLS[i];
+    try {
+      return await axios.post(indexer, { query });
+    } catch (error: any) {
+      console.error(`❌ Indexer call: ${error.toString()}\n  Indexer: ${indexer}\n`);
+      /*eslint-disable-next-line */
+    }
+  }
+  return await axios.post(INDEXER_URLS[0], { query });
+};

@@ -142,7 +142,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
         </SmartFlex>
       ),
       price: toCurrency(order.priceUnits.toSignificant(2)),
-      filled: BN.ZERO,
+      filled: BN.ZERO.toString(),
     }));
 
   const getBalanceData = () =>
