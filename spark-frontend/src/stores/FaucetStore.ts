@@ -79,7 +79,7 @@ class FaucetStore {
     if (!token || !accountStore.address) return;
 
     if (token.symbol === "ETH") {
-      window.open(`${ARBITRUM_SEPOLIA_FAUCET}/?address=${accountStore.address}`, "blank");
+      window.open(ARBITRUM_SEPOLIA_FAUCET, "blank");
       return;
     }
 
