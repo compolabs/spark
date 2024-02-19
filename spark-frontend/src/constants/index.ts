@@ -32,7 +32,11 @@ export const ARBITRUM_SEPOLIA_FAUCET = "https://faucet.quicknode.com/arbitrum/se
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 
-export const INDEXER_URL = "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest";
+export const INDEXER_URLS = [
+  "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest",
+  "https://api.studio.thegraph.com/query/63182/spark-arbitrum-spor-market/version/latest",
+];
+export const INDEXER_URL = INDEXER_URLS[0];
 
 export const CONTRACT_ADDRESSES = {
   spotMarket: "0xE57B37774D718ED379157CDd356492232FA9aE7e",

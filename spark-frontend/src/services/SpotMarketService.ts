@@ -1,6 +1,6 @@
 import axios from "axios";
 
-import { INDEXER_URL } from "@src/constants";
+import { INDEXER_URL, INDEXER_URLS } from "@src/constants";
 import { SpotMarketOrder } from "@src/entity";
 import BN from "@src/utils/BN";
 
@@ -48,7 +48,7 @@ export async function fetchOrders({
     }
   `;
   try {
-    const response = await axios.post(INDEXER_URL, { query });
+    const response = await fetchIndexer(query);
     return response.data.data.orders.map((order: TOrderResponse) => new SpotMarketOrder(order));
   } catch (error) {
     console.error("Error during Orders request:", error);
@@ -74,8 +74,7 @@ export async function fetchMarketCreateEvents(limit: number): Promise<Array<TMar
   `;
 
   try {
-    const response = await axios.post(INDEXER_URL, { query });
-    console.log(response);
+    const response = await fetchIndexer(query);
     return response.data.data.marketCreateEvents as TMarketCreateEvent[];
   } catch (error) {
     console.error("Error during MarketCreateEvents request:", error);
@@ -93,7 +92,7 @@ export async function fetchMarketPrice(baseToken: string): Promise<BN> {
     }
 `;
   try {
-    const response = await axios.post(INDEXER_URL, { query });
+    const response = await fetchIndexer(query);
     const tradeEvents = response.data.data.tradeEvents;
     return tradeEvents.length > 0 ? new BN(tradeEvents[0].price) : BN.ZERO;
   } catch (error) {
@@ -126,7 +125,7 @@ export async function fetchTrades(baseToken: string, limit: number): Promise<Arr
     }
 `;
   try {
-    const response = await axios.post(INDEXER_URL, { query });
+    const response = await fetchIndexer(query);
     return response.data.data.tradeEvents.map((trade: any) => ({
       ...trade,
       tradeAmount: new BN(trade.tradeAmount),
@@ -138,3 +137,15 @@ export async function fetchTrades(baseToken: string, limit: number): Promise<Arr
     return [];
   }
 }
+
+const fetchIndexer = async (query: string) => {
+  for (const i in INDEXER_URLS) {
+    const indexer = INDEXER_URLS[i];
+    try {
+      return await axios.post(indexer, { query });
+    } catch (error) {
+      /*eslint-disable-next-line */
+    }
+  }
+  return await axios.post(INDEXER_URL, { query });
+};
