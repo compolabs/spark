@@ -1,4 +1,4 @@
-import React, { ComponentProps, useEffect, useState } from "react";
+import React, { ComponentProps, useEffect } from "react";
 import styled from "@emotion/styled";
 import { Accordion } from "@szhsin/react-accordion";
 import { observer } from "mobx-react";
@@ -14,20 +14,15 @@ import TokenInput from "@components/TokenInput";
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import Button, { ButtonGroup } from "@src/components/Button";
 import { useMedia } from "@src/hooks/useMedia";
-import { ORDER_MODE, useCreateOrderSpotVM } from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
+import {
+  ORDER_MODE,
+  ORDER_TYPE,
+  useCreateOrderSpotVM,
+} from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
 
 interface IProps extends ComponentProps<any> {}
-
-enum ORDER_TYPE {
-  Market,
-  Limit,
-  StopMarket,
-  StopLimit,
-  TakeProfit,
-  TakeProfitLimit,
-}
 
 const ORDER_OPTIONS = [
   { title: "Market", key: ORDER_TYPE.Market },
@@ -47,10 +42,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 
   const isButtonDisabled = vm.loading || !vm.canProceed;
 
-  const [orderType, setOrderType] = useState(ORDER_OPTIONS[0].key);
-
   useEffect(() => {
-    if (orderType === ORDER_TYPE.Market) {
+    if (vm.orderType === ORDER_TYPE.Market) {
       vm.setInputPrice(market?.price ?? BN.ZERO);
     }
   });
@@ -73,13 +66,17 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
     vm.setInputTotal(value, true);
   };
 
-  const handleSetPrice = (amount: BN) => {
-    if (orderType === ORDER_TYPE.Market) return;
-
-    vm.setInputPrice(amount);
+  const handleSetOrderType = (type: ORDER_TYPE) => {
+    vm.setOrderType(type);
   };
 
-  const isInputPriceDisabled = orderType !== ORDER_TYPE.Limit;
+  const handleSetPrice = (amount: BN) => {
+    if (vm.orderType === ORDER_TYPE.Market) return;
+
+    vm.setInputPrice(amount, true);
+  };
+
+  const isInputPriceDisabled = vm.orderType !== ORDER_TYPE.Limit;
 
   return (
     <Root {...rest}>
@@ -97,8 +94,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           <Select
             label="Order type"
             options={ORDER_OPTIONS}
-            selected={orderType}
-            onSelect={(option) => setOrderType(option.key)}
+            selected={vm.orderType}
+            onSelect={({ key }) => handleSetOrderType(key)}
           />
           <SizedBox height={2} />
           <Row alignItems="center">

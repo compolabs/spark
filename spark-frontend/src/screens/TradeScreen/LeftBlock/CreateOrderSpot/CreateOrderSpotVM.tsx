@@ -27,10 +27,21 @@ export enum ORDER_MODE {
   SELL,
 }
 
+export enum ORDER_TYPE {
+  Market,
+  Limit,
+  StopMarket,
+  StopLimit,
+  TakeProfit,
+  TakeProfitLimit,
+}
+
 class CreateOrderSpotVM {
   loading = false;
 
   mode: ORDER_MODE = ORDER_MODE.BUY;
+
+  orderType: ORDER_TYPE = ORDER_TYPE.Market;
 
   inputPrice: BN = BN.ZERO;
   inputAmount: BN = BN.ZERO;
@@ -45,7 +56,11 @@ class CreateOrderSpotVM {
 
     reaction(
       () => tradeStore.market?.price,
-      (price) => this.setInputPrice(price ?? BN.ZERO),
+      (price) => {
+        if (this.orderType === ORDER_TYPE.Market) {
+          this.setInputPrice(price ?? BN.ZERO);
+        }
+      },
     );
   }
 
@@ -192,6 +207,8 @@ class CreateOrderSpotVM {
 
     this.setLoading(false);
   };
+
+  setOrderType = (type: ORDER_TYPE) => (this.orderType = type);
 
   private setLoading = (l: boolean) => (this.loading = l);
 }
