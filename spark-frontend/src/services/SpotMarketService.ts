@@ -104,23 +104,35 @@ export async function fetchMarketPrice(baseToken: string): Promise<BN> {
 export type TSpotMarketTrade = {
   id: string;
   baseToken: string;
+  seller: string;
+  buyer: string;
   matcher: string;
   tradeAmount: BN;
   price: BN;
   timestamp: number;
 };
 
-export async function fetchTrades(baseToken: string, limit: number): Promise<Array<TSpotMarketTrade>> {
-  const filter = `first: ${limit}, where: {baseToken: "${baseToken}"}`;
+export async function fetchTrades(baseToken: string, limit: number, trader?: string): Promise<Array<TSpotMarketTrade>> {
+  const baseTokenFilter = `baseToken: "${baseToken}",`;
+  const smartFilter = trader
+    ? `or: [
+    { seller: "${trader}", baseToken: "${baseToken}" },
+    { buyer: "${trader}", baseToken: "${baseToken}" }
+  ]`
+    : "";
+  const where = trader ? smartFilter : baseTokenFilter;
+  const filter = `first: ${limit}, where: { ${where} }`;
   const query = `
     query {
       tradeEvents(${filter}) {
-          id
-          matcher
-          baseToken
-          tradeAmount
-          price
-          blockTimestamp
+        id
+        matcher
+        seller
+        buyer
+        baseToken
+        tradeAmount
+        price
+        blockTimestamp
       }
     }
 `;

@@ -19,7 +19,7 @@ import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
 import hexToRgba from "@src/utils/hexToRgb";
 
-import { ORDER_MODE, useCreateOrderSpotVM } from "../../LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
+import { ORDER_MODE, ORDER_TYPE, useCreateOrderSpotVM } from "../../LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
 
 import { useSpotOrderbookVM } from "./SpotOrderbookVM";
 
@@ -107,6 +107,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
           orderSpotVm.setOrderMode(orderMode);
           orderSpotVm.setInputPrice(o.price);
           orderSpotVm.setInputAmount(new BN(o.baseSize), true);
+          orderSpotVm.setOrderType(ORDER_TYPE.Limit);
         }}
       >
         <VolumeBar type={type} volumePercent={volumePercent(o).times(100).toNumber()} />

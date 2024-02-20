@@ -103,7 +103,7 @@ const TokenInput: React.FC<IProps> = (props) => {
           autofocus={focused}
           decimals={props.decimals}
           disabled={props.disabled}
-          displayDecimals={2}
+          displayDecimals={props.decimals}
           max={props.max?.toString()}
           placeholder="0.00"
           renderInput={(props, ref) => (
