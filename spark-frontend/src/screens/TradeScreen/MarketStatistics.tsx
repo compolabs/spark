@@ -19,7 +19,6 @@ const MarketStatistics: React.FC = observer(() => {
   const media = useMedia();
 
   const spotStatsArr = [
-    { title: "Index price", value: toCurrency(tradeStore.market?.priceUnits.toSignificant(2) ?? BN.ZERO.toString()) },
     { title: "24h volume", value: toCurrency(BN.formatUnits(tradeStore.volume.volume, 6).toSignificant(2)) },
     { title: "24h High", value: toCurrency(BN.formatUnits(tradeStore.volume.high, 9).toSignificant(2)) },
     { title: "24h Low", value: toCurrency(BN.formatUnits(tradeStore.volume.low, 9).toSignificant(2)) },
