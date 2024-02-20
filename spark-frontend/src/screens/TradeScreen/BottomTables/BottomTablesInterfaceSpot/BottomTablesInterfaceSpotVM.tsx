@@ -3,10 +3,10 @@ import { ethers } from "ethers";
 import { makeAutoObservable, reaction, when } from "mobx";
 
 import { SPOT_MARKET_ABI } from "@src/abi";
-import { CONTRACT_ADDRESSES } from "@src/constants";
-import { SpotMarketOrder } from "@src/entity";
+import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { SpotMarketOrder, SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
-import { fetchOrders } from "@src/services/SpotMarketService";
+import { fetchOrders, fetchTrades } from "@src/services/SpotMarketService";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import { RootStore, useStores } from "@stores";
 
@@ -22,7 +22,7 @@ export const useBottomTablesInterfaceSpotVM = () => useVM(ctx);
 
 class BottomTablesInterfaceSpotVM {
   myOrders: SpotMarketOrder[] = [];
-  myOrdersHistory: SpotMarketOrder[] = [];
+  myOrdersHistory: SpotMarketTrade[] = [];
   initialized: boolean = false;
 
   isOrderCancelling = false;
@@ -73,22 +73,24 @@ class BottomTablesInterfaceSpotVM {
 
     if (!tradeStore.market || !accountStore.address) return;
 
+    const { market } = tradeStore;
+
     try {
       const orders = await fetchOrders({
-        baseToken: tradeStore.market.baseToken.assetId,
+        baseToken: market.baseToken.assetId,
         limit: 100,
         trader: accountStore.address,
         isActive: true,
       });
       this.setMySpotOrders(orders);
 
-      const ordersHistory = await fetchOrders({
-        baseToken: tradeStore.market.baseToken.assetId,
-        limit: 100,
-        trader: accountStore.address,
-        isActive: false,
-      });
-      this.setMySpotOrdersHistory(ordersHistory);
+      const ordersHistory = await fetchTrades(market.baseToken.assetId, 100, accountStore.address);
+
+      const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
+
+      this.setMySpotOrdersHistory(
+        ordersHistory.map((t) => new SpotMarketTrade({ ...t, baseToken: token, userAddress: accountStore.address! })),
+      );
     } catch (error) {
       console.error(error);
     }
@@ -96,7 +98,7 @@ class BottomTablesInterfaceSpotVM {
 
   private setMySpotOrders = (myOrders: SpotMarketOrder[]) => (this.myOrders = myOrders);
 
-  private setMySpotOrdersHistory = (myOrdersHistory: SpotMarketOrder[]) => (this.myOrdersHistory = myOrdersHistory);
+  private setMySpotOrdersHistory = (myOrdersHistory: SpotMarketTrade[]) => (this.myOrdersHistory = myOrdersHistory);
 
   private setInitialized = (l: boolean) => (this.initialized = l);
 }

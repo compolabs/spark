@@ -35,7 +35,7 @@ class SpotTradesVM {
   }
 
   updateTrades = async () => {
-    const { tradeStore, initialized } = this.rootStore;
+    const { accountStore, tradeStore, initialized } = this.rootStore;
 
     const market = tradeStore.market;
 
@@ -47,7 +47,9 @@ class SpotTradesVM {
       // todo: to think about TokenStore
       const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
 
-      this.trades = data.map((t) => new SpotMarketTrade({ ...t, baseToken: token }));
+      this.trades = data.map(
+        (t) => new SpotMarketTrade({ ...t, baseToken: token, userAddress: accountStore.address! }),
+      );
     } catch (error) {
       console.error("Error with loading trades");
     }

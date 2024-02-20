@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
-import dayjs from "dayjs";
 import { observer } from "mobx-react";
 
 import { Column } from "@components/Flex";
@@ -60,7 +59,7 @@ const SpotTradesImpl: React.FC<IProps> = observer(() => {
               {trade.formatTradeAmount}
             </Text>
             <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
-              {dayjs.unix(trade.timestamp).format("HH:mm:ss")}
+              {trade.timestamp.format("HH:mm:ss")}
             </Text>
           </Row>
         ))}
