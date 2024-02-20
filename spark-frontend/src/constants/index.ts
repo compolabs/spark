@@ -33,15 +33,15 @@ export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 
 export const INDEXER_URLS = [
-  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-3/version/latest",
-  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-2/version/latest",
+  // "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-3/version/latest",
+  // "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-2/version/latest",
   "https://api.studio.thegraph.com/query/63182/spark-arbitrum-spor-market/version/latest",
   "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest",
 ];
 export const INDEXER_URL = INDEXER_URLS[0];
 
 export const CONTRACT_ADDRESSES = {
-  spotMarket: "0x0DD4699013537cf77668E8461a6A1862Fa8cb5F5",
+  spotMarket: "0x6326d3AF2612a45F054D05f9cFf60B37338a59c0",
   tokenFactory: "0xc3d0426df8a40e7b4803f305537a83e7037be91596c393e7a6b693133f9d7301",
   pyth: "0x2b480dd77abdc48224a22b809608b445604f0de1a999160fb7f126cca2ffc108",
   proxy: "0x36eadaee6e25bd050239834703f3881f91cbc3cb3bb7c96f57483703d8ecba3f",
