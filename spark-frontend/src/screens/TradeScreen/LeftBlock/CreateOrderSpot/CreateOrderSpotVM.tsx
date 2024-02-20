@@ -183,9 +183,10 @@ class CreateOrderSpotVM {
       const quoteToken = market.quoteToken;
       const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
       const activeToken = this.isSell ? baseToken : quoteToken;
+      const approveAmount = this.isSell ? this.inputAmount : this.inputTotal;
 
       const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
-      await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, this.inputTotal.toString());
+      await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, approveAmount.toString());
 
       const spotMarketContract = new ethers.Contract(
         CONTRACT_ADDRESSES.spotMarket,
