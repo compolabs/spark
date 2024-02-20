@@ -59,5 +59,4 @@ export class SpotMarketOrder {
   get marketSymbol() {
     return `${this.baseToken.symbol}-${this.quoteToken.symbol}`;
   }
-
 }
