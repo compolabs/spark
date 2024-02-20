@@ -11,18 +11,17 @@ import { useMedia } from "@src/hooks/useMedia";
 import { useStores } from "@src/stores";
 import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
+import { toCurrency } from "@src/utils/toCurrency";
 
 const MarketStatistics: React.FC = observer(() => {
   const { tradeStore } = useStores();
   const theme = useTheme();
   const media = useMedia();
 
-  //todo исправить значения
   const spotStatsArr = [
-    { title: "Index price", value: tradeStore.market?.priceUnits.toFormat(2) },
-    { title: "24h volume", value: "$ 0.00" },
-    { title: "24h High", value: "$ 0.00" },
-    { title: "24h Low", value: "$ 0.00" },
+    { title: "24h volume", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.volume, 6).toSignificant(2)) },
+    { title: "24h High", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.high, 9).toSignificant(2)) },
+    { title: "24h Low", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.low, 9).toSignificant(2)) },
   ];
 
   const renderMobile = () => {

@@ -78,6 +78,22 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 
   const isInputPriceDisabled = vm.orderType !== ORDER_TYPE.Limit;
 
+  const renderButton = () => {
+    if (!vm.tokenIsApproved) {
+      return (
+        <Button disabled={isButtonDisabled} green={!vm.isSell} red={vm.isSell} onClick={vm.approve}>
+          {vm.loading ? "Loading..." : `Approve ${vm.isSell ? baseToken.symbol : quoteToken.symbol}`}
+        </Button>
+      );
+    }
+
+    return (
+      <Button disabled={isButtonDisabled} green={!vm.isSell} red={vm.isSell} onClick={vm.createOrder}>
+        {vm.loading ? "Loading..." : vm.isSell ? `Sell ${baseToken.symbol}` : `Buy ${baseToken.symbol}`}
+      </Button>
+    );
+  };
+
   return (
     <Root {...rest}>
       <ButtonGroup>
@@ -207,9 +223,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
         </AccordionItem>
       </Accordion>
       <SizedBox height={16} />
-      <Button disabled={isButtonDisabled} green={!vm.isSell} red={vm.isSell} onClick={vm.createOrder}>
-        {vm.loading ? "Loading..." : vm.isSell ? `Sell ${baseToken.symbol}` : `Buy ${baseToken.symbol}`}
-      </Button>
+      {renderButton()}
     </Root>
   );
 });

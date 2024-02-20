@@ -138,6 +138,41 @@ export async function fetchTrades(baseToken: string, limit: number): Promise<Arr
   }
 }
 
+export type SpotMarketVolume = {
+  low: BN;
+  high: BN;
+  volume: BN;
+};
+
+export async function fetchVolumeData(): Promise<SpotMarketVolume> {
+  const now = Date.now();
+  const startTime = Math.floor((now - 24 * 60 * 60 * 1000) / 1000);
+  const filter = `where: {blockTimestamp_gte: ${startTime}}`;
+
+  const query = `
+  query {
+    tradeEvents(${filter}) {
+      tradeAmount
+      price
+    }
+  }`;
+
+  try {
+    const response = await fetchIndexer(query);
+    const data = response.data.data.tradeEvents as { tradeAmount: string; price: string }[];
+
+    const volume = data.reduce((acc: number, curr) => acc + parseFloat(curr.tradeAmount), 0);
+    const high = data.reduce((max, trade) => (trade.price > max ? trade.price : max), data[0].price);
+    const low = data.reduce((min, trade) => (trade.price < min ? trade.price : min), data[0].price);
+
+    return { volume: new BN(volume), high: new BN(high), low: new BN(low) };
+  } catch (error) {
+    console.error("Error during Trades request:", error);
+
+    return { volume: BN.ZERO, high: BN.ZERO, low: BN.ZERO };
+  }
+}
+
 const fetchIndexer = async (query: string) => {
   for (const i in INDEXER_URLS) {
     const indexer = INDEXER_URLS[i];
