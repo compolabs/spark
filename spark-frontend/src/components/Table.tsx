@@ -90,6 +90,7 @@ const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover
 const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
   width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
   background: ${({ theme }) => `${theme.colors.bgPrimary}`};
+  height: fit-content;
 
   table {
     width: 100%;

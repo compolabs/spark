@@ -48,6 +48,8 @@ class CreateOrderSpotVM {
   inputPercent: BN = BN.ZERO;
   inputTotal: BN = BN.ZERO;
 
+  allowance: BN = BN.ZERO;
+
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
     //todo обработать маркет и лимит типы заказов в селекторе
@@ -61,6 +63,14 @@ class CreateOrderSpotVM {
           this.setInputPrice(price ?? BN.ZERO);
         }
       },
+    );
+
+    reaction(
+      () => [this.mode, tradeStore.market],
+      async () => {
+        await this.loadAllowance();
+      },
+      { fireImmediately: true },
     );
   }
 
@@ -76,6 +86,11 @@ class CreateOrderSpotVM {
 
   get isSell(): boolean {
     return this.mode === ORDER_MODE.SELL;
+  }
+
+  get tokenIsApproved() {
+    const amount = this.isSell ? this.inputAmount : this.inputTotal;
+    return this.allowance.gte(amount);
   }
 
   setOrderMode = (mode: ORDER_MODE) => (this.mode = mode);
@@ -118,7 +133,7 @@ class CreateOrderSpotVM {
 
   setInputAmount = (amount: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
-    this.inputAmount = amount;
+    this.inputAmount = amount.toDecimalPlaces(0);
 
     if (!sync) return;
 
@@ -170,6 +185,57 @@ class CreateOrderSpotVM {
     this.setInputPercent(inputPercent);
   };
 
+  approve = async () => {
+    const { accountStore, tradeStore, notificationStore } = this.rootStore;
+    const { market } = tradeStore;
+
+    if (!accountStore.signer || !market) return;
+
+    const baseToken = market.baseToken;
+    const quoteToken = market.quoteToken;
+
+    const activeToken = this.isSell ? baseToken : quoteToken;
+    const approveAmount = this.isSell ? this.inputAmount : this.inputTotal;
+
+    this.setLoading(true);
+
+    try {
+      const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
+      const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, approveAmount.toString());
+
+      await approveTransaction.wait();
+      await this.loadAllowance();
+
+      notificationStore.toast(`${activeToken.symbol} approved!`, { type: "success" });
+    } catch (error) {
+      notificationStore.toast(`Something goes wrong with ${activeToken.symbol} approve`, { type: "error" });
+    }
+
+    this.setLoading(false);
+  };
+
+  loadAllowance = async () => {
+    const { accountStore, tradeStore } = this.rootStore;
+    const { market } = tradeStore;
+
+    const baseToken = market?.baseToken;
+    const quoteToken = market?.quoteToken;
+
+    const activeToken = this.isSell ? baseToken : quoteToken;
+
+    if (!activeToken?.assetId) return;
+
+    try {
+      const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
+      const allowance = await tokenContract.allowance(accountStore.address, CONTRACT_ADDRESSES.spotMarket);
+
+      this.allowance = new BN(allowance.toString());
+    } catch (error) {
+      console.error("Something wrong with allowance!");
+      this.allowance = BN.ZERO;
+    }
+  };
+
   createOrder = async () => {
     const { accountStore, tradeStore, notificationStore, balanceStore } = this.rootStore;
     const { market } = tradeStore;
@@ -180,12 +246,7 @@ class CreateOrderSpotVM {
 
     try {
       const baseToken = market.baseToken;
-      const quoteToken = market.quoteToken;
       const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
-      const activeToken = this.isSell ? baseToken : quoteToken;
-
-      const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
-      await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, this.inputTotal.toString());
 
       const spotMarketContract = new ethers.Contract(
         CONTRACT_ADDRESSES.spotMarket,
@@ -200,6 +261,7 @@ class CreateOrderSpotVM {
       await openOrderTransaction.wait();
       notificationStore.toast(<Toast hash={openOrderTransaction.hash} text="Order Created" />);
     } catch (error: any) {
+      console.error(error);
       handleEvmErrors(notificationStore, error, "We were unable to process your order at this time");
     }
 
