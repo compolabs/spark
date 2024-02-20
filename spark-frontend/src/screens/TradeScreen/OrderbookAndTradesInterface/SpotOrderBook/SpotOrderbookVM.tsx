@@ -124,18 +124,26 @@ class SpotOrderbookVM {
       fetchOrders({ baseToken: market.baseToken.assetId, type: "SELL", limit: 20 }),
     ]);
 
+    //bid
     const maxBuyPriceOrder = buy.reduce((max: Nullable<SpotMarketOrder>, current) => {
       return max === null || current.price > max.price ? current : max;
     }, null);
 
+    //ask
     const minSellPriceOrder = sell.reduce((min: Nullable<SpotMarketOrder>, current) => {
       return min === null || current.price < min.price ? current : min;
     }, null);
 
     if (maxBuyPriceOrder && minSellPriceOrder) {
-      const spreadPercent = maxBuyPriceOrder.getSpreadPercent(minSellPriceOrder);
-      const spreadPrice = maxBuyPriceOrder.getSpreadPrice(minSellPriceOrder);
-      this.setOrderbook({ buy, sell, spreadPercent, spreadPrice });
+      // spread = ask - bid
+      const spread = minSellPriceOrder.price.minus(maxBuyPriceOrder.price);
+      const formattedSpread = BN.formatUnits(spread, maxBuyPriceOrder.priceDecimals).toFormat(2);
+
+      const spreadPercent = minSellPriceOrder.price
+        .minus(maxBuyPriceOrder.price)
+        .div(maxBuyPriceOrder.price)
+        .times(100);
+      this.setOrderbook({ buy, sell, spreadPercent: spreadPercent.toFormat(2), spreadPrice: formattedSpread });
       return;
     }
 

@@ -73,17 +73,13 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
   };
 
   const renderSpread = () => {
-    const isSpreadPositive = +vm.orderbook.spreadPercent > 0;
-
     if (media.mobile) {
       return (
         <SpreadContainer>
           <Text type={TEXT_TYPES.H} primary>
             {vm.orderbook.spreadPrice.length ? vm.orderbook.spreadPrice : "0.00"}
           </Text>
-          <Text color={isSpreadPositive ? theme.colors.greenLight : theme.colors.redLight}>
-            {`(${isSpreadPositive ? "+" : ""}${vm.orderbook.spreadPercent}%) `}
-          </Text>
+          <Text>{`(${vm.orderbook.spreadPercent}%)`}</Text>
         </SpreadContainer>
       );
     }
@@ -92,9 +88,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
       <SpreadContainer>
         <Text type={TEXT_TYPES.SUPPORTING}>SPREAD</Text>
         <Text primary>{vm.orderbook.spreadPrice}</Text>
-        <Text color={isSpreadPositive ? theme.colors.greenLight : theme.colors.redLight}>
-          {`(${isSpreadPositive ? "+" : ""}${vm.orderbook.spreadPercent}%) `}
-        </Text>
+        <Text>{`(${vm.orderbook.spreadPercent}%) `}</Text>
       </SpreadContainer>
     );
   };
