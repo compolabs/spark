@@ -1,4 +1,4 @@
-import React, { ComponentProps, useState } from "react";
+import React, { ComponentProps, useEffect, useState } from "react";
 import styled from "@emotion/styled";
 import { Accordion } from "@szhsin/react-accordion";
 import { observer } from "mobx-react";
@@ -48,6 +48,12 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   const isButtonDisabled = vm.loading || !vm.canProceed;
 
   const [orderType, setOrderType] = useState(ORDER_OPTIONS[0].key);
+
+  useEffect(() => {
+    if (orderType === ORDER_TYPE.Market) {
+      vm.setInputPrice(market?.price ?? BN.ZERO);
+    }
+  });
 
   if (!market) return null;
 
