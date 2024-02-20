@@ -8,24 +8,24 @@ import { Column } from "./Flex";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "./Text";
 import Tooltip from "./Tooltip";
 
-interface IOption {
-  key: string;
+interface IOption<T = string> {
+  key: T;
   title: string;
   disabled?: boolean;
 }
 
-interface IProps extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
-  options: IOption[];
-  selected?: string;
-  onSelect: (option: IOption, index: number) => void;
+interface IProps<T> extends Omit<HTMLAttributes<HTMLDivElement>, "onSelect"> {
+  options: IOption<T>[];
+  selected?: T;
+  onSelect: (option: IOption<T>, index: number) => void;
   label?: string;
 }
 
-const Select: React.FC<IProps> = ({ options, selected, onSelect, label, ...rest }) => {
+const Select = <T,>({ options, selected, onSelect, label, ...rest }: IProps<T>) => {
   const [isVisible, setIsVisible] = useState(false);
   const selectedOption = options.find(({ key }) => selected === key);
 
-  const handleSelectClick = (v: IOption, index: number) => {
+  const handleSelectClick = (v: IOption<T>, index: number) => {
     onSelect(v, index);
     setIsVisible(false);
   };
