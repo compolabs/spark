@@ -33,10 +33,10 @@ export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 
 export const INDEXER_URLS = [
-  // "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest",
-  // "https://api.studio.thegraph.com/query/63182/spark-arbitrum-spor-market/version/latest",
-  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-2/version/latest",
   "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-3/version/latest",
+  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-2/version/latest",
+  "https://api.studio.thegraph.com/query/63182/spark-arbitrum-spor-market/version/latest",
+  "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest",
 ];
 export const INDEXER_URL = INDEXER_URLS[0];
 
