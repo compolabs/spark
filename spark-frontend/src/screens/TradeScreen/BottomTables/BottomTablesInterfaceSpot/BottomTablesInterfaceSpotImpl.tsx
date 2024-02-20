@@ -40,7 +40,7 @@ const MAX_TABLE_HEIGHT = {
 const TABS = [
   { title: "ORDERS", disabled: false },
   { title: "BALANCES", disabled: false },
-  { title: "HISTORY", disabled: false },
+  // { title: "HISTORY", disabled: false },
 ];
 
 const TABLE_SIZES_CONFIG = [
@@ -124,26 +124,26 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       ),
     }));
 
-  const getHistoryData = () =>
-    vm.myOrdersHistory.map((order) => ({
-      date: order.timestamp.format("DD MMM YY, HH:mm"),
-      pair: order.marketSymbol,
-      type: (
-        <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-          {order.type}
-        </TableText>
-      ),
-      amount: (
-        <SmartFlex center="y" gap="4px">
-          <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
-          <TokenBadge>
-            <Text>{order.baseToken.symbol}</Text>
-          </TokenBadge>
-        </SmartFlex>
-      ),
-      price: toCurrency(order.priceUnits.toSignificant(2)),
-      filled: BN.ZERO.toString(),
-    }));
+  // const getHistoryData = () =>
+  //   vm.myOrdersHistory.map((order) => ({
+  //     date: order.timestamp.format("DD MMM YY, HH:mm"),
+  //     pair: order.marketSymbol,
+  //     type: (
+  //       <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+  //         {order.type}
+  //       </TableText>
+  //     ),
+  //     amount: (
+  //       <SmartFlex center="y" gap="4px">
+  //         <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
+  //         <TokenBadge>
+  //           <Text>{order.baseToken.symbol}</Text>
+  //         </TokenBadge>
+  //       </SmartFlex>
+  //     ),
+  //     price: toCurrency(order.priceUnits.toSignificant(2)),
+  //     filled: BN.ZERO.toString(),
+  //   }));
 
   const getBalanceData = () =>
     Array.from(balanceStore.balances)
@@ -207,45 +207,45 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       </MobileTableOrderRow>
     ));
 
-    const orderHistoryData = vm.myOrdersHistory.map((ord, i) => (
-      <MobileTableOrderRow key={i + "mobile-history-row"}>
-        <MobileTableRowColumn>
-          <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
-            {ord.marketSymbol}
-          </Text>
-          <SmartFlex gap="2px" column>
-            <Text type={TEXT_TYPES.SUPPORTING}>Amount</Text>
-            <SmartFlex center="y" gap="4px">
-              <Text color={theme.colors.textPrimary}>{ord.baseSizeUnits.toSignificant(2)}</Text>
-              <TokenBadge>
-                <Text>{ord.baseToken.symbol}</Text>
-              </TokenBadge>
-            </SmartFlex>
-          </SmartFlex>
-        </MobileTableRowColumn>
-        <MobileTableRowColumn>
-          <Text color={theme.colors.textPrimary}>Active</Text>
-          <SmartFlex gap="2px" column>
-            <SmartFlex center="y" gap="4px">
-              <Text type={TEXT_TYPES.SUPPORTING}>Side:</Text>
-              <TableText color={ord.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-                {ord.type}
-              </TableText>
-            </SmartFlex>
-            <SmartFlex center="y">
-              <Text type={TEXT_TYPES.SUPPORTING}>Filled:</Text>
-              <Text color={theme.colors.textPrimary}>-</Text>
-            </SmartFlex>
-          </SmartFlex>
-        </MobileTableRowColumn>
-        <MobileTableRowColumn>
-          <SmartFlex alignItems="flex-end" gap="2px" column>
-            <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
-            <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
-          </SmartFlex>
-        </MobileTableRowColumn>
-      </MobileTableOrderRow>
-    ));
+    // const orderHistoryData = vm.myOrdersHistory.map((ord, i) => (
+    //   <MobileTableOrderRow key={i + "mobile-history-row"}>
+    //     <MobileTableRowColumn>
+    //       <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
+    //         {ord.marketSymbol}
+    //       </Text>
+    //       <SmartFlex gap="2px" column>
+    //         <Text type={TEXT_TYPES.SUPPORTING}>Amount</Text>
+    //         <SmartFlex center="y" gap="4px">
+    //           <Text color={theme.colors.textPrimary}>{ord.baseSizeUnits.toSignificant(2)}</Text>
+    //           <TokenBadge>
+    //             <Text>{ord.baseToken.symbol}</Text>
+    //           </TokenBadge>
+    //         </SmartFlex>
+    //       </SmartFlex>
+    //     </MobileTableRowColumn>
+    //     <MobileTableRowColumn>
+    //       <Text color={theme.colors.textPrimary}>Active</Text>
+    //       <SmartFlex gap="2px" column>
+    //         <SmartFlex center="y" gap="4px">
+    //           <Text type={TEXT_TYPES.SUPPORTING}>Side:</Text>
+    //           <TableText color={ord.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+    //             {ord.type}
+    //           </TableText>
+    //         </SmartFlex>
+    //         <SmartFlex center="y">
+    //           <Text type={TEXT_TYPES.SUPPORTING}>Filled:</Text>
+    //           <Text color={theme.colors.textPrimary}>-</Text>
+    //         </SmartFlex>
+    //       </SmartFlex>
+    //     </MobileTableRowColumn>
+    //     <MobileTableRowColumn>
+    //       <SmartFlex alignItems="flex-end" gap="2px" column>
+    //         <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
+    //         <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
+    //       </SmartFlex>
+    //     </MobileTableRowColumn>
+    //   </MobileTableOrderRow>
+    // ));
 
     const balanceData = Array.from(balanceStore.balances)
       .filter(([, balance]) => balance && balance.gt(0))
@@ -275,7 +275,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
         );
       });
 
-    const tabToData = [orderData, balanceData, orderHistoryData];
+    const tabToData = [orderData, balanceData];
 
     return (
       <SmartFlex width="100%" column>
@@ -318,7 +318,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   };
 
   useEffect(() => {
-    const tabToData = [getOrderData, getBalanceData, getHistoryData];
+    const tabToData = [getOrderData, getBalanceData];
     setData(tabToData[tabIndex]());
   }, [tabIndex, vm.myOrders, balanceStore.balances]);
 
