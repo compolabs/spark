@@ -60,6 +60,7 @@ class BottomTablesInterfaceSpotVM {
       const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
       const transaction = await contract.removeOrder(orderId);
       await transaction.wait();
+      notificationStore.toast("Order canceled!", { type: "success" });
     } catch (error) {
       handleEvmErrors(notificationStore, error, "We were unable to cancel your order at this time");
     }
