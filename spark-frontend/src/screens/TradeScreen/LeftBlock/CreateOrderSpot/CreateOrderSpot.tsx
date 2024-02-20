@@ -80,7 +80,6 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
 
   const renderButton = () => {
     if (!vm.tokenIsApproved) {
-      console.log("wtf");
       return (
         <Button disabled={isButtonDisabled} green={!vm.isSell} red={vm.isSell} onClick={vm.approve}>
           {vm.loading ? "Loading..." : `Approve ${vm.isSell ? baseToken.symbol : quoteToken.symbol}`}

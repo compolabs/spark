@@ -68,7 +68,6 @@ class CreateOrderSpotVM {
     reaction(
       () => [this.mode, tradeStore.market],
       async () => {
-        console.log("sula");
         await this.loadAllowance();
       },
       { fireImmediately: true },
@@ -91,7 +90,6 @@ class CreateOrderSpotVM {
 
   get tokenIsApproved() {
     const amount = this.isSell ? this.inputAmount : this.inputTotal;
-    console.log(amount.toString(), this.allowance.toString());
     return this.allowance.gte(amount);
   }
 
@@ -227,14 +225,11 @@ class CreateOrderSpotVM {
       const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
       const allowance = await tokenContract.allowance(accountStore.address, CONTRACT_ADDRESSES.spotMarket);
 
-      console.log("123123", allowance.toString());
       this.allowance = new BN(allowance.toString());
     } catch (error) {
       console.error("Something wrong with allowance!");
       this.allowance = BN.ZERO;
     }
-
-    console.log("after all", this.allowance.toString());
   };
 
   createOrder = async () => {
@@ -248,8 +243,6 @@ class CreateOrderSpotVM {
     try {
       const baseToken = market.baseToken;
       const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
-
-      console.log(baseSize.toString(), this.inputPrice.toString());
 
       const spotMarketContract = new ethers.Contract(
         CONTRACT_ADDRESSES.spotMarket,
