@@ -60,11 +60,4 @@ export class SpotMarketOrder {
     return `${this.baseToken.symbol}-${this.quoteToken.symbol}`;
   }
 
-  // getSpreadPercent(otherOrder: SpotMarketOrder) {
-  //   return new BN(this.price).minus(otherOrder.price).div(this.price).toFixed(2);
-  // }
-  //
-  // getSpreadPrice(otherOrder: SpotMarketOrder) {
-  //   return BN.formatUnits(new BN(this.price).minus(otherOrder.price), this.priceDecimals).toFixed(2);
-  // }
 }
