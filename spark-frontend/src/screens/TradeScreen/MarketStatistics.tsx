@@ -19,9 +19,9 @@ const MarketStatistics: React.FC = observer(() => {
   const media = useMedia();
 
   const spotStatsArr = [
-    { title: "24h volume", value: toCurrency(BN.formatUnits(tradeStore.volume.volume, 6).toSignificant(2)) },
-    { title: "24h High", value: toCurrency(BN.formatUnits(tradeStore.volume.high, 9).toSignificant(2)) },
-    { title: "24h Low", value: toCurrency(BN.formatUnits(tradeStore.volume.low, 9).toSignificant(2)) },
+    { title: "24h volume", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.volume, 6).toSignificant(2)) },
+    { title: "24h High", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.high, 9).toSignificant(2)) },
+    { title: "24h Low", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.low, 9).toSignificant(2)) },
   ];
 
   const renderMobile = () => {

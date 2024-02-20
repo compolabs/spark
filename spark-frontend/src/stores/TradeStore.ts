@@ -4,11 +4,14 @@ import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import { SpotMarket } from "@src/entity";
 import { fetchMarketCreateEvents, fetchVolumeData, SpotMarketVolume } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
+import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import RootStore from "@stores/RootStore";
 
 export interface ISerializedTradeStore {
   favMarkets: string | null;
 }
+
+const MARKET_INFO_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 min
 
 class TradeStore {
   rootStore: RootStore;
@@ -20,11 +23,13 @@ class TradeStore {
   marketSymbol: string | null = null;
   readonly defaultMarketSymbol = "BTC-USDC";
 
-  volume: SpotMarketVolume = {
+  marketInfo: SpotMarketVolume = {
     volume: BN.ZERO,
     high: BN.ZERO,
     low: BN.ZERO,
   };
+
+  private marketInfoUpdater: IntervalUpdater;
 
   constructor(rootStore: RootStore, initState?: ISerializedTradeStore) {
     this.rootStore = rootStore;
@@ -36,6 +41,10 @@ class TradeStore {
     }
 
     this.init();
+
+    this.marketInfoUpdater = new IntervalUpdater(this.updateMarketInfo, MARKET_INFO_UPDATE_INTERVAL);
+
+    this.marketInfoUpdater.run(true);
   }
 
   get market() {
@@ -76,8 +85,10 @@ class TradeStore {
         setInterval(market.fetchPrice, 10000);
       });
     });
+  };
 
-    this.volume = await fetchVolumeData();
+  updateMarketInfo = async () => {
+    this.marketInfo = await fetchVolumeData();
   };
 
   private setFavMarkets = (v: string[]) => (this.favMarkets = v);
