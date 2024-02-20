@@ -197,6 +197,8 @@ class CreateOrderSpotVM {
     const activeToken = this.isSell ? baseToken : quoteToken;
     const approveAmount = this.isSell ? this.inputAmount : this.inputTotal;
 
+    this.setLoading(true);
+
     try {
       const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
       const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, approveAmount.toString());
@@ -208,6 +210,8 @@ class CreateOrderSpotVM {
     } catch (error) {
       notificationStore.toast(`Something goes wrong with ${activeToken.symbol} approve`, { type: "error" });
     }
+
+    this.setLoading(false);
   };
 
   loadAllowance = async () => {
