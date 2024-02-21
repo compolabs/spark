@@ -84,7 +84,7 @@ const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "cli
 
 // todo: Упростить логику разделить формирование данных и рендер для декстопа и мобилок
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-  const { settingsStore, balanceStore, faucetStore, accountStore } = useStores();
+  const { settingsStore, balanceStore, faucetStore } = useStores();
   const vm = useBottomTablesInterfaceSpotVM();
   const theme = useTheme();
   const media = useMedia();

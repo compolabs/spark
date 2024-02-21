@@ -11,8 +11,8 @@ import SizedBox from "@components/SizedBox";
 import Slider from "@components/Slider";
 import Text, { TEXT_TYPES } from "@components/Text";
 import TokenInput from "@components/TokenInput";
-import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
 import Button, { ButtonGroup } from "@src/components/Button";
+import useFlag from "@src/hooks/useFlag";
 import { useMedia } from "@src/hooks/useMedia";
 import {
   ORDER_MODE,
@@ -21,6 +21,8 @@ import {
 } from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
 import BN from "@src/utils/BN";
 import { useStores } from "@stores";
+
+import { OrderTypeSheet, OrderTypeTooltip, OrderTypeTooltipIcon } from "./OrderTypeTooltip";
 
 interface IProps extends ComponentProps<any> {}
 
@@ -41,6 +43,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   const media = useMedia();
 
   const isButtonDisabled = vm.loading || !vm.canProceed;
+
+  const [isOrderTooltipOpen, openOrderTooltip, closeOrderTooltip] = useFlag();
 
   useEffect(() => {
     if (vm.orderType === ORDER_TYPE.Market) {
@@ -94,6 +98,14 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
     );
   };
 
+  const renderOrderTooltip = () => {
+    if (media.mobile) {
+      return <OrderTypeTooltipIcon text="Info" onClick={openOrderTooltip} />;
+    }
+
+    return <OrderTypeTooltip />;
+  };
+
   return (
     <Root {...rest}>
       <ButtonGroup>
@@ -114,12 +126,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
             onSelect={({ key }) => handleSetOrderType(key)}
           />
           <SizedBox height={2} />
-          <Row alignItems="center">
-            <StyledInfoIcon />
-            <Text type={TEXT_TYPES.SUPPORTING} disabled>
-              {media.desktop ? "About order type" : "Info"}
-            </Text>
-          </Row>
+          {renderOrderTooltip()}
         </Column>
         <SizedBox width={8} />
         <TokenInput
@@ -224,6 +231,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
       </Accordion>
       <SizedBox height={16} />
       {renderButton()}
+
+      <OrderTypeSheet isOpen={isOrderTooltipOpen} onClose={closeOrderTooltip} />
     </Root>
   );
 });
@@ -233,12 +242,4 @@ export default CreateOrderSpot;
 const Root = styled.div`
   padding: 12px;
   width: 100%;
-`;
-
-const StyledInfoIcon = styled(InfoIcon)`
-  margin-right: 2px;
-
-  path {
-    fill: ${({ theme }) => theme.colors.textDisabled};
-  }
 `;
