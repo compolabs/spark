@@ -25,7 +25,7 @@ class AccountStore {
   address: Nullable<string> = null;
   privateKey: Nullable<string> = null;
 
-  initialized: boolean = false;
+  initialized = false;
 
   constructor(
     private rootStore: RootStore,
@@ -40,10 +40,9 @@ class AccountStore {
 
       if (this.privateKey?.length) {
         this.connectWalletByPrivateKey(this.privateKey);
-        return;
+      } else {
+        this.address && this.connectWallet();
       }
-
-      this.address && this.connectWallet();
     }
 
     this.init();

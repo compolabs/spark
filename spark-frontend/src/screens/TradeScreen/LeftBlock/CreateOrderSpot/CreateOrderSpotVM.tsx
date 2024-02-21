@@ -8,6 +8,7 @@ import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/con
 import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
+import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<CreateOrderSpotVM | null>(null);
@@ -36,6 +37,8 @@ export enum ORDER_TYPE {
   TakeProfitLimit,
 }
 
+const UPDATE_ALLOWANCE_INTERVAL = 15 * 1000; // 15 sec;
+
 class CreateOrderSpotVM {
   loading = false;
 
@@ -50,11 +53,13 @@ class CreateOrderSpotVM {
 
   allowance: BN = BN.ZERO;
 
+  private allowanceUpdater: IntervalUpdater;
+
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
     //todo обработать маркет и лимит типы заказов в селекторе
 
-    const { tradeStore, notificationStore } = this.rootStore;
+    const { tradeStore } = this.rootStore;
 
     reaction(
       () => tradeStore.market?.price,
@@ -65,13 +70,9 @@ class CreateOrderSpotVM {
       },
     );
 
-    reaction(
-      () => [this.mode, tradeStore.market],
-      async () => {
-        await this.loadAllowance();
-      },
-      { fireImmediately: true },
-    );
+    this.allowanceUpdater = new IntervalUpdater(this.loadAllowance, UPDATE_ALLOWANCE_INTERVAL);
+
+    this.allowanceUpdater.run(true);
   }
 
   get canProceed() {
@@ -80,8 +81,9 @@ class CreateOrderSpotVM {
 
   get inputTotalError(): boolean {
     const { tradeStore, balanceStore } = this.rootStore;
+    const amount = this.isSell ? this.inputAmount : this.inputTotal;
     const balance = balanceStore.getBalance(tradeStore.market!.quoteToken.assetId);
-    return balance ? this.inputTotal.gt(balance) : false;
+    return balance ? amount.gt(balance) : false;
   }
 
   get isSell(): boolean {
@@ -260,6 +262,8 @@ class CreateOrderSpotVM {
       );
       await openOrderTransaction.wait();
       notificationStore.toast(<Toast hash={openOrderTransaction.hash} text="Order Created" />);
+
+      await this.loadAllowance();
     } catch (error: any) {
       console.error(error);
       handleEvmErrors(notificationStore, error, "We were unable to process your order at this time");
