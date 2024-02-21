@@ -18,6 +18,7 @@ import { useMedia } from "@src/hooks/useMedia";
 import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
 import hexToRgba from "@src/utils/hexToRgb";
+import { useStores } from "@stores";
 
 import { ORDER_MODE, ORDER_TYPE, useCreateOrderSpotVM } from "../../LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
 
@@ -35,6 +36,8 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
   const orderSpotVm = useCreateOrderSpotVM();
   const media = useMedia();
   const theme = useTheme();
+  const { tradeStore } = useStores();
+  const market = tradeStore.market;
 
   const [isSettingsOpen, openSettings, closeSettings] = useFlag();
 
@@ -132,10 +135,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
         {renderSettingsIcons()}
       </SettingsContainer>
       <OrderBookHeader>
-        {/*todo добавить описание  в каком токене столбец (например Amount BTC | Total USDC | Price USDC)*/}
-        <Text type={TEXT_TYPES.SUPPORTING}>Amount </Text>
-        <Text type={TEXT_TYPES.SUPPORTING}>Total </Text>
-        <Text type={TEXT_TYPES.SUPPORTING}>Price </Text>
+        <Text type={TEXT_TYPES.SUPPORTING}>{`Amount ${market?.baseToken.symbol}`}</Text>
+        <Text type={TEXT_TYPES.SUPPORTING}>{`Total ${market?.quoteToken.symbol}`}</Text>
+        <Text type={TEXT_TYPES.SUPPORTING}>{`Price ${market?.quoteToken.symbol}`}</Text>
       </OrderBookHeader>
       <Container fitContent={vm.orderFilter === 1 || vm.orderFilter === 2} reverse={vm.orderFilter === 1}>
         {vm.orderFilter === 0 && (

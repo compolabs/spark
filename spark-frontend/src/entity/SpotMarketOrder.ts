@@ -48,8 +48,9 @@ export class SpotMarketOrder {
     this.quoteSize = new BN(order.baseSize)
       .abs()
       .times(order.orderPrice)
-      .times(this.quoteToken.decimals)
+      .times(Math.pow(10, this.quoteToken.decimals))
       .div(Math.pow(10, this.baseToken.decimals) * this.priceScale);
+
     this.quoteSizeUnits = BN.formatUnits(this.quoteSize, this.quoteToken.decimals);
     this.price = new BN(order.orderPrice);
     this.priceUnits = BN.formatUnits(order.orderPrice, this.priceDecimals);
