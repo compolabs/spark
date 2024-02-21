@@ -76,7 +76,7 @@ class SpotOrderbookVM {
         if (a.price === null && b.price === null) return 0;
         if (a.price === null && b.price !== null) return 1;
         if (a.price === null && b.price === null) return -1;
-        return a.price < b.price ? 1 : -1;
+        return a.price.lt(b.price) ? 1 : -1;
       })
       .reverse()
       .slice(this.orderFilter === 0 ? -this.oneSizeOrders : -this.amountOfOrders)
@@ -90,7 +90,7 @@ class SpotOrderbookVM {
         if (a.price === null && b.price === null) return 0;
         if (a.price === null && b.price !== null) return 1;
         if (a.price === null && b.price === null) return -1;
-        return a.price < b.price ? 1 : -1;
+        return a.price.lt(b.price) ? 1 : -1;
       })
       .slice(this.orderFilter === 0 ? -this.oneSizeOrders : -this.amountOfOrders);
   }
@@ -124,12 +124,12 @@ class SpotOrderbookVM {
       fetchOrders({ baseToken: market.baseToken.assetId, type: "SELL", limit: 20 }),
     ]);
 
-    //bid
+    //bid = max of buy
     const maxBuyPriceOrder = buy.reduce((max: Nullable<SpotMarketOrder>, current) => {
-      return max === null || current.price > max.price ? current : max;
+      return current.price.gt(max?.price ?? 0) ? current : max;
     }, null);
 
-    //ask
+    //ask = min of sell
     const minSellPriceOrder = sell.reduce((min: Nullable<SpotMarketOrder>, current) => {
       return min === null || current.price < min.price ? current : min;
     }, null);
@@ -147,7 +147,7 @@ class SpotOrderbookVM {
       return;
     }
 
-    this.setOrderbook({ buy, sell, spreadPercent: "0.00", spreadPrice: "" });
+    this.setOrderbook({ buy, sell, spreadPercent: "0.00", spreadPrice: "0.00" });
   };
 
   private setOrderbook = (orderbook: TOrderbookData) => (this.orderbook = orderbook);
