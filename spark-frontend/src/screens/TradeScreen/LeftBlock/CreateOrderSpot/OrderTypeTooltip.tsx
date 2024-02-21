@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import styled from "@emotion/styled";
 
 import { ReactComponent as InfoIcon } from "@src/assets/icons/info.svg";
-import limitBuyChart from "@src/assets/tooltip/order/limitBuyChart.png";
-import limitSellChart from "@src/assets/tooltip/order/limitSellChart.png";
-import marketChart from "@src/assets/tooltip/order/marketChart.png";
-import stopMarketChart from "@src/assets/tooltip/order/stopMarketChart.png";
+import limitBuyChart from "@src/assets/tooltip/order/limitBuyChart.svg";
+import limitSellChart from "@src/assets/tooltip/order/limitSellChart.svg";
+import marketChart from "@src/assets/tooltip/order/marketChart.svg";
+import stopMarketChart from "@src/assets/tooltip/order/stopMarketChart.svg";
 import { RadioButton } from "@src/components/RadioButton";
 import Sheet from "@src/components/Sheet";
 import { SmartFlex } from "@src/components/SmartFlex";
@@ -22,7 +22,7 @@ enum CHART_INFO {
 const TABS = [
   { title: "MARKET", key: [CHART_INFO.Market] },
   { title: "LIMIT", key: [CHART_INFO.LimitBuy, CHART_INFO.LimitSell] },
-  { title: "STOP-MARKET", key: [CHART_INFO.StopMarket] },
+  // { title: "STOP-MARKET", key: [CHART_INFO.StopMarket] },
 ];
 
 const CHART_IMG_MAP = {

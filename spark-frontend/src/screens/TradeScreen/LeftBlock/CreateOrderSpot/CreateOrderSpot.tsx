@@ -29,10 +29,10 @@ interface IProps extends ComponentProps<any> {}
 const ORDER_OPTIONS = [
   { title: "Market", key: ORDER_TYPE.Market },
   { title: "Limit", key: ORDER_TYPE.Limit },
-  { title: "Stop Market", key: ORDER_TYPE.StopMarket, disabled: true },
-  { title: "Stop Limit", key: ORDER_TYPE.StopLimit, disabled: true },
-  { title: "Take Profit", key: ORDER_TYPE.TakeProfit, disabled: true },
-  { title: "Take Profit Limit", key: ORDER_TYPE.TakeProfitLimit, disabled: true },
+  // { title: "Stop Market", key: ORDER_TYPE.StopMarket, disabled: true },
+  // { title: "Stop Limit", key: ORDER_TYPE.StopLimit, disabled: true },
+  // { title: "Take Profit", key: ORDER_TYPE.TakeProfit, disabled: true },
+  // { title: "Take Profit Limit", key: ORDER_TYPE.TakeProfitLimit, disabled: true },
 ];
 
 const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
