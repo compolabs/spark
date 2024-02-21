@@ -193,7 +193,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
         </MobileTableRowColumn>
         <MobileTableRowColumn>
           <CancelButton onClick={() => vm.cancelOrder(ord.id)}>
-            {vm.isOrderCancelling ? "Loading..." : "Close"}
+            {vm.isOrderCancelling ? "Loading..." : "Cancel"}
           </CancelButton>
           <SmartFlex alignItems="flex-end" gap="2px" column>
             <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
