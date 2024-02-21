@@ -94,7 +94,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
   };
 
   const renderOrders = (orders: SpotMarketOrder[], type: "sell" | "buy") => {
-    const orderMode = type === "sell" ? ORDER_MODE.BUY : ORDER_MODE.SELL;
+    const orderMode = type === "buy" ? ORDER_MODE.BUY : ORDER_MODE.SELL;
     const volumePercent = (ord: SpotMarketOrder) =>
       type === "sell" ? ord.baseSize.div(vm.totalSell) : ord.quoteSize.div(vm.totalBuy);
     const color = type === "sell" ? theme.colors.redLight : theme.colors.greenLight;
