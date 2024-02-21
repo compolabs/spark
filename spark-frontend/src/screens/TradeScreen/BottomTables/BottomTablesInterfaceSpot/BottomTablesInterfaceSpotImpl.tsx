@@ -119,7 +119,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       price: toCurrency(order.priceUnits.toSignificant(2)),
       action: (
         <CancelButton onClick={() => vm.cancelOrder(order.id)}>
-          {vm.isOrderCancelling ? "Loading..." : "Close"}
+          {vm.isOrderCancelling ? "Loading..." : "Cancel"}
         </CancelButton>
       ),
     }));
