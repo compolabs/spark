@@ -12,13 +12,14 @@ export const ROUTES = {
 };
 
 export const TOKENS_LIST: Array<Token> = Object.values(tokens).map(
-  ({ name, symbol, decimals, assetId }) =>
+  ({ name, symbol, decimals, assetId, priceFeed }) =>
     new Token({
       name,
       symbol,
       decimals,
       assetId,
       logo: TOKEN_LOGOS[symbol],
+      priceFeed,
     }),
 );
 export const TOKENS_BY_SYMBOL: Record<string, Token> = TOKENS_LIST.reduce((acc, t) => ({ ...acc, [t.symbol]: t }), {});

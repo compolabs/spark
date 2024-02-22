@@ -14,7 +14,7 @@ import BN from "@src/utils/BN";
 import { toCurrency } from "@src/utils/toCurrency";
 
 const MarketStatistics: React.FC = observer(() => {
-  const { tradeStore } = useStores();
+  const { oracleStore, tradeStore } = useStores();
   const theme = useTheme();
   const media = useMedia();
 
@@ -25,14 +25,15 @@ const MarketStatistics: React.FC = observer(() => {
   ];
 
   const renderMobile = () => {
-    const indexPrice = tradeStore.market?.priceUnits ?? BN.ZERO;
+    const baseToken = tradeStore.market?.baseToken;
+    const indexPrice = baseToken?.priceFeed ? oracleStore.getTokenIndexPrice(baseToken.priceFeed) : BN.ZERO;
 
     return (
       <MobileRoot>
         <SmartFlex column>
           <SmartFlex gap="4px" column>
             <Text type={TEXT_TYPES.H} primary>
-              {indexPrice.toFormat(2)}
+              {indexPrice.toSignificant(2)}
             </Text>
             <SmartFlex center="y" gap="8px">
               <Text primary>0.00</Text>

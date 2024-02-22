@@ -59,13 +59,17 @@ class CreateOrderSpotVM {
     makeAutoObservable(this);
     //todo обработать маркет и лимит типы заказов в селекторе
 
-    const { tradeStore } = this.rootStore;
+    const { tradeStore, oracleStore } = this.rootStore;
 
     reaction(
-      () => tradeStore.market?.price,
-      (price) => {
+      () => oracleStore.prices,
+      () => {
         if (this.orderType === ORDER_TYPE.Market) {
-          this.setInputPrice(price ?? BN.ZERO);
+          const token = tradeStore.market?.baseToken;
+          const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
+
+          console.log(price);
+          this.setInputPrice(price);
         }
       },
     );
