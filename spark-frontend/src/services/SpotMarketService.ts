@@ -173,11 +173,18 @@ export async function fetchVolumeData(): Promise<SpotMarketVolume> {
     const response = await fetchIndexer(query);
     const data = response.data.data.tradeEvents as { tradeAmount: string; price: string }[];
 
-    const volume = data.reduce((acc: number, curr) => acc + parseFloat(curr.tradeAmount), 0);
-    const high = data.reduce((max, trade) => (trade.price > max ? trade.price : max), data[0].price);
-    const low = data.reduce((min, trade) => (trade.price < min ? trade.price : min), data[0].price);
+    const formattedData = data.map((v) => ({
+      tradeAmount: new BN(v.tradeAmount),
+      price: new BN(v.price),
+    }));
 
-    return { volume: new BN(volume), high: new BN(high), low: new BN(low) };
+    const arrayOfPrice = formattedData.map((v) => v.price);
+
+    const low = BN.min(...arrayOfPrice);
+    const high = BN.max(...arrayOfPrice);
+    const volume = formattedData.reduce((acc, curr) => curr.tradeAmount.plus(acc), BN.ZERO);
+
+    return { volume, high, low };
   } catch (error) {
     console.error("Error during Trades request:", error);
 
