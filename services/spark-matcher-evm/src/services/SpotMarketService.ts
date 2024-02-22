@@ -69,6 +69,7 @@ export class SpotMarket {
 
   matchOrders = async (sellOrder: string, buyOrder: string) => {
     try {
+      console.log(sellOrder, buyOrder);
       const tx = await this.contract.matchOrders(sellOrder, buyOrder);
       await tx.wait();
 

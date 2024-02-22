@@ -369,7 +369,10 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
         </TabContainer>
         <TableContainer>{renderTable()}</TableContainer>
       </TableRoot>
-      {!!vm.myOrders.length && tabIndex === 0 && <CancelAllButton>Cancel all orders</CancelAllButton>}
+      {!!vm.myOrders.length && tabIndex === 0 && (
+        //todo здесь была кнопка cancel all orders
+        <Text style={{ textAlign: "center" }}>Data provided by the Graph</Text>
+      )}
     </Root>
   );
 });

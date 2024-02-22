@@ -151,7 +151,7 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
   };
 
   return (
-    <Dialog {...rest} title={renderHeader()}>
+    <Dialog onClose={onClose} {...rest} title={renderHeader()}>
       <Root>{renderContent()}</Root>
     </Dialog>
   );
