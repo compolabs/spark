@@ -114,6 +114,7 @@ export const BigNumberInput: React.FC<BigNumberInputProps> = ({
   const inputProps: HTMLInputProps = {
     onChange: handleChange,
     type: "text",
+    inputMode: "decimal",
     value: inputValue,
     ...props,
   };
