@@ -3,17 +3,17 @@ import { observer } from "mobx-react-lite";
 import RcDialog, { DialogProps } from "rc-dialog";
 
 type Props = DialogProps & {
-  onClose: () => void;
+  onCloseDialog: () => void;
 };
 
-export const Dialog: React.FC<Props> = observer(({ onClose, children, ...rest }) => {
+export const Dialog: React.FC<Props> = observer(({ onCloseDialog, children, ...rest }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (initialized && dialogRef.current && !dialogRef.current.contains(event.target as Node)) {
-        onClose();
+        onCloseDialog();
       }
     };
 
@@ -26,10 +26,10 @@ export const Dialog: React.FC<Props> = observer(({ onClose, children, ...rest })
     return () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
-  }, [onClose, initialized]);
+  }, [onCloseDialog, initialized]);
 
   return (
-    <RcDialog {...rest}>
+    <RcDialog animation="zoom" closeIcon={rest.onClose ? rest.closeIcon : <div />} maskAnimation="fade" {...rest}>
       <div ref={dialogRef}>{children}</div>
     </RcDialog>
   );
