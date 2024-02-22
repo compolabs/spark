@@ -85,6 +85,13 @@ const hasJsxRuntime = (() => {
     }
 })();
 
+const COMMIT_HASH = require('child_process')
+.execSync('git rev-parse --short HEAD')
+.toString()
+.trim();
+
+console.log(COMMIT_HASH)
+
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function (webpackEnv) {
@@ -751,6 +758,9 @@ module.exports = function (webpackEnv) {
                     },
                 },
             }),
+            new webpack.DefinePlugin({
+                __COMMIT_HASH__: JSON.stringify(COMMIT_HASH)
+            })
         ].filter(Boolean),
         // Turn off performance processing because we utilize
         // our own hints via the FileSizeReporter

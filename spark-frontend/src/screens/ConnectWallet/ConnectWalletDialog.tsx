@@ -51,8 +51,7 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
 
   const handleWalletClick = () => {
     // todo: Connect works only with metamask
-    accountStore.connectWallet();
-    onClose();
+    accountStore.connectWallet().then(onClose);
   };
 
   const handleNextStateClick = () => {
@@ -71,9 +70,9 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
           <Text color={theme.colors.textPrimary} type={TEXT_TYPES.H}>
             Connect your wallet
           </Text>
-          <Text color={theme.colors.textSecondary} type={TEXT_TYPES.BUTTON_SECONDARY} pointer onClick={onClose}>
+          <StyledText color={theme.colors.textSecondary} type={TEXT_TYPES.BUTTON_SECONDARY} onClick={onClose}>
             Close
-          </Text>
+          </StyledText>
         </HeaderContainer>
       );
     }
@@ -207,13 +206,21 @@ const FooterContainer = styled.div`
 
 const StyledLink = styled.a`
   cursor: pointer;
-  transition: .4s;
+  transition: 0.4s;
   text-decoration: none;
 
   :hover {
-    opacity: .8;
+    opacity: 0.8;
   }
-}
+`;
+
+const StyledText = styled(Text)`
+  cursor: pointer;
+  transition: 0.4s;
+
+  &:hover {
+    opacity: 0.8;
+  }
 `;
 
 const AgreementContainer = styled.div`
