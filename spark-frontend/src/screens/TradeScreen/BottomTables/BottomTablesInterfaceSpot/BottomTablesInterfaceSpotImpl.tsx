@@ -371,7 +371,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             </Tooltip>
           </TableSizeSelector>
         </TabContainer>
-        <TableContainer>{renderTable()}</TableContainer>
+        <TableContainer className="better-scroll">{renderTable()}</TableContainer>
       </TableRoot>
       {!!vm.myOrders.length && tabIndex === 0 && <CancelAllButton>Cancel all orders</CancelAllButton>}
     </Root>
@@ -389,7 +389,7 @@ const TableRoot = styled.div`
   flex: 1;
   border-radius: 10px;
   max-width: 100%;
-  overflow-x: scroll;
+  height: 100%;
 
   ${media.mobile} {
     flex: initial;
@@ -479,6 +479,7 @@ const TableSize = styled.div<{ active?: boolean }>`
 
 const TableContainer = styled(SmartFlex)`
   width: 100%;
+  height: 100%;
   overflow-y: scroll;
 `;
 

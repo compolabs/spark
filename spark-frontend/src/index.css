@@ -23,6 +23,32 @@ body.noscroll {
   overflow-y: hidden;
 }
 
+.better-scroll {
+  pointer-events: auto;
+
+  transition: scrollbar-color 250ms;
+
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: rgba(150, 150, 150, 0) transparent;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(150, 150, 150, 0);
+    border-radius: 6px;
+    box-shadow: 0 0 1px rgba(255, 255, 255, 0.01);
+  }
+
+  &:hover,
+  &:focus,
+  &:focus-within {
+    scrollbar-color: rgba(150, 150, 150, 0.3) transparent;
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(150, 150, 150, 0.3);
+    }
+  }
+}
+
 @font-face {
   font-family: "JetBrains Mono";
   src:
