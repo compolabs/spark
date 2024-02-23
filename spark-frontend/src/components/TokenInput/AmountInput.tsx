@@ -1,6 +1,30 @@
 import React from "react";
 import styled from "@emotion/styled";
 
+type TProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  small?: boolean;
+  onWheel?: React.WheelEventHandler<HTMLInputElement>;
+  onBlur?: React.FocusEventHandler<HTMLInputElement>;
+  onFocus?: React.FocusEventHandler<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement>;
+};
+
+const AmountInput: React.FC<TProps> = ({ onWheel, inputRef, ...props }) => (
+  <Root
+    {...props}
+    ref={inputRef}
+    small={props.small}
+    onBlur={props.onBlur}
+    onFocus={props.onFocus}
+    onWheel={(e) => {
+      e.target && (e.target as any).blur();
+      onWheel && onWheel(e);
+    }}
+  />
+);
+
+export default AmountInput;
+
 const Root = styled.input<{
   small?: boolean;
 }>`
@@ -30,27 +54,3 @@ const Root = styled.input<{
     color: ${({ theme }) => theme.colors.textSecondary};
   }
 `;
-
-type TProps = React.InputHTMLAttributes<HTMLInputElement> & {
-  small?: boolean;
-  onWheel?: React.WheelEventHandler<HTMLInputElement>;
-  onBlur?: React.FocusEventHandler<HTMLInputElement>;
-  onFocus?: React.FocusEventHandler<HTMLInputElement>;
-  inputRef?: React.RefObject<HTMLInputElement>;
-};
-
-const AmountInput: React.FC<TProps> = ({ onWheel, inputRef, ...props }) => (
-  <Root
-    {...props}
-    ref={inputRef}
-    small={props.small}
-    onBlur={props.onBlur}
-    onFocus={props.onFocus}
-    onWheel={(e) => {
-      e.target && (e.target as any).blur();
-      onWheel && onWheel(e);
-    }}
-  />
-);
-
-export default AmountInput;
