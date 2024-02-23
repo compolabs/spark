@@ -46,8 +46,6 @@ class CreateOrderSpotVM {
 
   mode: ORDER_MODE = ORDER_MODE.BUY;
 
-  orderType: ORDER_TYPE = ORDER_TYPE.Market;
-
   inputPrice: BN = BN.ZERO;
   inputAmount: BN = BN.ZERO;
   inputPercent: BN = BN.ZERO;
@@ -61,12 +59,12 @@ class CreateOrderSpotVM {
     makeAutoObservable(this);
     //todo обработать маркет и лимит типы заказов в селекторе
 
-    const { tradeStore, oracleStore } = this.rootStore;
+    const { tradeStore, oracleStore, settingsStore } = this.rootStore;
 
     reaction(
       () => oracleStore.prices,
       () => {
-        if (this.orderType === ORDER_TYPE.Market) {
+        if (settingsStore.orderType === ORDER_TYPE.Market) {
           const token = tradeStore.market?.baseToken;
           const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
           this.setInputPriceDebounce(price, true);
@@ -280,8 +278,6 @@ class CreateOrderSpotVM {
 
     this.setLoading(false);
   };
-
-  setOrderType = (type: ORDER_TYPE) => (this.orderType = type);
 
   private setLoading = (l: boolean) => (this.loading = l);
 }

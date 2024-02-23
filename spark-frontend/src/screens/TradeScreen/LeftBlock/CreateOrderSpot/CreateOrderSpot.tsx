@@ -37,7 +37,7 @@ const ORDER_OPTIONS = [
 ];
 
 const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
-  const { balanceStore, tradeStore } = useStores();
+  const { balanceStore, tradeStore, settingsStore } = useStores();
   const vm = useCreateOrderSpotVM();
   const market = tradeStore.market;
 
@@ -66,16 +66,16 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   };
 
   const handleSetOrderType = (type: ORDER_TYPE) => {
-    vm.setOrderType(type);
+    settingsStore.setOrderType(type);
   };
 
   const handleSetPrice = (amount: BN) => {
-    if (vm.orderType === ORDER_TYPE.Market) return;
+    if (settingsStore.orderType === ORDER_TYPE.Market) return;
 
     vm.setInputPrice(amount, true);
   };
 
-  const isInputPriceDisabled = vm.orderType !== ORDER_TYPE.Limit;
+  const isInputPriceDisabled = settingsStore.orderType !== ORDER_TYPE.Limit;
 
   const renderButton = () => {
     if (!vm.tokenIsApproved) {
@@ -117,7 +117,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           <Select
             label="Order type"
             options={ORDER_OPTIONS}
-            selected={vm.orderType}
+            selected={settingsStore.orderType}
             onSelect={({ key }) => handleSetOrderType(key)}
           />
           <SizedBox height={2} />

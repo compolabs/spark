@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useMemo } from "react";
+import { Dayjs } from "dayjs";
 import { ethers } from "ethers";
 import { makeAutoObservable, reaction, when } from "mobx";
 
@@ -75,22 +76,28 @@ class BottomTablesInterfaceSpotVM {
 
     const { market } = tradeStore;
 
+    const sortDesc = (a: { timestamp: Dayjs }, b: { timestamp: Dayjs }) =>
+      b.timestamp.valueOf() - a.timestamp.valueOf();
+
     try {
-      const orders = await fetchOrders({
+      const ordersData = await fetchOrders({
         baseToken: market.baseToken.assetId,
         limit: 100,
         trader: accountStore.address,
         isActive: true,
       });
-      this.setMySpotOrders(orders);
 
-      const ordersHistory = await fetchTrades(market.baseToken.assetId, 100, accountStore.address);
+      const sortedOrder = ordersData.sort(sortDesc);
+      this.setMySpotOrders(sortedOrder);
 
       const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
-
-      this.setMySpotOrdersHistory(
-        ordersHistory.map((t) => new SpotMarketTrade({ ...t, baseToken: token, userAddress: accountStore.address! })),
+      const ordersHistoryData = await fetchTrades(market.baseToken.assetId, 100, accountStore.address);
+      const ordersHistory = ordersHistoryData.map(
+        (t) => new SpotMarketTrade({ ...t, baseToken: token, userAddress: accountStore.address! }),
       );
+
+      const sortedOrdersHistory = ordersHistory.sort(sortDesc);
+      this.setMySpotOrdersHistory(sortedOrdersHistory);
     } catch (error) {
       console.error(error);
     }
