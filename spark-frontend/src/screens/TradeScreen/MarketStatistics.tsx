@@ -23,7 +23,7 @@ const MarketStatistics: React.FC = observer(() => {
   const quoteToken = tradeStore.market?.quoteToken;
 
   const indexPriceBn = baseToken?.priceFeed
-    ? BN.formatUnits(oracleStore.getTokenIndexPrice(baseToken.priceFeed), DEFAULT_DECIMALS).toFixed(2)
+    ? BN.formatUnits(oracleStore.getTokenIndexPrice(baseToken.priceFeed), DEFAULT_DECIMALS).toFormat(2)
     : BN.ZERO.toString();
   const indexPrice = toCurrency(indexPriceBn);
   const volume24h = toCurrency(BN.formatUnits(tradeStore.marketInfo.volume, quoteToken?.decimals).toSignificant(2));
@@ -39,31 +39,17 @@ const MarketStatistics: React.FC = observer(() => {
   const renderMobile = () => {
     return (
       <MobileRoot>
-        <SmartFlex column>
-          <SmartFlex gap="4px" column>
-            <Text type={TEXT_TYPES.H} primary>
-              {indexPrice}
-            </Text>
-            <SmartFlex center="y" gap="8px">
-              <Text primary>-</Text>
-              <Text>-%</Text>
-            </SmartFlex>
-          </SmartFlex>
-        </SmartFlex>
-        <SmartFlex gap="8px" column>
+        <Text color={theme.colors.greenLight} type={TEXT_TYPES.H}>
+          {indexPrice}
+        </Text>
+        <SmartFlex gap="12px" justifySelf="flex-end">
           <SmartFlex gap="2px" column>
-            <Text>Pred. funding rate</Text>
-            <Text primary>-</Text>
+            <Text>24h High</Text>
+            <Text primary>{high24h}</Text>
           </SmartFlex>
           <SmartFlex gap="2px" column>
-            <Text>Open interest</Text>
-            <Text primary>-</Text>
-          </SmartFlex>
-        </SmartFlex>
-        <SmartFlex gap="8px" column>
-          <SmartFlex gap="2px" column>
-            <Text>24H AVG. funding</Text>
-            <Text primary>-</Text>
+            <Text>24h Low</Text>
+            <Text primary>{low24h}</Text>
           </SmartFlex>
           <SmartFlex gap="2px" column>
             <Text>24H volume</Text>
@@ -117,7 +103,7 @@ const Root = styled.div`
 
 const MobileRoot = styled(SmartFlex)`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: min-content 1fr;
   gap: 8px;
   padding: 8px;
 `;
