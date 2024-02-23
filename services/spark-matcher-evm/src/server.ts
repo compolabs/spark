@@ -1,4 +1,4 @@
-import { PORT } from "./config";
+import { MARKET, PORT } from "./config";
 import { app } from "./app";
 import { schedule } from "node-cron";
 import { TOKENS_BY_SYMBOL } from "./constants";
@@ -22,7 +22,7 @@ class SparkMatcher {
   }
 
   public doMatch = async () => {
-    const market = TOKENS_BY_SYMBOL.BTC.assetId;
+    const market = TOKENS_BY_SYMBOL[MARKET].assetId;
 
     let [buyOrders, sellOrders]: [SpotMarketOrder[], SpotMarketOrder[]] = await Promise.all([
       this.spotMarket.getOrders({ market, limit: 100, type: "BUY" }),
@@ -63,6 +63,6 @@ class SparkMatcher {
 }
 
 const matcher = new SparkMatcher();
-matcher.run("*/20 * * * * *");
+matcher.run("*/30 * * * * *");
 
 app.listen(PORT ?? 5000, () => console.log(print));

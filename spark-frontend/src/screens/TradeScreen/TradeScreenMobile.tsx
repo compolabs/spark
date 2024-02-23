@@ -5,6 +5,7 @@ import { observer } from "mobx-react";
 import BottomTables from "@screens/TradeScreen/BottomTables";
 import Chart from "@screens/TradeScreen/Chart";
 import MarketStatisticsBar from "@screens/TradeScreen/MarketStatisticsBar";
+import StatusBar from "@screens/TradeScreen/StatusBar";
 import MenuOverlay from "@src/components/MenuOverlay";
 import { SmartFlex } from "@src/components/SmartFlex";
 import { media } from "@src/themes/breakpoints";
@@ -59,6 +60,7 @@ const TradeScreenMobile: React.FC = observer(() => {
       <MenuOverlay isOpen={tradeStore.marketSelectionOpened} offsetTop={50} top={40}>
         <MarketSelection />
       </MenuOverlay>
+      <StatusBar />
     </Root>
   );
 });
