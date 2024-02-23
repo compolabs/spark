@@ -4,6 +4,7 @@ interface TokenParams {
   decimals: number;
   logo: string;
   assetId: string;
+  priceFeed: string;
 }
 
 export class Token {
@@ -12,6 +13,7 @@ export class Token {
   public readonly decimals: TokenParams["decimals"];
   public readonly logo: TokenParams["logo"];
   public readonly assetId: TokenParams["assetId"];
+  public readonly priceFeed: TokenParams["priceFeed"];
 
   constructor(params: TokenParams) {
     this.name = params.name;
@@ -19,5 +21,6 @@ export class Token {
     this.decimals = params.decimals;
     this.logo = params.logo;
     this.assetId = params.assetId;
+    this.priceFeed = params.priceFeed;
   }
 }

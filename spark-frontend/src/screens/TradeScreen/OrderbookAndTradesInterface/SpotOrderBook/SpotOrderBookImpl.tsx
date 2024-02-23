@@ -36,7 +36,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
   const orderSpotVm = useCreateOrderSpotVM();
   const media = useMedia();
   const theme = useTheme();
-  const { tradeStore } = useStores();
+  const { tradeStore, settingsStore } = useStores();
   const market = tradeStore.market;
 
   const [isSettingsOpen, openSettings, closeSettings] = useFlag();
@@ -110,7 +110,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
           orderSpotVm.setOrderMode(orderMode);
           orderSpotVm.setInputPrice(o.price);
           orderSpotVm.setInputAmount(new BN(o.baseSize), true);
-          orderSpotVm.setOrderType(ORDER_TYPE.Limit);
+          settingsStore.setOrderType(ORDER_TYPE.Limit);
         }}
       >
         <VolumeBar type={type} volumePercent={volumePercent(o).times(100).toNumber()} />
@@ -124,7 +124,7 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
   return (
     <Root>
       <SettingsContainer>
-        <Select
+        <StyledSelect
           options={SPOT_DECIMAL_OPTIONS.map((v, index) => ({
             title: new BN(10).pow(-v).toString(),
             key: index.toString(),
@@ -252,6 +252,10 @@ const SettingIcon = styled.img<{ selected?: boolean }>`
   &:hover {
     border: 1px solid ${({ selected, theme }) => (selected ? theme.colors.borderAccent : theme.colors.borderPrimary)};
   }
+`;
+
+const StyledSelect = styled(Select<string>)`
+  min-width: 84px;
 `;
 
 const OrderBookHeader = styled.div`

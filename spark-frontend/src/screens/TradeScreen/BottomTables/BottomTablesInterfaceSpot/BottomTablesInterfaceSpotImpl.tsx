@@ -100,54 +100,50 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   };
 
   const getOrderData = () =>
-    vm.myOrders
-      .sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf())
-      .map((order) => ({
-        date: order.timestamp.format("DD MMM YY, HH:mm"),
-        pair: order.marketSymbol,
-        type: (
-          <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-            {order.type}
-          </TableText>
-        ),
-        amount: (
-          <SmartFlex center="y" gap="4px">
-            <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
-            <TokenBadge>
-              <Text>{order.baseToken.symbol}</Text>
-            </TokenBadge>
-          </SmartFlex>
-        ),
-        price: toCurrency(order.priceUnits.toSignificant(2)),
-        action: (
-          <CancelButton onClick={() => vm.cancelOrder(order.id)}>
-            {vm.isOrderCancelling ? "Loading..." : "Cancel"}
-          </CancelButton>
-        ),
-      }));
+    vm.myOrders.map((order) => ({
+      date: order.timestamp.format("DD MMM YY, HH:mm"),
+      pair: order.marketSymbol,
+      type: (
+        <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+          {order.type}
+        </TableText>
+      ),
+      amount: (
+        <SmartFlex center="y" gap="4px">
+          <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
+          <TokenBadge>
+            <Text>{order.baseToken.symbol}</Text>
+          </TokenBadge>
+        </SmartFlex>
+      ),
+      price: toCurrency(order.priceUnits.toSignificant(2)),
+      action: (
+        <CancelButton onClick={() => vm.cancelOrder(order.id)}>
+          {vm.isOrderCancelling ? "Loading..." : "Cancel"}
+        </CancelButton>
+      ),
+    }));
 
   const getHistoryData = () =>
-    vm.myOrdersHistory
-      .sort((a, b) => b.timestamp.valueOf() - a.timestamp.valueOf())
-      .map((order) => ({
-        date: order.timestamp.format("DD MMM YY, HH:mm"),
-        pair: order.marketSymbol,
-        type: (
-          <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-            {order.type}
-          </TableText>
-        ),
-        amount: (
-          <SmartFlex center="y" gap="4px">
-            <TableText primary>{order.formatTradeAmount}</TableText>
-            <TokenBadge>
-              <Text>{order.baseToken.symbol}</Text>
-            </TokenBadge>
-          </SmartFlex>
-        ),
-        price: toCurrency(order.formatPrice),
-        filled: order.formatTradeAmount,
-      }));
+    vm.myOrdersHistory.map((order) => ({
+      date: order.timestamp.format("DD MMM YY, HH:mm"),
+      pair: order.marketSymbol,
+      type: (
+        <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
+          {order.type}
+        </TableText>
+      ),
+      amount: (
+        <SmartFlex center="y" gap="4px">
+          <TableText primary>{order.formatTradeAmount}</TableText>
+          <TokenBadge>
+            <Text>{order.baseToken.symbol}</Text>
+          </TokenBadge>
+        </SmartFlex>
+      ),
+      price: toCurrency(order.formatPrice),
+      filled: order.formatTradeAmount,
+    }));
 
   const getBalanceData = () =>
     Array.from(balanceStore.balances)

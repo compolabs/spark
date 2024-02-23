@@ -125,9 +125,13 @@ class BN extends BigNumber {
    * new BN('123.0000').toSignificant(2) === 123
    * new BN('0.001234').toSignificant(2) === 0.0012
    */
-  toSignificant = (significantDigits: number, roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN): string => {
+  toSignificant = (
+    significantDigits: number,
+    roundingMode: BigNumber.RoundingMode = BigNumber.ROUND_DOWN,
+    format?: BigNumber.Format,
+  ): string => {
     return this.gte(1) || significantDigits === 0
-      ? this.toFormat(significantDigits, roundingMode).replace(/(\.[0-9]*[1-9])0+$|\.0+$/, "$1")
+      ? this.toFormat(significantDigits, roundingMode, format).replace(/(\.[0-9]*[1-9])0+$|\.0+$/, "$1")
       : super.precision(significantDigits, roundingMode).toString();
   };
 
