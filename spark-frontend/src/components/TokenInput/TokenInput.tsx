@@ -27,7 +27,7 @@ interface IProps {
   readOnly?: boolean;
 }
 
-const TokenInput: React.FC<IProps> = (props) => {
+const TokenInput: React.FC<IProps> = observer((props) => {
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
   useEffect(() => {
@@ -92,9 +92,9 @@ const TokenInput: React.FC<IProps> = (props) => {
       )}
     </Root>
   );
-};
+});
 
-export default observer(TokenInput);
+export default TokenInput;
 
 const Root = styled.div`
   display: flex;
