@@ -1,4 +1,4 @@
-import React, { ComponentProps, useEffect } from "react";
+import React, { ComponentProps } from "react";
 import styled from "@emotion/styled";
 import { Accordion } from "@szhsin/react-accordion";
 import { observer } from "mobx-react";
@@ -12,6 +12,7 @@ import Slider from "@components/Slider";
 import Text, { TEXT_TYPES } from "@components/Text";
 import TokenInput from "@components/TokenInput";
 import Button, { ButtonGroup } from "@src/components/Button";
+import { DEFAULT_DECIMALS } from "@src/constants";
 import useFlag from "@src/hooks/useFlag";
 import { useMedia } from "@src/hooks/useMedia";
 import {
@@ -45,12 +46,6 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
   const isButtonDisabled = vm.loading || !vm.canProceed;
 
   const [isOrderTooltipOpen, openOrderTooltip, closeOrderTooltip] = useFlag();
-
-  useEffect(() => {
-    if (vm.orderType === ORDER_TYPE.Market) {
-      vm.setInputPrice(market?.price ?? BN.ZERO);
-    }
-  });
 
   if (!market) return null;
 
@@ -131,7 +126,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
         <SizedBox width={8} />
         <TokenInput
           amount={vm.inputPrice}
-          decimals={9}
+          decimals={DEFAULT_DECIMALS}
           disabled={isInputPriceDisabled}
           label="Price"
           setAmount={handleSetPrice}

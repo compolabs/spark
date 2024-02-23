@@ -41,7 +41,6 @@ class OracleStore {
     const priceIds = TOKENS_LIST.filter((t) => t.priceFeed).map((t) => t.priceFeed);
 
     const res = await connection.getLatestPriceFeeds(priceIds);
-    console.log(res);
 
     const initPrices = res?.reduce((acc, priceFeed) => {
       const price = priceFeed.getPriceUnchecked();
@@ -58,10 +57,20 @@ class OracleStore {
   getTokenIndexPrice(priceFeed: string): BN {
     if (!this.prices) return BN.ZERO;
 
-    const price = this.prices[priceFeed];
-    const v = BN.formatUnits(price?.price, 2);
+    const feed = this.prices[priceFeed];
+    const token = TOKENS_LIST.find((t) => t.priceFeed === priceFeed);
 
-    return price?.price ? v : BN.ZERO;
+    if (!feed?.price) return BN.ZERO;
+
+    const price = new BN(feed.price);
+
+    // Нам нужно докидывать 1 decimal, потому что decimals,
+    //   который приходит из оракула не совпадает с нашим
+    if (token?.symbol === "BTC") {
+      return BN.parseUnits(price, 1);
+    }
+
+    return price;
   }
 
   get tokenIndexPrice(): BN {

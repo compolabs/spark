@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { ethers } from "ethers";
+import _ from "lodash";
 import { makeAutoObservable, reaction } from "mobx";
 
 import { ERC20_ABI, SPOT_MARKET_ABI } from "@src/abi";
@@ -22,6 +23,7 @@ export const CreateOrderSpotVMProvider: React.FC<PropsWithChildren> = ({ childre
 export const useCreateOrderSpotVM = () => useVM(ctx);
 
 const HALF_GWEI = new BN(5 * 1e9); // 0.5
+const PRICE_UPDATE_THROTTLE_INTERVAL = 1000; // 1s
 
 export enum ORDER_MODE {
   BUY,
@@ -67,9 +69,7 @@ class CreateOrderSpotVM {
         if (this.orderType === ORDER_TYPE.Market) {
           const token = tradeStore.market?.baseToken;
           const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
-
-          console.log(price);
-          this.setInputPrice(price);
+          this.setInputPriceDebounce(price, true);
         }
       },
     );
@@ -123,6 +123,7 @@ class CreateOrderSpotVM {
     const { tradeStore } = this.rootStore;
 
     this.inputPrice = price;
+
     if (price.eq(0)) {
       this.setInputTotal(BN.ZERO);
       return;
@@ -136,6 +137,8 @@ class CreateOrderSpotVM {
     const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
     this.setInputTotal(total);
   };
+
+  setInputPriceDebounce = _.throttle(this.setInputPrice, PRICE_UPDATE_THROTTLE_INTERVAL);
 
   setInputAmount = (amount: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
