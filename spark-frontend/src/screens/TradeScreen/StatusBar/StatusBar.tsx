@@ -6,6 +6,8 @@ import { Row } from "@components/Flex";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useStores } from "@stores";
 
+import tweets from "./tweets";
+
 interface IProps {}
 
 const Root = styled.div`
@@ -50,16 +52,17 @@ const LinkText = styled(Text)`
 
 const StatusBar: React.FC<IProps> = observer(() => {
   const { accountStore } = useStores();
+  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweets[Math.floor(Math.random() * 20)])}`;
   return (
     <Root>
-      <Row alignItems="center" mainAxisSize="fit-content" />
-      <Row alignItems="center" mainAxisSize="fit-content">
-        <a href="https://twitter.com/Sprkfi" rel="noreferrer noopener" target="_blank">
+      <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }} />
+      <Row alignItems="center" justifyContent="center" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        <a href={tweet} rel="noreferrer noopener" target="_blank">
           <LinkText type={TEXT_TYPES.SUPPORTING}>✨Wanna sparkle?</LinkText>
         </a>
       </Row>
-      <Row alignItems="center" mainAxisSize="fit-content">
-        <Text type={TEXT_TYPES.SUPPORTING}>Network: {accountStore.network.name}</Text>
+      <Row alignItems="center" justifyContent="flex-end" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        <Text type={TEXT_TYPES.SUPPORTING}>{accountStore.network.name}</Text>
       </Row>
 
       {/*
