@@ -5,9 +5,9 @@ import { THEME_TYPE } from "@src/themes/ThemeProvider";
 import RootStore from "@stores/RootStore";
 
 export interface ISerializedSettingStore {
-  isUserAgreedWithTerms: boolean;
-  tradeTableSize: number;
-  orderType: ORDER_TYPE;
+  isUserAgreedWithTerms?: boolean;
+  tradeTableSize?: number;
+  orderType?: ORDER_TYPE;
 }
 
 export enum TRADE_TABLE_SIZE {
@@ -25,9 +25,9 @@ class SettingsStore {
     this.rootStore = rootStore;
     makeAutoObservable(this);
     if (initState) {
-      this.setIsUserAgreedWithTerms(initState.isUserAgreedWithTerms);
-      this.setTradeTableSize(initState.tradeTableSize);
-      this.setOrderType(initState.orderType);
+      this.setIsUserAgreedWithTerms(initState.isUserAgreedWithTerms ?? false);
+      this.setTradeTableSize(initState.tradeTableSize ?? TRADE_TABLE_SIZE.S);
+      this.setOrderType(initState.orderType ?? ORDER_TYPE.Market);
     }
   }
 

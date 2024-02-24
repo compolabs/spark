@@ -142,6 +142,11 @@ class CreateOrderSpotVM {
     const { tradeStore, balanceStore } = this.rootStore;
     this.inputAmount = amount.toDecimalPlaces(0);
 
+    if (this.inputPrice.eq(BN.ZERO)) {
+      this.inputTotal = BN.ZERO;
+      return;
+    }
+
     if (!sync) return;
 
     const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
@@ -169,6 +174,11 @@ class CreateOrderSpotVM {
   setInputTotal = (total: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
     this.inputTotal = total;
+
+    if (this.inputPrice.eq(BN.ZERO)) {
+      this.inputAmount = BN.ZERO;
+      return;
+    }
 
     if (!sync) return;
 
