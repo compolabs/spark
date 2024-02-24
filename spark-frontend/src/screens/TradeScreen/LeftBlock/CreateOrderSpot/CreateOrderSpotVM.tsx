@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useMemo } from "react";
+import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import _ from "lodash";
 import { makeAutoObservable, reaction } from "mobx";
@@ -212,12 +213,13 @@ class CreateOrderSpotVM {
     const quoteToken = market.quoteToken;
 
     const activeToken = this.isSell ? baseToken : quoteToken;
-    const approveAmount = this.isSell ? this.inputAmount : this.inputTotal;
+    const approveAmount = (this.isSell ? this.inputAmount : this.inputTotal).toDecimalPlaces(0, BigNumber.ROUND_UP);
 
     this.setLoading(true);
 
     try {
       const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
+      console.log(approveAmount.toString());
       const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, approveAmount.toString());
 
       await approveTransaction.wait();
@@ -225,6 +227,7 @@ class CreateOrderSpotVM {
 
       notificationStore.toast(`${activeToken.symbol} approved!`, { type: "success" });
     } catch (error) {
+      console.error(error);
       notificationStore.toast(`Something goes wrong with ${activeToken.symbol} approve`, { type: "error" });
     }
 
