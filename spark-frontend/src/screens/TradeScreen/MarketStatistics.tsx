@@ -7,6 +7,7 @@ import { Column, DesktopRow, Row } from "@src/components/Flex";
 import SizedBox from "@src/components/SizedBox";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Text, { TEXT_TYPES } from "@src/components/Text";
+import { DEFAULT_DECIMALS } from "@src/constants";
 import { useMedia } from "@src/hooks/useMedia";
 import { useStores } from "@src/stores";
 import { media } from "@src/themes/breakpoints";
@@ -14,50 +15,45 @@ import BN from "@src/utils/BN";
 import { toCurrency } from "@src/utils/toCurrency";
 
 const MarketStatistics: React.FC = observer(() => {
-  const { tradeStore } = useStores();
+  const { oracleStore, tradeStore } = useStores();
   const theme = useTheme();
   const media = useMedia();
 
+  const baseToken = tradeStore.market?.baseToken;
+  const quoteToken = tradeStore.market?.quoteToken;
+
+  const indexPriceBn = baseToken?.priceFeed
+    ? BN.formatUnits(oracleStore.getTokenIndexPrice(baseToken.priceFeed), DEFAULT_DECIMALS).toFormat(2)
+    : BN.ZERO.toString();
+  const indexPrice = toCurrency(indexPriceBn);
+  const volume24h = toCurrency(BN.formatUnits(tradeStore.marketInfo.volume, quoteToken?.decimals).toSignificant(2));
+  const high24h = toCurrency(BN.formatUnits(tradeStore.marketInfo.high, DEFAULT_DECIMALS).toSignificant(2));
+  const low24h = toCurrency(BN.formatUnits(tradeStore.marketInfo.low, DEFAULT_DECIMALS).toSignificant(2));
+
   const spotStatsArr = [
-    { title: "24h volume", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.volume, 6).toSignificant(2)) },
-    { title: "24h High", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.high, 9).toSignificant(2)) },
-    { title: "24h Low", value: toCurrency(BN.formatUnits(tradeStore.marketInfo.low, 9).toSignificant(2)) },
+    { title: "24h volume", value: volume24h },
+    { title: "24h High", value: high24h },
+    { title: "24h Low", value: low24h },
   ];
 
   const renderMobile = () => {
-    const indexPrice = tradeStore.market?.priceUnits ?? BN.ZERO;
-
     return (
       <MobileRoot>
-        <SmartFlex column>
-          <SmartFlex gap="4px" column>
-            <Text type={TEXT_TYPES.H} primary>
-              {indexPrice.toFormat(2)}
-            </Text>
-            <SmartFlex center="y" gap="8px">
-              <Text primary>0.00</Text>
-              <Text>0.02%</Text>
-            </SmartFlex>
-          </SmartFlex>
-        </SmartFlex>
-        <SmartFlex gap="8px" column>
+        <Text color={theme.colors.greenLight} type={TEXT_TYPES.H}>
+          {indexPrice}
+        </Text>
+        <SmartFlex gap="12px" justifySelf="flex-end">
           <SmartFlex gap="2px" column>
-            <Text>Pred. funding rate</Text>
-            <Text primary>0.00</Text>
+            <Text>24h High</Text>
+            <Text primary>{high24h}</Text>
           </SmartFlex>
           <SmartFlex gap="2px" column>
-            <Text>Open interest</Text>
-            <Text primary>0.00</Text>
-          </SmartFlex>
-        </SmartFlex>
-        <SmartFlex gap="8px" column>
-          <SmartFlex gap="2px" column>
-            <Text>24H AVG. funding</Text>
-            <Text primary>0.00</Text>
+            <Text>24h Low</Text>
+            <Text primary>{low24h}</Text>
           </SmartFlex>
           <SmartFlex gap="2px" column>
             <Text>24H volume</Text>
-            <Text primary>0.00</Text>
+            <Text primary>{volume24h}</Text>
           </SmartFlex>
         </SmartFlex>
       </MobileRoot>
@@ -70,7 +66,7 @@ const MarketStatistics: React.FC = observer(() => {
         <PriceRow alignItems="center">
           <Column alignItems="flex-end">
             <Text type={TEXT_TYPES.H} primary>
-              $ {tradeStore.market?.priceUnits.toFormat(2)}
+              {indexPrice}
             </Text>
           </Column>
           <DesktopRow>
@@ -107,7 +103,7 @@ const Root = styled.div`
 
 const MobileRoot = styled(SmartFlex)`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: min-content 1fr;
   gap: 8px;
   padding: 8px;
 `;

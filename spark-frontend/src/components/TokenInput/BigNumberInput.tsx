@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import BigNumber from "bignumber.js";
 import { Nullable } from "tsdef";
 
 import { DEFAULT_DECIMALS } from "@src/constants";
@@ -22,6 +23,15 @@ export interface BigNumberInputProps {
   disabled?: boolean;
   displayDecimals?: number;
 }
+
+const BN_INPUT_CONFIG: BigNumber.Format = {
+  decimalSeparator: ".",
+  groupSeparator: "",
+  groupSize: 3,
+  secondaryGroupSize: 0,
+  fractionGroupSeparator: " ",
+  fractionGroupSize: 0,
+};
 
 export const BigNumberInput: React.FC<BigNumberInputProps> = ({
   decimals = DEFAULT_DECIMALS,
@@ -52,7 +62,12 @@ export const BigNumberInput: React.FC<BigNumberInputProps> = ({
       const parseInputValue = BN.parseUnits(inputValue || BN.ZERO, decimals);
 
       if (!parseInputValue.eq(value)) {
-        setInputValue(BN.formatUnits(value, decimals).toSignificant(displayDecimals));
+        const formattedValue = BN.formatUnits(value, decimals).toSignificant(
+          displayDecimals,
+          undefined,
+          BN_INPUT_CONFIG,
+        );
+        setInputValue(formattedValue);
       }
     }
   }, [value, decimals, inputValue, displayDecimals]);
@@ -114,6 +129,7 @@ export const BigNumberInput: React.FC<BigNumberInputProps> = ({
   const inputProps: HTMLInputProps = {
     onChange: handleChange,
     type: "text",
+    inputMode: "decimal",
     value: inputValue,
     ...props,
   };

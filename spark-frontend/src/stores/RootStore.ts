@@ -8,6 +8,7 @@ import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 import TradeStore, { ISerializedTradeStore } from "@stores/TradeStore";
 
 import { BalanceStore } from "./BalanceStore";
+import OracleStore from "./OracleStore";
 
 export interface ISerializedRootStore {
   accountStore?: ISerializedAccountStore;
@@ -23,6 +24,7 @@ export default class RootStore {
   notificationStore: NotificationStore;
   tradeStore: TradeStore;
   balanceStore: BalanceStore;
+  oracleStore: OracleStore;
 
   private constructor(initState?: ISerializedRootStore) {
     this.accountStore = new AccountStore(this, initState?.accountStore);
@@ -31,6 +33,8 @@ export default class RootStore {
     this.notificationStore = new NotificationStore(this);
     this.tradeStore = new TradeStore(this, initState?.tradeStore);
     this.balanceStore = new BalanceStore(this);
+    this.oracleStore = new OracleStore(this);
+
     makeAutoObservable(this);
 
     autorun(

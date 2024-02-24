@@ -1,5 +1,6 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { ethers } from "ethers";
+import _ from "lodash";
 import { makeAutoObservable, reaction } from "mobx";
 
 import { ERC20_ABI, SPOT_MARKET_ABI } from "@src/abi";
@@ -22,6 +23,7 @@ export const CreateOrderSpotVMProvider: React.FC<PropsWithChildren> = ({ childre
 export const useCreateOrderSpotVM = () => useVM(ctx);
 
 const HALF_GWEI = new BN(5 * 1e9); // 0.5
+const PRICE_UPDATE_THROTTLE_INTERVAL = 1000; // 1s
 
 export enum ORDER_MODE {
   BUY,
@@ -44,8 +46,6 @@ class CreateOrderSpotVM {
 
   mode: ORDER_MODE = ORDER_MODE.BUY;
 
-  orderType: ORDER_TYPE = ORDER_TYPE.Market;
-
   inputPrice: BN = BN.ZERO;
   inputAmount: BN = BN.ZERO;
   inputPercent: BN = BN.ZERO;
@@ -59,13 +59,15 @@ class CreateOrderSpotVM {
     makeAutoObservable(this);
     //todo обработать маркет и лимит типы заказов в селекторе
 
-    const { tradeStore } = this.rootStore;
+    const { tradeStore, oracleStore, settingsStore } = this.rootStore;
 
     reaction(
-      () => tradeStore.market?.price,
-      (price) => {
-        if (this.orderType === ORDER_TYPE.Market) {
-          this.setInputPrice(price ?? BN.ZERO);
+      () => oracleStore.prices,
+      () => {
+        if (settingsStore.orderType === ORDER_TYPE.Market) {
+          const token = tradeStore.market?.baseToken;
+          const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
+          this.setInputPriceDebounce(price, true);
         }
       },
     );
@@ -119,6 +121,7 @@ class CreateOrderSpotVM {
     const { tradeStore } = this.rootStore;
 
     this.inputPrice = price;
+
     if (price.eq(0)) {
       this.setInputTotal(BN.ZERO);
       return;
@@ -133,9 +136,16 @@ class CreateOrderSpotVM {
     this.setInputTotal(total);
   };
 
+  setInputPriceDebounce = _.throttle(this.setInputPrice, PRICE_UPDATE_THROTTLE_INTERVAL);
+
   setInputAmount = (amount: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
     this.inputAmount = amount.toDecimalPlaces(0);
+
+    if (this.inputPrice.eq(BN.ZERO)) {
+      this.inputTotal = BN.ZERO;
+      return;
+    }
 
     if (!sync) return;
 
@@ -164,6 +174,11 @@ class CreateOrderSpotVM {
   setInputTotal = (total: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
     this.inputTotal = total;
+
+    if (this.inputPrice.eq(BN.ZERO)) {
+      this.inputAmount = BN.ZERO;
+      return;
+    }
 
     if (!sync) return;
 
@@ -273,8 +288,6 @@ class CreateOrderSpotVM {
 
     this.setLoading(false);
   };
-
-  setOrderType = (type: ORDER_TYPE) => (this.orderType = type);
 
   private setLoading = (l: boolean) => (this.loading = l);
 }

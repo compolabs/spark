@@ -85,6 +85,13 @@ const hasJsxRuntime = (() => {
     }
 })();
 
+const COMMIT_HASH = require('child_process')
+.execSync('git rev-parse --short HEAD')
+.toString()
+.trim();
+
+console.log(COMMIT_HASH)
+
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
 module.exports = function (webpackEnv) {
@@ -557,7 +564,7 @@ module.exports = function (webpackEnv) {
                             // its runtime that would otherwise be processed through "file" loader.
                             // Also exclude `html` and `json` extensions so they get processed
                             // by webpacks internal loaders.
-                            exclude: [/^$/, /\.(js|mjs|jsx|ts|tsx)$/, /\.html$/, /\.json$/],
+                            exclude: [/^$/, /\.(js|mjs|jsx|ts|tsx|cjs)$/, /\.html$/, /\.json$/],
                             type: 'asset/resource',
                         },
                         // ** STOP ** Are you adding a new loader?
@@ -751,6 +758,9 @@ module.exports = function (webpackEnv) {
                     },
                 },
             }),
+            new webpack.DefinePlugin({
+                __COMMIT_HASH__: JSON.stringify(COMMIT_HASH)
+            })
         ].filter(Boolean),
         // Turn off performance processing because we utilize
         // our own hints via the FileSizeReporter

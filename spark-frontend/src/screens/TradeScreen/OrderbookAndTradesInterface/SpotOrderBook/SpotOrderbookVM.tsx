@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { makeAutoObservable, reaction } from "mobx";
-import { Nullable } from "tsdef";
 
 import { SpotMarketOrder } from "@src/entity";
 import useVM from "@src/hooks/useVM";
@@ -125,24 +124,20 @@ class SpotOrderbookVM {
     ]);
 
     //bid = max of buy
-    const maxBuyPriceOrder = buy.reduce((max: Nullable<SpotMarketOrder>, current) => {
-      return current.price.gt(max?.price ?? 0) ? current : max;
-    }, null);
+    const buyPrices = buy.map((order) => order.price);
+    const maxBuyPrice = buyPrices.reduce((max, current) => (current.gt(max) ? current : max), buyPrices[0]);
 
     //ask = min of sell
-    const minSellPriceOrder = sell.reduce((min: Nullable<SpotMarketOrder>, current) => {
-      return min === null || current.price < min.price ? current : min;
-    }, null);
+    const sellPrices = sell.map((order) => order.price);
+    const minSellPrice = sellPrices.reduce((min, current) => (current.lt(min) ? current : min), sellPrices[0]);
 
-    if (maxBuyPriceOrder && minSellPriceOrder) {
+    if (maxBuyPrice && minSellPrice) {
       // spread = ask - bid
-      const spread = minSellPriceOrder.price.minus(maxBuyPriceOrder.price);
-      const formattedSpread = BN.formatUnits(spread, maxBuyPriceOrder.priceDecimals).toFormat(2);
+      const spread = minSellPrice.minus(maxBuyPrice);
+      //todo уточнить почему тут 9
+      const formattedSpread = BN.formatUnits(spread, 9).toSignificant(2);
 
-      const spreadPercent = minSellPriceOrder.price
-        .minus(maxBuyPriceOrder.price)
-        .div(maxBuyPriceOrder.price)
-        .times(100);
+      const spreadPercent = minSellPrice.minus(maxBuyPrice).div(maxBuyPrice).times(100);
       this.setOrderbook({ buy, sell, spreadPercent: spreadPercent.toFormat(2), spreadPrice: formattedSpread });
       return;
     }

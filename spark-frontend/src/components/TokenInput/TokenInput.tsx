@@ -27,49 +27,6 @@ interface IProps {
   readOnly?: boolean;
 }
 
-const Root = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  width: 100%;
-`;
-
-const InputContainer = styled.div<{
-  focused?: boolean;
-  invalid?: boolean;
-  readOnly?: boolean;
-  error?: boolean;
-  disabled?: boolean;
-}>`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  padding: 0 8px;
-  height: 32px;
-  width: 100%;
-  cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
-
-  box-sizing: border-box;
-
-  input {
-    cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
-    ${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
-  }
-
-  background: ${({ theme }) => theme.colors.bgPrimary};
-
-  border-radius: 4px;
-  border: 1px solid
-    ${({ error, focused, disabled, theme }) =>
-      (() => {
-        if (disabled) return theme.colors.borderSecondary;
-        if (error) return theme.colors.attention;
-        if (focused) return theme.colors.borderAccent;
-        return theme.colors.borderSecondary;
-      })()};
-`;
-
 const TokenInput: React.FC<IProps> = (props) => {
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
@@ -136,4 +93,48 @@ const TokenInput: React.FC<IProps> = (props) => {
     </Root>
   );
 };
+
 export default observer(TokenInput);
+
+const Root = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+`;
+
+const InputContainer = styled.div<{
+  focused?: boolean;
+  invalid?: boolean;
+  readOnly?: boolean;
+  error?: boolean;
+  disabled?: boolean;
+}>`
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 0 8px;
+  height: 32px;
+  width: 100%;
+  cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
+
+  box-sizing: border-box;
+
+  input {
+    cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
+    ${TEXT_TYPES_MAP[TEXT_TYPES.BODY]}
+  }
+
+  background: ${({ theme }) => theme.colors.bgPrimary};
+
+  border-radius: 4px;
+  border: 1px solid
+    ${({ error, focused, disabled, theme }) =>
+      (() => {
+        if (disabled) return theme.colors.borderSecondary;
+        if (error) return theme.colors.attention;
+        if (focused) return theme.colors.borderAccent;
+        return theme.colors.borderSecondary;
+      })()};
+`;
