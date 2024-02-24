@@ -15,7 +15,7 @@ interface IProps {}
 const TokensFaucetTable: React.FC<IProps> = observer((assetId) => {
   const { faucetStore } = useStores();
   return (
-    <Root>
+    <Root className="better-scroll">
       <StyledTableRow>
         <TableTitle>Asset</TableTitle>
         <TableTitle>Mint amount</TableTitle>
@@ -84,7 +84,6 @@ const TableTitle = styled(Text)`
 `;
 
 const TableBody = styled(Column)`
-  //overflow: scroll;
   width: 100%;
   box-sizing: border-box;
 `;

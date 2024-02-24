@@ -95,6 +95,13 @@ const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
   table {
     width: 100%;
     border-spacing: 0;
+    position: relative;
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: ${({ theme }) => theme.colors.bgPrimary};
+    }
 
     tr {
       color: ${({ theme }) => `${theme.colors.textPrimary}`};

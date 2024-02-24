@@ -125,7 +125,7 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
   const renderAgreement = () => {
     return (
       <>
-        <AgreementContainer>{AGREEMENT_TEXT}</AgreementContainer>
+        <AgreementContainer className="better-scroll">{AGREEMENT_TEXT}</AgreementContainer>
         <ButtonContainer>
           <CheckboxContainer>
             <Checkbox checked={settingsStore.isUserAgreedWithTerms} onChange={toggleUserAgreement}>
