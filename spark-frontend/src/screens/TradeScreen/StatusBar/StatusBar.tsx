@@ -52,7 +52,7 @@ const LinkText = styled(Text)`
 
 const StatusBar: React.FC<IProps> = observer(() => {
   const { accountStore } = useStores();
-  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweets[Math.floor(Math.random() * 20)])}`;
+  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweets[Math.floor(Math.random() * tweets.length)])}`;
   return (
     <Root>
       <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }} />
