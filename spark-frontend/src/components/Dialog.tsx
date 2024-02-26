@@ -4,17 +4,11 @@ import RcDialog, { DialogProps } from "rc-dialog";
 
 import { useOnClickOutside } from "@src/hooks/useOnClickOutside";
 
-type Props = DialogProps & {
-  onCloseDialog: () => void;
-};
-
-export const Dialog: React.FC<Props> = observer(({ children, onCloseDialog, ...rest }) => {
+export const Dialog: React.FC<DialogProps> = observer(({ children, ...rest }) => {
   const dialogRef = useRef<HTMLDivElement>(null);
   const handleCloseDialog = useCallback(() => {
-    if (onCloseDialog) {
-      onCloseDialog();
-    }
-  }, [onCloseDialog]);
+    rest.onClose !== undefined && rest.onClose(null as any);
+  }, [rest.onClose]);
   useOnClickOutside(dialogRef, handleCloseDialog);
   return (
     <RcDialog animation="zoom" closeIcon={rest.onClose ? rest.closeIcon : <div />} maskAnimation="fade" {...rest}>
