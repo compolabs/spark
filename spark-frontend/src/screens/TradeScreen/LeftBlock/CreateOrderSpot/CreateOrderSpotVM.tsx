@@ -1,4 +1,5 @@
 import React, { PropsWithChildren, useMemo } from "react";
+import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import _ from "lodash";
 import { makeAutoObservable, reaction } from "mobx";
@@ -212,7 +213,7 @@ class CreateOrderSpotVM {
     const quoteToken = market.quoteToken;
 
     const activeToken = this.isSell ? baseToken : quoteToken;
-    const approveAmount = this.isSell ? this.inputAmount : this.inputTotal;
+    const approveAmount = (this.isSell ? this.inputAmount : this.inputTotal).toDecimalPlaces(0, BigNumber.ROUND_UP);
 
     this.setLoading(true);
 
@@ -225,6 +226,7 @@ class CreateOrderSpotVM {
 
       notificationStore.toast(`${activeToken.symbol} approved!`, { type: "success" });
     } catch (error) {
+      console.error(error);
       notificationStore.toast(`Something goes wrong with ${activeToken.symbol} approve`, { type: "error" });
     }
 
