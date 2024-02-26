@@ -219,7 +219,6 @@ class CreateOrderSpotVM {
 
     try {
       const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
-      console.log(approveAmount.toString());
       const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, approveAmount.toString());
 
       await approveTransaction.wait();
