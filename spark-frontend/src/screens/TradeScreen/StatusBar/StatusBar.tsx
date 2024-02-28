@@ -62,7 +62,8 @@ const StatusBar: React.FC<IProps> = observer(() => {
         </a>
       </Row>
       <Row alignItems="center" justifyContent="flex-end" mainAxisSize="fit-content" style={{ flex: 1 }}>
-        <Text type={TEXT_TYPES.SUPPORTING}>{accountStore.network.name}</Text>
+        {/*<Text type={TEXT_TYPES.SUPPORTING}>{accountStore.network.name}</Text>*/}
+        <Text type={TEXT_TYPES.SUPPORTING}>Powered by Fuel</Text>
       </Row>
 
       {/*
