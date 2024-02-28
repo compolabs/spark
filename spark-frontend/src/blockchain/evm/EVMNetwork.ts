@@ -13,11 +13,12 @@ import { EvmAddress } from "./types";
 import { WalletManager } from "./WalletManager";
 
 export class EVMNetwork extends BlockchainNetwork {
-  private network = NETWORKS[0];
   private provider: JsonRpcProvider;
 
   private walletManager = new WalletManager();
   private api = new Api();
+
+  public network = NETWORKS[0];
 
   constructor() {
     super();

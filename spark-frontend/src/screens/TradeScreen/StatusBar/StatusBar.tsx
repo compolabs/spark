@@ -4,6 +4,7 @@ import { observer } from "mobx-react";
 
 import { Row } from "@components/Flex";
 import Text, { TEXT_TYPES } from "@components/Text";
+import { EVMNetwork } from "@src/blockchain";
 import { useStores } from "@stores";
 
 import tweets from "./tweets";
@@ -53,6 +54,9 @@ const LinkText = styled(Text)`
 const StatusBar: React.FC<IProps> = observer(() => {
   const { accountStore } = useStores();
   const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweets[Math.floor(Math.random() * tweets.length)])}`;
+
+  const networkName = accountStore.blockchain instanceof EVMNetwork ? accountStore.blockchain.network.name : "";
+
   return (
     <Root>
       <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }} />
@@ -62,7 +66,7 @@ const StatusBar: React.FC<IProps> = observer(() => {
         </a>
       </Row>
       <Row alignItems="center" justifyContent="flex-end" mainAxisSize="fit-content" style={{ flex: 1 }}>
-        <Text type={TEXT_TYPES.SUPPORTING}>{accountStore.network.name}</Text>
+        <Text type={TEXT_TYPES.SUPPORTING}>{networkName}</Text>
       </Row>
 
       {/*
