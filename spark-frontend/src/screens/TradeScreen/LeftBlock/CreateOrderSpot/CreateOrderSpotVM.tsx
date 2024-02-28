@@ -1,11 +1,9 @@
 import React, { PropsWithChildren, useMemo } from "react";
-import { ethers } from "ethers";
 import _ from "lodash";
 import { makeAutoObservable, reaction } from "mobx";
 
-import { ERC20_ABI, SPOT_MARKET_ABI } from "@src/abi";
 import Toast from "@src/components/Toast";
-import { CONTRACT_ADDRESSES, DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
+import { DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
 import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
@@ -173,7 +171,7 @@ class CreateOrderSpotVM {
 
   setInputTotal = (total: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
-    this.inputTotal = total;
+    this.inputTotal = total.toDecimalPlaces(0);
 
     if (this.inputPrice.eq(BN.ZERO)) {
       this.inputAmount = BN.ZERO;
@@ -206,7 +204,7 @@ class CreateOrderSpotVM {
     const { accountStore, tradeStore, notificationStore } = this.rootStore;
     const { market } = tradeStore;
 
-    if (!accountStore.signer || !market) return;
+    if (!market) return;
 
     const baseToken = market.baseToken;
     const quoteToken = market.quoteToken;
@@ -217,15 +215,12 @@ class CreateOrderSpotVM {
     this.setLoading(true);
 
     try {
-      const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
-      const approveTransaction = await tokenContract.approve(CONTRACT_ADDRESSES.spotMarket, approveAmount.toString());
-
-      await approveTransaction.wait();
+      await accountStore.blockchain?.approve(activeToken.assetId, approveAmount.toString());
       await this.loadAllowance();
 
       notificationStore.toast(`${activeToken.symbol} approved!`, { type: "success" });
     } catch (error) {
-      notificationStore.toast(`Something goes wrong with ${activeToken.symbol} approve`, { type: "error" });
+      handleEvmErrors(notificationStore, error, `Something goes wrong with ${activeToken.symbol} approve`);
     }
 
     this.setLoading(false);
@@ -243,10 +238,9 @@ class CreateOrderSpotVM {
     if (!activeToken?.assetId) return;
 
     try {
-      const tokenContract = new ethers.Contract(activeToken.assetId, ERC20_ABI, accountStore.signer);
-      const allowance = await tokenContract.allowance(accountStore.address, CONTRACT_ADDRESSES.spotMarket);
+      const allowance = await accountStore.blockchain!.allowance(activeToken.assetId);
 
-      this.allowance = new BN(allowance.toString());
+      this.allowance = new BN(allowance);
     } catch (error) {
       console.error("Something wrong with allowance!");
       this.allowance = BN.ZERO;
@@ -257,7 +251,7 @@ class CreateOrderSpotVM {
     const { accountStore, tradeStore, notificationStore, balanceStore } = this.rootStore;
     const { market } = tradeStore;
 
-    if (!accountStore.signer || !market) return;
+    if (!market) return;
 
     this.setLoading(true);
 
@@ -265,18 +259,13 @@ class CreateOrderSpotVM {
       const baseToken = market.baseToken;
       const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
 
-      const spotMarketContract = new ethers.Contract(
-        CONTRACT_ADDRESSES.spotMarket,
-        SPOT_MARKET_ABI,
-        accountStore.signer,
-      );
-      const openOrderTransaction = await spotMarketContract.openOrder(
+      const hash = await accountStore.blockchain?.createOrder(
         baseToken.assetId,
         baseSize.toString(),
         this.inputPrice.toString(),
       );
-      await openOrderTransaction.wait();
-      notificationStore.toast(<Toast hash={openOrderTransaction.hash} text="Order Created" />);
+
+      notificationStore.toast(<Toast hash={hash} text="Order Created" />);
 
       await this.loadAllowance();
     } catch (error: any) {

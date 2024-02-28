@@ -1,8 +1,6 @@
-import { Contract } from "ethers";
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 
-import { ERC20_ABI } from "@src/abi";
-import { PROVIDERS, TOKENS_BY_SYMBOL, TOKENS_LIST } from "@src/constants";
+import { TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 
@@ -78,15 +76,8 @@ export class BalanceStore {
 
     if (!accountStore.isConnected) return "0";
 
-    const provider = PROVIDERS[accountStore.network.chainId];
+    const balance = await accountStore.blockchain!.getBalance(accountStore.address!, assetId);
 
-    if (assetId === TOKENS_BY_SYMBOL.ETH.assetId) {
-      const balance = await provider.getBalance(accountStore.address!);
-      return balance.toString();
-    }
-
-    const contract = new Contract(assetId, ERC20_ABI, provider);
-    const balance = await contract.balanceOf(accountStore.address!);
     return balance;
   };
 }

@@ -12,7 +12,7 @@ import { Checkbox } from "@src/components/Checkbox";
 import { Dialog } from "@src/components/Dialog";
 import Text, { TEXT_TYPES } from "@src/components/Text";
 import { useStores } from "@src/stores";
-import { LOGIN_TYPE } from "@stores/AccountStore";
+import { LOGIN_TYPE, WALLET_TYPE } from "@stores/AccountStore";
 
 type IProps = Omit<IDialogPropTypes, "onClose"> & {
   onClose: () => void;
@@ -51,7 +51,7 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
 
   const handleWalletClick = () => {
     // todo: Connect works only with metamask
-    accountStore.connectWallet().then(onClose);
+    accountStore.connectWallet(WALLET_TYPE.EVM).then(onClose);
   };
 
   const handleNextStateClick = () => {

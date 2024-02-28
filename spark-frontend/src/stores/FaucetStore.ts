@@ -1,8 +1,6 @@
-import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { ERC20_ABI } from "@src/abi";
 import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
@@ -53,15 +51,10 @@ class FaucetStore {
     if (!TOKENS_BY_ASSET_ID[assetId] || !accountStore.address) return;
 
     this.setActionTokenAssetId(assetId);
+    this.setLoading(true);
 
-    const token = TOKENS_BY_ASSET_ID[assetId];
-    const tokenContract = new ethers.Contract(assetId, ERC20_ABI, accountStore.signer);
-
-    const amount = ethers.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
     try {
-      this.setLoading(true);
-      const tx = await tokenContract.mint(accountStore.getAddress(), amount);
-      await tx.wait();
+      await accountStore.blockchain?.mintToken(assetId);
       notificationStore.toast("Minting successful!", { type: "success" });
       await accountStore.addAsset(assetId);
     } catch (error: any) {

@@ -40,6 +40,7 @@
     "file-loader": "^6.2.0",
     "framer-motion": "^11.0.3",
     "fs-extra": "^10.0.0",
+    "fuels": "^0.75.0",
     "gh-pages": "^6.1.1",
     "html-webpack-plugin": "^5.5.0",
     "identity-obj-proxy": "^3.0.0",

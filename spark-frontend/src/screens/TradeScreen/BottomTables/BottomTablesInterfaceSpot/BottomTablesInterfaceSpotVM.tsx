@@ -1,10 +1,8 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { Dayjs } from "dayjs";
-import { ethers } from "ethers";
 import { makeAutoObservable, reaction, when } from "mobx";
 
-import { SPOT_MARKET_ABI } from "@src/abi";
-import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
+import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { SpotMarketOrder, SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
 import { fetchOrders, fetchTrades } from "@src/services/SpotMarketService";
@@ -53,14 +51,12 @@ class BottomTablesInterfaceSpotVM {
   cancelOrder = async (orderId: string) => {
     const { accountStore, notificationStore } = this.rootStore;
 
-    if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
+    if (!this.rootStore.tradeStore.market) return;
 
     this.isOrderCancelling = true;
 
     try {
-      const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
-      const transaction = await contract.removeOrder(orderId);
-      await transaction.wait();
+      await accountStore.blockchain?.cancelOrder(orderId);
       notificationStore.toast("Order canceled!", { type: "success" });
     } catch (error) {
       handleEvmErrors(notificationStore, error, "We were unable to cancel your order at this time");
