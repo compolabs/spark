@@ -66,12 +66,20 @@ class TradeStore {
 
   setMarketSelectionOpened = (s: boolean) => (this.marketSelectionOpened = s);
 
+  updateMarketInfo = async () => {
+    this.marketInfo = await fetchVolumeData();
+  };
+
+  serialize = (): ISerializedTradeStore => ({
+    favMarkets: this.favMarkets.join(","),
+  });
+
   private init = async () => {
     this.loading = true;
 
     const fetchSpotMarketsPromise = fetchMarketCreateEvents(100).then((markets) => {
       return markets
-        .filter((market) => TOKENS_BY_ASSET_ID[market.assetId] !== undefined)
+        .filter((market) => TOKENS_BY_ASSET_ID[market.assetId.toLowerCase()] !== undefined)
         .map((market) => new SpotMarket(market.assetId, TOKENS_BY_SYMBOL.USDC.assetId));
     });
 
@@ -87,10 +95,6 @@ class TradeStore {
     });
   };
 
-  updateMarketInfo = async () => {
-    this.marketInfo = await fetchVolumeData();
-  };
-
   private setFavMarkets = (v: string[]) => (this.favMarkets = v);
 
   private setSpotMarkets = (v: SpotMarket[]) => (this.spotMarkets = v);
@@ -98,10 +102,6 @@ class TradeStore {
   private setInitialized = (l: boolean) => (this.initialized = l);
 
   private _setLoading = (l: boolean) => (this.loading = l);
-
-  serialize = (): ISerializedTradeStore => ({
-    favMarkets: this.favMarkets.join(","),
-  });
 }
 
 export default TradeStore;

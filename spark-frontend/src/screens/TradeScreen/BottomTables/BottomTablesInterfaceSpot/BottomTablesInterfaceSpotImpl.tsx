@@ -7,7 +7,7 @@ import { observer } from "mobx-react";
 import Chip from "@components/Chip";
 import SizedBox from "@components/SizedBox";
 import Tab from "@components/Tab";
-import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
+import Text, { TEXT_TYPES } from "@components/Text";
 import Tooltip from "@components/Tooltip";
 import MintButtons from "@screens/Faucet/MintButtons";
 import { useBottomTablesInterfaceSpotVM } from "@screens/TradeScreen/BottomTables/BottomTablesInterfaceSpot/BottomTablesInterfaceSpotVM";
@@ -16,7 +16,6 @@ import tableMediumSize from "@src/assets/icons/tableMediumSize.svg";
 import tableSizeExtraSmall from "@src/assets/icons/tableSizeExtraSmall.svg";
 import tableSmallSize from "@src/assets/icons/tableSmallSize.svg";
 import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
-import Button from "@src/components/Button";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
@@ -367,9 +366,12 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
             </Tooltip>
           </TableSizeSelector>
         </TabContainer>
-        <TableContainer>{renderTable()}</TableContainer>
+        <TableContainer className="better-scroll">{renderTable()}</TableContainer>
       </TableRoot>
-      {!!vm.myOrders.length && tabIndex === 0 && <CancelAllButton>Cancel all orders</CancelAllButton>}
+      {!!vm.myOrders.length && tabIndex === 0 && (
+        //todo здесь была кнопка cancel all orders
+        <TextGraph style={{ textAlign: "center" }}>Data provided by the Graph</TextGraph>
+      )}
     </Root>
   );
 });
@@ -385,7 +387,7 @@ const TableRoot = styled.div`
   flex: 1;
   border-radius: 10px;
   max-width: 100%;
-  overflow-x: scroll;
+  height: 100%;
 
   ${media.mobile} {
     flex: initial;
@@ -403,28 +405,10 @@ const Root = styled(SmartFlex)<{ size: TRADE_TABLE_SIZE }>`
 `;
 
 //todo добавтьб тултипы с информацией в заголовке колонок (напримеп margin: margin is how much of collateral position is taking (degen))
-export const TableTitle = styled(Text)`
-  flex: 1;
-  white-space: nowrap;
-  ${TEXT_TYPES_MAP[TEXT_TYPES.SUPPORTING]}
-`;
 
 export const TableText = styled(Text)`
   display: flex;
   align-items: center;
-`;
-
-export const TableRow = styled(Row)`
-  margin-bottom: 1px;
-  height: 32px;
-  flex-shrink: 0;
-  background: ${({ theme }) => theme.colors.bgPrimary};
-  align-items: center;
-  padding: 0 12px;
-
-  :last-of-type {
-    margin-bottom: 0;
-  }
 `;
 
 const CancelButton = styled(Chip)`
@@ -475,6 +459,7 @@ const TableSize = styled.div<{ active?: boolean }>`
 
 const TableContainer = styled(SmartFlex)`
   width: 100%;
+  height: 100%;
   overflow-y: scroll;
 `;
 
@@ -518,7 +503,7 @@ const TokenBadge = styled(SmartFlex)`
   }
 `;
 
-const CancelAllButton = styled(Button)`
+const TextGraph = styled(Text)`
   text-transform: uppercase;
 
   ${media.desktop} {

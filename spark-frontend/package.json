@@ -9,7 +9,7 @@
     "@emotion/styled": "^11.11.0",
     "@ethersproject/bignumber": "^5.7.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.3",
-    "@pythnetwork/pyth-evm-js": "^1.32.0",
+    "@pythnetwork/pyth-evm-js": "^1.33.0",
     "@svgr/webpack": "^5.5.0",
     "@szhsin/react-accordion": "^1.2.3",
     "@testing-library/jest-dom": "^5.17.0",

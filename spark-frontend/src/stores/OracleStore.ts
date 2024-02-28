@@ -10,18 +10,22 @@ class OracleStore {
   public rootStore: RootStore;
 
   pythClient: Nullable<EvmPriceServiceConnection> = null;
-  private setPythClient = (l: any) => (this.pythClient = l);
-
   prices: Nullable<Record<string, Price>> = null;
-  private setPrices = (v: Record<string, Price>) => (this.prices = v);
-
   initialized: boolean = false;
-  private setInitialized = (l: boolean) => (this.initialized = l);
 
   constructor(rootStore: RootStore) {
     makeAutoObservable(this);
     this.rootStore = rootStore;
     this.initAndGetPythPrices().then(() => this.setInitialized(true));
+  }
+
+  get tokenIndexPrice(): BN {
+    const { market } = this.rootStore.tradeStore;
+    const token = market?.baseToken;
+
+    if (!token) return BN.ZERO;
+
+    return this.getTokenIndexPrice(token?.priceFeed);
   }
 
   initAndGetPythPrices = async () => {
@@ -65,22 +69,14 @@ class OracleStore {
     const price = new BN(feed.price);
 
     // Нам нужно докидывать 1 decimal, потому что decimals,
-    //   который приходит из оракула не совпадает с нашим
-    if (token?.symbol === "BTC") {
-      return BN.parseUnits(price, 1);
-    }
-
-    return price;
+    return BN.parseUnits(price, 1);
   }
 
-  get tokenIndexPrice(): BN {
-    const { market } = this.rootStore.tradeStore;
-    const token = market?.baseToken;
+  private setPythClient = (l: any) => (this.pythClient = l);
 
-    if (!token) return BN.ZERO;
+  private setPrices = (v: Record<string, Price>) => (this.prices = v);
 
-    return this.getTokenIndexPrice(token?.priceFeed);
-  }
+  private setInitialized = (l: boolean) => (this.initialized = l);
 }
 
 export default OracleStore;

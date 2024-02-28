@@ -8,3 +8,4 @@ export const PORT = loadVar("PORT", true);
 export const PRIVATE_KEY = loadVar("PRIVATE_KEY");
 export const CONTRACT_ADDRESS = loadVar("CONTRACT_ADDRESS");
 export const NODE_URL = loadVar("NODE_URL");
+export const MARKET = loadVar("MARKET");

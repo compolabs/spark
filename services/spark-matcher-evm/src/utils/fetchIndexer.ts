@@ -1,10 +1,10 @@
 import axios from "axios";
 
 export const INDEXER_URLS = [
-  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-3/version/latest",
-  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-2/version/latest",
-  "https://api.studio.thegraph.com/query/63182/spark-arbitrum-spor-market/version/latest",
   "https://api.studio.thegraph.com/query/63182/arbitrum-sepolia-spot-market/version/latest",
+  "https://api.studio.thegraph.com/query/63182/spark-arbitrum-spor-market/version/latest",
+  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-2/version/latest",
+  "https://api.studio.thegraph.com/query/65658/spark-arbitrum-spor-market-3/version/latest",
 ];
 
 export const fetchIndexer = async (query: string) => {

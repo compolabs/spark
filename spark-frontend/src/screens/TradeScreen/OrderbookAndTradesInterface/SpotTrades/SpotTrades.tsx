@@ -49,7 +49,7 @@ const SpotTradesImpl: React.FC<IProps> = observer(() => {
       </Header>
       <SizedBox height={8} />
 
-      <Container>
+      <Container className="better-scroll">
         {trades.map((trade) => (
           <Row key={"trade" + trade.id} alignItems="center" justifyContent="space-between" style={{ marginBottom: 2 }}>
             <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
@@ -106,7 +106,6 @@ const Container = styled.div<{
   height: 100%;
   box-sizing: border-box;
   padding: 0 12px;
-  overflow-x: hidden;
   overflow-y: auto;
   max-height: calc(100vh - 200px);
 

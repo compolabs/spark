@@ -3,12 +3,15 @@ import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
+import { useStores } from "@stores";
+
 let tvScriptLoadingPromise: Promise<any>;
 
 const TradingViewWidget = observer(() => {
   const onLoadScriptRef = useRef();
 
   const theme = useTheme();
+  const { tradeStore } = useStores();
 
   useEffect(() => {
     (onLoadScriptRef as any).current = createWidget;
@@ -31,11 +34,12 @@ const TradingViewWidget = observer(() => {
       (onLoadScriptRef as any).current = null;
     };
 
-    function createWidget(symbol?: string) {
-      if (document.getElementById("tradingview_3f939") && "TradingView" in window) {
+    function createWidget() {
+      if (tradeStore.market !== undefined && document.getElementById("tradingview_3f939") && "TradingView" in window) {
         new (window as any).TradingView.widget({
           autosize: true,
-          symbol: "OKX:BTCUSDC",
+          // symbol: "OKX:BTCUSDC",
+          symbol: `OKX:${tradeStore.market.baseToken.symbol}${tradeStore.market.quoteToken.symbol}`,
           interval: "30",
           timezone: "Etc/UTC",
           theme: "dark",
@@ -51,7 +55,7 @@ const TradingViewWidget = observer(() => {
         });
       }
     }
-  }, [theme]);
+  }, [theme, tradeStore.market]);
 
   return (
     <Root className="tradingview-widget-container">

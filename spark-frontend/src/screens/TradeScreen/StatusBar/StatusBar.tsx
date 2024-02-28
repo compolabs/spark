@@ -2,11 +2,11 @@ import React from "react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
-import Chip from "@components/Chip";
-import { DesktopRow, Row } from "@components/Flex";
-import SizedBox from "@components/SizedBox";
+import { Row } from "@components/Flex";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { useStores } from "@stores";
+
+import tweets from "./tweets";
 
 interface IProps {}
 
@@ -16,8 +16,10 @@ const Root = styled.div`
   width: 100%;
   height: 26px;
   box-sizing: border-box;
+  justify-content: space-between;
   //border: 1px solid white;
-  padding: 0 16px;
+  //padding: 0 16px;
+  flex-shrink: 0;
 `;
 
 const Indicator = styled.div<{
@@ -36,16 +38,39 @@ const Divider = styled.div`
   margin: 0 8px;
 `;
 
+const LinkText = styled(Text)`
+  ${TEXT_TYPES.SUPPORTING};
+  transition: .4s;
+  cursor: pointer;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.textPrimary};
+  }
+;
+}
+`;
+
 const StatusBar: React.FC<IProps> = observer(() => {
   const { accountStore } = useStores();
+  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweets[Math.floor(Math.random() * tweets.length)])}`;
   return (
     <Root>
+      <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }} />
+      <Row alignItems="center" justifyContent="center" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        <a href={tweet} rel="noreferrer noopener" target="_blank">
+          <LinkText type={TEXT_TYPES.SUPPORTING}>✨Wanna sparkle?</LinkText>
+        </a>
+      </Row>
+      <Row alignItems="center" justifyContent="flex-end" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        <Text type={TEXT_TYPES.SUPPORTING}>{accountStore.network.name}</Text>
+      </Row>
+
+      {/*
       <Row alignItems="center" mainAxisSize="fit-content">
         <Indicator error={!accountStore.address} />
         <SizedBox width={8} />
         <Text type={TEXT_TYPES.SUPPORTING}>Stable Connection</Text>
       </Row>
-      <Divider />
       <Row alignItems="center" mainAxisSize="fit-content">
         <Indicator />
         <SizedBox width={8} />
@@ -61,6 +86,7 @@ const StatusBar: React.FC<IProps> = observer(() => {
         <SizedBox width={8} />
         <Chip>PERP:&nbsp;X,XXXX€</Chip>
       </DesktopRow>
+      */}
     </Root>
   );
 });
