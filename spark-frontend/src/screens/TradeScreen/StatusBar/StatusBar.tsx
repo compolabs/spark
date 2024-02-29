@@ -52,10 +52,16 @@ const LinkText = styled(Text)`
 
 const StatusBar: React.FC<IProps> = observer(() => {
   const { accountStore } = useStores();
-  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweets[Math.floor(Math.random() * tweets.length)])}`;
+  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    tweets[Math.floor(Math.random() * tweets.length)],
+  )}`;
   return (
     <Root>
-      <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }} />
+      <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        <a href="https://twitter.com/Sprkfi" rel="noreferrer noopener" target="_blank">
+          <LinkText type={TEXT_TYPES.SUPPORTING}>Twitter</LinkText>
+        </a>
+      </Row>
       <Row alignItems="center" justifyContent="center" mainAxisSize="fit-content" style={{ flex: 1 }}>
         <a href={tweet} rel="noreferrer noopener" target="_blank">
           <LinkText type={TEXT_TYPES.SUPPORTING}>✨Wanna sparkle?</LinkText>
