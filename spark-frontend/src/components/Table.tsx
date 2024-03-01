@@ -1,6 +1,7 @@
 import React from "react";
 import { HeaderGroup, TableProps, useTable } from "react-table";
 import styled from "@emotion/styled";
+import { observer } from "mobx-react";
 
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 
@@ -16,7 +17,7 @@ interface IProps extends TableProps {
   loading?: boolean;
 }
 
-const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover, loading, ...rest }) => {
+const Table: React.FC<IProps> = observer(({ columns, data, onClick, fitContent, withHover, loading, ...rest }) => {
   const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
 
   const renderTooltip = (header: HeaderGroup) => {
@@ -85,7 +86,9 @@ const Table: React.FC<IProps> = ({ columns, data, onClick, fitContent, withHover
       {loading && <Text style={{ cursor: "pointer", padding: "16px 0" }}>Loading...</Text>}
     </Root>
   );
-};
+});
+
+export default Table;
 
 const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
   width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
@@ -143,8 +146,6 @@ const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
 const HeaderWithTooltip = styled.div`
   text-decoration: underline dashed;
 `;
-
-export default Table;
 
 export const TableText = styled(Text)`
   flex: 1;

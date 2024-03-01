@@ -65,10 +65,14 @@ class CreateOrderSpotVM {
     reaction(
       () => oracleStore.prices,
       () => {
-        if (settingsStore.orderType === ORDER_TYPE.Market) {
-          const token = tradeStore.market?.baseToken;
-          const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
+        const { orderType } = settingsStore;
+        const token = tradeStore.market?.baseToken;
+        const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
+
+        if (orderType === ORDER_TYPE.Market) {
           this.setInputPriceDebounce(price, true);
+        } else if (orderType === ORDER_TYPE.Limit && this.inputPrice.eq(BN.ZERO)) {
+          this.setInputPriceDebounce(price);
         }
       },
     );
