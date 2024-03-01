@@ -2,6 +2,7 @@ import React, { PropsWithChildren, useMemo } from "react";
 import { Dayjs } from "dayjs";
 import { ethers } from "ethers";
 import { makeAutoObservable, reaction, when } from "mobx";
+import { Nullable } from "tsdef";
 
 import { SPOT_MARKET_ABI } from "@src/abi";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
@@ -27,6 +28,7 @@ class BottomTablesInterfaceSpotVM {
   initialized: boolean = false;
 
   isOrderCancelling = false;
+  cancelingOrderId: Nullable<string> = null;
 
   private readonly rootStore: RootStore;
 
@@ -56,6 +58,7 @@ class BottomTablesInterfaceSpotVM {
     if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
 
     this.isOrderCancelling = true;
+    this.cancelingOrderId = orderId;
 
     try {
       const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
@@ -67,6 +70,7 @@ class BottomTablesInterfaceSpotVM {
     }
 
     this.isOrderCancelling = false;
+    this.cancelingOrderId = null;
   };
 
   private sync = async () => {

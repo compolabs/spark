@@ -7,6 +7,7 @@ import sellAndBuyIcon from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
 import buyIcon from "@src/assets/icons/buyOrderBookIcon.svg";
 import sellIcon from "@src/assets/icons/sellOrderBookIcon.svg";
 import { Row } from "@src/components/Flex";
+import Loader from "@src/components/Loader";
 import { SpotOrderSettingsSheet } from "@src/components/Modal";
 import Select from "@src/components/Select";
 import { SmartFlex } from "@src/components/SmartFlex";
@@ -24,8 +25,6 @@ import { ORDER_MODE, ORDER_TYPE, useCreateOrderSpotVM } from "../../LeftBlock/Cr
 
 import { useSpotOrderbookVM } from "./SpotOrderbookVM";
 
-//todo отрефакторить и возможно перенесть часть логики в вью модель
-//todo добавить лоадер
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
 export const SPOT_DECIMAL_OPTIONS = [2, 4, 5, 6];
@@ -51,7 +50,13 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
 
   useEventListener("resize", handleCalcSize);
 
-  if (vm.orderbook.buy.length === 0 && vm.orderbook.sell.length === 0) {
+  const isOrderBookEmpty = vm.orderbook.buy.length === 0 && vm.orderbook.sell.length === 0;
+
+  if (vm.isOrderBookLoading && isOrderBookEmpty) {
+    return <Loader size={32} hideText />;
+  }
+
+  if (isOrderBookEmpty) {
     return (
       <Root center column>
         <Text type={TEXT_TYPES.SUPPORTING}>No orders yet</Text>

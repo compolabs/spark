@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Config } from "react-popper-tooltip";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
@@ -89,7 +89,6 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
   const media = useMedia();
 
   const [tabIndex, setTabIndex] = useState(0);
-  const [data, setData] = useState<any[]>([]);
   const [isTooltipVisible, setIsTooltipVisible] = useState(false);
 
   const tooltipConfig: Config = {
@@ -118,7 +117,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       price: toCurrency(order.priceUnits.toSignificant(2)),
       action: (
         <CancelButton onClick={() => vm.cancelOrder(order.id)}>
-          {vm.isOrderCancelling ? "Loading..." : "Cancel"}
+          {vm.cancelingOrderId === order.id ? "Loading..." : "Cancel"}
         </CancelButton>
       ),
     }));
@@ -192,7 +191,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
         </MobileTableRowColumn>
         <MobileTableRowColumn>
           <CancelButton onClick={() => vm.cancelOrder(ord.id)}>
-            {vm.isOrderCancelling ? "Loading..." : "Cancel"}
+            {vm.cancelingOrderId === ord.id ? "Loading..." : "Cancel"}
           </CancelButton>
           <SmartFlex alignItems="flex-end" gap="2px" column>
             <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
@@ -289,6 +288,9 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
     setIsTooltipVisible(false);
   };
 
+  const tabToData = [getOrderData, getBalanceData, getHistoryData];
+  const data = tabToData[tabIndex]();
+
   const renderTable = () => {
     if (!data.length) {
       return (
@@ -316,11 +318,6 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
       />
     );
   };
-
-  useEffect(() => {
-    const tabToData = [getOrderData, getBalanceData, getHistoryData];
-    setData(tabToData[tabIndex]());
-  }, [tabIndex, vm.myOrders, balanceStore.balances]);
 
   return (
     <Root gap="16px" size={settingsStore.tradeTableSize} column>
