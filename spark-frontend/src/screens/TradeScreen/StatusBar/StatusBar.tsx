@@ -11,6 +11,59 @@ import tweets from "./tweets";
 
 interface IProps {}
 
+const StatusBar: React.FC<IProps> = observer(() => {
+  const { accountStore } = useStores();
+  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    tweets[Math.floor(Math.random() * tweets.length)],
+  )}`;
+
+  const networkName = accountStore.blockchain instanceof EVMNetwork ? accountStore.blockchain.network.name : "";
+
+  return (
+    <Root>
+      <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        <a href="https://twitter.com/Sprkfi" rel="noreferrer noopener" target="_blank">
+          <LinkText type={TEXT_TYPES.SUPPORTING}>Twitter</LinkText>
+        </a>
+      </Row>
+      <Row alignItems="center" justifyContent="center" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        <a href={tweet} rel="noreferrer noopener" target="_blank">
+          <LinkText type={TEXT_TYPES.SUPPORTING}>✨Wanna sparkle?</LinkText>
+        </a>
+      </Row>
+      <Row alignItems="center" justifyContent="flex-end" mainAxisSize="fit-content" style={{ flex: 1 }}>
+        {/*<Text type={TEXT_TYPES.SUPPORTING}>{networkName}</Text>*/}
+        <Text type={TEXT_TYPES.SUPPORTING}>Powered by Fuel</Text>
+      </Row>
+
+      {/*
+      <Row alignItems="center" mainAxisSize="fit-content">
+        <Indicator error={!accountStore.address} />
+        <SizedBox width={8} />
+        <Text type={TEXT_TYPES.SUPPORTING}>Stable Connection</Text>
+      </Row>
+      <Row alignItems="center" mainAxisSize="fit-content">
+        <Indicator />
+        <SizedBox width={8} />
+        <Text type={TEXT_TYPES.SUPPORTING}> Response Time Name holder (xxxms)</Text>
+      </Row>
+      <DesktopRow>
+        <Divider />
+        <Text type={TEXT_TYPES.SUPPORTING}>XX,XXX TPS</Text>
+        <Divider />
+        <Text type={TEXT_TYPES.SUPPORTING}>Average Gas Prices:</Text>
+        <SizedBox width={8} />
+        <Chip>SPOT:&nbsp;X,XXXX€</Chip>
+        <SizedBox width={8} />
+        <Chip>PERP:&nbsp;X,XXXX€</Chip>
+      </DesktopRow>
+      */}
+    </Root>
+  );
+});
+
+export default StatusBar;
+
 const Root = styled.div`
   display: flex;
   align-items: center;
@@ -50,48 +103,3 @@ const LinkText = styled(Text)`
 ;
 }
 `;
-
-const StatusBar: React.FC<IProps> = observer(() => {
-  const { accountStore } = useStores();
-  const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweets[Math.floor(Math.random() * tweets.length)])}`;
-
-  const networkName = accountStore.blockchain instanceof EVMNetwork ? accountStore.blockchain.network.name : "";
-
-  return (
-    <Root>
-      <Row alignItems="center" mainAxisSize="fit-content" style={{ flex: 1 }} />
-      <Row alignItems="center" justifyContent="center" mainAxisSize="fit-content" style={{ flex: 1 }}>
-        <a href={tweet} rel="noreferrer noopener" target="_blank">
-          <LinkText type={TEXT_TYPES.SUPPORTING}>✨Wanna sparkle?</LinkText>
-        </a>
-      </Row>
-      <Row alignItems="center" justifyContent="flex-end" mainAxisSize="fit-content" style={{ flex: 1 }}>
-        <Text type={TEXT_TYPES.SUPPORTING}>{networkName}</Text>
-      </Row>
-
-      {/*
-      <Row alignItems="center" mainAxisSize="fit-content">
-        <Indicator error={!accountStore.address} />
-        <SizedBox width={8} />
-        <Text type={TEXT_TYPES.SUPPORTING}>Stable Connection</Text>
-      </Row>
-      <Row alignItems="center" mainAxisSize="fit-content">
-        <Indicator />
-        <SizedBox width={8} />
-        <Text type={TEXT_TYPES.SUPPORTING}> Response Time Name holder (xxxms)</Text>
-      </Row>
-      <DesktopRow>
-        <Divider />
-        <Text type={TEXT_TYPES.SUPPORTING}>XX,XXX TPS</Text>
-        <Divider />
-        <Text type={TEXT_TYPES.SUPPORTING}>Average Gas Prices:</Text>
-        <SizedBox width={8} />
-        <Chip>SPOT:&nbsp;X,XXXX€</Chip>
-        <SizedBox width={8} />
-        <Chip>PERP:&nbsp;X,XXXX€</Chip>
-      </DesktopRow>
-      */}
-    </Root>
-  );
-});
-export default StatusBar;
