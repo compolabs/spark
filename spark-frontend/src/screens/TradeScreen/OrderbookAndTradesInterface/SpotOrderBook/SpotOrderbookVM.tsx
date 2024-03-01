@@ -44,6 +44,8 @@ class SpotOrderbookVM {
   orderFilter: number = 0;
   amountOfOrders: number = 0;
 
+  isOrderBookLoading = false;
+
   private orderBookUpdater: IntervalUpdater;
 
   constructor(rootStore: RootStore) {
@@ -103,7 +105,7 @@ class SpotOrderbookVM {
   }
 
   calcSize = (isMobile: boolean) => {
-    const orderbookHeight = isMobile ? 380 : window.innerHeight - 260;
+    const orderbookHeight = isMobile ? 380 : window.innerHeight - 210;
     const rowHeight = 17;
     this.setAmountOfOrders(Math.floor((orderbookHeight - 24) / rowHeight));
   };
@@ -117,6 +119,8 @@ class SpotOrderbookVM {
   updateOrderBook = async () => {
     const market = this.rootStore.tradeStore.market;
     if (!this.rootStore.initialized || !market) return;
+
+    this.isOrderBookLoading = true;
 
     const [buy, sell] = await Promise.all([
       fetchOrders({ baseToken: market.baseToken.assetId, type: "BUY", limit: 20 }),
@@ -139,10 +143,12 @@ class SpotOrderbookVM {
 
       const spreadPercent = minSellPrice.minus(maxBuyPrice).div(maxBuyPrice).times(100);
       this.setOrderbook({ buy, sell, spreadPercent: spreadPercent.toFormat(2), spreadPrice: formattedSpread });
+      this.isOrderBookLoading = false;
       return;
     }
 
     this.setOrderbook({ buy, sell, spreadPercent: "0.00", spreadPrice: "0.00" });
+    this.isOrderBookLoading = false;
   };
 
   private setOrderbook = (orderbook: TOrderbookData) => (this.orderbook = orderbook);
