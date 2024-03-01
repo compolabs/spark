@@ -5,9 +5,10 @@ import copy from "copy-to-clipboard";
 import copyIcon from "@src/assets/icons/copy.svg";
 import linkIcon from "@src/assets/icons/link.svg";
 import logoutIcon from "@src/assets/icons/logout.svg";
-import { EXPLORER_URL, TOKENS_BY_SYMBOL } from "@src/constants";
+import { TOKENS_BY_SYMBOL } from "@src/constants";
 import { useStores } from "@src/stores";
 import BN from "@src/utils/BN";
+import { getExplorerLinkByAddress } from "@src/utils/getExplorerLink";
 
 import Divider from "../Divider";
 import Sheet from "../Sheet";
@@ -47,7 +48,7 @@ const AccountInfoSheet: React.FC<Props> = ({ isOpen, onClose }) => {
     },
     {
       icon: linkIcon,
-      action: () => window.open(`${EXPLORER_URL}/address/${accountStore.address}`),
+      action: () => window.open(getExplorerLinkByAddress(accountStore.address!, accountStore.blockchain!.NETWORK_TYPE)),
       title: "View in Explorer",
       active: true,
     },

@@ -32,3 +32,5 @@ export const PROVIDERS: Record<string, JsonRpcProvider> = NETWORKS.reduce((provi
     [network.chainId]: new JsonRpcProvider(network.rpc),
   };
 }, {});
+
+export const EXPLORER_URL = "https://sepolia.arbiscan.io";

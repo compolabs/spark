@@ -25,7 +25,6 @@ export const TOKENS_BY_ASSET_ID: Record<string, Token> = TOKENS_LIST.reduce(
   (acc, t) => ({ ...acc, [t.assetId]: t }),
   {},
 );
-export const EXPLORER_URL = "https://sepolia.arbiscan.io";
 export const ARBITRUM_SEPOLIA_FAUCET = "https://faucet.quicknode.com/arbitrum/sepolia";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";

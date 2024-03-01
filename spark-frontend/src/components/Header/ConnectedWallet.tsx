@@ -11,8 +11,9 @@ import Tooltip from "@components/Tooltip";
 import copyIcon from "@src/assets/icons/copy.svg";
 import linkIcon from "@src/assets/icons/link.svg";
 import logoutIcon from "@src/assets/icons/logout.svg";
-import { EXPLORER_URL, TOKENS_BY_SYMBOL } from "@src/constants";
+import { TOKENS_BY_SYMBOL } from "@src/constants";
 import BN from "@src/utils/BN";
+import { getExplorerLinkByAddress } from "@src/utils/getExplorerLink";
 import { useStores } from "@stores";
 
 import ConnectedWalletButton from "./ConnectedWalletButton";
@@ -40,7 +41,7 @@ const ConnectedWallet: React.FC = observer(() => {
     },
     {
       icon: linkIcon,
-      action: () => window.open(`${EXPLORER_URL}/address/${accountStore.address}`),
+      action: () => window.open(getExplorerLinkByAddress(accountStore.address!, accountStore.blockchain!.NETWORK_TYPE)),
       title: "View in Explorer",
       active: true,
     },

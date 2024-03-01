@@ -3,12 +3,15 @@ import { makeObservable } from "mobx";
 import { Nullable } from "tsdef";
 
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
+import { NETWORK } from "../types";
 
 import { Api } from "./Api";
 import { NETWORKS } from "./constants";
 import { WalletManager } from "./WalletManager";
 
 export class FuelNetwork extends BlockchainNetwork {
+  NETWORK_TYPE = NETWORK.FUEL;
+
   private provider: Nullable<Provider> = null;
 
   private walletManager = new WalletManager();

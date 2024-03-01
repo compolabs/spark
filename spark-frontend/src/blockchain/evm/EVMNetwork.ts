@@ -5,6 +5,7 @@ import { Nullable } from "tsdef";
 import { TOKENS_BY_SYMBOL } from "@src/constants";
 
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
+import { NETWORK } from "../types";
 
 import { ERC20_ABI } from "./abi";
 import { Api } from "./Api";
@@ -13,6 +14,8 @@ import { EvmAddress } from "./types";
 import { WalletManager } from "./WalletManager";
 
 export class EVMNetwork extends BlockchainNetwork {
+  NETWORK_TYPE = NETWORK.EVM;
+
   private provider: JsonRpcProvider;
 
   private walletManager = new WalletManager();

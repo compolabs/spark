@@ -1,8 +1,8 @@
-import { Fuel } from "fuels";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
 import { BlockchainNetwork, EVMNetwork, FuelNetwork } from "@src/blockchain";
+import { NETWORK } from "@src/blockchain/types";
 
 import RootStore from "./RootStore";
 
@@ -10,11 +10,6 @@ export enum LOGIN_TYPE {
   METAMASK = "metamask",
   FUEL_WALLET = "fuel_wallet",
   GENERATE_SEED = "generate_seed",
-}
-
-export enum WALLET_TYPE {
-  EVM,
-  FUEL,
 }
 
 export interface ISerializedAccountStore {
@@ -52,13 +47,11 @@ class AccountStore {
     this.initialized = true;
   };
 
-  private defineBlockchain = (walletType: WALLET_TYPE) => {
-    console.log(new Fuel());
-    console.log(walletType);
-    if (walletType === WALLET_TYPE.EVM) {
+  private defineBlockchain = (walletType: NETWORK) => {
+    if (walletType === NETWORK.EVM) {
       this.blockchain = new EVMNetwork();
       return;
-    } else if (walletType === WALLET_TYPE.FUEL) {
+    } else if (walletType === NETWORK.FUEL) {
       this.blockchain = new FuelNetwork();
       return;
     }
@@ -66,7 +59,7 @@ class AccountStore {
     throw new Error("Unsupported wallet type");
   };
 
-  connectWallet = async (walletType: WALLET_TYPE) => {
+  connectWallet = async (walletType: NETWORK) => {
     const { notificationStore } = this.rootStore;
 
     this.defineBlockchain(walletType);

@@ -21,3 +21,5 @@ export const NETWORKS: Network[] = [
     url: "https://beta-5.fuel.network/graphql",
   },
 ];
+
+export const EXPLORER_URL = "https://fuellabs.github.io/block-explorer-v2/beta-5";

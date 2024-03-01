@@ -267,7 +267,9 @@ class CreateOrderSpotVM {
         this.inputPrice.toString(),
       );
 
-      notificationStore.toast(<Toast hash={hash} text="Order Created" />);
+      notificationStore.toast(
+        <Toast hash={hash} networkType={accountStore.blockchain!.NETWORK_TYPE} text="Order Created" />,
+      );
 
       await this.loadAllowance();
     } catch (error: any) {

@@ -1,6 +1,10 @@
 import { Nullable } from "tsdef";
 
+import { NETWORK } from "../types";
+
 export abstract class BlockchainNetwork {
+  abstract NETWORK_TYPE: NETWORK;
+
   abstract getBalance(accountAddress: string, assetAddress: string): Promise<string>;
   abstract getAddress(): Nullable<string>;
 
