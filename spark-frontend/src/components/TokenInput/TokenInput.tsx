@@ -63,17 +63,17 @@ const TokenInput: React.FC<IProps> = observer((props) => {
           displayDecimals={props.decimals}
           max={props.max?.toString()}
           placeholder="0.00"
-          renderInput={(props, ref) => (
+          renderInput={(inputProps, ref) => (
             <AmountInput
-              {...props}
+              {...inputProps}
               disabled={props.disabled}
               inputRef={ref}
-              onBlur={(e) => {
-                props.onBlur && props.onBlur(e);
+              onBlur={() => {
+                props.onBlur?.();
                 setFocused(false);
               }}
-              onFocus={(e) => {
-                props.onFocus && props.onFocus(e);
+              onFocus={() => {
+                props.onFocus?.();
                 !props.readOnly && setFocused(true);
               }}
             />

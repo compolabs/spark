@@ -16,6 +16,7 @@ import { DEFAULT_DECIMALS } from "@src/constants";
 import useFlag from "@src/hooks/useFlag";
 import { useMedia } from "@src/hooks/useMedia";
 import {
+  ACTIVE_INPUT,
   ORDER_MODE,
   ORDER_TYPE,
   useCreateOrderSpotVM,
@@ -130,6 +131,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           disabled={isInputPriceDisabled}
           label="Price"
           setAmount={handleSetPrice}
+          onBlur={vm.setActiveInput}
+          onFocus={() => vm.setActiveInput(ACTIVE_INPUT.Price)}
         />
       </Row>
       <SizedBox height={2} />
@@ -141,7 +144,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           error={vm.isSell ? vm.inputTotalError : undefined}
           label="Order size"
           setAmount={(v) => vm.setInputAmount(v, true)}
-          // errorMessage="Insufficient amount"
+          onBlur={vm.setActiveInput}
+          onFocus={() => vm.setActiveInput(ACTIVE_INPUT.Amount)}
         />
         <SizedBox width={8} />
         <Column alignItems="flex-end" crossAxisSize="max">
@@ -155,7 +159,8 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
             decimals={quoteToken.decimals}
             error={vm.isSell ? undefined : vm.inputTotalError}
             setAmount={(v) => vm.setInputTotal(v, true)}
-            // errorMessage="Insufficient amount"
+            onBlur={vm.setActiveInput}
+            onFocus={() => vm.setActiveInput(ACTIVE_INPUT.Total)}
           />
         </Column>
       </Row>
