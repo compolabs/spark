@@ -2,6 +2,7 @@ import { ethers, JsonRpcSigner } from "ethers";
 
 import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { FAUCET_AMOUNTS } from "@src/stores/FaucetStore";
+import BN from "@src/utils/BN";
 
 import { ERC20_ABI, SPOT_MARKET_ABI } from "./abi";
 import { CONTRACT_ADDRESSES } from "./constants";
@@ -30,7 +31,7 @@ export class Api {
     const token = TOKENS_BY_ASSET_ID[assetAddress];
     const contract = new ethers.Contract(assetAddress, ERC20_ABI, signer);
 
-    const amount = ethers.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
+    const amount = BN.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
 
     const address = await signer.getAddress();
     const tx = await contract.mint(address, amount);

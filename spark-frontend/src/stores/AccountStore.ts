@@ -1,7 +1,8 @@
+import { Fuel } from "fuels";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { BlockchainNetwork, EVMNetwork } from "@src/blockchain";
+import { BlockchainNetwork, EVMNetwork, FuelNetwork } from "@src/blockchain";
 
 import RootStore from "./RootStore";
 
@@ -52,8 +53,13 @@ class AccountStore {
   };
 
   private defineBlockchain = (walletType: WALLET_TYPE) => {
+    console.log(new Fuel());
+    console.log(walletType);
     if (walletType === WALLET_TYPE.EVM) {
       this.blockchain = new EVMNetwork();
+      return;
+    } else if (walletType === WALLET_TYPE.FUEL) {
+      this.blockchain = new FuelNetwork();
       return;
     }
 
