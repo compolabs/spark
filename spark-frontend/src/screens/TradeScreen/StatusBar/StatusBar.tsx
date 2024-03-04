@@ -12,12 +12,13 @@ import tweets from "./tweets";
 interface IProps {}
 
 const StatusBar: React.FC<IProps> = observer(() => {
-  const { accountStore } = useStores();
+  const { blockchainStore } = useStores();
   const tweet = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     tweets[Math.floor(Math.random() * tweets.length)],
   )}`;
 
-  const networkName = accountStore.blockchain instanceof EVMNetwork ? accountStore.blockchain.network.name : "";
+  const bcNetwork = blockchainStore.currentInstance;
+  const networkName = bcNetwork instanceof EVMNetwork ? bcNetwork.network.name : "";
 
   return (
     <Root>

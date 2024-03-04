@@ -1,7 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { BlockchainNetwork, EVMNetwork, FuelNetwork } from "@src/blockchain";
 import { NETWORK } from "@src/blockchain/types";
 
 import RootStore from "./RootStore";
@@ -19,8 +18,6 @@ export interface ISerializedAccountStore {
 }
 
 class AccountStore {
-  blockchain: Nullable<BlockchainNetwork> = null;
-
   initialized = false;
 
   constructor(
@@ -47,25 +44,14 @@ class AccountStore {
     this.initialized = true;
   };
 
-  private defineBlockchain = (walletType: NETWORK) => {
-    if (walletType === NETWORK.EVM) {
-      this.blockchain = new EVMNetwork();
-      return;
-    } else if (walletType === NETWORK.FUEL) {
-      this.blockchain = new FuelNetwork();
-      return;
-    }
+  connectWallet = async (network: NETWORK) => {
+    const { blockchainStore, notificationStore } = this.rootStore;
 
-    throw new Error("Unsupported wallet type");
-  };
-
-  connectWallet = async (walletType: NETWORK) => {
-    const { notificationStore } = this.rootStore;
-
-    this.defineBlockchain(walletType);
+    const bcNetwork = blockchainStore.connectTo(network);
+    console.log("bcNetwork", bcNetwork);
 
     try {
-      await this.blockchain?.connectWallet();
+      await bcNetwork?.connectWallet();
     } catch (error: any) {
       console.error("Error connecting to wallet:", error);
 
@@ -81,36 +67,46 @@ class AccountStore {
         notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
       }
 
-      this.blockchain?.disconnectWallet();
+      bcNetwork?.disconnectWallet();
     }
   };
 
   connectWalletByPrivateKey = async (privateKey: string) => {
-    const { notificationStore } = this.rootStore;
+    const { notificationStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     try {
-      await this.blockchain?.connectWalletByPrivateKey(privateKey);
+      await bcNetwork?.connectWalletByPrivateKey(privateKey);
     } catch (error: any) {
       notificationStore.toast("Unexpected error. Please try again.", { type: "error" });
     }
   };
 
   addAsset = async (assetId: string) => {
-    const { notificationStore } = this.rootStore;
+    const { notificationStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     try {
-      await (this.blockchain as EVMNetwork).addAssetToWallet(assetId);
+      await bcNetwork!.addAssetToWallet(assetId);
     } catch (error: any) {
       notificationStore.toast(error, { type: "error" });
     }
   };
 
   disconnect = () => {
-    this.blockchain?.disconnectWallet();
+    const { blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
+
+    bcNetwork?.disconnectWallet();
   };
 
   get address() {
-    return this.blockchain?.getAddress();
+    const { blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
+
+    console.log(bcNetwork?.getAddress());
+
+    return bcNetwork?.getAddress();
   }
 
   get isConnected() {

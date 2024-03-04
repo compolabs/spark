@@ -1,4 +1,4 @@
 export enum NETWORK {
-  EVM,
-  FUEL,
+  EVM = "EVM",
+  FUEL = "FUEL",
 }

@@ -4,7 +4,7 @@ import _ from "lodash";
 import { makeAutoObservable, reaction } from "mobx";
 
 import Toast from "@src/components/Toast";
-import { DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
+import { DEFAULT_DECIMALS } from "@src/constants";
 import useVM from "@src/hooks/useVM";
 import BN from "@src/utils/BN";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
@@ -99,12 +99,13 @@ class CreateOrderSpotVM {
   setOrderMode = (mode: ORDER_MODE) => (this.mode = mode);
 
   onMaxClick = () => {
-    const { tradeStore, balanceStore } = this.rootStore;
+    const { tradeStore, balanceStore, accountStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     const tokenId = this.isSell ? tradeStore.market!.baseToken.assetId : tradeStore.market!.quoteToken.assetId;
 
     let balance = balanceStore.getBalance(tokenId) ?? BN.ZERO;
-    if (tokenId === TOKENS_BY_SYMBOL.ETH.assetId) {
+    if (tokenId === bcNetwork!.getTokenBySymbol("ETH").assetId) {
       balance = balance.minus(HALF_GWEI);
     }
 
@@ -202,8 +203,9 @@ class CreateOrderSpotVM {
   };
 
   approve = async () => {
-    const { accountStore, tradeStore, notificationStore } = this.rootStore;
+    const { accountStore, tradeStore, notificationStore, blockchainStore } = this.rootStore;
     const { market } = tradeStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     if (!market) return;
 
@@ -216,7 +218,7 @@ class CreateOrderSpotVM {
     this.setLoading(true);
 
     try {
-      await accountStore.blockchain?.approve(activeToken.assetId, approveAmount.toString());
+      await bcNetwork?.approve(activeToken.assetId, approveAmount.toString());
       await this.loadAllowance();
 
       notificationStore.toast(`${activeToken.symbol} approved!`, { type: "success" });
@@ -229,8 +231,9 @@ class CreateOrderSpotVM {
   };
 
   loadAllowance = async () => {
-    const { accountStore, tradeStore } = this.rootStore;
+    const { accountStore, tradeStore, blockchainStore } = this.rootStore;
     const { market } = tradeStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     const baseToken = market?.baseToken;
     const quoteToken = market?.quoteToken;
@@ -240,7 +243,7 @@ class CreateOrderSpotVM {
     if (!activeToken?.assetId) return;
 
     try {
-      const allowance = await accountStore.blockchain!.allowance(activeToken.assetId);
+      const allowance = await bcNetwork!.allowance(activeToken.assetId);
 
       this.allowance = new BN(allowance);
     } catch (error) {
@@ -250,8 +253,9 @@ class CreateOrderSpotVM {
   };
 
   createOrder = async () => {
-    const { accountStore, tradeStore, notificationStore, balanceStore } = this.rootStore;
+    const { accountStore, tradeStore, notificationStore, balanceStore, blockchainStore } = this.rootStore;
     const { market } = tradeStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     if (!market) return;
 
@@ -261,15 +265,9 @@ class CreateOrderSpotVM {
       const baseToken = market.baseToken;
       const baseSize = this.isSell ? this.inputAmount.times(-1) : this.inputAmount;
 
-      const hash = await accountStore.blockchain?.createOrder(
-        baseToken.assetId,
-        baseSize.toString(),
-        this.inputPrice.toString(),
-      );
+      const hash = await bcNetwork?.createOrder(baseToken.assetId, baseSize.toString(), this.inputPrice.toString());
 
-      notificationStore.toast(
-        <Toast hash={hash} networkType={accountStore.blockchain!.NETWORK_TYPE} text="Order Created" />,
-      );
+      notificationStore.toast(<Toast hash={hash} networkType={bcNetwork!.NETWORK_TYPE} text="Order Created" />);
 
       await this.loadAllowance();
     } catch (error: any) {

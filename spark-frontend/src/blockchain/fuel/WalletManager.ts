@@ -3,7 +3,7 @@ import { Provider, Wallet } from "fuels";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { TOKENS_BY_ASSET_ID } from "./constants";
 
 export class WalletManager {
   public address: Nullable<string> = null;

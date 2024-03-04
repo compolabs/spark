@@ -1,7 +1,8 @@
 import dayjs, { Dayjs } from "dayjs";
 import { Nullable } from "tsdef";
 
-import { DEFAULT_DECIMALS, TOKENS_BY_SYMBOL } from "@src/constants";
+import { TOKENS_BY_SYMBOL } from "@src/blockchain/evm/constants";
+import { DEFAULT_DECIMALS } from "@src/constants";
 import BN from "@src/utils/BN";
 
 import { Token } from "./Token";
@@ -32,7 +33,7 @@ export class SpotMarketTrade {
   readonly tradeAmount: SpotMarketTradeParams["tradeAmount"];
   readonly price: SpotMarketTradeParams["price"];
   readonly timestamp: Dayjs;
-  readonly quoteToken = TOKENS_BY_SYMBOL.USDC;
+  readonly quoteToken = TOKENS_BY_SYMBOL.USDC; // TODO: Переписать, пробрасывать через аргументы
   readonly type: Nullable<"SELL" | "BUY"> = null;
 
   constructor(params: SpotMarketTradeParams) {

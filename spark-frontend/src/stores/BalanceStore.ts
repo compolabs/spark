@@ -1,6 +1,5 @@
 import { makeAutoObservable, reaction, runInAction } from "mobx";
 
-import { TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 
@@ -47,12 +46,13 @@ export class BalanceStore {
   }
 
   update = async () => {
-    const { accountStore } = this.rootStore;
+    const { accountStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     if (!accountStore.isConnected) return;
 
     try {
-      for (const token of TOKENS_LIST) {
+      for (const token of bcNetwork!.getTokenList()) {
         const balance = await this.fetchBalance(token.assetId);
         runInAction(() => {
           this.balances.set(token.assetId, new BN(balance));
@@ -72,11 +72,12 @@ export class BalanceStore {
   };
 
   private fetchBalance = async (assetId: string): Promise<string> => {
-    const { accountStore } = this.rootStore;
+    const { accountStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     if (!accountStore.isConnected) return "0";
 
-    const balance = await accountStore.blockchain!.getBalance(accountStore.address!, assetId);
+    const balance = await bcNetwork!.getBalance(accountStore.address!, assetId);
 
     return balance;
   };

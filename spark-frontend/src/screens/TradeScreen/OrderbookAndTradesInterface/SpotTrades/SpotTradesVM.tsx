@@ -1,7 +1,6 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { makeAutoObservable } from "mobx";
 
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
 import { fetchTrades } from "@src/services/SpotMarketService";
@@ -35,7 +34,8 @@ class SpotTradesVM {
   }
 
   updateTrades = async () => {
-    const { accountStore, tradeStore, initialized } = this.rootStore;
+    const { accountStore, tradeStore, initialized, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     const market = tradeStore.market;
 
@@ -44,8 +44,7 @@ class SpotTradesVM {
     try {
       const data = await fetchTrades(market.baseToken.assetId, 40);
 
-      // todo: to think about TokenStore
-      const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
+      const token = bcNetwork!.getTokenByAssetId(market.baseToken.assetId);
 
       this.trades = data.map(
         (t) => new SpotMarketTrade({ ...t, baseToken: token, userAddress: accountStore.address! }),

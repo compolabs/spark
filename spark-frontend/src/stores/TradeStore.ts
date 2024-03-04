@@ -1,6 +1,5 @@
 import { makeAutoObservable } from "mobx";
 
-import { TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
 import { SpotMarket } from "@src/entity";
 import { fetchMarketCreateEvents, fetchVolumeData, SpotMarketVolume } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
@@ -77,10 +76,13 @@ class TradeStore {
   private init = async () => {
     this.loading = true;
 
+    const { blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
+
     const fetchSpotMarketsPromise = fetchMarketCreateEvents(100).then((markets) => {
       return markets
-        .filter((market) => TOKENS_BY_ASSET_ID[market.assetId.toLowerCase()] !== undefined)
-        .map((market) => new SpotMarket(market.assetId, TOKENS_BY_SYMBOL.USDC.assetId));
+        .filter((market) => bcNetwork!.getTokenByAssetId(market.assetId) !== undefined)
+        .map((market) => new SpotMarket(market.assetId, bcNetwork!.getTokenBySymbol("USDC").assetId));
     });
 
     await Promise.all([fetchSpotMarketsPromise]).then(([spotMarkets]) => {

@@ -2,11 +2,13 @@ import { Provider } from "fuels";
 import { makeObservable } from "mobx";
 import { Nullable } from "tsdef";
 
+import { Token } from "@src/entity";
+
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
 import { NETWORK } from "../types";
 
 import { Api } from "./Api";
-import { NETWORKS } from "./constants";
+import { NETWORKS, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "./constants";
 import { WalletManager } from "./WalletManager";
 
 export class FuelNetwork extends BlockchainNetwork {
@@ -39,6 +41,18 @@ export class FuelNetwork extends BlockchainNetwork {
     return this.walletManager.getBalance(accountAddress, assetAddress);
   };
 
+  getTokenList = (): Token[] => {
+    return TOKENS_LIST;
+  };
+
+  getTokenBySymbol = (symbol: string): Token => {
+    return TOKENS_BY_SYMBOL[symbol];
+  };
+
+  getTokenByAssetId = (assetId: string): Token => {
+    return TOKENS_BY_ASSET_ID[assetId.toLowerCase()];
+  };
+
   connectWallet = async (): Promise<void> => {
     await this.walletManager.connect();
   };
@@ -69,6 +83,8 @@ export class FuelNetwork extends BlockchainNetwork {
     if (!this.walletManager.wallet) {
       throw new Error("Wallet does not exist");
     }
+
+    console.log("here");
 
     await this.api.mintToken(assetAddress, this.walletManager.wallet);
   };

@@ -2,14 +2,14 @@ import { Contract, JsonRpcProvider } from "ethers";
 import { makeObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { TOKENS_BY_SYMBOL } from "@src/constants";
+import { Token } from "@src/entity";
 
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
 import { NETWORK } from "../types";
 
 import { ERC20_ABI } from "./abi";
 import { Api } from "./Api";
-import { NETWORKS, PROVIDERS } from "./constants";
+import { NETWORKS, PROVIDERS, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "./constants";
 import { EvmAddress } from "./types";
 import { WalletManager } from "./WalletManager";
 
@@ -36,7 +36,7 @@ export class EVMNetwork extends BlockchainNetwork {
   };
 
   getBalance = async (accountAddress: string, assetAddress: EvmAddress): Promise<string> => {
-    if (assetAddress === TOKENS_BY_SYMBOL.ETH.assetId) {
+    if (assetAddress === this.getTokenBySymbol("ETH").assetId) {
       const balance = await this.provider.getBalance(accountAddress);
       return balance.toString();
     }
@@ -46,12 +46,24 @@ export class EVMNetwork extends BlockchainNetwork {
     return balance.toString();
   };
 
+  getTokenList = (): Token[] => {
+    return TOKENS_LIST;
+  };
+
+  getTokenBySymbol = (symbol: string): Token => {
+    return TOKENS_BY_SYMBOL[symbol];
+  };
+
+  getTokenByAssetId = (assetId: string): Token => {
+    return TOKENS_BY_ASSET_ID[assetId.toLowerCase()];
+  };
+
   connectWallet = async (): Promise<void> => {
-    this.walletManager.connect(this.network);
+    await this.walletManager.connect(this.network);
   };
 
   connectWalletByPrivateKey = async (privateKey: string): Promise<void> => {
-    this.walletManager.connectByPrivateKey(privateKey, this.network);
+    await this.walletManager.connectByPrivateKey(privateKey, this.network);
   };
 
   disconnectWallet = (): void => {

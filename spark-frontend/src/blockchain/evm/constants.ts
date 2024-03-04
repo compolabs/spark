@@ -1,5 +1,10 @@
 import { JsonRpcProvider } from "ethers";
 
+import TOKEN_LOGOS from "@src/constants/tokenLogos";
+import { Token } from "@src/entity";
+
+import TOKENS_JSON from "./tokens.json";
+
 export const CONTRACT_ADDRESSES = {
   spotMarket: "0x6326d3AF2612a45F054D05f9cFf60B37338a59c0",
   tokenFactory: "0xc3d0426df8a40e7b4803f305537a83e7037be91596c393e7a6b693133f9d7301",
@@ -34,3 +39,22 @@ export const PROVIDERS: Record<string, JsonRpcProvider> = NETWORKS.reduce((provi
 }, {});
 
 export const EXPLORER_URL = "https://sepolia.arbiscan.io";
+
+export const TOKENS_LIST: Token[] = Object.values(TOKENS_JSON).map(
+  ({ name, symbol, decimals, assetId, priceFeed }) =>
+    new Token({
+      name,
+      symbol,
+      decimals,
+      assetId,
+      logo: TOKEN_LOGOS[symbol],
+      priceFeed,
+    }),
+);
+
+export const TOKENS_BY_SYMBOL: Record<string, Token> = TOKENS_LIST.reduce((acc, t) => ({ ...acc, [t.symbol]: t }), {});
+
+export const TOKENS_BY_ASSET_ID: Record<string, Token> = TOKENS_LIST.reduce(
+  (acc, t) => ({ ...acc, [t.assetId.toLowerCase()]: t }),
+  {},
+);

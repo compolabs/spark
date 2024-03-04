@@ -1,5 +1,7 @@
 import { Nullable } from "tsdef";
 
+import { Token } from "@src/entity";
+
 import { NETWORK } from "../types";
 
 export abstract class BlockchainNetwork {
@@ -8,10 +10,16 @@ export abstract class BlockchainNetwork {
   abstract getBalance(accountAddress: string, assetAddress: string): Promise<string>;
   abstract getAddress(): Nullable<string>;
 
+  // Tokens
+  abstract getTokenList(): Token[];
+  abstract getTokenBySymbol(symbol: string): Token;
+  abstract getTokenByAssetId(assetId: string): Token;
+
   // Wallet
   abstract connectWallet(): Promise<void>;
   abstract connectWalletByPrivateKey(privateKey: string): Promise<void>;
   abstract disconnectWallet(): void;
+  abstract addAssetToWallet(assetId: string): Promise<void>;
 
   // Api
   abstract createOrder(assetAddress: string, size: string, price: string): Promise<string>;

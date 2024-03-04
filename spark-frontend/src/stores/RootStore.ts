@@ -8,6 +8,7 @@ import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 import TradeStore, { ISerializedTradeStore } from "@stores/TradeStore";
 
 import { BalanceStore } from "./BalanceStore";
+import BlockchainStore from "./BlockchainStore";
 import OracleStore from "./OracleStore";
 
 export interface ISerializedRootStore {
@@ -18,6 +19,7 @@ export interface ISerializedRootStore {
 
 export default class RootStore {
   static instance?: RootStore;
+  blockchainStore: BlockchainStore;
   accountStore: AccountStore;
   faucetStore: FaucetStore;
   settingsStore: SettingsStore;
@@ -27,6 +29,7 @@ export default class RootStore {
   oracleStore: OracleStore;
 
   private constructor(initState?: ISerializedRootStore) {
+    this.blockchainStore = new BlockchainStore(this);
     this.accountStore = new AccountStore(this, initState?.accountStore);
     this.faucetStore = new FaucetStore(this);
     this.settingsStore = new SettingsStore(this, initState?.settingStore);

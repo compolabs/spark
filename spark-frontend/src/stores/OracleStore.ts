@@ -2,7 +2,6 @@ import { EvmPriceServiceConnection, Price, PriceFeed } from "@pythnetwork/pyth-e
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { TOKENS_LIST } from "@src/constants";
 import BN from "@src/utils/BN";
 import RootStore from "@stores/RootStore";
 
@@ -42,7 +41,13 @@ class OracleStore {
     this.setPythClient(connection);
     // You can find the ids of prices at https://pyth.network/developers/price-feed-ids
 
-    const priceIds = TOKENS_LIST.filter((t) => t.priceFeed).map((t) => t.priceFeed);
+    const { blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
+
+    const priceIds = bcNetwork!
+      .getTokenList()
+      .filter((t) => t.priceFeed)
+      .map((t) => t.priceFeed);
 
     const res = await connection.getLatestPriceFeeds(priceIds);
 
@@ -62,7 +67,6 @@ class OracleStore {
     if (!this.prices) return BN.ZERO;
 
     const feed = this.prices[priceFeed];
-    const token = TOKENS_LIST.find((t) => t.priceFeed === priceFeed);
 
     if (!feed?.price) return BN.ZERO;
 

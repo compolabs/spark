@@ -1,11 +1,10 @@
 import { ethers, JsonRpcSigner } from "ethers";
 
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { FAUCET_AMOUNTS } from "@src/stores/FaucetStore";
 import BN from "@src/utils/BN";
 
 import { ERC20_ABI, SPOT_MARKET_ABI } from "./abi";
-import { CONTRACT_ADDRESSES } from "./constants";
+import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "./constants";
 import { EvmAddress } from "./types";
 
 export class Api {

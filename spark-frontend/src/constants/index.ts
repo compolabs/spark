@@ -1,30 +1,9 @@
-import { Token } from "@src/entity";
-
-import TOKEN_LOGOS from "./tokenLogos";
-import tokens from "./tokens.json";
-
 export const ROUTES = {
   ROOT: "/",
   TRADE: "/:marketId",
   FAUCET: "/faucet",
 };
 
-export const TOKENS_LIST: Array<Token> = Object.values(tokens).map(
-  ({ name, symbol, decimals, assetId, priceFeed }) =>
-    new Token({
-      name,
-      symbol,
-      decimals,
-      assetId,
-      logo: TOKEN_LOGOS[symbol],
-      priceFeed,
-    }),
-);
-export const TOKENS_BY_SYMBOL: Record<string, Token> = TOKENS_LIST.reduce((acc, t) => ({ ...acc, [t.symbol]: t }), {});
-export const TOKENS_BY_ASSET_ID: Record<string, Token> = TOKENS_LIST.reduce(
-  (acc, t) => ({ ...acc, [t.assetId]: t }),
-  {},
-);
 export const ARBITRUM_SEPOLIA_FAUCET = "https://faucet.quicknode.com/arbitrum/sepolia";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
