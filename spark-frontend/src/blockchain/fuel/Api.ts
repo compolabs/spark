@@ -26,13 +26,8 @@ export class Api {
         value: wallet.address.toB256(),
       },
     };
-    console.log("minting");
-    console.log("args", { identity, hash, amount: amount.toString() });
-    try {
-      await tokenFactoryContract.functions.mint(identity, hash, amount.toString()).txParams({ gasPrice: 1 }).call();
-    } catch (error) {
-      console.log("wtf", error);
-    }
+
+    await tokenFactoryContract.functions.mint(identity, hash, amount.toString()).txParams({ gasPrice: 1 }).call();
   };
 
   approve = async (assetAddress: string, amount: string): Promise<void> => {};

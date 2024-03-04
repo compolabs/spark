@@ -26,7 +26,6 @@ class AccountStore {
   ) {
     makeAutoObservable(this);
 
-    console.log(initState);
     if (initState) {
       if (initState.privateKey?.length) {
         this.connectWalletByPrivateKey(initState.privateKey);
