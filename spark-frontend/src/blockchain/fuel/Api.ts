@@ -15,27 +15,19 @@ export class Api {
   cancelOrder = async (orderId: string): Promise<void> => {};
 
   mintToken = async (assetAddress: string, wallet: WalletLocked | WalletUnlocked): Promise<void> => {
-    try {
-      const tokenFactory = CONTRACT_ADDRESSES.tokenFactory;
-      const tokenFactoryContract = TokenAbi__factory.connect(tokenFactory, wallet);
+    const tokenFactory = CONTRACT_ADDRESSES.tokenFactory;
+    const tokenFactoryContract = TokenAbi__factory.connect(tokenFactory, wallet);
 
-      console.log("factory");
+    const token = TOKENS_BY_ASSET_ID[assetAddress];
+    const amount = BN.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
+    const hash = hashMessage(token.symbol);
+    const identity: IdentityInput = {
+      Address: {
+        value: wallet.address.toString(),
+      },
+    };
 
-      const token = TOKENS_BY_ASSET_ID[assetAddress];
-      const amount = BN.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
-      const hash = hashMessage(token.symbol);
-      const identity: IdentityInput = {
-        Address: {
-          value: wallet.address.toString(),
-        },
-      };
-
-      console.log("trying to mint");
-
-      await tokenFactoryContract.functions.mint(identity, hash, amount.toString()).txParams({ gasPrice: 1 }).call();
-    } catch (error) {
-      console.log(error);
-    }
+    await tokenFactoryContract.functions.mint(identity, hash, amount.toString()).txParams({ gasPrice: 1 }).call();
   };
 
   approve = async (assetAddress: string, amount: string): Promise<void> => {};

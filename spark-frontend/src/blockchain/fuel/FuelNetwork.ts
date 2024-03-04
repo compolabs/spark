@@ -84,8 +84,6 @@ export class FuelNetwork extends BlockchainNetwork {
       throw new Error("Wallet does not exist");
     }
 
-    console.log("here");
-
     await this.api.mintToken(assetAddress, this.walletManager.wallet);
   };
 

@@ -28,7 +28,6 @@ export class WalletManager {
     const isApproved = await this.fuel.connect();
 
     if (!isApproved) {
-      console.log("Not approved");
       return;
     }
 

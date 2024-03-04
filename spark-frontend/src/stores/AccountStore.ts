@@ -48,7 +48,6 @@ class AccountStore {
     const { blockchainStore, notificationStore } = this.rootStore;
 
     const bcNetwork = blockchainStore.connectTo(network);
-    console.log("bcNetwork", bcNetwork);
 
     try {
       await bcNetwork?.connectWallet();
@@ -103,8 +102,6 @@ class AccountStore {
   get address() {
     const { blockchainStore } = this.rootStore;
     const bcNetwork = blockchainStore.currentInstance;
-
-    console.log(bcNetwork?.getAddress());
 
     return bcNetwork?.getAddress();
   }
