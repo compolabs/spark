@@ -141,7 +141,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
           amount={vm.inputAmount}
           assetId={baseToken.assetId}
           decimals={baseToken.decimals}
-          error={vm.isSell ? vm.inputTotalError : undefined}
+          error={vm.isSell ? vm.isInputError : undefined}
           label="Order size"
           setAmount={(v) => vm.setInputAmount(v, true)}
           onBlur={vm.setActiveInput}
@@ -157,7 +157,7 @@ const CreateOrderSpot: React.FC<IProps> = observer(({ ...rest }) => {
             amount={vm.inputTotal}
             assetId={quoteToken.assetId}
             decimals={quoteToken.decimals}
-            error={vm.isSell ? undefined : vm.inputTotalError}
+            error={vm.isSell ? undefined : vm.isInputError}
             setAmount={(v) => vm.setInputTotal(v, true)}
             onBlur={vm.setActiveInput}
             onFocus={() => vm.setActiveInput(ACTIVE_INPUT.Total)}

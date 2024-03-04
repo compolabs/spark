@@ -84,7 +84,6 @@ class CreateOrderSpotVM {
           this.inputPrice.eq(BN.ZERO) &&
           this.activeInput !== ACTIVE_INPUT.Price
         ) {
-          console.log(orderType === ORDER_TYPE.Limit, this.inputPrice.eq(BN.ZERO), this.activeInput);
           this.setInputPriceDebounce(price);
         }
       },
@@ -96,13 +95,15 @@ class CreateOrderSpotVM {
   }
 
   get canProceed() {
-    return this.inputAmount.gt(0) && this.inputPrice.gt(0) && this.inputTotal.gt(0) && !this.inputTotalError;
+    return this.inputAmount.gt(0) && this.inputPrice.gt(0) && this.inputTotal.gt(0) && !this.isInputError;
   }
 
-  get inputTotalError(): boolean {
+  get isInputError(): boolean {
     const { tradeStore, balanceStore } = this.rootStore;
+    const { market } = tradeStore;
     const amount = this.isSell ? this.inputAmount : this.inputTotal;
-    const balance = balanceStore.getBalance(tradeStore.market!.quoteToken.assetId);
+    const token = this.isSell ? market!.baseToken.assetId : market!.quoteToken.assetId;
+    const balance = balanceStore.getBalance(token);
     return balance ? amount.gt(balance) : false;
   }
 
@@ -151,7 +152,6 @@ class CreateOrderSpotVM {
     const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market!.baseToken.decimals);
     const formattedTotal = BN.formatUnits(this.inputTotal, tradeStore.market!.quoteToken.decimals);
 
-    console.log(this.activeInput === ACTIVE_INPUT.Price);
     if (this.activeInput === ACTIVE_INPUT.Amount || this.activeInput === ACTIVE_INPUT.Price) {
       const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
       this.setInputTotal(total);
