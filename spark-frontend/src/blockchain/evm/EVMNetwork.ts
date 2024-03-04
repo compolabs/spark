@@ -35,6 +35,10 @@ export class EVMNetwork extends BlockchainNetwork {
     return this.walletManager.address;
   };
 
+  getPrivateKey = (): Nullable<string> => {
+    return this.walletManager.privateKey;
+  };
+
   getBalance = async (accountAddress: string, assetAddress: EvmAddress): Promise<string> => {
     if (assetAddress === this.getTokenBySymbol("ETH").assetId) {
       const balance = await this.provider.getBalance(accountAddress);

@@ -37,6 +37,10 @@ export class FuelNetwork extends BlockchainNetwork {
     return this.walletManager.address;
   };
 
+  getPrivateKey(): Nullable<string> {
+    return this.walletManager.privateKey;
+  }
+
   getBalance = async (accountAddress: string, assetAddress: string): Promise<string> => {
     return this.walletManager.getBalance(accountAddress, assetAddress);
   };

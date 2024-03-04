@@ -23,11 +23,16 @@ export class Api {
     const hash = hashMessage(token.symbol);
     const identity: IdentityInput = {
       Address: {
-        value: wallet.address.toString(),
+        value: wallet.address.toB256(),
       },
     };
-
-    await tokenFactoryContract.functions.mint(identity, hash, amount.toString()).txParams({ gasPrice: 1 }).call();
+    console.log("minting");
+    console.log("args", { identity, hash, amount: amount.toString() });
+    try {
+      await tokenFactoryContract.functions.mint(identity, hash, amount.toString()).txParams({ gasPrice: 1 }).call();
+    } catch (error) {
+      console.log("wtf", error);
+    }
   };
 
   approve = async (assetAddress: string, amount: string): Promise<void> => {};

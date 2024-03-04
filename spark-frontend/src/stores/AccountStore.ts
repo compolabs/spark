@@ -13,7 +13,7 @@ export enum LOGIN_TYPE {
 
 export interface ISerializedAccountStore {
   address: Nullable<string>;
-  loginType: Nullable<LOGIN_TYPE>;
+  network: Nullable<NETWORK>;
   privateKey: Nullable<string>;
 }
 
@@ -26,15 +26,13 @@ class AccountStore {
   ) {
     makeAutoObservable(this);
 
+    console.log(initState);
     if (initState) {
-      // this.loginType = initState.loginType;
-      // this.address = initState.address;
-      // this.privateKey = initState.privateKey;
-      // if (this.privateKey?.length) {
-      //   this.connectWalletByPrivateKey(this.privateKey);
-      // } else {
-      //   this.address && this.connectWallet(WALLET_TYPE.EVM);
-      // }
+      if (initState.privateKey?.length) {
+        this.connectWalletByPrivateKey(initState.privateKey);
+      } else {
+        initState.address && initState.network && this.connectWallet(initState.network);
+      }
     }
 
     this.init();
@@ -110,12 +108,16 @@ class AccountStore {
     return !!this.address;
   }
 
-  // ABSTRACT TODO: Fix it
-  // serialize = (): ISerializedAccountStore => ({
-  //   address: this.address,
-  //   loginType: this.loginType,
-  //   privateKey: this.privateKey,
-  // });
+  serialize = (): ISerializedAccountStore => {
+    const { blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
+
+    return {
+      address: bcNetwork?.getAddress() ?? null,
+      privateKey: bcNetwork?.getPrivateKey() ?? null,
+      network: bcNetwork?.NETWORK_TYPE ?? null,
+    };
+  };
 }
 
 export default AccountStore;

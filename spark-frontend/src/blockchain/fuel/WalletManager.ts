@@ -8,8 +8,7 @@ import { TOKENS_BY_ASSET_ID } from "./constants";
 export class WalletManager {
   public address: Nullable<string> = null;
   public wallet: Nullable<FuelWalletLocked> = null;
-
-  private privateKey: Nullable<string> = null;
+  public privateKey: Nullable<string> = null;
 
   private fuel = new Fuel({
     connectors: [new FuelWalletConnector()],

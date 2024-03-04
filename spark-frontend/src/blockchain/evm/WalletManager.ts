@@ -7,8 +7,7 @@ import { Network, PROVIDERS, TOKENS_BY_ASSET_ID } from "./constants";
 export class WalletManager {
   public address: Nullable<string> = null;
   public signer: Nullable<ethers.JsonRpcSigner> = null;
-
-  private privateKey: Nullable<string> = null;
+  public privateKey: Nullable<string> = null;
 
   constructor() {
     makeAutoObservable(this);
