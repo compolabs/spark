@@ -5,6 +5,7 @@ export const ROUTES = {
 };
 
 export const ARBITRUM_SEPOLIA_FAUCET = "https://faucet.quicknode.com/arbitrum/sepolia";
+export const FUEL_FAUCET = "https://faucet-beta-5.fuel.network/?address=";
 export const TV_DATAFEED = "https://spark-tv-datafeed.spark-defi.com/api/v1";
 export const CHARTS_STORAGE = "https://tv-backend-v4.herokuapp.com/";
 

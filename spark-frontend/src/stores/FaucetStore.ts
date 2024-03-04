@@ -1,7 +1,8 @@
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { ARBITRUM_SEPOLIA_FAUCET } from "@src/constants";
+import { NETWORK } from "@src/blockchain/types";
+import { ARBITRUM_SEPOLIA_FAUCET, FUEL_FAUCET } from "@src/constants";
 import BN from "@src/utils/BN";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import RootStore from "@stores/RootStore";
@@ -75,7 +76,10 @@ class FaucetStore {
     if (!token || !accountStore.address) return;
 
     if (token.symbol === "ETH") {
-      window.open(ARBITRUM_SEPOLIA_FAUCET, "blank");
+      window.open(
+        bcNetwork?.NETWORK_TYPE === NETWORK.EVM ? ARBITRUM_SEPOLIA_FAUCET : `${FUEL_FAUCET}${accountStore.address}`,
+        "blank",
+      );
       return;
     }
 
