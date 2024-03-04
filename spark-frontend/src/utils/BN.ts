@@ -63,10 +63,6 @@ class BN extends BigNumber {
     return new BN(valueA).div(valueB).times(100);
   }
 
-  static toEthersBN(value: TValue): EthersBigNumber {
-    return EthersBigNumber.from(value.toString());
-  }
-
   abs(): BN {
     return new BN(super.abs());
   }

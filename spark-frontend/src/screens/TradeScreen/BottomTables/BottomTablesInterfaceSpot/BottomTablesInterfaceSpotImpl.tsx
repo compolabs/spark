@@ -19,7 +19,6 @@ import tableSizeSelector from "@src/assets/icons/tablesSize.svg";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
 import { useMedia } from "@src/hooks/useMedia";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
@@ -83,7 +82,9 @@ const RESIZE_TOOLTIP_CONFIG: Config = { placement: "bottom-start", trigger: "cli
 
 // todo: Упростить логику разделить формирование данных и рендер для декстопа и мобилок
 const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
-  const { settingsStore, balanceStore, faucetStore } = useStores();
+  const { settingsStore, balanceStore, faucetStore, accountStore, blockchainStore } = useStores();
+  const bcNetwork = blockchainStore.currentInstance;
+
   const vm = useBottomTablesInterfaceSpotVM();
   const theme = useTheme();
   const media = useMedia();
@@ -147,7 +148,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
     Array.from(balanceStore.balances)
       .filter(([, balance]) => balance && balance.gt(0))
       .map(([assetId, balance]) => {
-        const token = TOKENS_BY_ASSET_ID[assetId];
+        const token = bcNetwork!.getTokenByAssetId(assetId);
         return {
           asset: (
             <Row alignItems="center">
@@ -249,7 +250,7 @@ const BottomTablesInterfaceSpotImpl: React.FC<IProps> = observer(() => {
     const balanceData = Array.from(balanceStore.balances)
       .filter(([, balance]) => balance && balance.gt(0))
       .map(([assetId, balance], i) => {
-        const token = TOKENS_BY_ASSET_ID[assetId];
+        const token = bcNetwork!.getTokenByAssetId(assetId);
         return (
           <MobileTableOrderRow key={i + "mobile-row"}>
             <MobileTableRowColumn>

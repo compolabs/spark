@@ -1,6 +1,8 @@
 import dayjs, { Dayjs } from "dayjs";
 
-import { DEFAULT_DECIMALS, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL } from "@src/constants";
+import { BlockchainNetworkFactory } from "@src/blockchain/BlockchainNetworkFactory";
+import { TOKENS_BY_SYMBOL } from "@src/blockchain/evm/constants";
+import { DEFAULT_DECIMALS } from "@src/constants";
 import BN from "@src/utils/BN";
 
 import { Token } from "./Token";
@@ -20,7 +22,7 @@ export class SpotMarketOrder {
   readonly id: string;
   readonly timestamp: Dayjs;
   readonly baseToken: Token;
-  readonly quoteToken = TOKENS_BY_SYMBOL.USDC;
+  readonly quoteToken = TOKENS_BY_SYMBOL.USDC; // TODO: Переписать пробрасывать через аргументы;
   readonly trader: string;
   readonly baseSize: BN;
   readonly baseSizeUnits: BN;
@@ -35,11 +37,14 @@ export class SpotMarketOrder {
   constructor(order: SpotMarketOrderParams) {
     this.id = order.id;
 
-    if (!TOKENS_BY_ASSET_ID[order.baseToken]) {
+    const bcNetwork = BlockchainNetworkFactory.getInstance().currentInstance!;
+    const baseToken = bcNetwork.getTokenByAssetId(order.baseToken);
+
+    if (!baseToken) {
       throw new Error("Unexpected token");
     }
 
-    this.baseToken = TOKENS_BY_ASSET_ID[order.baseToken];
+    this.baseToken = baseToken;
 
     this.trader = order.trader;
     this.type = order.baseSize < 0 ? "SELL" : "BUY";

@@ -5,9 +5,9 @@ import copy from "copy-to-clipboard";
 import copyIcon from "@src/assets/icons/copy.svg";
 import linkIcon from "@src/assets/icons/link.svg";
 import logoutIcon from "@src/assets/icons/logout.svg";
-import { EXPLORER_URL, TOKENS_BY_SYMBOL } from "@src/constants";
 import { useStores } from "@src/stores";
 import BN from "@src/utils/BN";
+import { getExplorerLinkByAddress } from "@src/utils/getExplorerLink";
 
 import Divider from "../Divider";
 import Sheet from "../Sheet";
@@ -20,11 +20,13 @@ interface Props {
 }
 
 const AccountInfoSheet: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { accountStore, notificationStore, balanceStore } = useStores();
+  const { accountStore, notificationStore, balanceStore, blockchainStore } = useStores();
+
+  const bcNetwork = blockchainStore.currentInstance;
 
   const ethBalance = BN.formatUnits(
-    balanceStore.getBalance(TOKENS_BY_SYMBOL.ETH.assetId) ?? BN.ZERO,
-    TOKENS_BY_SYMBOL.ETH.decimals,
+    balanceStore.getBalance(bcNetwork!.getTokenBySymbol("ETH").assetId) ?? BN.ZERO,
+    bcNetwork?.getTokenBySymbol("ETH").decimals,
   )?.toFormat(4);
 
   const handleAddressCopy = () => {
@@ -47,7 +49,7 @@ const AccountInfoSheet: React.FC<Props> = ({ isOpen, onClose }) => {
     },
     {
       icon: linkIcon,
-      action: () => window.open(`${EXPLORER_URL}/address/${accountStore.address}`),
+      action: () => window.open(getExplorerLinkByAddress(accountStore.address!, bcNetwork!.NETWORK_TYPE)),
       title: "View in Explorer",
       active: true,
     },
@@ -71,7 +73,7 @@ const AccountInfoSheet: React.FC<Props> = ({ isOpen, onClose }) => {
     <Sheet isOpen={isOpen} onClose={onClose}>
       <SmartFlex column>
         <TokenContainer center="y" gap="8px">
-          <Icon alt="ETH" src={TOKENS_BY_SYMBOL.ETH.logo} />
+          <Icon alt="ETH" src={bcNetwork?.getTokenBySymbol("ETH").logo} />
           <Text type={TEXT_TYPES.H} primary>{`${ethBalance} ETH`}</Text>
         </TokenContainer>
         <Divider />

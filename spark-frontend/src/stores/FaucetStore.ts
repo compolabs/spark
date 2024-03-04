@@ -1,9 +1,8 @@
-import { ethers } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { ERC20_ABI } from "@src/abi";
-import { ARBITRUM_SEPOLIA_FAUCET, TOKENS_BY_ASSET_ID, TOKENS_LIST } from "@src/constants";
+import { NETWORK } from "@src/blockchain/types";
+import { ARBITRUM_SEPOLIA_FAUCET, FUEL_FAUCET } from "@src/constants";
 import BN from "@src/utils/BN";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import RootStore from "@stores/RootStore";
@@ -29,14 +28,15 @@ class FaucetStore {
   }
 
   get faucetTokens() {
-    const { balanceStore } = this.rootStore;
+    const { balanceStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
-    return TOKENS_LIST.map((v) => {
+    return bcNetwork!.getTokenList().map((v) => {
       const balance = balanceStore.getBalance(v.assetId);
       const mintAmount = new BN(FAUCET_AMOUNTS[v.symbol] ?? 0);
       const formatBalance = BN.formatUnits(balance ?? BN.ZERO, v.decimals);
       return {
-        ...TOKENS_BY_ASSET_ID[v.assetId],
+        ...bcNetwork!.getTokenByAssetId(v.assetId),
         ...balance,
         formatBalance,
         mintAmount,
@@ -48,20 +48,16 @@ class FaucetStore {
   setActionTokenAssetId = (l: Nullable<string>) => (this.actionTokenAssetId = l);
 
   private mint = async (assetId: string) => {
-    const { accountStore, balanceStore, notificationStore } = this.rootStore;
+    const { accountStore, balanceStore, notificationStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
-    if (!TOKENS_BY_ASSET_ID[assetId] || !accountStore.address) return;
+    if (!bcNetwork!.getTokenByAssetId(assetId) || !accountStore.address) return;
 
     this.setActionTokenAssetId(assetId);
+    this.setLoading(true);
 
-    const token = TOKENS_BY_ASSET_ID[assetId];
-    const tokenContract = new ethers.Contract(assetId, ERC20_ABI, accountStore.signer);
-
-    const amount = ethers.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
     try {
-      this.setLoading(true);
-      const tx = await tokenContract.mint(accountStore.getAddress(), amount);
-      await tx.wait();
+      await bcNetwork?.mintToken(assetId);
       notificationStore.toast("Minting successful!", { type: "success" });
       await accountStore.addAsset(assetId);
     } catch (error: any) {
@@ -73,13 +69,17 @@ class FaucetStore {
   };
 
   mintByAssetId = (assetId: string) => {
-    const { accountStore } = this.rootStore;
-    const token = TOKENS_BY_ASSET_ID[assetId];
+    const { accountStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
+    const token = bcNetwork?.getTokenByAssetId(assetId);
 
     if (!token || !accountStore.address) return;
 
     if (token.symbol === "ETH") {
-      window.open(ARBITRUM_SEPOLIA_FAUCET, "blank");
+      window.open(
+        bcNetwork?.NETWORK_TYPE === NETWORK.EVM ? ARBITRUM_SEPOLIA_FAUCET : `${FUEL_FAUCET}${accountStore.address}`,
+        "blank",
+      );
       return;
     }
 
@@ -87,8 +87,10 @@ class FaucetStore {
   };
 
   disabled = (assetId: string) => {
-    const token = TOKENS_BY_ASSET_ID[assetId];
-    const { accountStore, faucetStore } = this.rootStore;
+    const { accountStore, faucetStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
+
+    const token = bcNetwork?.getTokenByAssetId(assetId);
     return (
       faucetStore.loading ||
       !faucetStore.initialized ||

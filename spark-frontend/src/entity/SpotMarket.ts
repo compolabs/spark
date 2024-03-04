@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { BlockchainNetworkFactory } from "@src/blockchain/BlockchainNetworkFactory";
 import { fetchMarketPrice } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
 
@@ -12,8 +12,10 @@ export class SpotMarket {
   price: BN = BN.ZERO; //todo брать начальное значение из локалстораджа
 
   constructor(baseToken: string, quoteToken: string) {
-    this.baseToken = TOKENS_BY_ASSET_ID[baseToken];
-    this.quoteToken = TOKENS_BY_ASSET_ID[quoteToken];
+    const bcNetwork = BlockchainNetworkFactory.getInstance().currentInstance!;
+
+    this.baseToken = bcNetwork.getTokenByAssetId(baseToken);
+    this.quoteToken = bcNetwork.getTokenByAssetId(quoteToken);
     makeAutoObservable(this);
   }
 

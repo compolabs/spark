@@ -1,11 +1,8 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { Dayjs } from "dayjs";
-import { ethers } from "ethers";
 import { makeAutoObservable, reaction, when } from "mobx";
 import { Nullable } from "tsdef";
 
-import { SPOT_MARKET_ABI } from "@src/abi";
-import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "@src/constants";
 import { SpotMarketOrder, SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
 import { fetchOrders, fetchTrades } from "@src/services/SpotMarketService";
@@ -53,17 +50,16 @@ class BottomTablesInterfaceSpotVM {
   }
 
   cancelOrder = async (orderId: string) => {
-    const { accountStore, notificationStore } = this.rootStore;
+    const { notificationStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
-    if (!accountStore.signer || !this.rootStore.tradeStore.market) return;
+    if (!this.rootStore.tradeStore.market) return;
 
     this.isOrderCancelling = true;
     this.cancelingOrderId = orderId;
 
     try {
-      const contract = new ethers.Contract(CONTRACT_ADDRESSES.spotMarket, SPOT_MARKET_ABI, accountStore.signer);
-      const transaction = await contract.removeOrder(orderId);
-      await transaction.wait();
+      await bcNetwork?.cancelOrder(orderId);
       notificationStore.toast("Order canceled!", { type: "success" });
     } catch (error) {
       handleEvmErrors(notificationStore, error, "We were unable to cancel your order at this time");
@@ -74,7 +70,8 @@ class BottomTablesInterfaceSpotVM {
   };
 
   private sync = async () => {
-    const { accountStore, tradeStore } = this.rootStore;
+    const { accountStore, tradeStore, blockchainStore } = this.rootStore;
+    const bcNetwork = blockchainStore.currentInstance;
 
     if (!tradeStore.market || !accountStore.address) return;
 
@@ -94,7 +91,7 @@ class BottomTablesInterfaceSpotVM {
       const sortedOrder = ordersData.sort(sortDesc);
       this.setMySpotOrders(sortedOrder);
 
-      const token = TOKENS_BY_ASSET_ID[market.baseToken.assetId];
+      const token = bcNetwork!.getTokenByAssetId(market.baseToken.assetId);
       const ordersHistoryData = await fetchTrades(market.baseToken.assetId, 100, accountStore.address);
       const ordersHistory = ordersHistoryData.map(
         (t) => new SpotMarketTrade({ ...t, baseToken: token, userAddress: accountStore.address! }),

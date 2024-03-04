@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite";
 import Chip from "@components/Chip";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
-import { TOKENS_BY_ASSET_ID } from "@src/constants";
+import { useStores } from "@src/stores";
 import BN from "@src/utils/BN";
 
 import AmountInput from "./AmountInput";
@@ -28,8 +28,12 @@ interface IProps {
 }
 
 const TokenInput: React.FC<IProps> = observer((props) => {
+  const { blockchainStore } = useStores();
+  const bcNetwork = blockchainStore.currentInstance;
+
   const [focused, setFocused] = useState(false);
   const [amount, setAmount] = useState<BN>(props.amount);
+
   useEffect(() => {
     props.amount && setAmount(props.amount);
   }, [props.amount]);
@@ -39,6 +43,7 @@ const TokenInput: React.FC<IProps> = observer((props) => {
     setAmount(v);
     debounce(v);
   };
+
   //eslint-disable-next-line react-hooks/exhaustive-deps
   const debounce = useCallback(
     _.debounce((value: BN) => {
@@ -81,7 +86,7 @@ const TokenInput: React.FC<IProps> = observer((props) => {
           value={amount}
           onChange={handleChangeAmount}
         />
-        {props.assetId && <Chip>{TOKENS_BY_ASSET_ID[props.assetId].symbol}</Chip>}
+        {props.assetId && <Chip>{bcNetwork?.getTokenByAssetId(props.assetId).symbol}</Chip>}
       </InputContainer>
       <SizedBox height={2} />
       {props.error && (
