@@ -31,5 +31,5 @@ export const MENU_ITEMS: Array<TMenuItem> = [
   { title: "FAUCET", route: ROUTES.FAUCET },
   { title: "DOCS", link: "https://docs.sprk.fi" },
   { title: "GITHUB", link: "https://github.com/compolabs/spark" },
-  { title: "TWITTER", link: "https://twitter.com/Sprkf" },
+  { title: "TWITTER", link: "https://twitter.com/Sprkfi" },
 ];

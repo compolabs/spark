@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, useMemo } from "react";
 import { Dayjs } from "dayjs";
 import { makeAutoObservable, reaction, when } from "mobx";
+import { Nullable } from "tsdef";
 
 import { SpotMarketOrder, SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
@@ -24,6 +25,7 @@ class BottomTablesInterfaceSpotVM {
   initialized: boolean = false;
 
   isOrderCancelling = false;
+  cancelingOrderId: Nullable<string> = null;
 
   private readonly rootStore: RootStore;
 
@@ -54,6 +56,7 @@ class BottomTablesInterfaceSpotVM {
     if (!this.rootStore.tradeStore.market) return;
 
     this.isOrderCancelling = true;
+    this.cancelingOrderId = orderId;
 
     try {
       await bcNetwork?.cancelOrder(orderId);
@@ -63,6 +66,7 @@ class BottomTablesInterfaceSpotVM {
     }
 
     this.isOrderCancelling = false;
+    this.cancelingOrderId = null;
   };
 
   private sync = async () => {

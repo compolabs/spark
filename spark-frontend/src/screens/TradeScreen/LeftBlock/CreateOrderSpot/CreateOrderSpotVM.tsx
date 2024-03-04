@@ -29,6 +29,12 @@ export enum ORDER_MODE {
   SELL,
 }
 
+export enum ACTIVE_INPUT {
+  Price,
+  Amount,
+  Total,
+}
+
 export enum ORDER_TYPE {
   Market,
   Limit,
@@ -44,6 +50,8 @@ class CreateOrderSpotVM {
   loading = false;
 
   mode: ORDER_MODE = ORDER_MODE.BUY;
+
+  activeInput: ACTIVE_INPUT = ACTIVE_INPUT.Amount;
 
   inputPrice: BN = BN.ZERO;
   inputAmount: BN = BN.ZERO;
@@ -63,10 +71,19 @@ class CreateOrderSpotVM {
     reaction(
       () => oracleStore.prices,
       () => {
-        if (settingsStore.orderType === ORDER_TYPE.Market) {
-          const token = tradeStore.market?.baseToken;
-          const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
+        const { orderType } = settingsStore;
+        const token = tradeStore.market?.baseToken;
+        const price = token?.priceFeed ? oracleStore.getTokenIndexPrice(token?.priceFeed) : BN.ZERO;
+
+        if (orderType === ORDER_TYPE.Market) {
           this.setInputPriceDebounce(price, true);
+        } else if (
+          orderType === ORDER_TYPE.Limit &&
+          this.inputPrice.eq(BN.ZERO) &&
+          this.activeInput !== ACTIVE_INPUT.Price
+        ) {
+          console.log(orderType === ORDER_TYPE.Limit, this.inputPrice.eq(BN.ZERO), this.activeInput);
+          this.setInputPriceDebounce(price);
         }
       },
     );
@@ -131,9 +148,16 @@ class CreateOrderSpotVM {
 
     const formattedPrice = BN.formatUnits(price, DEFAULT_DECIMALS);
     const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market!.baseToken.decimals);
+    const formattedTotal = BN.formatUnits(this.inputTotal, tradeStore.market!.quoteToken.decimals);
 
-    const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
-    this.setInputTotal(total);
+    console.log(this.activeInput === ACTIVE_INPUT.Price);
+    if (this.activeInput === ACTIVE_INPUT.Amount || this.activeInput === ACTIVE_INPUT.Price) {
+      const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
+      this.setInputTotal(total);
+    } else if (this.activeInput === ACTIVE_INPUT.Total) {
+      const amount = BN.parseUnits(formattedTotal.div(formattedPrice), tradeStore.market!.baseToken.decimals);
+      this.setInputAmount(amount);
+    }
   };
 
   setInputPriceDebounce = _.throttle(this.setInputPrice, PRICE_UPDATE_THROTTLE_INTERVAL);
@@ -281,4 +305,6 @@ class CreateOrderSpotVM {
   };
 
   private setLoading = (l: boolean) => (this.loading = l);
+
+  setActiveInput = (input?: ACTIVE_INPUT) => (this.activeInput = input === undefined ? ACTIVE_INPUT.Amount : input);
 }
