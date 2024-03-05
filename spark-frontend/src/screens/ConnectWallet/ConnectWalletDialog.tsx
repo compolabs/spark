@@ -6,7 +6,6 @@ import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
 
 import { ReactComponent as ArrowIcon } from "@src/assets/icons/arrowUp.svg";
 import { ReactComponent as FuelWalletIcon } from "@src/assets/wallets/fuel.svg";
-import { ReactComponent as MetaMaskIcon } from "@src/assets/wallets/metamask.svg";
 import { NETWORK } from "@src/blockchain/types";
 import Button from "@src/components/Button";
 import { Checkbox } from "@src/components/Checkbox";
@@ -33,7 +32,6 @@ interface Wallet {
 }
 
 const WALLETS: Wallet[] = [
-  { name: "MetaMask", isActive: true, type: LOGIN_TYPE.METAMASK, icon: MetaMaskIcon, walletType: NETWORK.EVM },
   {
     name: "Fuel Wallet",
     isActive: true,

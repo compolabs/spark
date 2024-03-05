@@ -2,7 +2,7 @@ import { ethers, JsonRpcSigner, NonceManager } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { Network, PROVIDERS, TOKENS_BY_ASSET_ID } from "./constants";
+import { Network, PROVIDERS, TOKENS_BY_ASSET_ID, web3Modal } from "./constants";
 
 export class WalletManager {
   public address: Nullable<string> = null;
@@ -11,44 +11,18 @@ export class WalletManager {
 
   constructor() {
     makeAutoObservable(this);
+
+    web3Modal.subscribeEvents((event) => console.log(event.data));
   }
 
   connect = async (targetNetwork: Network): Promise<void> => {
-    const ethereum = window.ethereum;
+    const walletProvider = web3Modal.getWalletProvider();
 
-    if (!ethereum) {
-      throw new Error("Ethereum wallet not found");
+    if (!walletProvider) {
+      throw new Error("Wallet not connected");
     }
 
-    this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
-    const network = await this.signer.provider.getNetwork();
-    const targetChainId = parseInt(targetNetwork.chainId, 10).toString(16);
-    const currentChainId = parseInt(network.chainId.toString(), 10).toString(16);
-
-    this.address = await this.signer.getAddress();
-
-    if (currentChainId !== targetChainId) {
-      await ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: `0x${targetChainId}`,
-            chainName: targetNetwork.name,
-            rpcUrls: [targetNetwork.rpc],
-            nativeCurrency: {
-              name: "ETH",
-              symbol: "ETH",
-              decimals: 18,
-            },
-          },
-        ],
-      });
-    } else {
-      await ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: `0x${targetChainId}` }],
-      });
-    }
+    this.signer = await new ethers.BrowserProvider(walletProvider).getSigner();
     const address = await this.signer.getAddress();
 
     this.address = address;
@@ -89,7 +63,9 @@ export class WalletManager {
     });
   };
 
-  disconnect = () => {
+  disconnect = async () => {
+    await web3Modal.disconnect();
+
     this.address = null;
     this.signer = null;
     this.privateKey = null;

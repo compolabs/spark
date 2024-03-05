@@ -1,3 +1,4 @@
+import { createWeb3Modal, defaultConfig } from "@web3modal/ethers";
 import { JsonRpcProvider } from "ethers";
 
 import TOKEN_LOGOS from "@src/constants/tokenLogos";
@@ -21,6 +22,8 @@ export interface Network {
   name: string;
   rpc: string;
   chainId: string;
+  explorer: string;
+  currency: string;
 }
 
 export const NETWORKS: Network[] = [
@@ -28,6 +31,8 @@ export const NETWORKS: Network[] = [
     name: "Arbitrum Sepolia",
     rpc: "https://arbitrum-sepolia.infura.io/v3/c9c23a966a0e4064b925cb2d6783e679",
     chainId: "421614",
+    explorer: "https://sepolia.arbiscan.io",
+    currency: "ETH",
   },
 ];
 
@@ -38,6 +43,7 @@ export const PROVIDERS: Record<string, JsonRpcProvider> = NETWORKS.reduce((provi
   };
 }, {});
 
+// TODO: Need to fix logic. Should be inside networks
 export const EXPLORER_URL = "https://sepolia.arbiscan.io";
 
 export const TOKENS_LIST: Token[] = Object.values(TOKENS_JSON).map(
@@ -58,3 +64,28 @@ export const TOKENS_BY_ASSET_ID: Record<string, Token> = TOKENS_LIST.reduce(
   (acc, t) => ({ ...acc, [t.assetId.toLowerCase()]: t }),
   {},
 );
+
+export const WEB3_MODAL_PROJECT_ID = "44156c54a1b842a095507783c40d667b";
+
+const chains = NETWORKS.map((network) => ({
+  chainId: Number(network.chainId),
+  name: network.name,
+  currency: network.currency,
+  explorerUrl: network.explorer,
+  rpcUrl: network.rpc,
+}));
+
+const metadata = {
+  name: "Spark",
+  description: "A Decentralized Order Book on Fuel.Network",
+  url: "https://app.sprk.fi",
+  icons: ["https://app.sprk.fi/"],
+};
+
+export const web3Modal = createWeb3Modal({
+  ethersConfig: defaultConfig({ metadata }),
+  chains,
+  projectId: WEB3_MODAL_PROJECT_ID,
+  enableAnalytics: true,
+  defaultChain: chains[0],
+});
