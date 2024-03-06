@@ -11,8 +11,6 @@ export class WalletManager {
 
   constructor() {
     makeAutoObservable(this);
-
-    web3Modal.subscribeEvents((event) => console.log(event.data));
   }
 
   connect = async (targetNetwork: Network): Promise<void> => {
