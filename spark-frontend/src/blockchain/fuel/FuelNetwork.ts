@@ -78,10 +78,33 @@ export class FuelNetwork extends BlockchainNetwork {
   };
 
   createOrder = async (assetAddress: string, size: string, price: string): Promise<string> => {
-    return "";
+    // 0x42d0d50ee2a447bb63fe4e43eb06d38d742377ba 1000000 66825955050000
+    if (!this.walletManager.wallet) {
+      throw new Error("Wallet does not exist");
+    }
+
+    return this.api.createOrder(assetAddress, size, price, this.walletManager.wallet);
+
+    // Uncaught RequireRevertError: The script reverted with reason RequireFailed
+    // at revertErrorFactory (revert-error.ts:173:1)
+    // at RevertErrorCodes.getError (revert-error-codes.ts:41:1)
+    // at RevertErrorCodes.assert (revert-error-codes.ts:22:1)
+    // at new ScriptResultDecoderError (errors.ts:34:1)
+    // at decodeCallResult (script-request.ts:119:1)
+    // at decodeContractCallScriptResult (contract-call-script.ts:174:1)
+    // at FunctionInvocationResult.getDecodedValue (invocation-results.ts:89:1)
+    // at new InvocationResult (invocation-results.ts:59:1)
+    // at new FunctionInvocationResult (invocation-results.ts:151:1)
+    // at FunctionInvocationResult.build (invocation-results.ts:175:1)
   };
 
-  cancelOrder = async (orderId: string): Promise<void> => {};
+  cancelOrder = async (orderId: string): Promise<void> => {
+    if (!this.walletManager.wallet) {
+      throw new Error("Wallet does not exist");
+    }
+
+    await this.api.cancelOrder(orderId, this.walletManager.wallet);
+  };
 
   mintToken = async (assetAddress: string): Promise<void> => {
     if (!this.walletManager.wallet) {

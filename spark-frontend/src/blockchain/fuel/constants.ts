@@ -4,6 +4,7 @@ import { Token } from "@src/entity/Token";
 import TOKENS_JSON from "./tokens.json";
 
 export const CONTRACT_ADDRESSES = {
+  spotMarket: "0x09888861682fb900a7ea36806fb66074ffc3a69fc4f05ed17730b0bc417a0fe0",
   tokenFactory: "0x6bd9643c9279204b474a778dea7f923226060cb94a4c61c5aae015cf96b5aad2",
 };
 
