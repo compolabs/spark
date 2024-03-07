@@ -45,6 +45,8 @@ export class FuelNetwork extends BlockchainNetwork {
     return this.walletManager.getBalance(accountAddress, assetAddress);
   };
 
+  getIsExternalWallet = () => false;
+
   getTokenList = (): Token[] => {
     return TOKENS_LIST;
   };

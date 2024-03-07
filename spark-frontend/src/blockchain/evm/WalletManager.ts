@@ -9,8 +9,20 @@ export class WalletManager {
   public signer: Nullable<ethers.JsonRpcSigner> = null;
   public privateKey: Nullable<string> = null;
 
+  public isRemoteProvider = false;
+
   constructor() {
     makeAutoObservable(this);
+
+    web3Modal.subscribeProvider((newProvider) => {
+      // Way to handle remote wallet
+      if (newProvider.providerType === "walletConnect") {
+        this.isRemoteProvider = true;
+        return;
+      }
+
+      this.isRemoteProvider = false;
+    });
   }
 
   connect = async (targetNetwork: Network): Promise<void> => {
@@ -50,15 +62,26 @@ export class WalletManager {
       throw new Error("Invalid token.");
     }
 
-    await window.ethereum?.request({
+    const walletProvider = web3Modal.getWalletProvider();
+
+    await walletProvider?.request({
       method: "wallet_watchAsset",
       params: {
         type: "ERC20",
         options: {
           address: assetId,
+          symbol: token.symbol,
+          decimals: token.decimals,
+          image: token.logo,
         },
       },
     });
+  };
+
+  isWalletConnect = () => {
+    const walletProvider = web3Modal.getWalletProvider();
+
+    return walletProvider;
   };
 
   disconnect = async () => {

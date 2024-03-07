@@ -57,6 +57,9 @@ class BottomTablesInterfaceSpotVM {
 
     this.isOrderCancelling = true;
     this.cancelingOrderId = orderId;
+    if (bcNetwork?.getIsExternalWallet()) {
+      notificationStore.toast("Please, confirm operation in your wallet", { type: "info" });
+    }
 
     try {
       await bcNetwork?.cancelOrder(orderId);
