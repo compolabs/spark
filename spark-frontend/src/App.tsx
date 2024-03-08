@@ -10,6 +10,7 @@ import TradeScreen from "@screens/TradeScreen";
 import { ROUTES } from "@src/constants";
 
 import { usePrivateKeyAsAuth } from "./hooks/usePrivateKeyAsAuth";
+import { useWeb3Modal } from "./hooks/useWeb3Modal";
 
 const Root = styled(Column)`
   width: 100%;
@@ -20,6 +21,7 @@ const Root = styled(Column)`
 `;
 
 const App: React.FC = observer(() => {
+  useWeb3Modal();
   usePrivateKeyAsAuth();
 
   return (

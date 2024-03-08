@@ -5,6 +5,7 @@ import { Nullable } from "tsdef";
 import { Token } from "@src/entity";
 
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
+import { NETWORK_ERROR, NetworkError } from "../NetworkError";
 import { NETWORK } from "../types";
 
 import { Api } from "./Api";
@@ -45,6 +46,8 @@ export class FuelNetwork extends BlockchainNetwork {
     return this.walletManager.getBalance(accountAddress, assetAddress);
   };
 
+  getIsExternalWallet = () => false;
+
   getTokenList = (): Token[] => {
     return TOKENS_LIST;
   };
@@ -63,7 +66,7 @@ export class FuelNetwork extends BlockchainNetwork {
 
   connectWalletByPrivateKey = async (privateKey: string): Promise<void> => {
     if (!this.provider) {
-      throw new Error("Provider does not exist");
+      throw new NetworkError(NETWORK_ERROR.INVALID_WALLET_PROVIDER);
     }
 
     await this.walletManager.connectByPrivateKey(privateKey, this.provider);
@@ -85,7 +88,7 @@ export class FuelNetwork extends BlockchainNetwork {
 
   mintToken = async (assetAddress: string): Promise<void> => {
     if (!this.walletManager.wallet) {
-      throw new Error("Wallet does not exist");
+      throw new NetworkError(NETWORK_ERROR.UNKNOWN_WALLET);
     }
 
     await this.api.mintToken(assetAddress, this.walletManager.wallet);

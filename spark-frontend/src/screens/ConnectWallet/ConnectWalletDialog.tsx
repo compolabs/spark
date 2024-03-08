@@ -6,14 +6,12 @@ import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
 
 import { ReactComponent as ArrowIcon } from "@src/assets/icons/arrowUp.svg";
 import { ReactComponent as FuelWalletIcon } from "@src/assets/wallets/fuel.svg";
-import { ReactComponent as MetaMaskIcon } from "@src/assets/wallets/metamask.svg";
 import { NETWORK } from "@src/blockchain/types";
 import Button from "@src/components/Button";
 import { Checkbox } from "@src/components/Checkbox";
 import { Dialog } from "@src/components/Dialog";
 import Text, { TEXT_TYPES } from "@src/components/Text";
 import { useStores } from "@src/stores";
-import { LOGIN_TYPE } from "@stores/AccountStore";
 
 type IProps = Omit<IDialogPropTypes, "onClose"> & {
   onClose: () => void;
@@ -27,19 +25,16 @@ enum ActiveState {
 interface Wallet {
   name: string;
   icon: React.FC;
-  type: LOGIN_TYPE;
-  walletType: NETWORK;
+  network: NETWORK;
   isActive: boolean;
 }
 
 const WALLETS: Wallet[] = [
-  { name: "MetaMask", isActive: true, type: LOGIN_TYPE.METAMASK, icon: MetaMaskIcon, walletType: NETWORK.EVM },
   {
     name: "Fuel Wallet",
     isActive: true,
-    type: LOGIN_TYPE.FUEL_WALLET,
     icon: FuelWalletIcon,
-    walletType: NETWORK.FUEL,
+    network: NETWORK.FUEL,
   },
 ];
 
@@ -50,7 +45,7 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
   const activeWallets = useMemo(() => WALLETS.filter((w) => w.isActive), []);
 
   const [activeState, setActiveState] = useState(ActiveState.SELECT_WALLET);
-  const [selectedWalletType, setSelectedWalletType] = useState<NETWORK>();
+  const [selectedNetwork, setSelectedNetwork] = useState<NETWORK>();
 
   useEffect(() => {
     if (rest.visible) return;
@@ -58,21 +53,21 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
     setActiveState(ActiveState.SELECT_WALLET);
   }, [rest.visible]);
 
-  const handleWalletClick = (walletType?: NETWORK) => {
-    const connectWithWalletType = selectedWalletType ?? walletType;
-    if (!connectWithWalletType) {
+  const handleWalletClick = (network?: NETWORK) => {
+    const connectWithNetwork = selectedNetwork ?? network;
+    if (!connectWithNetwork) {
       console.error("Wrong wallet type");
       return;
     }
 
-    accountStore.connectWallet(connectWithWalletType).then(onClose);
+    accountStore.connectWallet(connectWithNetwork).then(onClose);
   };
 
-  const handleNextStateClick = (walletType: NETWORK) => {
-    setSelectedWalletType(walletType);
+  const handleNextStateClick = (network: NETWORK) => {
+    setSelectedNetwork(network);
 
     if (settingsStore.isUserAgreedWithTerms) {
-      handleWalletClick(walletType);
+      handleWalletClick(network);
       return;
     }
 
@@ -109,8 +104,8 @@ const ConnectWalletDialog: React.FC<IProps> = observer(({ onClose, ...rest }) =>
     return (
       <>
         <WalletContainer>
-          {activeWallets.map(({ name, icon: WalletIcon, walletType }) => (
-            <WalletItem key={name} onClick={() => handleNextStateClick(walletType)}>
+          {activeWallets.map(({ name, icon: WalletIcon, network }) => (
+            <WalletItem key={name} onClick={() => handleNextStateClick(network)}>
               <WalletIconContainer>
                 <WalletIcon />
               </WalletIconContainer>

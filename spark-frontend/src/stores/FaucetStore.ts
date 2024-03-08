@@ -55,6 +55,9 @@ class FaucetStore {
 
     this.setActionTokenAssetId(assetId);
     this.setLoading(true);
+    if (bcNetwork?.getIsExternalWallet()) {
+      notificationStore.toast("Please, confirm operation in your wallet", { type: "info" });
+    }
 
     try {
       await bcNetwork?.mintToken(assetId);

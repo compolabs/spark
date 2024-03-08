@@ -1,55 +1,35 @@
+import type { EthersStoreUtilState } from "@web3modal/scaffold-utils/ethers";
 import { ethers, JsonRpcSigner, NonceManager } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { Network, PROVIDERS, TOKENS_BY_ASSET_ID } from "./constants";
+import { NETWORK_ERROR, NetworkError } from "../NetworkError";
+
+import { Network, PROVIDERS, TOKENS_BY_ASSET_ID, web3Modal } from "./constants";
+import { EvmAddress } from "./types";
 
 export class WalletManager {
-  public address: Nullable<string> = null;
+  public address: Nullable<EvmAddress> = null;
   public signer: Nullable<ethers.JsonRpcSigner> = null;
   public privateKey: Nullable<string> = null;
 
+  public isRemoteProvider = false;
+
   constructor() {
     makeAutoObservable(this);
+
+    web3Modal.subscribeProvider(this.onProviderChange);
   }
 
   connect = async (targetNetwork: Network): Promise<void> => {
-    const ethereum = window.ethereum;
+    const walletProvider = web3Modal.getWalletProvider();
 
-    if (!ethereum) {
-      throw new Error("Ethereum wallet not found");
+    if (!walletProvider) {
+      throw new NetworkError(NETWORK_ERROR.INVALID_WALLET_PROVIDER);
     }
 
-    this.signer = await new ethers.BrowserProvider(ethereum).getSigner();
-    const network = await this.signer.provider.getNetwork();
-    const targetChainId = parseInt(targetNetwork.chainId, 10).toString(16);
-    const currentChainId = parseInt(network.chainId.toString(), 10).toString(16);
-
-    this.address = await this.signer.getAddress();
-
-    if (currentChainId !== targetChainId) {
-      await ethereum.request({
-        method: "wallet_addEthereumChain",
-        params: [
-          {
-            chainId: `0x${targetChainId}`,
-            chainName: targetNetwork.name,
-            rpcUrls: [targetNetwork.rpc],
-            nativeCurrency: {
-              name: "ETH",
-              symbol: "ETH",
-              decimals: 18,
-            },
-          },
-        ],
-      });
-    } else {
-      await ethereum.request({
-        method: "wallet_switchEthereumChain",
-        params: [{ chainId: `0x${targetChainId}` }],
-      });
-    }
-    const address = await this.signer.getAddress();
+    this.signer = await new ethers.BrowserProvider(walletProvider).getSigner();
+    const address = (await this.signer.getAddress()) as EvmAddress;
 
     this.address = address;
   };
@@ -58,40 +38,67 @@ export class WalletManager {
     const wallet = new ethers.Wallet(privateKey, PROVIDERS[network.chainId]);
     const address = await wallet.getAddress();
     this.signer = new NonceManager(wallet) as any as JsonRpcSigner;
-    this.address = address;
+    this.address = address as EvmAddress;
     this.privateKey = privateKey;
   };
 
-  addAsset = async (assetId: string) => {
+  addAsset = async (assetId: EvmAddress) => {
     // Не добавляем, если авторизированы по приватному ключу
     if (this.privateKey?.length) {
       return;
     }
 
     if (!this.address) {
-      throw new Error("Not connected to a wallet.");
+      throw new NetworkError(NETWORK_ERROR.NOT_CONNECTED);
     }
 
     const token = TOKENS_BY_ASSET_ID[assetId];
 
     if (!token) {
-      throw new Error("Invalid token.");
+      throw new NetworkError(NETWORK_ERROR.INVALID_TOKEN);
     }
 
-    await window.ethereum?.request({
+    const walletProvider = web3Modal.getWalletProvider();
+
+    await walletProvider?.request({
       method: "wallet_watchAsset",
       params: {
         type: "ERC20",
         options: {
           address: assetId,
+          symbol: token.symbol,
+          decimals: token.decimals,
+          image: token.logo,
         },
       },
     });
   };
 
-  disconnect = () => {
+  isWalletConnect = () => {
+    const walletProvider = web3Modal.getWalletProvider();
+
+    return walletProvider;
+  };
+
+  disconnect = async () => {
+    await web3Modal.disconnect();
+
     this.address = null;
     this.signer = null;
     this.privateKey = null;
+  };
+
+  onProviderChange = (provider: EthersStoreUtilState) => {
+    if (provider.address && provider.address !== this.address) {
+      this.address = provider.address;
+    }
+
+    // Way to handle remote wallet
+    if (provider.providerType === "walletConnect") {
+      this.isRemoteProvider = true;
+      return;
+    }
+
+    this.isRemoteProvider = false;
   };
 }
