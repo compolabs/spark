@@ -44,7 +44,7 @@ export class EVMNetwork extends BlockchainNetwork {
     return this.walletManager.isRemoteProvider;
   };
 
-  getBalance = async (accountAddress: string, assetAddress: EvmAddress): Promise<string> => {
+  getBalance = async (accountAddress: EvmAddress, assetAddress: EvmAddress): Promise<string> => {
     if (assetAddress === this.getTokenBySymbol("ETH").assetId) {
       const balance = await this.provider.getBalance(accountAddress);
       return balance.toString();
@@ -63,7 +63,7 @@ export class EVMNetwork extends BlockchainNetwork {
     return TOKENS_BY_SYMBOL[symbol];
   };
 
-  getTokenByAssetId = (assetId: string): Token => {
+  getTokenByAssetId = (assetId: EvmAddress): Token => {
     return TOKENS_BY_ASSET_ID[assetId.toLowerCase()];
   };
 
@@ -79,7 +79,7 @@ export class EVMNetwork extends BlockchainNetwork {
     this.walletManager.disconnect();
   };
 
-  addAssetToWallet = async (assetId: string): Promise<void> => {
+  addAssetToWallet = async (assetId: EvmAddress): Promise<void> => {
     await this.walletManager.addAsset(assetId);
   };
 

@@ -1,3 +1,4 @@
+import type { EthersStoreUtilState } from "@web3modal/scaffold-utils/ethers";
 import { ethers, JsonRpcSigner, NonceManager } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
@@ -5,9 +6,10 @@ import { Nullable } from "tsdef";
 import { NETWORK_ERROR, NetworkError } from "../NetworkError";
 
 import { Network, PROVIDERS, TOKENS_BY_ASSET_ID, web3Modal } from "./constants";
+import { EvmAddress } from "./types";
 
 export class WalletManager {
-  public address: Nullable<string> = null;
+  public address: Nullable<EvmAddress> = null;
   public signer: Nullable<ethers.JsonRpcSigner> = null;
   public privateKey: Nullable<string> = null;
 
@@ -16,15 +18,7 @@ export class WalletManager {
   constructor() {
     makeAutoObservable(this);
 
-    web3Modal.subscribeProvider((newProvider) => {
-      // Way to handle remote wallet
-      if (newProvider.providerType === "walletConnect") {
-        this.isRemoteProvider = true;
-        return;
-      }
-
-      this.isRemoteProvider = false;
-    });
+    web3Modal.subscribeProvider(this.onProviderChange);
   }
 
   connect = async (targetNetwork: Network): Promise<void> => {
@@ -35,7 +29,7 @@ export class WalletManager {
     }
 
     this.signer = await new ethers.BrowserProvider(walletProvider).getSigner();
-    const address = await this.signer.getAddress();
+    const address = (await this.signer.getAddress()) as EvmAddress;
 
     this.address = address;
   };
@@ -44,11 +38,11 @@ export class WalletManager {
     const wallet = new ethers.Wallet(privateKey, PROVIDERS[network.chainId]);
     const address = await wallet.getAddress();
     this.signer = new NonceManager(wallet) as any as JsonRpcSigner;
-    this.address = address;
+    this.address = address as EvmAddress;
     this.privateKey = privateKey;
   };
 
-  addAsset = async (assetId: string) => {
+  addAsset = async (assetId: EvmAddress) => {
     // Не добавляем, если авторизированы по приватному ключу
     if (this.privateKey?.length) {
       return;
@@ -92,5 +86,19 @@ export class WalletManager {
     this.address = null;
     this.signer = null;
     this.privateKey = null;
+  };
+
+  onProviderChange = (provider: EthersStoreUtilState) => {
+    if (provider.address && provider.address !== this.address) {
+      this.address = provider.address;
+    }
+
+    // Way to handle remote wallet
+    if (provider.providerType === "walletConnect") {
+      this.isRemoteProvider = true;
+      return;
+    }
+
+    this.isRemoteProvider = false;
   };
 }
