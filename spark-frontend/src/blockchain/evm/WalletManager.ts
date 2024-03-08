@@ -2,6 +2,8 @@ import { ethers, JsonRpcSigner, NonceManager } from "ethers";
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
+import { NETWORK_ERROR, NetworkError } from "../NetworkError";
+
 import { Network, PROVIDERS, TOKENS_BY_ASSET_ID, web3Modal } from "./constants";
 
 export class WalletManager {
@@ -29,7 +31,7 @@ export class WalletManager {
     const walletProvider = web3Modal.getWalletProvider();
 
     if (!walletProvider) {
-      throw new Error("Wallet not connected");
+      throw new NetworkError(NETWORK_ERROR.INVALID_WALLET_PROVIDER);
     }
 
     this.signer = await new ethers.BrowserProvider(walletProvider).getSigner();
@@ -53,13 +55,13 @@ export class WalletManager {
     }
 
     if (!this.address) {
-      throw new Error("Not connected to a wallet.");
+      throw new NetworkError(NETWORK_ERROR.NOT_CONNECTED);
     }
 
     const token = TOKENS_BY_ASSET_ID[assetId];
 
     if (!token) {
-      throw new Error("Invalid token.");
+      throw new NetworkError(NETWORK_ERROR.INVALID_TOKEN);
     }
 
     const walletProvider = web3Modal.getWalletProvider();
