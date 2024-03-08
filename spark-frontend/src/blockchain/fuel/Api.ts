@@ -1,39 +1,45 @@
 import { CoinQuantityLike, hashMessage, WalletLocked, WalletUnlocked } from "fuels";
 
 import { DEFAULT_DECIMALS } from "@src/constants";
+import { Token } from "@src/entity";
 import { FAUCET_AMOUNTS } from "@src/stores/FaucetStore";
 import BN from "@src/utils/BN";
 
 import { AssetIdInput, I64Input } from "./types/OrderbookAbi";
 import { IdentityInput } from "./types/TokenAbi";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "./constants";
+import { Fetch } from "./Fetch";
 import { OrderbookAbi__factory, TokenAbi__factory } from "./types";
 
 export class Api {
+  public fetch = new Fetch();
+
   createOrder = async (
-    assetAddress: string,
+    baseToken: Token,
+    quoteToken: Token,
     size: string,
     price: string,
     wallet: WalletLocked | WalletUnlocked,
   ): Promise<string> => {
     const orderbookFactory = OrderbookAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
 
-    const assetId: AssetIdInput = { value: assetAddress };
+    console.log(baseToken, quoteToken, size, price);
+
+    const assetId: AssetIdInput = { value: baseToken.assetId };
     const isNegative = size.includes("-");
     const absSize = size.replace("-", "");
     const baseSize: I64Input = { value: absSize, negative: isNegative };
 
-    const amount = new BN(absSize).times(price).div(new BN(10).pow(DEFAULT_DECIMALS + 8 - 6));
-    // let quote_size = base_size.abs() as u128 * base_price as u128
-    // / 10u128.pow(
-    //     self.price_decimals as u32 + market.asset_decimals
-    //         - self.quote_token_decimals as u32,
-    // );
+    const amountToSend = new BN(absSize)
+      .times(price)
+      .dividedToIntegerBy(new BN(10).pow(DEFAULT_DECIMALS + baseToken.decimals - quoteToken.decimals));
 
     const forward: CoinQuantityLike = {
-      amount: amount.toString(),
-      assetId: "0x0450e4d385cbd2914f74505f18f01587cc4f4ad1fdef4b80cbde2a8155a86d72", // test
+      amount: amountToSend.toString(),
+      assetId: isNegative ? baseToken.assetId : quoteToken.assetId,
     };
+
+    console.log(assetId, baseSize, price, forward);
 
     const tx = await orderbookFactory.functions
       .open_order(assetId, baseSize, price)

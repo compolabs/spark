@@ -2,10 +2,11 @@ import { Provider } from "fuels";
 import { makeObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { Token } from "@src/entity";
+import { SpotMarketOrder, SpotMarketTrade, Token } from "@src/entity";
+import BN from "@src/utils/BN";
 
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
-import { NETWORK } from "../types";
+import { FetchOrdersParams, FetchTradesParams, MarketCreateEvent, NETWORK, SpotMarketVolume } from "../types";
 
 import { Api } from "./Api";
 import { NETWORKS, TOKENS_BY_ASSET_ID, TOKENS_BY_SYMBOL, TOKENS_LIST } from "./constants";
@@ -78,24 +79,14 @@ export class FuelNetwork extends BlockchainNetwork {
   };
 
   createOrder = async (assetAddress: string, size: string, price: string): Promise<string> => {
-    // 0x42d0d50ee2a447bb63fe4e43eb06d38d742377ba 1000000 66825955050000
     if (!this.walletManager.wallet) {
       throw new Error("Wallet does not exist");
     }
 
-    return this.api.createOrder(assetAddress, size, price, this.walletManager.wallet);
+    const baseToken = this.getTokenByAssetId(assetAddress);
+    const quoteToken = this.getTokenBySymbol("USDC");
 
-    // Uncaught RequireRevertError: The script reverted with reason RequireFailed
-    // at revertErrorFactory (revert-error.ts:173:1)
-    // at RevertErrorCodes.getError (revert-error-codes.ts:41:1)
-    // at RevertErrorCodes.assert (revert-error-codes.ts:22:1)
-    // at new ScriptResultDecoderError (errors.ts:34:1)
-    // at decodeCallResult (script-request.ts:119:1)
-    // at decodeContractCallScriptResult (contract-call-script.ts:174:1)
-    // at FunctionInvocationResult.getDecodedValue (invocation-results.ts:89:1)
-    // at new InvocationResult (invocation-results.ts:59:1)
-    // at new FunctionInvocationResult (invocation-results.ts:151:1)
-    // at FunctionInvocationResult.build (invocation-results.ts:175:1)
+    return this.api.createOrder(baseToken, quoteToken, size, price, this.walletManager.wallet);
   };
 
   cancelOrder = async (orderId: string): Promise<void> => {
@@ -117,6 +108,36 @@ export class FuelNetwork extends BlockchainNetwork {
   approve = async (assetAddress: string, amount: string): Promise<void> => {};
 
   allowance = async (assetAddress: string): Promise<string> => {
-    return "";
+    return "9999999999999999";
+  };
+
+  fetchMarkets = async (limit: number): Promise<MarketCreateEvent[]> => {
+    if (!this.walletManager.wallet) {
+      throw new Error("Provider does not exist");
+    }
+
+    const tokens = this.getTokenList();
+
+    return this.api.fetch.fetchMarkets(limit, tokens, this.walletManager.wallet);
+  };
+
+  fetchMarketPrice = async (baseTokenAddress: string): Promise<BN> => {
+    return this.api.fetch.fetchMarketPrice(baseTokenAddress);
+  };
+
+  fetchOrders = async (params: FetchOrdersParams): Promise<SpotMarketOrder[]> => {
+    if (!this.walletManager.wallet) {
+      throw new Error("Provider does not exist");
+    }
+
+    return this.api.fetch.fetchOrders(params, this.walletManager.wallet);
+  };
+
+  fetchTrades = async (params: FetchTradesParams): Promise<SpotMarketTrade[]> => {
+    return this.api.fetch.fetchTrades(params);
+  };
+
+  fetchVolume = async (): Promise<SpotMarketVolume> => {
+    return this.api.fetch.fetchVolume();
   };
 }

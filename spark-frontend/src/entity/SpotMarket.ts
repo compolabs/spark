@@ -1,7 +1,7 @@
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable } from "mobx";
 
 import { BlockchainNetworkFactory } from "@src/blockchain/BlockchainNetworkFactory";
-import { fetchMarketPrice } from "@src/services/SpotMarketService";
+import { DEFAULT_DECIMALS } from "@src/constants";
 import BN from "@src/utils/BN";
 
 import { Token } from "./Token";
@@ -9,7 +9,9 @@ import { Token } from "./Token";
 export class SpotMarket {
   readonly baseToken: Token;
   readonly quoteToken: Token;
-  price: BN = BN.ZERO; //todo брать начальное значение из локалстораджа
+
+  price: BN = BN.ZERO;
+  setPrice = (price: BN) => (this.price = price);
 
   constructor(baseToken: string, quoteToken: string) {
     const bcNetwork = BlockchainNetworkFactory.getInstance().currentInstance!;
@@ -24,21 +26,6 @@ export class SpotMarket {
   }
 
   get priceUnits(): BN {
-    return BN.formatUnits(this.price, 9);
+    return BN.formatUnits(this.price, DEFAULT_DECIMALS);
   }
-
-  get change24(): BN {
-    return BN.ZERO;
-  }
-
-  fetchPrice = async () => {
-    try {
-      const price = await fetchMarketPrice(this.baseToken.assetId);
-      runInAction(() => {
-        this.price = price;
-      });
-    } catch (error) {
-      console.error("Ошибка при получении цены:", error);
-    }
-  };
 }
