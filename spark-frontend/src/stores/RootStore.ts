@@ -29,11 +29,11 @@ export default class RootStore {
   oracleStore: OracleStore;
 
   private constructor(initState?: ISerializedRootStore) {
+    this.notificationStore = new NotificationStore(this);
     this.blockchainStore = new BlockchainStore(this);
     this.accountStore = new AccountStore(this, initState?.accountStore);
     this.faucetStore = new FaucetStore(this);
     this.settingsStore = new SettingsStore(this, initState?.settingStore);
-    this.notificationStore = new NotificationStore(this);
     this.tradeStore = new TradeStore(this, initState?.tradeStore);
     this.balanceStore = new BalanceStore(this);
     this.oracleStore = new OracleStore(this);

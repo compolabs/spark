@@ -1,10 +1,9 @@
-import { BigNumber as EthersBigNumber } from "@ethersproject/bignumber";
 import BigNumber from "bignumber.js";
 import { Undefinable } from "tsdef";
 
 BigNumber.config({ EXPONENTIAL_AT: [-100, 100] });
 
-type TValue = BN | EthersBigNumber | BigNumber.Value;
+type TValue = BN | BigNumber.Value;
 
 const bigNumberify = (n: any): string | number => {
   if (n && n.toString) {
@@ -43,7 +42,7 @@ class BN extends BigNumber {
     return new BN(super.min(...n.map(bigNumberify)));
   }
 
-  static toBN(p: Promise<EthersBigNumber | number | string>): Promise<BN> {
+  static toBN(p: Promise<number | string>): Promise<BN> {
     return p.then((v) => new BN(v));
   }
 

@@ -6,6 +6,7 @@ import { SpotMarketOrder, SpotMarketTrade, Token } from "@src/entity";
 import BN from "@src/utils/BN";
 
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
+import { NETWORK_ERROR, NetworkError } from "../NetworkError";
 import { FetchOrdersParams, FetchTradesParams, MarketCreateEvent, NETWORK, SpotMarketVolume } from "../types";
 
 import { ERC20_ABI } from "./abi";
@@ -40,7 +41,11 @@ export class EVMNetwork extends BlockchainNetwork {
     return this.walletManager.privateKey;
   };
 
-  getBalance = async (accountAddress: string, assetAddress: EvmAddress): Promise<string> => {
+  getIsExternalWallet = () => {
+    return this.walletManager.isRemoteProvider;
+  };
+
+  getBalance = async (accountAddress: EvmAddress, assetAddress: EvmAddress): Promise<string> => {
     if (assetAddress === this.getTokenBySymbol("ETH").assetId) {
       const balance = await this.provider.getBalance(accountAddress);
       return balance.toString();
@@ -59,7 +64,7 @@ export class EVMNetwork extends BlockchainNetwork {
     return TOKENS_BY_SYMBOL[symbol];
   };
 
-  getTokenByAssetId = (assetId: string): Token => {
+  getTokenByAssetId = (assetId: EvmAddress): Token => {
     return TOKENS_BY_ASSET_ID[assetId.toLowerCase()];
   };
 
@@ -75,13 +80,13 @@ export class EVMNetwork extends BlockchainNetwork {
     this.walletManager.disconnect();
   };
 
-  addAssetToWallet = async (assetId: string): Promise<void> => {
+  addAssetToWallet = async (assetId: EvmAddress): Promise<void> => {
     await this.walletManager.addAsset(assetId);
   };
 
   createOrder = async (assetAddress: EvmAddress, size: string, price: string): Promise<string> => {
     if (!this.walletManager.signer) {
-      throw new Error("Signer does not exist.");
+      throw new NetworkError(NETWORK_ERROR.UNKNOWN_SIGNER);
     }
 
     return this.api.createOrder(assetAddress, size, price, this.walletManager.signer);
@@ -89,7 +94,7 @@ export class EVMNetwork extends BlockchainNetwork {
 
   cancelOrder = async (orderId: string): Promise<void> => {
     if (!this.walletManager.signer) {
-      throw new Error("Signer does not exist.");
+      throw new NetworkError(NETWORK_ERROR.UNKNOWN_SIGNER);
     }
 
     await this.api.cancelOrder(orderId, this.walletManager.signer);
@@ -97,7 +102,7 @@ export class EVMNetwork extends BlockchainNetwork {
 
   mintToken = async (assetAddress: EvmAddress): Promise<void> => {
     if (!this.walletManager.signer) {
-      throw new Error("Signer does not exist.");
+      throw new NetworkError(NETWORK_ERROR.UNKNOWN_SIGNER);
     }
 
     await this.api.mintToken(assetAddress, this.walletManager.signer);
@@ -105,7 +110,7 @@ export class EVMNetwork extends BlockchainNetwork {
 
   approve = async (assetAddress: EvmAddress, amount: string): Promise<void> => {
     if (!this.walletManager.signer) {
-      throw new Error("Signer does not exist.");
+      throw new NetworkError(NETWORK_ERROR.UNKNOWN_SIGNER);
     }
 
     await this.api.approve(assetAddress, amount, this.walletManager.signer);
@@ -113,7 +118,7 @@ export class EVMNetwork extends BlockchainNetwork {
 
   allowance = async (assetAddress: EvmAddress): Promise<string> => {
     if (!this.walletManager.signer) {
-      throw new Error("Signer does not exist.");
+      throw new NetworkError(NETWORK_ERROR.UNKNOWN_SIGNER);
     }
 
     return this.api.allowance(assetAddress, this.walletManager.signer);

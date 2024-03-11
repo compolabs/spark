@@ -1,9 +1,11 @@
 import { NotificationStore } from "@src/stores";
 
 export const handleEvmErrors = (notificationStore: NotificationStore, error: any, defaultMessage?: string) => {
-  if (error.message.includes("user rejected action")) return;
+  const message = error?.message.toLowerCase();
 
-  if (error.message.includes("insufficient funds for intrinsic transaction cost")) {
+  if (message.includes("user rejected action") || message.includes("user rejected the transaction")) return;
+
+  if (message.includes("insufficient funds for intrinsic transaction cost")) {
     notificationStore.toast("Not enough funds to pay gas", { type: "error" });
     return;
   }

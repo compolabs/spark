@@ -284,6 +284,9 @@ class CreateOrderSpotVM {
     if (!market) return;
 
     this.setLoading(true);
+    if (bcNetwork?.getIsExternalWallet()) {
+      notificationStore.toast("Please, confirm operation in your wallet", { type: "info" });
+    }
 
     try {
       const baseToken = market.baseToken;

@@ -6,6 +6,7 @@ import { Nullable } from "tsdef";
 import { SpotMarketOrder, SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
 import { handleEvmErrors } from "@src/utils/handleEvmErrors";
+import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
 
 const ctx = React.createContext<BottomTablesInterfaceSpotVM | null>(null);
@@ -18,6 +19,8 @@ export const BottomTablesInterfaceSpotVMProvider: React.FC<PropsWithChildren> = 
 
 export const useBottomTablesInterfaceSpotVM = () => useVM(ctx);
 
+const ORDERS_UPDATE_INTERVAL = 10 * 1000; // 10 sec
+
 class BottomTablesInterfaceSpotVM {
   myOrders: SpotMarketOrder[] = [];
   myOrdersHistory: SpotMarketTrade[] = [];
@@ -28,22 +31,31 @@ class BottomTablesInterfaceSpotVM {
 
   private readonly rootStore: RootStore;
 
+  private ordersUpdater: IntervalUpdater;
+
   constructor(rootStore: RootStore) {
     makeAutoObservable(this);
     this.rootStore = rootStore;
+    const { tradeStore, accountStore } = this.rootStore;
+
     when(
-      () => !!this.rootStore.tradeStore.market,
+      () => !!tradeStore.market,
       () => this.sync().then(() => this.setInitialized(true)),
     );
-    setInterval(this.sync, 10000);
-    reaction(() => this.rootStore.accountStore.address, this.sync);
+
+    this.ordersUpdater = new IntervalUpdater(this.sync, ORDERS_UPDATE_INTERVAL);
+
+    this.ordersUpdater.run(true);
 
     reaction(
-      () => this.rootStore.accountStore.isConnected,
-      (isConnected) => {
+      () => [accountStore.isConnected, accountStore.address],
+      ([isConnected]) => {
         if (!isConnected) {
           this.setMySpotOrders([]);
+          return;
         }
+
+        this.ordersUpdater.update();
       },
     );
   }
@@ -56,6 +68,9 @@ class BottomTablesInterfaceSpotVM {
 
     this.isOrderCancelling = true;
     this.cancelingOrderId = orderId;
+    if (bcNetwork?.getIsExternalWallet()) {
+      notificationStore.toast("Please, confirm operation in your wallet", { type: "info" });
+    }
 
     try {
       await bcNetwork?.cancelOrder(orderId);

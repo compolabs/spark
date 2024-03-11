@@ -11,6 +11,7 @@ export abstract class BlockchainNetwork {
   abstract getBalance(accountAddress: string, assetAddress: string): Promise<string>;
   abstract getAddress(): Nullable<string>;
   abstract getPrivateKey(): Nullable<string>;
+  abstract getIsExternalWallet(): boolean;
 
   // Tokens
   abstract getTokenList(): Token[];

@@ -22,8 +22,8 @@ export class BalanceStore {
     const { accountStore } = rootStore;
 
     reaction(
-      () => accountStore.isConnected,
-      (isConnected) => {
+      () => [accountStore.isConnected, accountStore.address],
+      ([isConnected]) => {
         if (!isConnected) {
           this.balances = new Map();
           return;

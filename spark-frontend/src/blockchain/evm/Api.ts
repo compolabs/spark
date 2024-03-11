@@ -36,7 +36,7 @@ export class Api {
     const amount = BN.parseUnits(FAUCET_AMOUNTS[token.symbol].toString(), token.decimals);
 
     const address = await signer.getAddress();
-    const tx = await contract.mint(address, amount);
+    const tx = await contract.mint(address, amount.toString());
     await tx.wait();
   };
 

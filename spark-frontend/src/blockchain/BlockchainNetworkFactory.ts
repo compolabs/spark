@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { Nullable } from "tsdef";
 
+import { NETWORK_ERROR, NetworkError } from "./NetworkError";
 import { NETWORK } from "./types";
 import { BlockchainNetwork, EVMNetwork, FuelNetwork } from ".";
 
@@ -30,7 +31,7 @@ export class BlockchainNetworkFactory {
           this.instances.set(NETWORK.FUEL, new FuelNetwork());
           break;
         default:
-          throw new Error("Unknown Blockchain Network type.");
+          throw new NetworkError(NETWORK_ERROR.UNKNOWN_NETWORK_TYPE);
       }
     }
     return this.instances.get(type)!;

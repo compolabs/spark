@@ -9,6 +9,8 @@ import Tab from "@components/Tab";
 import { TEXT_TYPES } from "@components/Text";
 import { ReactComponent as Logo } from "@src/assets/icons/logo.svg";
 import { ReactComponent as Menu } from "@src/assets/icons/menu.svg";
+import { web3Modal } from "@src/blockchain/evm/constants";
+import { NETWORK } from "@src/blockchain/types";
 import { MENU_ITEMS } from "@src/constants";
 import useFlag from "@src/hooks/useFlag";
 import { useMedia } from "@src/hooks/useMedia";
@@ -17,22 +19,26 @@ import { media } from "@src/themes/breakpoints";
 import isRoutesEquals from "@src/utils/isRoutesEquals";
 import { useStores } from "@stores";
 
-import { AccountInfoSheet } from "../Modal";
+import { AccountInfoSheet, NetworkSelectSheet } from "../Modal";
 import { SmartFlex } from "../SmartFlex";
 
 import ConnectedWalletButton from "./ConnectedWalletButton";
 import MobileMenu from "./MobileMenu";
+import NetworkSelect from "./NetworkSelect";
 
 interface IProps {}
 
 const Header: React.FC<IProps> = observer(() => {
-  const { accountStore } = useStores();
+  const { accountStore, blockchainStore } = useStores();
   const location = useLocation();
   const media = useMedia();
+
+  const bcNetwork = blockchainStore.currentInstance;
 
   const [isMobileMenuOpen, openMobileMenu, closeMobileMenu] = useFlag();
   const [isConnectDialogVisible, openConnectDialog, closeConnectDialog] = useFlag();
   const [isAccountInfoSheetOpen, openAccountInfo, closeAccountInfo] = useFlag();
+  const [isNetworkSelectOpen, openNetworkSelect, closeNetworkSelect] = useFlag();
 
   const toggleMenu = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -46,9 +52,11 @@ const Header: React.FC<IProps> = observer(() => {
 
   const renderWallet = () => {
     if (!accountStore.address) {
+      const openActions = bcNetwork?.NETWORK_TYPE === NETWORK.EVM ? () => web3Modal.open() : openConnectDialog;
+
       return (
         <WalletContainer>
-          <Button fitContent green onClick={openConnectDialog}>
+          <Button fitContent green onClick={openActions}>
             Connect wallet
           </Button>
         </WalletContainer>
@@ -128,7 +136,10 @@ const Header: React.FC<IProps> = observer(() => {
             })}
           </SmartFlex>
         </SmartFlex>
-        <SmartFlex center="y">{renderWallet()}</SmartFlex>
+        <SmartFlex center="y" gap="16px">
+          {renderWallet()}
+          {!accountStore.address && <NetworkSelect isSmall />}
+        </SmartFlex>
       </>
     );
   };
@@ -141,10 +152,12 @@ const Header: React.FC<IProps> = observer(() => {
         isOpen={isMobileMenuOpen}
         onAccountClick={openAccountInfo}
         onClose={closeMobileMenu}
+        onNetworkSelect={openNetworkSelect}
         onWalletConnect={openConnectDialog}
       />
       <ConnectWalletDialog visible={isConnectDialogVisible} onClose={closeConnectDialog} />
       <AccountInfoSheet isOpen={isAccountInfoSheetOpen} onClose={closeAccountInfo} />
+      <NetworkSelectSheet isOpen={isNetworkSelectOpen} onClose={closeNetworkSelect} />
     </Root>
   );
 });
