@@ -23,8 +23,6 @@ export class Api {
   ): Promise<string> => {
     const orderbookFactory = OrderbookAbi__factory.connect(CONTRACT_ADDRESSES.spotMarket, wallet);
 
-    console.log(baseToken, quoteToken, size, price);
-
     const assetId: AssetIdInput = { value: baseToken.assetId };
     const isNegative = size.includes("-");
     const absSize = size.replace("-", "");
@@ -38,8 +36,6 @@ export class Api {
       amount: amountToSend.toString(),
       assetId: isNegative ? baseToken.assetId : quoteToken.assetId,
     };
-
-    console.log(assetId, baseSize, price, forward);
 
     const tx = await orderbookFactory.functions
       .open_order(assetId, baseSize, price)

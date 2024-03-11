@@ -25,11 +25,7 @@ export class Fetch {
         .simulate(),
     );
 
-    console.log("32123123", getMarketByIdPromises);
-
     const data = await Promise.all(getMarketByIdPromises);
-
-    console.log(data);
 
     const markets = data.map((market) => ({
       id: market.value.asset_id.value,
@@ -54,10 +50,6 @@ export class Fetch {
     // TODO: Should be fixed. Can't get all trades, only for trader.
     if (!trader) return [];
 
-    console.log("fetchOrders - 1");
-
-    console.log(trader);
-
     const ordersId = await orderbookFactory.functions
       .orders_by_trader({
         value: new Address(trader as Bech32Address).toB256(),
@@ -65,13 +57,10 @@ export class Fetch {
       .txParams({ gasPrice: 1 })
       .simulate();
 
-    console.log("fetchOrders - 2");
-
     const ordersPromises = ordersId.value.map((order) =>
       orderbookFactory.functions.order_by_id(order).txParams({ gasPrice: 1 }).call(),
     );
 
-    console.log("fetchOrders - 3");
     const data = await Promise.all(ordersPromises);
 
     const dataFiltered = data.filter(({ value }) => {
@@ -80,8 +69,6 @@ export class Fetch {
 
       return true;
     });
-
-    console.log("fetchOrders - 4");
 
     const orders = dataFiltered.map(
       ({ value, transactionResult }) =>
@@ -94,8 +81,6 @@ export class Fetch {
           blockTimestamp: transactionResult.date!.getDate(),
         }),
     );
-
-    console.log("fetchOrders - 5");
 
     return orders;
   };

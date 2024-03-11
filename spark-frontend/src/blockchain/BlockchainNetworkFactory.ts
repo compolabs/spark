@@ -50,5 +50,3 @@ export class BlockchainNetworkFactory {
     this.currentInstance = instance;
   }
 }
-
-console.log(BlockchainNetworkFactory);
