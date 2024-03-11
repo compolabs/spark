@@ -33,9 +33,12 @@ export class Api {
       .dividedToIntegerBy(new BN(10).pow(DEFAULT_DECIMALS + baseToken.decimals - quoteToken.decimals));
 
     const forward: CoinQuantityLike = {
-      amount: amountToSend.toString(),
+      amount: isNegative ? absSize : amountToSend.toString(),
       assetId: isNegative ? baseToken.assetId : quoteToken.assetId,
     };
+
+    console.log(forward);
+    console.log(assetId, baseSize, price);
 
     const tx = await orderbookFactory.functions
       .open_order(assetId, baseSize, price)

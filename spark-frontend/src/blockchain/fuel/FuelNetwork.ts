@@ -1,4 +1,4 @@
-import { Provider } from "fuels";
+import { Provider, Wallet } from "fuels";
 import { makeObservable } from "mobx";
 import { Nullable } from "tsdef";
 
@@ -16,7 +16,7 @@ import { WalletManager } from "./WalletManager";
 export class FuelNetwork extends BlockchainNetwork {
   NETWORK_TYPE = NETWORK.FUEL;
 
-  private provider: Nullable<Provider> = null;
+  private providerPromise: Promise<Provider>;
 
   private walletManager = new WalletManager();
   private api = new Api();
@@ -28,12 +28,8 @@ export class FuelNetwork extends BlockchainNetwork {
 
     makeObservable(this.walletManager);
 
-    this.initProvider();
+    this.providerPromise = Provider.create(NETWORKS[0].url);
   }
-
-  initProvider = async () => {
-    this.provider = await Provider.create(NETWORKS[0].url);
-  };
 
   getAddress = (): Nullable<string> => {
     return this.walletManager.address;
@@ -66,11 +62,7 @@ export class FuelNetwork extends BlockchainNetwork {
   };
 
   connectWalletByPrivateKey = async (privateKey: string): Promise<void> => {
-    if (!this.provider) {
-      throw new NetworkError(NETWORK_ERROR.INVALID_WALLET_PROVIDER);
-    }
-
-    await this.walletManager.connectByPrivateKey(privateKey, this.provider);
+    await this.walletManager.connectByPrivateKey(privateKey, await this.providerPromise);
   };
 
   disconnectWallet = (): void => {
@@ -115,13 +107,10 @@ export class FuelNetwork extends BlockchainNetwork {
   };
 
   fetchMarkets = async (limit: number): Promise<MarketCreateEvent[]> => {
-    if (!this.walletManager.wallet) {
-      throw new NetworkError(NETWORK_ERROR.UNKNOWN_WALLET);
-    }
+    const tokens = [this.getTokenBySymbol("BTC")];
+    const providerWallet = await this.getProviderWallet();
 
-    const tokens = this.getTokenList();
-
-    return this.api.fetch.fetchMarkets(limit, tokens, this.walletManager.wallet);
+    return this.api.fetch.fetchMarkets(limit, tokens, providerWallet);
   };
 
   fetchMarketPrice = async (baseTokenAddress: string): Promise<BN> => {
@@ -129,11 +118,9 @@ export class FuelNetwork extends BlockchainNetwork {
   };
 
   fetchOrders = async (params: FetchOrdersParams): Promise<SpotMarketOrder[]> => {
-    if (!this.walletManager.wallet) {
-      throw new NetworkError(NETWORK_ERROR.UNKNOWN_WALLET);
-    }
+    const providerWallet = await this.getProviderWallet();
 
-    return this.api.fetch.fetchOrders(params, this.walletManager.wallet);
+    return this.api.fetch.fetchOrders(params, providerWallet);
   };
 
   fetchTrades = async (params: FetchTradesParams): Promise<SpotMarketTrade[]> => {
@@ -142,5 +129,12 @@ export class FuelNetwork extends BlockchainNetwork {
 
   fetchVolume = async (): Promise<SpotMarketVolume> => {
     return this.api.fetch.fetchVolume();
+  };
+
+  private getProviderWallet = async () => {
+    return Wallet.fromAddress(
+      "0xdd8ce029ad3f4f78c0891513dcfa72914d9c7b8fe44faf2e1a9a9b33b5ee5b94",
+      await this.providerPromise,
+    );
   };
 }

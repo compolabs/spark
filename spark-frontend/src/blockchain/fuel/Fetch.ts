@@ -21,7 +21,6 @@ export class Fetch {
         .get_market_by_id({
           value: t.assetId,
         })
-        .txParams({ gasPrice: 1 })
         .simulate(),
     );
 
@@ -54,12 +53,9 @@ export class Fetch {
       .orders_by_trader({
         value: new Address(trader as Bech32Address).toB256(),
       })
-      .txParams({ gasPrice: 1 })
       .simulate();
 
-    const ordersPromises = ordersId.value.map((order) =>
-      orderbookFactory.functions.order_by_id(order).txParams({ gasPrice: 1 }).call(),
-    );
+    const ordersPromises = ordersId.value.map((order) => orderbookFactory.functions.order_by_id(order).simulate());
 
     const data = await Promise.all(ordersPromises);
 
@@ -70,17 +66,19 @@ export class Fetch {
       return true;
     });
 
-    const orders = dataFiltered.map(
-      ({ value, transactionResult }) =>
-        new SpotMarketOrder({
-          id: value!.id,
-          baseToken: value!.base_token.value,
-          trader: value!.trader.value,
-          baseSize: value!.base_size.value.toNumber(),
-          orderPrice: value!.base_price.toNumber(),
-          blockTimestamp: transactionResult.date!.getDate(),
-        }),
-    );
+    const orders = dataFiltered.map(({ value }) => {
+      const baseSizeBn = new BN(value!.base_size.value.toString());
+      const baseSize = value!.base_size.negative ? baseSizeBn.times(-1) : baseSizeBn;
+      return new SpotMarketOrder({
+        id: value!.id,
+        baseToken: value!.base_token.value,
+        trader: value!.trader.value,
+        baseSize: baseSize.toNumber(),
+        orderPrice: value!.base_price.toNumber(),
+        // TODO: Fetch date somehow
+        blockTimestamp: Date.now(),
+      });
+    });
 
     return orders;
   };

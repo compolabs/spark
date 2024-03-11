@@ -47,7 +47,7 @@ class TradeStore {
 
     reaction(
       () => blockchainStore.currentInstance?.NETWORK_TYPE,
-      () => {
+      async () => {
         this.setSpotMarkets([]);
         this.init();
       },
@@ -110,6 +110,7 @@ class TradeStore {
     const bcNetwork = blockchainStore.currentInstance;
 
     try {
+      console.log(bcNetwork);
       const markets = await bcNetwork!.fetchMarkets(100);
       const spotMarkets = markets
         .filter((market) => bcNetwork!.getTokenByAssetId(market.assetId) !== undefined)
