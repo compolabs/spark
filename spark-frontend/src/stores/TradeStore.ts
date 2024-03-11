@@ -1,6 +1,6 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 
-import { NETWORK, SpotMarketVolume } from "@src/blockchain/types";
+import { SpotMarketVolume } from "@src/blockchain/types";
 import { SpotMarket } from "@src/entity";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
@@ -42,6 +42,16 @@ class TradeStore {
     }
 
     this.init();
+
+    const { blockchainStore } = this.rootStore;
+
+    reaction(
+      () => blockchainStore.currentInstance?.NETWORK_TYPE,
+      () => {
+        this.setSpotMarkets([]);
+        this.init();
+      },
+    );
 
     this.marketInfoUpdater = new IntervalUpdater(this.updateMarketInfo, MARKET_INFO_UPDATE_INTERVAL);
     this.marketPricesUpdater = new IntervalUpdater(this.updateMarketPrices, MARKET_PRICES_UPDATE_INTERVAL);
@@ -99,16 +109,6 @@ class TradeStore {
     const { blockchainStore } = this.rootStore;
     const bcNetwork = blockchainStore.currentInstance;
 
-    // TODO: FIX FOR FUEL
-    if (bcNetwork?.NETWORK_TYPE === NETWORK.FUEL) {
-      this.setSpotMarkets([
-        new SpotMarket(bcNetwork!.getTokenBySymbol("BTC").assetId, bcNetwork!.getTokenBySymbol("USDC").assetId),
-      ]);
-      this._setLoading(false);
-      this.setInitialized(true);
-      return;
-    }
-
     try {
       const markets = await bcNetwork!.fetchMarkets(100);
       const spotMarkets = markets
@@ -119,7 +119,7 @@ class TradeStore {
 
       await this.updateMarketPrices();
     } catch (error) {
-      console.error("Error with init of trade store");
+      console.error("Error with init of trade store", error);
     }
 
     this._setLoading(false);
