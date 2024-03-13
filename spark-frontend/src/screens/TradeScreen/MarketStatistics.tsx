@@ -36,26 +36,30 @@ const MarketStatistics: React.FC = observer(() => {
     { title: "24h Low", value: low24h },
   ];
 
+  const perpStatsArr = [
+    ...(media.mobile ? [] : [{ title: "Index Price", value: BN.ZERO.toSignificant(2) }]),
+    { title: media.mobile ? "Pred. funding rate" : "Predicted funding rate", value: BN.ZERO.toSignificant(2) },
+    { title: "24H AVG. funding", value: BN.ZERO.toSignificant(2) },
+    { title: "Open interest", value: BN.ZERO.toSignificant(2) },
+    { title: "24H volume", value: volume24h },
+  ];
+
+  const activeDataArr = tradeStore.isPerp ? perpStatsArr : spotStatsArr;
+
   const renderMobile = () => {
     return (
       <MobileRoot>
         <Text color={theme.colors.greenLight} type={TEXT_TYPES.H}>
           {indexPrice}
         </Text>
-        <SmartFlex gap="12px" justifySelf="flex-end">
-          <SmartFlex gap="2px" column>
-            <Text>24h High</Text>
-            <Text primary>{high24h}</Text>
-          </SmartFlex>
-          <SmartFlex gap="2px" column>
-            <Text>24h Low</Text>
-            <Text primary>{low24h}</Text>
-          </SmartFlex>
-          <SmartFlex gap="2px" column>
-            <Text>24H volume</Text>
-            <Text primary>{volume24h}</Text>
-          </SmartFlex>
-        </SmartFlex>
+        <MobileStatsContent gap="12px" justifySelf="flex-end">
+          {activeDataArr.map((data) => (
+            <SmartFlex key={data.title} gap="2px" column>
+              <Text>{data.title}</Text>
+              <Text primary>{data.value}</Text>
+            </SmartFlex>
+          ))}
+        </MobileStatsContent>
       </MobileRoot>
     );
   };
@@ -70,7 +74,7 @@ const MarketStatistics: React.FC = observer(() => {
             </Text>
           </Column>
           <DesktopRow>
-            {spotStatsArr.map(({ title, value }) => (
+            {activeDataArr.map(({ title, value }) => (
               <React.Fragment key={title}>
                 <SizedBox height={30} style={{ background: theme.colors.bgPrimary, margin: "0 8px" }} width={1} />
                 <Column>
@@ -115,4 +119,13 @@ const PriceRow = styled(Row)`
   ${media.desktop} {
     justify-content: flex-start;
   }
+`;
+
+const MobileStatsContent = styled(SmartFlex)`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    ". ."
+    ". .";
 `;

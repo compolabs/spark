@@ -23,6 +23,7 @@ import { AccountInfoSheet, NetworkSelectSheet } from "../Modal";
 import { SmartFlex } from "../SmartFlex";
 
 import ConnectedWalletButton from "./ConnectedWalletButton";
+import DepositWithdrawModal from "./DepositWithdrawModal";
 import MobileMenu from "./MobileMenu";
 import NetworkSelect from "./NetworkSelect";
 
@@ -37,6 +38,7 @@ const Header: React.FC<IProps> = observer(() => {
 
   const [isMobileMenuOpen, openMobileMenu, closeMobileMenu] = useFlag();
   const [isConnectDialogVisible, openConnectDialog, closeConnectDialog] = useFlag();
+  const [isDepositWithdrawDialogVisible, openDepositWithdrawDialog, closeDepositWithdrawDialog] = useFlag();
   const [isAccountInfoSheetOpen, openAccountInfo, closeAccountInfo] = useFlag();
   const [isNetworkSelectOpen, openNetworkSelect, closeNetworkSelect] = useFlag();
 
@@ -76,6 +78,10 @@ const Header: React.FC<IProps> = observer(() => {
         <ConnectedWallet />
       </WalletContainer>
     );
+  };
+
+  const renderDepositButton = () => {
+    return;
   };
 
   const renderMobile = () => {
@@ -137,6 +143,9 @@ const Header: React.FC<IProps> = observer(() => {
           </SmartFlex>
         </SmartFlex>
         <SmartFlex center="y" gap="16px">
+          <Button fitContent onClick={openDepositWithdrawDialog}>
+            DEPOSIT / WITHDRAW
+          </Button>
           {renderWallet()}
           {!accountStore.address && <NetworkSelect isSmall />}
         </SmartFlex>
@@ -152,12 +161,14 @@ const Header: React.FC<IProps> = observer(() => {
         isOpen={isMobileMenuOpen}
         onAccountClick={openAccountInfo}
         onClose={closeMobileMenu}
+        onDepositWithdrawClick={openDepositWithdrawDialog}
         onNetworkSelect={openNetworkSelect}
         onWalletConnect={openConnectDialog}
       />
       <ConnectWalletDialog visible={isConnectDialogVisible} onClose={closeConnectDialog} />
       <AccountInfoSheet isOpen={isAccountInfoSheetOpen} onClose={closeAccountInfo} />
       <NetworkSelectSheet isOpen={isNetworkSelectOpen} onClose={closeNetworkSelect} />
+      <DepositWithdrawModal visible={isDepositWithdrawDialogVisible} onClose={closeDepositWithdrawDialog} />
     </Root>
   );
 });

@@ -4,8 +4,8 @@ import styled from "@emotion/styled";
 import { observer } from "mobx-react";
 
 import Text, { TEXT_TYPES } from "@components/Text";
-import star from "@src/assets/icons/star.svg";
-import yellowStar from "@src/assets/icons/yellowStar.svg";
+import outlineStarIcon from "@src/assets/icons/star.svg";
+import filledStarIcon from "@src/assets/icons/yellowStar.svg";
 import { SmartFlex } from "@src/components/SmartFlex";
 import { SpotMarket } from "@src/entity";
 import { useStores } from "@stores";
@@ -14,7 +14,7 @@ interface IProps {
   market: SpotMarket;
 }
 
-const MarketRow: React.FC<IProps> = observer(({ market }) => {
+const PerpMarketRow: React.FC<IProps> = observer(({ market }) => {
   const { tradeStore } = useStores();
   const navigate = useNavigate();
 
@@ -33,11 +33,12 @@ const MarketRow: React.FC<IProps> = observer(({ market }) => {
     <Root
       onClick={() => {
         tradeStore.setMarketSelectionOpened(false);
+        tradeStore.setIsPerp(false);
         navigate(`/${market.symbol}`);
       }}
     >
-      <SmartFlex gap="4px" width="100%" vertical>
-        <Icon alt="Add to Favorite" src={isFavorite ? yellowStar : star} onClick={handleFavoriteClick} />
+      <SmartFlex gap="4px" width="100%" column>
+        <Icon alt="Add to Favorite" src={isFavorite ? filledStarIcon : outlineStarIcon} onClick={handleFavoriteClick} />
         <SmartFlex>
           <SmartFlex>
             <Icon alt="logo" src={market.baseToken?.logo} />
@@ -57,7 +58,7 @@ const MarketRow: React.FC<IProps> = observer(({ market }) => {
   );
 });
 
-export default MarketRow;
+export default PerpMarketRow;
 
 const Root = styled.div`
   display: flex;

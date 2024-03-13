@@ -11,7 +11,7 @@ import { SmartFlex } from "@src/components/SmartFlex";
 import { media } from "@src/themes/breakpoints";
 import { useStores } from "@stores";
 
-import CreateOrderSpot from "./LeftBlock/CreateOrderSpot";
+import CreateOrder from "./LeftBlock/CreateOrder";
 import MarketSelection from "./LeftBlock/MarketSelection";
 import SpotOrderBook from "./OrderbookAndTradesInterface/SpotOrderBook";
 import MarketStatistics from "./MarketStatistics";
@@ -40,7 +40,7 @@ const TradeScreenMobile: React.FC = observer(() => {
           <SpotOrderBook />
         </ContentWrapper>
         <ContentWrapper>
-          <CreateOrderSpot />
+          <CreateOrder />
         </ContentWrapper>
       </MobileContent>
     );
@@ -90,7 +90,7 @@ const MobileContent = styled.div`
   grid-template-columns: 140px 1fr;
   gap: 8px;
   width: 100%;
-  height: 418px;
+  min-height: 404px;
 `;
 
 const ContentWrapper = styled(SmartFlex)`

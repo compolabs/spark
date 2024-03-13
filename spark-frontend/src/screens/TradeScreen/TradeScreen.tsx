@@ -4,15 +4,13 @@ import { observer } from "mobx-react";
 
 import Loader from "@src/components/Loader";
 import { useMedia } from "@src/hooks/useMedia";
-import { CreateOrderSpotVMProvider } from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
+import { CreateOrderVMProvider } from "@src/screens/TradeScreen/LeftBlock/CreateOrder/CreateOrderVM";
 import { useStores } from "@stores";
 
 import TradeScreenDesktop from "./TradeScreenDesktop";
 import TradeScreenMobile from "./TradeScreenMobile";
 
-interface IProps {}
-
-const TradeScreenImpl: React.FC<IProps> = observer(() => {
+const TradeScreenImpl: React.FC = observer(() => {
   const { tradeStore } = useStores();
   const media = useMedia();
 
@@ -23,7 +21,7 @@ const TradeScreenImpl: React.FC<IProps> = observer(() => {
   return media.mobile ? <TradeScreenMobile /> : <TradeScreenDesktop />;
 });
 
-const TradeScreen: React.FC<IProps> = observer(() => {
+const TradeScreen: React.FC = observer(() => {
   const { tradeStore } = useStores();
   const { marketId } = useParams<{ marketId: string }>();
   const spotMarketExists = tradeStore.spotMarkets.some((market) => market.symbol === marketId);
@@ -36,9 +34,9 @@ const TradeScreen: React.FC<IProps> = observer(() => {
 
   return (
     //я оборачиваю весь TradeScreenImpl в CreateOrderSpotVMProvider потому что при нажатии на трейд в OrderbookAndTradesInterface должно меняться значение в LeftBlock
-    <CreateOrderSpotVMProvider>
+    <CreateOrderVMProvider>
       <TradeScreenImpl />
-    </CreateOrderSpotVMProvider>
+    </CreateOrderVMProvider>
   );
 });
 

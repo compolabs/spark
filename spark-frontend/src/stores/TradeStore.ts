@@ -16,11 +16,15 @@ class TradeStore {
   rootStore: RootStore;
   initialized: boolean = false;
   loading: boolean = false;
-  favMarkets: Array<string> = [];
-  spotMarkets: Array<SpotMarket> = [];
+  favMarkets: string[] = [];
+  spotMarkets: SpotMarket[] = [];
+  perpMarkets: SpotMarket[] = [];
   marketSelectionOpened: boolean = false;
   marketSymbol: string | null = null;
   readonly defaultMarketSymbol = "BTC-USDC";
+
+  isPerp = false;
+  setIsPerp = (value: boolean) => (this.isPerp = value);
 
   marketInfo: SpotMarketVolume = {
     volume: BN.ZERO,

@@ -9,8 +9,10 @@ import SearchInput from "@components/SearchInput";
 import SizedBox from "@components/SizedBox";
 import Text, { TEXT_TYPES } from "@components/Text";
 import { SmartFlex } from "@src/components/SmartFlex";
-import MarketRow from "@src/screens/TradeScreen/LeftBlock/MarketSelection/MarketRow";
+import SpotMarketRow from "@src/screens/TradeScreen/LeftBlock/MarketSelection/SpotMarketRow";
 import { useStores } from "@stores";
+
+import PerpMarketRow from "./PerpMarketRow";
 
 interface IProps {}
 
@@ -31,6 +33,14 @@ const MarketSelection: React.FC<IProps> = observer(() => {
     [tradeStore.spotMarkets, searchValue],
   );
 
+  const perpMarketsFiltered = useMemo(
+    () =>
+      tradeStore.perpMarkets.filter((market) => {
+        return searchValue.length ? market.symbol.includes(searchValue) : true;
+      }),
+    [tradeStore.perpMarkets, searchValue],
+  );
+
   const renderSpotMarketList = () => {
     if (!isSpotMarket) return;
 
@@ -45,25 +55,32 @@ const MarketSelection: React.FC<IProps> = observer(() => {
       );
     }
 
-    return spotMarketsFiltered.map((market) => <MarketRow key={market.symbol} market={market} />);
+    return spotMarketsFiltered.map((market) => <SpotMarketRow key={market.symbol} market={market} />);
   };
 
   const renderPerpMarketList = () => {
     if (isSpotMarket) return;
 
-    return (
-      <>
-        <SizedBox height={16} />
-        <Row justifyContent="center">
-          <Text>No perp markets found</Text>
-        </Row>
-      </>
-    );
+    // TODO: Use perpMarketsFiltered when contracts will be ready
+    if (!spotMarketsFiltered.length) {
+      return (
+        <>
+          <SizedBox height={16} />
+          <Row justifyContent="center">
+            <Text>No spot markets found</Text>
+          </Row>
+        </>
+      );
+    }
+
+    // TODO: Use perpMarketsFiltered when contracts will be ready
+    // return perpMarketsFiltered.map((market) => <PerpMarketRow key={market.symbol} market={market} />);
+    return spotMarketsFiltered.map((market) => <PerpMarketRow key={market.symbol} market={market} />);
   };
 
   return (
     <Root ref={rootRef}>
-      <Top>
+      <SearchContainer>
         <ButtonGroup>
           <Button active={isSpotMarket} onClick={() => setSpotMarket(true)}>
             SPOT
@@ -74,7 +91,7 @@ const MarketSelection: React.FC<IProps> = observer(() => {
         </ButtonGroup>
         <SizedBox height={16} />
         <SearchInput value={searchValue} onChange={setSearchValue} />
-      </Top>
+      </SearchContainer>
       <SizedBox height={24} />
       <SmartFlex justifyContent="space-between" padding="0 12px">
         <Text type={TEXT_TYPES.BODY}>MARKET</Text>
@@ -96,7 +113,7 @@ const Root = styled.div`
   width: 100%;
 `;
 
-const Top = styled.div`
+const SearchContainer = styled.div`
   display: flex;
   flex-direction: column;
   padding: 12px;

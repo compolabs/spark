@@ -1,6 +1,6 @@
 import React from "react";
-import { HeaderGroup, TableProps, useTable } from "react-table";
 import styled from "@emotion/styled";
+import { ColumnDef, flexRender, getCoreRowModel, Header, useReactTable } from "@tanstack/react-table";
 import { observer } from "mobx-react";
 
 import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
@@ -8,8 +8,8 @@ import Text, { TEXT_TYPES, TEXT_TYPES_MAP } from "@components/Text";
 import { SmartFlex } from "./SmartFlex";
 import Tooltip from "./Tooltip";
 
-interface IProps extends TableProps {
-  columns: any[];
+interface IProps {
+  columns: ColumnDef<any, any>[];
   data: any[];
   fitContent?: boolean;
   withHover?: boolean;
@@ -18,14 +18,19 @@ interface IProps extends TableProps {
 }
 
 const Table: React.FC<IProps> = observer(({ columns, data, onClick, fitContent, withHover, loading, ...rest }) => {
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } = useTable({ columns, data });
+  const table = useReactTable({
+    columns,
+    data,
+    getCoreRowModel: getCoreRowModel(),
+    autoResetAll: true,
+  });
 
-  const renderTooltip = (header: HeaderGroup) => {
+  const renderTooltip = (header: Header<any, any>) => {
     const tooltipContent = (header as any).tooltip;
-    const headerContent = header.render("Header");
+    const content = header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext());
 
     if (!tooltipContent) {
-      return headerContent;
+      return content;
     }
 
     return (
@@ -41,46 +46,31 @@ const Table: React.FC<IProps> = observer(({ columns, data, onClick, fitContent, 
           </SmartFlex>
         }
       >
-        <HeaderWithTooltip>{headerContent}</HeaderWithTooltip>
+        <HeaderWithTooltip>{content}</HeaderWithTooltip>
       </Tooltip>
     );
   };
 
   return (
     <Root {...rest} fitContent={fitContent} hovered={withHover}>
-      <table {...getTableProps()}>
+      <table>
         <thead>
-          {headerGroups.map((headerGroup, index) => (
-            <tr {...headerGroup.getHeaderGroupProps()} key={index + "tr-header"}>
-              {headerGroup.headers.map((column, index) => (
-                <th {...column.getHeaderProps()} key={index + "th"}>
-                  {renderTooltip(column)}
-                </th>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id}>{renderTooltip(header)}</th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows.map((row, i) => {
-            prepareRow(row);
-            return (
-              <tr
-                style={{
-                  opacity: row.original.disabled ? 0.5 : 1,
-                  cursor: row.original.disabled ? "not-allowed" : "pointer",
-                }}
-                {...row.getRowProps()}
-                key={i + "tr"}
-                onClick={() => !row.original.disabled && row.original.onClick && row.original.onClick()}
-              >
-                {row.cells.map((cell, index) => (
-                  <td {...cell.getCellProps()} key={index + "td"}>
-                    {cell.render("Cell")}
-                  </td>
-                ))}
-              </tr>
-            );
-          })}
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
       {loading && <Text style={{ cursor: "pointer", padding: "16px 0" }}>Loading...</Text>}

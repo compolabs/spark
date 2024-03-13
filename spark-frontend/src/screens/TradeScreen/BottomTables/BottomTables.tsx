@@ -1,12 +1,18 @@
 import React from "react";
 
-import BottomTablesInterfaceSpot from "./BottomTablesInterfaceSpot";
+import { useStores } from "@src/stores";
 
-interface IProps {}
+import PerpTable from "./PerpTable";
+import SpotTable from "./SpotTable";
 
-//todo надо сделать этот компонент более умно, я думаю в этом файле должно разруливаться что рисовать, а вся логика должга быть во вью моделях вложенных файлов
-const BottomTables: React.FC<IProps> = () => {
-  return <BottomTablesInterfaceSpot />;
+const BottomTables: React.FC = () => {
+  const { tradeStore } = useStores();
+
+  if (tradeStore.isPerp) {
+    return <PerpTable />;
+  }
+
+  return <SpotTable />;
 };
 
 export default BottomTables;

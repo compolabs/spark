@@ -10,19 +10,19 @@ import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
 
-const ctx = React.createContext<BottomTablesInterfaceSpotVM | null>(null);
+const ctx = React.createContext<SpotTableVM | null>(null);
 
-export const BottomTablesInterfaceSpotVMProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const SpotTableVMProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const rootStore = useStores();
-  const store = useMemo(() => new BottomTablesInterfaceSpotVM(rootStore), [rootStore]);
+  const store = useMemo(() => new SpotTableVM(rootStore), [rootStore]);
   return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
-export const useBottomTablesInterfaceSpotVM = () => useVM(ctx);
+export const useSpotTableVMProvider = () => useVM(ctx);
 
 const ORDERS_UPDATE_INTERVAL = 10 * 1000; // 10 sec
 
-class BottomTablesInterfaceSpotVM {
+class SpotTableVM {
   myOrders: SpotMarketOrder[] = [];
   myOrdersHistory: SpotMarketTrade[] = [];
   initialized: boolean = false;
