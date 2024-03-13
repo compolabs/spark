@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { useTheme } from "@emotion/react";
+import { Theme, useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
+import { createColumnHelper } from "@tanstack/react-table";
 import { observer } from "mobx-react";
 
 import Chip from "@components/Chip";
@@ -10,15 +11,18 @@ import MintButtons from "@screens/Faucet/MintButtons";
 import { Row } from "@src/components/Flex";
 import { SmartFlex } from "@src/components/SmartFlex";
 import Table from "@src/components/Table";
+import TOKEN_LOGOS from "@src/constants/tokenLogos";
+import { Token } from "@src/entity";
+import useFlag from "@src/hooks/useFlag";
 import { useMedia } from "@src/hooks/useMedia";
 import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
-import { toCurrency } from "@src/utils/toCurrency";
 import { useStores } from "@stores";
 
 import { BaseTable } from "../BaseTable";
 
 import { usePerpTableVMProvider } from "./PerpTableVM";
+import TakeProfitStopLossSheet from "./TakeProfitStopLossSheet";
 
 const TABS = [
   { title: "POSITIONS", disabled: false },
@@ -29,35 +33,152 @@ const TABS = [
   // { title: "HISTORY", disabled: true },
 ];
 
-const POSITIONS_COLUMNS = [
-  { header: "Trading Pair", accessorKey: "pair" },
-  { header: "Size / Value", accessorKey: "sizeValue" },
-  { header: "Margin", accessorKey: "margin" },
-  {
-    header: "Entry / Mark",
-    accessorKey: "entryMark",
-    tooltip: (
-      <>
-        <Text type={TEXT_TYPES.BODY}>
-          Amount represents the quantity of cryptocurrency tokens bought or sold in a transaction on the exchange.
-        </Text>
-        <Text type={TEXT_TYPES.BODY}>For buys, it shows tokens acquired; for sells, tokens sold.</Text>
-      </>
+interface PerpMarketTrade {
+  id: string;
+  pair: string;
+  type: "LONG" | "SHORT";
+  leverage: string;
+  baseToken: string;
+  quoteToken: string;
+  size: string;
+  value: string;
+  margin: string;
+  entry: string;
+  mark: string;
+  liqPrice: string;
+  unrealizedPnl: string;
+  unrealizedPnlPercent: string;
+  fundingPayment: string;
+  isTpSlActive: boolean;
+  takeProfit: string;
+  stopLoss: string;
+}
+
+interface PositionColumnParams {
+  vm: ReturnType<typeof usePerpTableVMProvider>;
+  theme: Theme;
+  onTpSlClick: () => void;
+}
+
+const positionColumnHelper = createColumnHelper<PerpMarketTrade>();
+const balanceColumnHelper = createColumnHelper<{ asset: Token; balance: string; assetId: string }>();
+
+const POSITIONS_COLUMNS = (params: PositionColumnParams) => [
+  positionColumnHelper.accessor("pair", {
+    header: "Trading Pair",
+    cell: (props) => (
+      <SmartFlex gap="4px">
+        <TokenIcon alt="ETH-USDC" height={16} src={TOKEN_LOGOS["ETH"]} width={16} />
+        <SmartFlex column>
+          <Text>ETH-USDC</Text>
+          <Text color={params.theme.colors.greenLight}>20х Long</Text>
+        </SmartFlex>
+      </SmartFlex>
     ),
-  },
-  { header: "Liq. Price", accessorKey: "liqPrice" },
-  { header: "Unrealized PNL", accessorKey: "unrealizedPnl" },
-  { header: "Funding payment", accessorKey: "fundingPayment" },
-  { header: "", accessorKey: "action" },
+  }),
+  positionColumnHelper.accessor("size", {
+    header: "Size / Value",
+    cell: (props) => (
+      <SmartFlex column>
+        <SmartFlex center="y" gap="4px">
+          <Text primary>0.89</Text>
+          <TokenBadge>
+            <Text>ETH</Text>
+          </TokenBadge>
+        </SmartFlex>
+        <Text primary>1719.21</Text>
+      </SmartFlex>
+    ),
+  }),
+  positionColumnHelper.accessor("margin", {
+    header: "Margin",
+    cell: (props) => (
+      <SmartFlex alignSelf="flex-start" center="y" gap="4px" height="100%">
+        <Text primary>75.6255</Text>
+        <TokenBadge>
+          <Text>USDC</Text>
+        </TokenBadge>
+      </SmartFlex>
+    ),
+  }),
+  positionColumnHelper.accessor("entry", {
+    header: "Entry / Mark",
+    cell: (props) => (
+      <SmartFlex center="y" gap="2px" column>
+        <Text primary>1720.23</Text>
+        <Text primary>1789.80</Text>
+      </SmartFlex>
+    ),
+  }),
+  positionColumnHelper.accessor("liqPrice", {
+    header: "Liq. Price",
+    cell: (props) => <Text primary>1720.23</Text>,
+  }),
+  positionColumnHelper.accessor("unrealizedPnl", {
+    header: "Unrealized PNL",
+    cell: (props) => (
+      <SmartFlex column>
+        <SmartFlex center="y" gap="4px">
+          <Text color={params.theme.colors.greenLight} primary>
+            64.1617
+          </Text>
+          <TokenBadge>
+            <Text>USDC</Text>
+          </TokenBadge>
+        </SmartFlex>
+        <Text color={params.theme.colors.greenLight}>85.52%</Text>
+      </SmartFlex>
+    ),
+  }),
+  positionColumnHelper.accessor("fundingPayment", {
+    header: "Funding payment",
+    cell: (props) => (
+      <SmartFlex center="y" gap="4px">
+        <Text color={params.theme.colors.greenLight} primary>
+          78.2131
+        </Text>
+        <TokenBadge>
+          <Text>USDC</Text>
+        </TokenBadge>
+      </SmartFlex>
+    ),
+  }),
+  positionColumnHelper.accessor("id", {
+    header: "",
+    cell: (props) => (
+      <SmartFlex center="y" gap="4px">
+        <CancelButton onClick={() => params.vm.cancelOrder(props.getValue())}>
+          {params.vm.cancelingOrderId === props.getValue() ? "Loading..." : "Close"}
+        </CancelButton>
+        <CancelButton onClick={params.onTpSlClick}>TP/SL</CancelButton>
+      </SmartFlex>
+    ),
+  }),
 ];
 
 const BALANCE_COLUMNS = [
-  { header: "Asset", accessorKey: "asset" },
-  { header: "Balance", accessorKey: "balance" },
-  { header: "", accessorKey: "buttons" },
+  balanceColumnHelper.accessor("asset", {
+    header: "Asset",
+    cell: (props) => {
+      console.log(props.getValue());
+      return (
+        <Row alignItems="center">
+          <TokenIcon alt="market-icon" src={props.getValue().logo} />
+          <SizedBox width={4} />
+          123123
+          {props.getValue().symbol}
+        </Row>
+      );
+    },
+  }),
+  balanceColumnHelper.accessor("balance", {
+    header: "Balance",
+  }),
+  balanceColumnHelper.accessor("assetId", {
+    header: "",
+    cell: (props) => <MintButtons assetId={props.getValue()} />,
+  }),
 ];
-
-const COLUMNS = [POSITIONS_COLUMNS, BALANCE_COLUMNS];
 
 // todo: Упростить логику разделить формирование данных и рендер для декстопа и мобилок
 const PerpTableImpl: React.FC = observer(() => {
@@ -68,89 +189,96 @@ const PerpTableImpl: React.FC = observer(() => {
   const theme = useTheme();
   const media = useMedia();
 
+  const [isTpSlSheetOpen, openTpSlSheet, closeTpSlSheet] = useFlag();
+
   const [tabIndex, setTabIndex] = useState(0);
+  const columns = [POSITIONS_COLUMNS({ vm, theme, onTpSlClick: openTpSlSheet }), BALANCE_COLUMNS];
 
-  const getPositionData = () =>
-    vm.myPositions.map((order) => ({
-      date: order.timestamp.format("DD MMM YY, HH:mm"),
-      pair: order.marketSymbol,
-      type: (
-        <TableText color={order.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-          {order.type}
-        </TableText>
-      ),
-      amount: (
-        <SmartFlex center="y" gap="4px">
-          <TableText primary>{order.baseSizeUnits.toSignificant(2)}</TableText>
-          <TokenBadge>
-            <Text>{order.baseToken.symbol}</Text>
-          </TokenBadge>
-        </SmartFlex>
-      ),
-      price: toCurrency(order.priceUnits.toSignificant(2)),
-      action: (
-        <CancelButton onClick={() => vm.cancelOrder(order.id)}>
-          {vm.cancelingOrderId === order.id ? "Loading..." : "Cancel"}
-        </CancelButton>
-      ),
-    }));
+  const [isTpSlActive, setTpSlActive] = useState(false);
 
-  const getBalanceData = () =>
-    Array.from(balanceStore.balances)
-      .filter(([, balance]) => balance && balance.gt(0))
-      .map(([assetId, balance]) => {
-        const token = bcNetwork!.getTokenByAssetId(assetId);
-        return {
-          asset: (
-            <Row alignItems="center">
-              <TokenIcon alt="market-icon" src={token.logo} />
-              <SizedBox width={4} />
-              {token.symbol}
-            </Row>
-          ),
-          balance: BN.formatUnits(balance, token.decimals).toSignificant(2),
-          buttons: <MintButtons assetId={assetId} />,
-        };
-      });
+  const balanceData = Array.from(balanceStore.balances)
+    .filter(([, balance]) => balance && balance.gt(0))
+    .map(([assetId, balance]) => {
+      const token = bcNetwork!.getTokenByAssetId(assetId);
+      return {
+        asset: token,
+        balance: BN.formatUnits(balance, token.decimals).toSignificant(2),
+        assetId,
+      };
+    });
+
+  const handleTpSlChange = () => {
+    setTpSlActive((state) => !state);
+  };
 
   const renderMobileRows = () => {
     const orderData = vm.myPositions.map((ord, i) => (
-      <MobileTableOrderRow key={i + "mobile-row"}>
-        <MobileTableRowColumn>
-          <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
-            {ord.marketSymbol}
-          </Text>
-          <SmartFlex gap="2px" column>
-            <Text type={TEXT_TYPES.SUPPORTING}>Amount</Text>
+      <MobileTablePositionRow key={i + "mobile-row"}>
+        <SmartFlex gap="1px" column>
+          <SmartFlex center="y" gap="8px">
             <SmartFlex center="y" gap="4px">
-              <Text color={theme.colors.textPrimary}>{ord.baseSizeUnits.toSignificant(2)}</Text>
+              <TokenIcon alt="ETH-USDC" src={TOKEN_LOGOS["ETH"]} />
+              <Text primary>ETH-USDC</Text>
+            </SmartFlex>
+            <Text color={theme.colors.greenLight}>20x Long</Text>
+          </SmartFlex>
+          <SmartFlex center="y" gap="4px">
+            <Text>Size:</Text>
+            <Text primary>0.89</Text>
+            <TokenBadge>
+              <Text>ETH</Text>
+            </TokenBadge>
+          </SmartFlex>
+          <SmartFlex center="y" gap="4px">
+            <Text>Value:</Text>
+            <Text primary>1719.21</Text>
+          </SmartFlex>
+          <SmartFlex center="y" gap="4px">
+            <Text>Margin:</Text>
+            <Text primary>75.6255</Text>
+            <TokenBadge>
+              <Text>USDC</Text>
+            </TokenBadge>
+          </SmartFlex>
+          <SmartFlex column>
+            <Text>Unrealized PNL:</Text>
+            <SmartFlex center="y" gap="4px">
+              <Text primary>64.1617</Text>
               <TokenBadge>
-                <Text>{ord.baseToken.symbol}</Text>
+                <Text>USDC</Text>
+              </TokenBadge>
+              <Text primary>85.52%</Text>
+            </SmartFlex>
+          </SmartFlex>
+        </SmartFlex>
+        <SmartFlex gap="2px" margin="0 0 0 8px" column>
+          <SmartFlex center="y" gap="4px">
+            <CancelButton onClick={() => vm.cancelOrder("")}>Close</CancelButton>
+            <CancelButton onClick={openTpSlSheet}>TP/SL</CancelButton>
+          </SmartFlex>
+          <SmartFlex center="y" gap="4px">
+            <Text>Entry Price:</Text>
+            <Text primary>1720.23</Text>
+          </SmartFlex>
+          <SmartFlex center="y" gap="4px">
+            <Text>Mark Price:</Text>
+            <Text primary>1789.80</Text>
+          </SmartFlex>
+          <SmartFlex center="y" gap="4px">
+            <Text>Liq. Price:</Text>
+            <Text primary>1720.23</Text>
+          </SmartFlex>
+          <SmartFlex column>
+            <Text>Funding payment:</Text>
+            <SmartFlex center="y" gap="4px">
+              <Text primary>78.2131</Text>
+              <TokenBadge>
+                <Text>USDC</Text>
               </TokenBadge>
             </SmartFlex>
           </SmartFlex>
-        </MobileTableRowColumn>
-        <MobileTableRowColumn>
-          <Text color={theme.colors.textPrimary}>Active</Text>
-          <SmartFlex gap="2px" column>
-            <SmartFlex center="y" gap="4px">
-              <Text type={TEXT_TYPES.SUPPORTING}>Side:</Text>
-              <TableText color={ord.type === "SELL" ? theme.colors.redLight : theme.colors.greenLight}>
-                {ord.type}
-              </TableText>
-            </SmartFlex>
-          </SmartFlex>
-        </MobileTableRowColumn>
-        <MobileTableRowColumn>
-          <CancelButton onClick={() => vm.cancelOrder(ord.id)}>
-            {vm.cancelingOrderId === ord.id ? "Loading..." : "Cancel"}
-          </CancelButton>
-          <SmartFlex alignItems="flex-end" gap="2px" column>
-            <Text type={TEXT_TYPES.SUPPORTING}>Price:</Text>
-            <Text color={theme.colors.textPrimary}>{toCurrency(ord.priceUnits.toSignificant(2))}</Text>
-          </SmartFlex>
-        </MobileTableRowColumn>
-      </MobileTableOrderRow>
+        </SmartFlex>
+      </MobileTablePositionRow>
     ));
 
     const balanceData = Array.from(balanceStore.balances)
@@ -163,14 +291,14 @@ const PerpTableImpl: React.FC = observer(() => {
               <Text type={TEXT_TYPES.SUPPORTING}>Token</Text>
               <SmartFlex center="y" gap="4px">
                 <TokenIcon alt="market-icon" src={token.logo} />
-                <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BUTTON_SECONDARY}>
+                <Text type={TEXT_TYPES.BUTTON_SECONDARY} primary>
                   {token.symbol}
                 </Text>
               </SmartFlex>
             </MobileTableRowColumn>
             <MobileTableRowColumn>
               <Text type={TEXT_TYPES.SUPPORTING}>Balance</Text>
-              <Text color={theme.colors.textPrimary}>{BN.formatUnits(balance, token.decimals).toSignificant(2)}</Text>
+              <Text primary>{BN.formatUnits(balance, token.decimals).toSignificant(2)}</Text>
             </MobileTableRowColumn>
             <MobileTableRowColumn>
               <CancelButton onClick={() => faucetStore.mintByAssetId(assetId)}>
@@ -190,8 +318,8 @@ const PerpTableImpl: React.FC = observer(() => {
     );
   };
 
-  const tabToData = [getPositionData, getBalanceData];
-  const data = tabToData[tabIndex]();
+  const tabToData = [vm.myPositions, balanceData];
+  const data = tabToData[tabIndex];
 
   const renderTable = () => {
     if (!data.length) {
@@ -208,17 +336,7 @@ const PerpTableImpl: React.FC = observer(() => {
       return renderMobileRows();
     }
 
-    return (
-      <Table
-        columns={COLUMNS[tabIndex]}
-        data={data}
-        // style={{
-        //   whiteSpace: "nowrap",
-        //   width: "fitContent",
-        //   minWidth: "fit-content",
-        // }}
-      />
-    );
+    return <Table columns={columns[tabIndex] as any} data={data} />;
   };
 
   return (
@@ -229,16 +347,18 @@ const PerpTableImpl: React.FC = observer(() => {
       {!!vm.myPositions.length && tabIndex === 0 && (
         <TextGraph style={{ textAlign: "center" }}>Data provided by the Graph</TextGraph>
       )}
+
+      <TakeProfitStopLossSheet
+        isOpen={isTpSlSheetOpen}
+        isTpSlActive={isTpSlActive}
+        onClose={closeTpSlSheet}
+        onToggleTpSl={handleTpSlChange}
+      />
     </>
   );
 });
 
 export default PerpTableImpl;
-
-export const TableText = styled(Text)`
-  display: flex;
-  align-items: center;
-`;
 
 const CancelButton = styled(Chip)`
   cursor: pointer;
@@ -246,8 +366,8 @@ const CancelButton = styled(Chip)`
 `;
 
 const TokenIcon = styled.img`
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
 `;
 
@@ -259,6 +379,31 @@ const MobileTableOrderRow = styled(SmartFlex)`
   background: ${({ theme }) => theme.colors.bgPrimary};
 
   position: relative;
+
+  &:not(:last-of-type)::after {
+    content: "";
+
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+
+    height: 1px;
+    box-shadow: inset 0 1px 0 0 ${({ theme }) => theme.colors.bgSecondary};
+  }
+`;
+
+const MobileTablePositionRow = styled(SmartFlex)`
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  width: 100%;
+  padding: 11px 7px 14px 7px;
+  background: ${({ theme }) => theme.colors.bgPrimary};
+
+  position: relative;
+
+  ${SmartFlex}:last-of-type {
+    margin-right: 8px;
+  }
 
   &:not(:last-of-type)::after {
     content: "";

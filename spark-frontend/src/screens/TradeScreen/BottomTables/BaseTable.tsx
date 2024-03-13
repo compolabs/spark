@@ -14,7 +14,7 @@ import { useStores } from "@src/stores";
 import { TRADE_TABLE_SIZE } from "@src/stores/SettingsStore";
 import { media } from "@src/themes/breakpoints";
 
-import { MAX_TABLE_HEIGHT, RESIZE_TOOLTIP_CONFIG, TABLE_SIZES_CONFIG } from "./types";
+import { MAX_TABLE_HEIGHT, RESIZE_TOOLTIP_CONFIG, TABLE_SIZES_CONFIG } from "./constants";
 
 interface Props {
   tabs: { title: string; disabled: boolean }[];

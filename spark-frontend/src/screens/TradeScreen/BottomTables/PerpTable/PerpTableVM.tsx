@@ -18,6 +18,7 @@ export const usePerpTableVMProvider = () => useVM(ctx);
 class PerpTableVM {
   myPositions: any[] = [
     {
+      id: "1",
       pair: "ETH-USDC",
       type: "LONG",
       leverage: "20",
