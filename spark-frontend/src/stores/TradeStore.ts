@@ -1,7 +1,7 @@
-import { makeAutoObservable } from "mobx";
+import { makeAutoObservable, reaction } from "mobx";
 
+import { SpotMarketVolume } from "@src/blockchain/types";
 import { SpotMarket } from "@src/entity";
-import { fetchMarketCreateEvents, fetchVolumeData, SpotMarketVolume } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import RootStore from "@stores/RootStore";
@@ -11,6 +11,7 @@ export interface ISerializedTradeStore {
 }
 
 const MARKET_INFO_UPDATE_INTERVAL = 5 * 60 * 1000; // 5 min
+const MARKET_PRICES_UPDATE_INTERVAL = 10 * 1000; // 10 sec
 
 class TradeStore {
   rootStore: RootStore;
@@ -29,6 +30,7 @@ class TradeStore {
   };
 
   private marketInfoUpdater: IntervalUpdater;
+  private marketPricesUpdater: IntervalUpdater;
 
   constructor(rootStore: RootStore, initState?: ISerializedTradeStore) {
     this.rootStore = rootStore;
@@ -41,9 +43,21 @@ class TradeStore {
 
     this.init();
 
+    const { blockchainStore } = this.rootStore;
+
+    reaction(
+      () => blockchainStore.currentInstance?.NETWORK_TYPE,
+      async () => {
+        this.setSpotMarkets([]);
+        this.init();
+      },
+    );
+
     this.marketInfoUpdater = new IntervalUpdater(this.updateMarketInfo, MARKET_INFO_UPDATE_INTERVAL);
+    this.marketPricesUpdater = new IntervalUpdater(this.updateMarketPrices, MARKET_PRICES_UPDATE_INTERVAL);
 
     this.marketInfoUpdater.run(true);
+    this.marketPricesUpdater.run();
   }
 
   get market() {
@@ -66,7 +80,23 @@ class TradeStore {
   setMarketSelectionOpened = (s: boolean) => (this.marketSelectionOpened = s);
 
   updateMarketInfo = async () => {
-    this.marketInfo = await fetchVolumeData();
+    const { blockchainStore } = this.rootStore;
+
+    const bcNetwork = blockchainStore.currentInstance;
+
+    this.marketInfo = await bcNetwork!.fetchVolume();
+  };
+
+  updateMarketPrices = async () => {
+    const { blockchainStore } = this.rootStore;
+
+    const bcNetwork = blockchainStore.currentInstance;
+
+    const spotMarketPriceUpdates = this.spotMarkets.map((market) =>
+      bcNetwork!.fetchMarketPrice(market.baseToken.assetId),
+    );
+
+    await Promise.all(spotMarketPriceUpdates);
   };
 
   serialize = (): ISerializedTradeStore => ({
@@ -79,22 +109,22 @@ class TradeStore {
     const { blockchainStore } = this.rootStore;
     const bcNetwork = blockchainStore.currentInstance;
 
-    const fetchSpotMarketsPromise = fetchMarketCreateEvents(100).then((markets) => {
-      return markets
+    try {
+      console.log(bcNetwork);
+      const markets = await bcNetwork!.fetchMarkets(100);
+      const spotMarkets = markets
         .filter((market) => bcNetwork!.getTokenByAssetId(market.assetId) !== undefined)
         .map((market) => new SpotMarket(market.assetId, bcNetwork!.getTokenBySymbol("USDC").assetId));
-    });
 
-    await Promise.all([fetchSpotMarketsPromise]).then(([spotMarkets]) => {
       this.setSpotMarkets(spotMarkets);
-      this._setLoading(false);
-      this.setInitialized(true);
-      //todo обновлять цену надо тут, не стоит делать setInterval внутри класса SpotMarket
-      this.spotMarkets.forEach((market) => {
-        market.fetchPrice();
-        setInterval(market.fetchPrice, 10000);
-      });
-    });
+
+      await this.updateMarketPrices();
+    } catch (error) {
+      console.error("Error with init of trade store", error);
+    }
+
+    this._setLoading(false);
+    this.setInitialized(true);
   };
 
   private setFavMarkets = (v: string[]) => (this.favMarkets = v);
