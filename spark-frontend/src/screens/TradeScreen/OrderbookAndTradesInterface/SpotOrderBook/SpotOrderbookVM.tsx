@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
 import { makeAutoObservable, reaction } from "mobx";
 
+import { DEFAULT_DECIMALS } from "@src/constants";
 import { SpotMarketOrder } from "@src/entity";
 import useVM from "@src/hooks/useVM";
-import { fetchOrders } from "@src/services/SpotMarketService";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
@@ -117,14 +117,20 @@ class SpotOrderbookVM {
   setOrderFilter = (value: number) => (this.orderFilter = value);
 
   updateOrderBook = async () => {
-    const market = this.rootStore.tradeStore.market;
+    const { tradeStore, blockchainStore } = this.rootStore;
+
+    const market = tradeStore.market;
+
     if (!this.rootStore.initialized || !market) return;
+
+    const bcNetwork = blockchainStore.currentInstance;
+    const limit = 20;
 
     this.isOrderBookLoading = true;
 
     const [buy, sell] = await Promise.all([
-      fetchOrders({ baseToken: market.baseToken.assetId, type: "BUY", limit: 20 }),
-      fetchOrders({ baseToken: market.baseToken.assetId, type: "SELL", limit: 20 }),
+      bcNetwork!.fetchOrders({ baseToken: market.baseToken.assetId, type: "BUY", limit }),
+      bcNetwork!.fetchOrders({ baseToken: market.baseToken.assetId, type: "SELL", limit }),
     ]);
 
     //bid = max of buy
@@ -138,8 +144,7 @@ class SpotOrderbookVM {
     if (maxBuyPrice && minSellPrice) {
       // spread = ask - bid
       const spread = minSellPrice.minus(maxBuyPrice);
-      //todo уточнить почему тут 9
-      const formattedSpread = BN.formatUnits(spread, 9).toSignificant(2);
+      const formattedSpread = BN.formatUnits(spread, DEFAULT_DECIMALS).toSignificant(2);
 
       const spreadPercent = minSellPrice.minus(maxBuyPrice).div(maxBuyPrice).times(100);
       this.setOrderbook({ buy, sell, spreadPercent: spreadPercent.toFormat(2), spreadPrice: formattedSpread });

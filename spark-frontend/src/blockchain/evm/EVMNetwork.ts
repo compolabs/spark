@@ -2,11 +2,12 @@ import { Contract, JsonRpcProvider } from "ethers";
 import { makeObservable } from "mobx";
 import { Nullable } from "tsdef";
 
-import { Token } from "@src/entity";
+import { SpotMarketOrder, SpotMarketTrade, Token } from "@src/entity";
+import BN from "@src/utils/BN";
 
 import { BlockchainNetwork } from "../abstract/BlockchainNetwork";
 import { NETWORK_ERROR, NetworkError } from "../NetworkError";
-import { NETWORK } from "../types";
+import { FetchOrdersParams, FetchTradesParams, MarketCreateEvent, NETWORK, SpotMarketVolume } from "../types";
 
 import { ERC20_ABI } from "./abi";
 import { Api } from "./Api";
@@ -121,5 +122,21 @@ export class EVMNetwork extends BlockchainNetwork {
     }
 
     return this.api.allowance(assetAddress, this.walletManager.signer);
+  };
+
+  fetchMarkets = async (limit: number): Promise<MarketCreateEvent[]> => {
+    return this.api.fetch.fetchMarkets(limit);
+  };
+  fetchMarketPrice = async (baseTokenAddress: EvmAddress): Promise<BN> => {
+    return this.api.fetch.fetchMarketPrice(baseTokenAddress);
+  };
+  fetchOrders = async (params: FetchOrdersParams<EvmAddress>): Promise<SpotMarketOrder[]> => {
+    return this.api.fetch.fetchOrders(params);
+  };
+  fetchTrades = async (params: FetchTradesParams<EvmAddress>): Promise<SpotMarketTrade[]> => {
+    return this.api.fetch.fetchTrades(params);
+  };
+  fetchVolume = async (): Promise<SpotMarketVolume> => {
+    return this.api.fetch.fetchVolume();
   };
 }

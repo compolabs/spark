@@ -5,9 +5,12 @@ import BN from "@src/utils/BN";
 
 import { ERC20_ABI, SPOT_MARKET_ABI } from "./abi";
 import { CONTRACT_ADDRESSES, TOKENS_BY_ASSET_ID } from "./constants";
+import { Fetch } from "./Fetch";
 import { EvmAddress } from "./types";
 
 export class Api {
+  public fetch = new Fetch();
+
   createOrder = async (
     assetAddress: EvmAddress,
     size: string,

@@ -3,7 +3,6 @@ import { makeAutoObservable } from "mobx";
 
 import { SpotMarketTrade } from "@src/entity";
 import useVM from "@src/hooks/useVM";
-import { fetchTrades } from "@src/services/SpotMarketService";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
 
@@ -17,7 +16,7 @@ export const SpotTradesVMProvider: React.FC<PropsWithChildren> = ({ children }) 
 
 export const useSpotTradesVM = () => useVM(ctx);
 
-const UPDATE_INTERVAL = 10 * 1000;
+const UPDATE_TRADES_INTERVAL = 10 * 1000;
 
 class SpotTradesVM {
   public trades: Array<SpotMarketTrade> = [];
@@ -28,7 +27,7 @@ class SpotTradesVM {
     makeAutoObservable(this);
     this.updateTrades().then();
 
-    this.tradesUpdater = new IntervalUpdater(this.updateTrades, UPDATE_INTERVAL);
+    this.tradesUpdater = new IntervalUpdater(this.updateTrades, UPDATE_TRADES_INTERVAL);
 
     this.tradesUpdater.run();
   }
@@ -42,13 +41,11 @@ class SpotTradesVM {
     if (!initialized || !market) return;
 
     try {
-      const data = await fetchTrades(market.baseToken.assetId, 40);
-
-      const token = bcNetwork!.getTokenByAssetId(market.baseToken.assetId);
-
-      this.trades = data.map(
-        (t) => new SpotMarketTrade({ ...t, baseToken: token, userAddress: accountStore.address! }),
-      );
+      this.trades = await bcNetwork!.fetchTrades({
+        baseToken: market.baseToken.assetId,
+        limit: 40,
+        trader: accountStore.address!,
+      });
     } catch (error) {
       console.error("Error with loading trades");
     }
