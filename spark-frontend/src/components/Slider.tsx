@@ -13,6 +13,19 @@ interface IProps {
   fixSize?: number;
 }
 
+const Slider: React.FC<SliderProps & IProps> = (props) => (
+  <Root>
+    <DotsContainer>
+      {Array.from({ length: 10 }, (_, i) => (
+        <Dot key={i} />
+      ))}
+    </DotsContainer>
+    <StyledSlider {...props} />
+  </Root>
+);
+
+export default Slider;
+
 const Dot = styled.div`
   width: 4px;
   height: 4px;
@@ -128,15 +141,3 @@ const DotsContainer = styled(Row)`
   align-items: center;
   justify-content: space-around;
 `;
-
-const Slider: React.FC<SliderProps & IProps> = (props) => (
-  <Root>
-    <DotsContainer>
-      {Array.from({ length: 10 }, (_, i) => (
-        <Dot key={i} />
-      ))}
-    </DotsContainer>
-    <StyledSlider {...props} />
-  </Root>
-);
-export default Slider;

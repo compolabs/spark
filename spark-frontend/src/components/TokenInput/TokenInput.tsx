@@ -121,6 +121,7 @@ const InputContainer = styled.div<{
   align-items: center;
   padding: 0 8px;
   height: 32px;
+  min-height: 32px;
   width: 100%;
   cursor: ${({ readOnly }) => (readOnly ? "not-allowed" : "unset")};
 

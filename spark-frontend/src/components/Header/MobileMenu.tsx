@@ -21,10 +21,18 @@ interface IProps {
   onAccountClick: () => void;
   onWalletConnect: () => void;
   onNetworkSelect: () => void;
+  onDepositWithdrawClick: () => void;
   onClose: () => void;
 }
 
-const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect, onClose, onNetworkSelect }) => {
+const MobileMenu: React.FC<IProps> = ({
+  isOpen,
+  onAccountClick,
+  onWalletConnect,
+  onClose,
+  onNetworkSelect,
+  onDepositWithdrawClick,
+}) => {
   const { accountStore } = useStores();
   const location = useLocation();
 
@@ -40,6 +48,11 @@ const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect,
 
   const handleNetworkSelect = () => {
     onNetworkSelect();
+    onClose();
+  };
+
+  const handleDepositWithdrawClick = () => {
+    onDepositWithdrawClick();
     onClose();
   };
 
@@ -88,6 +101,7 @@ const MobileMenu: React.FC<IProps> = ({ isOpen, onAccountClick, onWalletConnect,
         </Container>
         <SizedBox height={8} />
         <FooterContainer gap="8px" column>
+          <Button onClick={handleDepositWithdrawClick}>DEPOSIT / WITHDRAW</Button>
           {renderWalletButton()}
           {!accountStore.address && <NetworkSelectButton onClick={handleNetworkSelect} />}
         </FooterContainer>

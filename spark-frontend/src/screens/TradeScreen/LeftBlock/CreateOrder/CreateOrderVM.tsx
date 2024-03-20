@@ -11,15 +11,15 @@ import { handleEvmErrors } from "@src/utils/handleEvmErrors";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import { RootStore, useStores } from "@stores";
 
-const ctx = React.createContext<CreateOrderSpotVM | null>(null);
+const ctx = React.createContext<CreateOrderVM | null>(null);
 
-export const CreateOrderSpotVMProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const CreateOrderVMProvider: React.FC<PropsWithChildren> = ({ children }) => {
   const rootStore = useStores();
-  const store = useMemo(() => new CreateOrderSpotVM(rootStore), [rootStore]);
+  const store = useMemo(() => new CreateOrderVM(rootStore), [rootStore]);
   return <ctx.Provider value={store}>{children}</ctx.Provider>;
 };
 
-export const useCreateOrderSpotVM = () => useVM(ctx);
+export const useCreateOrderVM = () => useVM(ctx);
 
 const HALF_GWEI = new BN(5 * 1e9); // 0.5
 const PRICE_UPDATE_THROTTLE_INTERVAL = 1000; // 1s
@@ -46,7 +46,7 @@ export enum ORDER_TYPE {
 
 const UPDATE_ALLOWANCE_INTERVAL = 15 * 1000; // 15 sec;
 
-class CreateOrderSpotVM {
+class CreateOrderVM {
   loading = false;
 
   mode: ORDER_MODE = ORDER_MODE.BUY;
@@ -64,7 +64,6 @@ class CreateOrderSpotVM {
 
   constructor(private rootStore: RootStore) {
     makeAutoObservable(this);
-    //todo обработать маркет и лимит типы заказов в селекторе
 
     const { tradeStore, oracleStore, settingsStore } = this.rootStore;
 
@@ -117,10 +116,12 @@ class CreateOrderSpotVM {
   setOrderMode = (mode: ORDER_MODE) => (this.mode = mode);
 
   onMaxClick = () => {
-    const { tradeStore, balanceStore, accountStore, blockchainStore } = this.rootStore;
+    const { tradeStore, balanceStore, blockchainStore } = this.rootStore;
     const bcNetwork = blockchainStore.currentInstance;
 
-    const tokenId = this.isSell ? tradeStore.market!.baseToken.assetId : tradeStore.market!.quoteToken.assetId;
+    if (!tradeStore.market) return;
+
+    const tokenId = this.isSell ? tradeStore.market.baseToken.assetId : tradeStore.market.quoteToken.assetId;
 
     let balance = balanceStore.getBalance(tokenId) ?? BN.ZERO;
     if (tokenId === bcNetwork!.getTokenBySymbol("ETH").assetId) {
@@ -138,6 +139,8 @@ class CreateOrderSpotVM {
   setInputPrice = (price: BN, sync?: boolean) => {
     const { tradeStore } = this.rootStore;
 
+    if (!tradeStore.market) return;
+
     this.inputPrice = price;
 
     if (price.eq(0)) {
@@ -148,14 +151,14 @@ class CreateOrderSpotVM {
     if (!sync) return;
 
     const formattedPrice = BN.formatUnits(price, DEFAULT_DECIMALS);
-    const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market!.baseToken.decimals);
-    const formattedTotal = BN.formatUnits(this.inputTotal, tradeStore.market!.quoteToken.decimals);
+    const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market.baseToken.decimals);
+    const formattedTotal = BN.formatUnits(this.inputTotal, tradeStore.market.quoteToken.decimals);
 
     if (this.activeInput === ACTIVE_INPUT.Amount || this.activeInput === ACTIVE_INPUT.Price) {
-      const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
+      const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market.quoteToken.decimals);
       this.setInputTotal(total);
     } else if (this.activeInput === ACTIVE_INPUT.Total) {
-      const amount = BN.parseUnits(formattedTotal.div(formattedPrice), tradeStore.market!.baseToken.decimals);
+      const amount = BN.parseUnits(formattedTotal.div(formattedPrice), tradeStore.market.baseToken.decimals);
       this.setInputAmount(amount);
     }
   };
@@ -164,6 +167,9 @@ class CreateOrderSpotVM {
 
   setInputAmount = (amount: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
+
+    if (!tradeStore.market) return;
+
     this.inputAmount = amount.toDecimalPlaces(0);
 
     if (this.inputPrice.eq(BN.ZERO)) {
@@ -174,12 +180,12 @@ class CreateOrderSpotVM {
     if (!sync) return;
 
     const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
-    const formattedAmount = BN.formatUnits(amount, tradeStore.market!.baseToken.decimals);
+    const formattedAmount = BN.formatUnits(amount, tradeStore.market.baseToken.decimals);
 
-    const total = BN.parseUnits(formattedAmount.times(formattedInputPrice), tradeStore.market!.quoteToken.decimals);
+    const total = BN.parseUnits(formattedAmount.times(formattedInputPrice), tradeStore.market.quoteToken.decimals);
     this.setInputTotal(total);
 
-    const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
+    const relativeToken = this.isSell ? tradeStore.market.baseToken : tradeStore.market.quoteToken;
     const balance = balanceStore.getBalance(relativeToken.assetId);
     if (balance.eq(BN.ZERO)) return;
 
@@ -197,6 +203,9 @@ class CreateOrderSpotVM {
 
   setInputTotal = (total: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
+
+    if (!tradeStore.market) return;
+
     this.inputTotal = total.toDecimalPlaces(0);
 
     if (this.inputPrice.eq(BN.ZERO)) {
@@ -207,12 +216,12 @@ class CreateOrderSpotVM {
     if (!sync) return;
 
     const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
-    const formattedTotal = BN.formatUnits(total, tradeStore.market!.quoteToken.decimals);
+    const formattedTotal = BN.formatUnits(total, tradeStore.market.quoteToken.decimals);
 
-    const inputAmount = BN.parseUnits(formattedTotal.div(formattedInputPrice), tradeStore.market!.baseToken.decimals);
+    const inputAmount = BN.parseUnits(formattedTotal.div(formattedInputPrice), tradeStore.market.baseToken.decimals);
     this.setInputAmount(inputAmount);
 
-    const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
+    const relativeToken = this.isSell ? tradeStore.market.baseToken : tradeStore.market.quoteToken;
     const balance = balanceStore.getBalance(relativeToken.assetId);
     if (balance.eq(BN.ZERO)) return;
 
@@ -227,7 +236,7 @@ class CreateOrderSpotVM {
   };
 
   approve = async () => {
-    const { accountStore, tradeStore, notificationStore, blockchainStore } = this.rootStore;
+    const { tradeStore, notificationStore, blockchainStore } = this.rootStore;
     const { market } = tradeStore;
     const bcNetwork = blockchainStore.currentInstance;
 
@@ -255,7 +264,7 @@ class CreateOrderSpotVM {
   };
 
   loadAllowance = async () => {
-    const { accountStore, tradeStore, blockchainStore } = this.rootStore;
+    const { tradeStore, blockchainStore } = this.rootStore;
     const { market } = tradeStore;
     const bcNetwork = blockchainStore.currentInstance;
 
@@ -277,7 +286,7 @@ class CreateOrderSpotVM {
   };
 
   createOrder = async () => {
-    const { accountStore, tradeStore, notificationStore, balanceStore, blockchainStore } = this.rootStore;
+    const { tradeStore, notificationStore, balanceStore, blockchainStore } = this.rootStore;
     const { market } = tradeStore;
     const bcNetwork = blockchainStore.currentInstance;
 

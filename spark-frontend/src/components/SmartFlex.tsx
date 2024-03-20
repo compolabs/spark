@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 
 type FlexProps = {
   column?: boolean;
-  vertical?: boolean; // alias for column
   center?: "x" | "y" | true;
   alignItems?: CSSProperties["alignItems"];
   alignSelf?: CSSProperties["alignSelf"];
@@ -25,13 +24,13 @@ const setProp = <T extends Record<string, any>>(prop: keyof T, cssProp: string) 
 
 export const SmartFlex = styled.div<FlexProps>`
   display: flex;
-  flex-direction: ${({ column, vertical }) => (column || vertical ? "column" : "row")};
+  flex-direction: ${({ column }) => (column ? "column" : "row")};
 
-  ${({ column, vertical, center }) => {
+  ${({ column, center }) => {
     const centerX = center === "x" || center === true;
     const centerY = center === "y" || center === true;
 
-    if (column || vertical) {
+    if (column) {
       return `
         align-items: ${centerX ? "center" : "normal"};
         justify-content:  ${centerY ? "center" : "normal"};

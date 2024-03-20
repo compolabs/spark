@@ -8,13 +8,14 @@ import SettingsStore, { ISerializedSettingStore } from "@stores/SettingsStore";
 import TradeStore, { ISerializedTradeStore } from "@stores/TradeStore";
 
 import { BalanceStore } from "./BalanceStore";
-import BlockchainStore from "./BlockchainStore";
+import BlockchainStore, { ISerializedBlockchainStore } from "./BlockchainStore";
 import OracleStore from "./OracleStore";
 
 export interface ISerializedRootStore {
   accountStore?: ISerializedAccountStore;
   tradeStore?: ISerializedTradeStore;
   settingStore?: ISerializedSettingStore;
+  blockchainStore?: ISerializedBlockchainStore;
 }
 
 export default class RootStore {
@@ -30,7 +31,7 @@ export default class RootStore {
 
   private constructor(initState?: ISerializedRootStore) {
     this.notificationStore = new NotificationStore(this);
-    this.blockchainStore = new BlockchainStore(this);
+    this.blockchainStore = new BlockchainStore(this, initState?.blockchainStore);
     this.accountStore = new AccountStore(this, initState?.accountStore);
     this.faucetStore = new FaucetStore(this);
     this.settingsStore = new SettingsStore(this, initState?.settingStore);
@@ -64,5 +65,6 @@ export default class RootStore {
     accountStore: this.accountStore.serialize(),
     tradeStore: this.tradeStore.serialize(),
     settingStore: this.settingsStore.serialize(),
+    blockchainStore: this.blockchainStore.serialize(),
   });
 }

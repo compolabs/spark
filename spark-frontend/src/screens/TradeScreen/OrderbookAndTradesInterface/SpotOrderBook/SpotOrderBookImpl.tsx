@@ -2,6 +2,7 @@ import React, { HTMLAttributes, useCallback, useEffect } from "react";
 import { useTheme } from "@emotion/react";
 import styled from "@emotion/styled";
 import { observer } from "mobx-react";
+import numeral from "numeral";
 
 import sellAndBuyIcon from "@src/assets/icons/buyAndSellOrderBookIcon.svg";
 import buyIcon from "@src/assets/icons/buyOrderBookIcon.svg";
@@ -21,18 +22,18 @@ import BN from "@src/utils/BN";
 import hexToRgba from "@src/utils/hexToRgb";
 import { useStores } from "@stores";
 
-import { ORDER_MODE, ORDER_TYPE, useCreateOrderSpotVM } from "../../LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
+import { ORDER_MODE, ORDER_TYPE, useCreateOrderVM } from "../../LeftBlock/CreateOrder/CreateOrderVM";
 
 import { useSpotOrderbookVM } from "./SpotOrderbookVM";
 
 interface IProps extends HTMLAttributes<HTMLDivElement> {}
 
-export const SPOT_DECIMAL_OPTIONS = [2, 4, 5, 6];
+export const SPOT_DECIMAL_OPTIONS = [2, 3, 4, 5];
 export const SPOT_SETTINGS_ICONS = [sellAndBuyIcon, sellIcon, buyIcon];
 
 const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
   const vm = useSpotOrderbookVM();
-  const orderSpotVm = useCreateOrderSpotVM();
+  const orderSpotVm = useCreateOrderVM();
   const media = useMedia();
   const theme = useTheme();
   const { tradeStore, settingsStore } = useStores();
@@ -101,6 +102,8 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
     );
   };
 
+  const decimals = SPOT_DECIMAL_OPTIONS[+vm.decimalKey];
+
   const renderOrders = (orders: SpotMarketOrder[], type: "sell" | "buy") => {
     const orderMode = type === "sell" ? ORDER_MODE.BUY : ORDER_MODE.SELL;
     const volumePercent = (ord: SpotMarketOrder) =>
@@ -119,9 +122,9 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
         }}
       >
         <VolumeBar type={type} volumePercent={volumePercent(o).times(100).toNumber()} />
-        <Text primary>{o.baseSizeUnits.toSignificant(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
-        <Text primary>{o.quoteSizeUnits.toSignificant(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
-        <Text color={color}>{BN.formatUnits(o.price, 9).toSignificant(SPOT_DECIMAL_OPTIONS[+vm.decimalKey])}</Text>
+        <Text primary>{o.baseSizeUnits.toSignificant(decimals)}</Text>
+        <Text color={color}>{BN.formatUnits(o.price, 9).toFormat(decimals)}</Text>
+        <Text primary>{numeral(o.quoteSizeUnits).format(`0.${"0".repeat(decimals)} a`)}</Text>
       </OrderRow>
     ));
   };
@@ -141,8 +144,8 @@ const SpotOrderBookImpl: React.FC<IProps> = observer(() => {
       </SettingsContainer>
       <OrderBookHeader>
         <Text type={TEXT_TYPES.SUPPORTING}>{`Amount ${market?.baseToken.symbol}`}</Text>
+        <Text type={TEXT_TYPES.SUPPORTING}>Price</Text>
         <Text type={TEXT_TYPES.SUPPORTING}>{`Total ${market?.quoteToken.symbol}`}</Text>
-        <Text type={TEXT_TYPES.SUPPORTING}>{`Price ${market?.quoteToken.symbol}`}</Text>
       </OrderBookHeader>
       <Container fitContent={vm.orderFilter === 1 || vm.orderFilter === 2} reverse={vm.orderFilter === 1}>
         {vm.orderFilter === 0 && (
@@ -219,6 +222,10 @@ const PlugContainer = styled(SmartFlex)`
     grid-template-columns: repeat(2, 1fr);
 
     ${Text}:nth-of-type(2) {
+      text-align: end;
+    }
+
+    ${Text}:nth-of-type(3) {
       display: none;
     }
   }
@@ -279,9 +286,12 @@ const OrderBookHeader = styled.div`
   }
 
   ${media.mobile} {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr min-content;
 
     ${Text}:nth-of-type(2) {
+      text-align: end;
+    }
+    ${Text}:nth-of-type(3) {
       display: none;
     }
   }
@@ -305,11 +315,14 @@ const OrderRow = styled(Row)<{ type: "buy" | "sell" }>`
 
   ${media.mobile} {
     & > ${Text}:nth-of-type(2) {
+      text-align: right;
+    }
+    & > ${Text}:nth-of-type(3) {
       display: none;
     }
   }
 
-  & > div:last-of-type {
+  & > ${Text}:nth-of-type(3) {
     text-align: right;
   }
 

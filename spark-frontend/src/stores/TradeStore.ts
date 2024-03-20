@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction } from "mobx";
 
 import { SpotMarketVolume } from "@src/blockchain/types";
-import { SpotMarket } from "@src/entity";
+import { PerpMarket, SpotMarket } from "@src/entity";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import RootStore from "@stores/RootStore";
@@ -17,11 +17,15 @@ class TradeStore {
   rootStore: RootStore;
   initialized: boolean = false;
   loading: boolean = false;
-  favMarkets: Array<string> = [];
-  spotMarkets: Array<SpotMarket> = [];
+  favMarkets: string[] = [];
+  spotMarkets: SpotMarket[] = [];
+  perpMarkets: PerpMarket[] = [];
   marketSelectionOpened: boolean = false;
   marketSymbol: string | null = null;
   readonly defaultMarketSymbol = "BTC-USDC";
+
+  isPerp = false;
+  setIsPerp = (value: boolean) => (this.isPerp = value);
 
   marketInfo: SpotMarketVolume = {
     volume: BN.ZERO,
@@ -61,6 +65,9 @@ class TradeStore {
   }
 
   get market() {
+    if (this.isPerp) {
+      return this.perpMarkets.find((market) => market.symbol === this.marketSymbol);
+    }
     return this.spotMarkets.find((market) => market.symbol === this.marketSymbol);
   }
 
@@ -110,13 +117,15 @@ class TradeStore {
     const bcNetwork = blockchainStore.currentInstance;
 
     try {
-      console.log(bcNetwork);
       const markets = await bcNetwork!.fetchMarkets(100);
       const spotMarkets = markets
         .filter((market) => bcNetwork!.getTokenByAssetId(market.assetId) !== undefined)
         .map((market) => new SpotMarket(market.assetId, bcNetwork!.getTokenBySymbol("USDC").assetId));
 
       this.setSpotMarkets(spotMarkets);
+      this.setPerpMarkets([
+        new PerpMarket(bcNetwork!.getTokenBySymbol("BTC").assetId, bcNetwork!.getTokenBySymbol("USDC").assetId),
+      ]);
 
       await this.updateMarketPrices();
     } catch (error) {
@@ -130,6 +139,8 @@ class TradeStore {
   private setFavMarkets = (v: string[]) => (this.favMarkets = v);
 
   private setSpotMarkets = (v: SpotMarket[]) => (this.spotMarkets = v);
+
+  private setPerpMarkets = (v: PerpMarket[]) => (this.perpMarkets = v);
 
   private setInitialized = (l: boolean) => (this.initialized = l);
 

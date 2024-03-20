@@ -37,9 +37,6 @@ export class Api {
       assetId: isNegative ? baseToken.assetId : quoteToken.assetId,
     };
 
-    console.log(forward);
-    console.log(assetId, baseSize, price);
-
     const tx = await orderbookFactory.functions
       .open_order(assetId, baseSize, price)
       .callParams({ forward })

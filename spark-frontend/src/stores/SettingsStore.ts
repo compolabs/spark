@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 
-import { ORDER_TYPE } from "@src/screens/TradeScreen/LeftBlock/CreateOrderSpot/CreateOrderSpotVM";
+import { ORDER_TYPE } from "@src/screens/TradeScreen/LeftBlock/CreateOrder/CreateOrderVM";
 import { THEME_TYPE } from "@src/themes/ThemeProvider";
 import RootStore from "@stores/RootStore";
 
