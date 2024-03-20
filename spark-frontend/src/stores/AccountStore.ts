@@ -8,6 +8,7 @@ import RootStore from "./RootStore";
 
 export interface ISerializedAccountStore {
   privateKey: Nullable<string>;
+  address: Nullable<string>;
 }
 
 class AccountStore {
@@ -19,9 +20,13 @@ class AccountStore {
   ) {
     makeAutoObservable(this);
 
+    const { blockchainStore } = this.rootStore;
+
     if (initState) {
-      if (initState.privateKey?.length) {
+      if (initState.privateKey) {
         this.connectWalletByPrivateKey(initState.privateKey);
+      } else if (initState.address && blockchainStore.currentInstance?.NETWORK_TYPE) {
+        this.connectWallet(blockchainStore.currentInstance.NETWORK_TYPE);
       }
     }
 
@@ -105,6 +110,7 @@ class AccountStore {
 
     return {
       privateKey: bcNetwork?.getPrivateKey() ?? null,
+      address: bcNetwork?.getAddress() ?? null,
     };
   };
 }

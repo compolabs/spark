@@ -158,12 +158,10 @@ const BALANCE_COLUMNS = [
   balanceColumnHelper.accessor("asset", {
     header: "Asset",
     cell: (props) => {
-      console.log(props.getValue());
       return (
         <Row alignItems="center">
           <TokenIcon alt="market-icon" src={props.getValue().logo} />
           <SizedBox width={4} />
-          123123
           {props.getValue().symbol}
         </Row>
       );

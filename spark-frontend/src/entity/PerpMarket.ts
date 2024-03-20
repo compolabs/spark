@@ -22,7 +22,7 @@ export class PerpMarket {
   }
 
   get symbol(): string {
-    return `${this.baseToken.symbol}-${this.quoteToken.symbol}`;
+    return `${this.baseToken.symbol}-PERP`;
   }
 
   get priceUnits(): BN {

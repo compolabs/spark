@@ -61,8 +61,7 @@ const MarketSelection: React.FC<IProps> = observer(() => {
   const renderPerpMarketList = () => {
     if (isSpotMarket) return;
 
-    // TODO: Use perpMarketsFiltered when contracts will be ready
-    if (!spotMarketsFiltered.length) {
+    if (!perpMarketsFiltered.length) {
       return (
         <>
           <SizedBox height={16} />
@@ -73,9 +72,7 @@ const MarketSelection: React.FC<IProps> = observer(() => {
       );
     }
 
-    // TODO: Use perpMarketsFiltered when contracts will be ready
-    // return perpMarketsFiltered.map((market) => <PerpMarketRow key={market.symbol} market={market} />);
-    return spotMarketsFiltered.map((market) => <PerpMarketRow key={market.symbol} market={market} />);
+    return perpMarketsFiltered.map((market) => <PerpMarketRow key={market.symbol} market={market} />);
   };
 
   return (

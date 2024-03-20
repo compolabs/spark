@@ -10,7 +10,6 @@ const BottomTables: React.FC = observer(() => {
   const { tradeStore } = useStores();
 
   if (tradeStore.isPerp) {
-    console.log("perp");
     return <PerpTable />;
   }
 

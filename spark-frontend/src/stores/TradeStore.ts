@@ -65,6 +65,9 @@ class TradeStore {
   }
 
   get market() {
+    if (this.isPerp) {
+      return this.perpMarkets.find((market) => market.symbol === this.marketSymbol);
+    }
     return this.spotMarkets.find((market) => market.symbol === this.marketSymbol);
   }
 
@@ -114,7 +117,6 @@ class TradeStore {
     const bcNetwork = blockchainStore.currentInstance;
 
     try {
-      console.log(bcNetwork);
       const markets = await bcNetwork!.fetchMarkets(100);
       const spotMarkets = markets
         .filter((market) => bcNetwork!.getTokenByAssetId(market.assetId) !== undefined)

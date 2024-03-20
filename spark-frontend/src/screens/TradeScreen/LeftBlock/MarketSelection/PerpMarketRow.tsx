@@ -15,7 +15,7 @@ interface IProps {
   market: SpotMarket;
 }
 
-const SpotMarketRow: React.FC<IProps> = observer(({ market }) => {
+const PerpMarketRow: React.FC<IProps> = observer(({ market }) => {
   const { tradeStore } = useStores();
   const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const SpotMarketRow: React.FC<IProps> = observer(({ market }) => {
       onClick={() => {
         tradeStore.setMarketSelectionOpened(false);
         tradeStore.setIsPerp(true);
-        navigate(`/perp/${market.symbol}`);
+        navigate(`/${market.symbol}`);
       }}
     >
       <SmartFlex gap="4px" width="100%" column>
@@ -76,7 +76,7 @@ const SpotMarketRow: React.FC<IProps> = observer(({ market }) => {
   );
 });
 
-export default SpotMarketRow;
+export default PerpMarketRow;
 
 const Root = styled.div`
   display: flex;

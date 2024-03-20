@@ -26,7 +26,7 @@ const TradeScreen: React.FC = observer(() => {
   const location = useLocation();
   const { marketId } = useParams<{ marketId: string }>();
 
-  const isPerp = location.pathname.includes("/perp");
+  const isPerp = location.pathname.includes("PERP");
   const spotMarketExists = tradeStore.spotMarkets.some((market) => market.symbol === marketId);
   const perpMarketExists = tradeStore.perpMarkets.some((market) => market.symbol === marketId);
 
@@ -35,7 +35,6 @@ const TradeScreen: React.FC = observer(() => {
   }
 
   tradeStore.setIsPerp(isPerp);
-
   tradeStore.setMarketSymbol(
     !marketId || (!spotMarketExists && !perpMarketExists) ? tradeStore.defaultMarketSymbol : marketId,
   );
