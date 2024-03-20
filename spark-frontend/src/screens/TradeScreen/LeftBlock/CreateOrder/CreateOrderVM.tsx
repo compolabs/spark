@@ -119,7 +119,9 @@ class CreateOrderVM {
     const { tradeStore, balanceStore, blockchainStore } = this.rootStore;
     const bcNetwork = blockchainStore.currentInstance;
 
-    const tokenId = this.isSell ? tradeStore.market!.baseToken.assetId : tradeStore.market!.quoteToken.assetId;
+    if (!tradeStore.market) return;
+
+    const tokenId = this.isSell ? tradeStore.market.baseToken.assetId : tradeStore.market.quoteToken.assetId;
 
     let balance = balanceStore.getBalance(tokenId) ?? BN.ZERO;
     if (tokenId === bcNetwork!.getTokenBySymbol("ETH").assetId) {
@@ -137,6 +139,8 @@ class CreateOrderVM {
   setInputPrice = (price: BN, sync?: boolean) => {
     const { tradeStore } = this.rootStore;
 
+    if (!tradeStore.market) return;
+
     this.inputPrice = price;
 
     if (price.eq(0)) {
@@ -147,14 +151,14 @@ class CreateOrderVM {
     if (!sync) return;
 
     const formattedPrice = BN.formatUnits(price, DEFAULT_DECIMALS);
-    const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market!.baseToken.decimals);
-    const formattedTotal = BN.formatUnits(this.inputTotal, tradeStore.market!.quoteToken.decimals);
+    const formattedAmount = BN.formatUnits(this.inputAmount, tradeStore.market.baseToken.decimals);
+    const formattedTotal = BN.formatUnits(this.inputTotal, tradeStore.market.quoteToken.decimals);
 
     if (this.activeInput === ACTIVE_INPUT.Amount || this.activeInput === ACTIVE_INPUT.Price) {
-      const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market!.quoteToken.decimals);
+      const total = BN.parseUnits(formattedAmount.times(formattedPrice), tradeStore.market.quoteToken.decimals);
       this.setInputTotal(total);
     } else if (this.activeInput === ACTIVE_INPUT.Total) {
-      const amount = BN.parseUnits(formattedTotal.div(formattedPrice), tradeStore.market!.baseToken.decimals);
+      const amount = BN.parseUnits(formattedTotal.div(formattedPrice), tradeStore.market.baseToken.decimals);
       this.setInputAmount(amount);
     }
   };
@@ -163,6 +167,9 @@ class CreateOrderVM {
 
   setInputAmount = (amount: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
+
+    if (!tradeStore.market) return;
+
     this.inputAmount = amount.toDecimalPlaces(0);
 
     if (this.inputPrice.eq(BN.ZERO)) {
@@ -173,12 +180,12 @@ class CreateOrderVM {
     if (!sync) return;
 
     const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
-    const formattedAmount = BN.formatUnits(amount, tradeStore.market!.baseToken.decimals);
+    const formattedAmount = BN.formatUnits(amount, tradeStore.market.baseToken.decimals);
 
-    const total = BN.parseUnits(formattedAmount.times(formattedInputPrice), tradeStore.market!.quoteToken.decimals);
+    const total = BN.parseUnits(formattedAmount.times(formattedInputPrice), tradeStore.market.quoteToken.decimals);
     this.setInputTotal(total);
 
-    const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
+    const relativeToken = this.isSell ? tradeStore.market.baseToken : tradeStore.market.quoteToken;
     const balance = balanceStore.getBalance(relativeToken.assetId);
     if (balance.eq(BN.ZERO)) return;
 
@@ -196,6 +203,9 @@ class CreateOrderVM {
 
   setInputTotal = (total: BN, sync?: boolean) => {
     const { tradeStore, balanceStore } = this.rootStore;
+
+    if (!tradeStore.market) return;
+
     this.inputTotal = total.toDecimalPlaces(0);
 
     if (this.inputPrice.eq(BN.ZERO)) {
@@ -206,12 +216,12 @@ class CreateOrderVM {
     if (!sync) return;
 
     const formattedInputPrice = BN.formatUnits(this.inputPrice, DEFAULT_DECIMALS);
-    const formattedTotal = BN.formatUnits(total, tradeStore.market!.quoteToken.decimals);
+    const formattedTotal = BN.formatUnits(total, tradeStore.market.quoteToken.decimals);
 
-    const inputAmount = BN.parseUnits(formattedTotal.div(formattedInputPrice), tradeStore.market!.baseToken.decimals);
+    const inputAmount = BN.parseUnits(formattedTotal.div(formattedInputPrice), tradeStore.market.baseToken.decimals);
     this.setInputAmount(inputAmount);
 
-    const relativeToken = this.isSell ? tradeStore.market!.baseToken : tradeStore.market!.quoteToken;
+    const relativeToken = this.isSell ? tradeStore.market.baseToken : tradeStore.market.quoteToken;
     const balance = balanceStore.getBalance(relativeToken.assetId);
     if (balance.eq(BN.ZERO)) return;
 
