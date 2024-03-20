@@ -25,7 +25,7 @@ class AccountStore {
     if (initState) {
       if (initState.privateKey) {
         this.connectWalletByPrivateKey(initState.privateKey);
-      } else if (initState.address && blockchainStore.currentInstance?.NETWORK_TYPE) {
+      } else if (initState.address && blockchainStore.currentInstance?.NETWORK_TYPE === NETWORK.FUEL) {
         this.connectWallet(blockchainStore.currentInstance.NETWORK_TYPE);
       }
     }
