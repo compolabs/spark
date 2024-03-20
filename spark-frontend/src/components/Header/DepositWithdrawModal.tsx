@@ -6,6 +6,7 @@ import { IDialogPropTypes } from "rc-dialog/lib/IDialogPropTypes";
 import { ReactComponent as LeftCaretIcon } from "src/assets/icons/arrowUp.svg";
 
 import { useStores } from "@src/stores";
+import { media } from "@src/themes/breakpoints";
 import BN from "@src/utils/BN";
 
 import Button, { ButtonGroup } from "../Button";
@@ -59,12 +60,12 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
 
   const renderTitle = () => {
     return (
-      <SmartFlex center="y" gap="10px" padding="12px 12px 0">
+      <DialogTitleStyled center="y" gap="10px" margin="12px 12px 0" padding="8px 0">
         <LeftCaretIconStyled onClick={rest?.onClose} />
         <Text color="primary" type={TEXT_TYPES.H}>
           Deposit / Withdraw
         </Text>
-      </SmartFlex>
+      </DialogTitleStyled>
     );
   };
 
@@ -80,12 +81,12 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
             <Text type={TEXT_TYPES.SUPPORTING}>USDC</Text>
           </SmartFlex>
         </SmartFlex>
-        <SmartFlex center="y" justifyContent="space-between">
+        <BorderBottomBox center="y" justifyContent="space-between">
           <Text type={TEXT_TYPES.BODY}>Net Account Balance (USD)</Text>
           <Text color={theme.colors.textPrimary} type={TEXT_TYPES.BODY}>
             ${BN.ZERO.toSignificant(2)}
           </Text>
-        </SmartFlex>
+        </BorderBottomBox>
       </SmartFlex>
     );
   };
@@ -102,7 +103,7 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
         </SmartFlex>
         <SmartFlex gap="9px" column>
           {tokens.map((token) => (
-            <SmartFlex key={token.assetId} center="y" justifyContent="space-between">
+            <BorderBottomBox key={token.assetId} center="y" justifyContent="space-between">
               <SmartFlex center="y" gap="4px">
                 <TokenIcon alt={token.symbol} src={token.logo} />
                 <Text type={TEXT_TYPES.BODY} primary>
@@ -112,7 +113,7 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
               <Text type={TEXT_TYPES.BODY} primary>
                 0
               </Text>
-            </SmartFlex>
+            </BorderBottomBox>
           ))}
         </SmartFlex>
       </SmartFlex>
@@ -120,45 +121,49 @@ const DepositWithdrawModal: React.FC<IProps> = ({ children, ...rest }) => {
   };
 
   return (
-    <Dialog {...rest} title={renderTitle()}>
-      <SmartFlex gap="16px" padding="16px 12px 24px" center column>
-        <ButtonGroup>
-          <Button active={isDeposit} onClick={() => setIsDeposit(true)}>
-            Deposit
-          </Button>
-          <Button active={!isDeposit} onClick={() => setIsDeposit(false)}>
-            Withdraw
-          </Button>
-        </ButtonGroup>
-        <SmartFlex center="y" gap="8px" width="100%">
-          <Select label="Asset" options={tokens} onSelect={() => {}} />
-          <AmountContainer width="100%">
-            <MaxButtonStyled fitContent onClick={handleMaxClick}>
-              MAX
-            </MaxButtonStyled>
-            <TokenInput
-              amount={isDeposit ? depositAmount : withdrawAmount}
-              decimals={USDC.decimals}
-              label="Amount"
-              setAmount={handleAmountChange}
-            />
-          </AmountContainer>
-        </SmartFlex>
-        <SmartFlex center="y" justifyContent="space-between" width="100%">
-          <Text type={TEXT_TYPES.SUPPORTING}>{isDeposit ? "Wallet balance" : "Available to withdraw"}</Text>
-          <SmartFlex center="y" gap="4px">
-            <Text color={theme.colors.textPrimary} type={TEXT_TYPES.SUPPORTING}>
-              {isDeposit ? USDCBalance.toSignificant(2) : BN.ZERO.toSignificant(2)}
-            </Text>
-            <Text type={TEXT_TYPES.SUPPORTING}>USDC</Text>
+    <DialogStyled {...rest} title={renderTitle()}>
+      <DialogContainerStyled gap="16px" justifyContent="space-between" padding="16px 12px 24px" column>
+        <SmartFlex gap="16px" width="100%" column>
+          <ButtonGroup>
+            <Button active={isDeposit} onClick={() => setIsDeposit(true)}>
+              Deposit
+            </Button>
+            <Button active={!isDeposit} onClick={() => setIsDeposit(false)}>
+              Withdraw
+            </Button>
+          </ButtonGroup>
+          <SmartFlex center="y" gap="8px" width="100%">
+            <Select label="Asset" options={tokens} onSelect={() => {}} />
+            <AmountContainer width="100%">
+              <MaxButtonStyled fitContent onClick={handleMaxClick}>
+                MAX
+              </MaxButtonStyled>
+              <TokenInput
+                amount={isDeposit ? depositAmount : withdrawAmount}
+                decimals={USDC.decimals}
+                label="Amount"
+                setAmount={handleAmountChange}
+              />
+            </AmountContainer>
           </SmartFlex>
+          <BorderBottomBox center="y" justifyContent="space-between" width="100%">
+            <Text type={TEXT_TYPES.SUPPORTING}>{isDeposit ? "Wallet balance" : "Available to withdraw"}</Text>
+            <SmartFlex center="y" gap="4px">
+              <Text color={theme.colors.textPrimary} type={TEXT_TYPES.SUPPORTING}>
+                {isDeposit ? USDCBalance.toSignificant(2) : BN.ZERO.toSignificant(2)}
+              </Text>
+              <Text type={TEXT_TYPES.SUPPORTING}>USDC</Text>
+            </SmartFlex>
+          </BorderBottomBox>
+          {isDeposit ? renderDepositContent() : renderWithdrawContent()}
         </SmartFlex>
-        {isDeposit ? renderDepositContent() : renderWithdrawContent()}
-        <Button green onClick={onSubmit}>
-          Confirm
-        </Button>
-      </SmartFlex>
-    </Dialog>
+        <SmartFlex alignItems="flex-end">
+          <Button green onClick={onSubmit}>
+            Confirm
+          </Button>
+        </SmartFlex>
+      </DialogContainerStyled>
+    </DialogStyled>
   );
 };
 
@@ -183,4 +188,29 @@ const TokenIcon = styled.img`
   width: 16px;
   height: 16px;
   border-radius: 50%;
+`;
+
+const DialogStyled = styled(Dialog)`
+  ${media.mobile} {
+    height: 100vh;
+    padding: 24px 0;
+  }
+`;
+
+const DialogTitleStyled = styled(SmartFlex)`
+  ${media.mobile} {
+    margin-top: 0;
+  }
+`;
+
+const DialogContainerStyled = styled(SmartFlex)`
+  ${media.mobile} {
+    height: 90vh;
+    padding-bottom: 0;
+  }
+`;
+
+const BorderBottomBox = styled(SmartFlex)`
+  border-bottom: 1px solid ${({ theme }) => theme.colors.borderSecondary};
+  padding-bottom: 5px;
 `;

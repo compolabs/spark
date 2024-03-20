@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { observer } from "mobx-react";
 
 import Loader from "@src/components/Loader";
@@ -23,14 +23,22 @@ const TradeScreenImpl: React.FC = observer(() => {
 
 const TradeScreen: React.FC = observer(() => {
   const { tradeStore } = useStores();
+  const location = useLocation();
   const { marketId } = useParams<{ marketId: string }>();
-  const spotMarketExists = tradeStore.spotMarkets.some((market) => market.symbol === marketId);
 
-  if (tradeStore.spotMarkets.length === 0) {
+  const isPerp = location.pathname.includes("/perp");
+  const spotMarketExists = tradeStore.spotMarkets.some((market) => market.symbol === marketId);
+  const perpMarketExists = tradeStore.perpMarkets.some((market) => market.symbol === marketId);
+
+  if (tradeStore.spotMarkets.length === 0 || (isPerp && tradeStore.perpMarkets.length === 0)) {
     return <Loader />;
   }
 
-  tradeStore.setMarketSymbol(!marketId || !spotMarketExists ? tradeStore.defaultMarketSymbol : marketId);
+  tradeStore.setIsPerp(isPerp);
+
+  tradeStore.setMarketSymbol(
+    !marketId || (!spotMarketExists && !perpMarketExists) ? tradeStore.defaultMarketSymbol : marketId,
+  );
 
   return (
     //я оборачиваю весь TradeScreenImpl в CreateOrderSpotVMProvider потому что при нажатии на трейд в OrderbookAndTradesInterface должно меняться значение в LeftBlock

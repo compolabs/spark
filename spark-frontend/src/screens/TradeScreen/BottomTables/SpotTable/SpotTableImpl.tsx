@@ -22,12 +22,6 @@ import { BaseTable } from "../BaseTable";
 
 import { useSpotTableVMProvider } from "./SpotTableVM";
 
-const TABS = [
-  { title: "ORDERS", disabled: false },
-  { title: "BALANCES", disabled: false },
-  { title: "HISTORY", disabled: false },
-];
-
 const orderColumnHelper = createColumnHelper<SpotMarketOrder>();
 const tradeColumnHelper = createColumnHelper<SpotMarketTrade>();
 const balanceColumnHelper = createColumnHelper<{ asset: Token; balance: string; assetId: string }>();
@@ -153,6 +147,12 @@ const SpotTableImpl: React.FC = observer(() => {
         assetId,
       };
     });
+
+  const TABS = [
+    { title: "ORDERS", disabled: false, rowCount: vm.myOrders.length },
+    { title: "BALANCES", disabled: false, rowCount: balanceData.length },
+    { title: "HISTORY", disabled: false, rowCount: vm.myOrdersHistory.length },
+  ];
 
   const renderMobileRows = () => {
     const orderData = vm.myOrders.map((ord, i) => (

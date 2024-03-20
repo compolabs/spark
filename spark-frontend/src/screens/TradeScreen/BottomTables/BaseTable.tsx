@@ -17,7 +17,7 @@ import { media } from "@src/themes/breakpoints";
 import { MAX_TABLE_HEIGHT, RESIZE_TOOLTIP_CONFIG, TABLE_SIZES_CONFIG } from "./constants";
 
 interface Props {
-  tabs: { title: string; disabled: boolean }[];
+  tabs: { title: string; disabled: boolean; rowCount: number }[];
   children: React.ReactNode;
   activeTab: number;
   onTabClick: (index: number) => void;
@@ -43,7 +43,7 @@ export const BaseTable: React.FC<Props> = observer(({ tabs, activeTab, onTabClic
     <Root gap="16px" size={settingsStore.tradeTableSize} column>
       <TableRoot>
         <TabContainer>
-          {tabs.map(({ title, disabled }, index) => (
+          {tabs.map(({ title, disabled, rowCount }, index) => (
             <Tab
               key={title + index}
               active={activeTab === index}
@@ -51,6 +51,13 @@ export const BaseTable: React.FC<Props> = observer(({ tabs, activeTab, onTabClic
               onClick={() => !disabled && onTabClick(index)}
             >
               {title}
+              {rowCount > 0 && (
+                <Badge>
+                  <Text style={{ lineHeight: "10px" }} primary>
+                    {rowCount}
+                  </Text>
+                </Badge>
+              )}
             </Tab>
           ))}
           <TableSizeSelector>
@@ -154,4 +161,11 @@ const TableSize = styled.div<{ active?: boolean }>`
   :hover {
     background: ${({ theme }) => theme.colors.borderSecondary};
   }
+`;
+
+const Badge = styled.div`
+  margin-left: 4px;
+  background: ${({ theme }) => theme.colors.borderSecondary};
+  border-radius: 4px;
+  padding: 3px 4px;
 `;

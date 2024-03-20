@@ -31,6 +31,7 @@ const App: React.FC = observer(() => {
         <Route element={<TradeScreen />} path={ROUTES.TRADE} />
         <Route element={<TradeScreen />} path={ROUTES.ROOT} />
         <Route element={<Faucet />} path={ROUTES.FAUCET} />
+        <Route element={<TradeScreen />} path={ROUTES.PERP} />
       </Routes>
     </Root>
   );

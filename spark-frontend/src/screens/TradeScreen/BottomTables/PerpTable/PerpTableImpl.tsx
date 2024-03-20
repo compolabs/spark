@@ -21,17 +21,9 @@ import { useStores } from "@stores";
 
 import { BaseTable } from "../BaseTable";
 
+import TakeProfitStopLossSheet from "./TakeProfitStopLoss/TakeProfitStopLossSheet";
+import { TakeProfitStopLossTooltip } from "./TakeProfitStopLoss/TakeProfitStopLossTooltip";
 import { usePerpTableVMProvider } from "./PerpTableVM";
-import TakeProfitStopLossSheet from "./TakeProfitStopLossSheet";
-
-const TABS = [
-  { title: "POSITIONS", disabled: false },
-  { title: "BALANCES", disabled: false },
-  // { title: "ORDERS", disabled: true },
-  // { title: "TRADES", disabled: true },
-  // { title: "UNSETTLED P&L", disabled: true },
-  // { title: "HISTORY", disabled: true },
-];
 
 interface PerpMarketTrade {
   id: string;
@@ -57,7 +49,8 @@ interface PerpMarketTrade {
 interface PositionColumnParams {
   vm: ReturnType<typeof usePerpTableVMProvider>;
   theme: Theme;
-  onTpSlClick: () => void;
+  isTooltipVisible: boolean;
+  onTooltipVisibleChange: (isVisible: boolean) => void;
 }
 
 const positionColumnHelper = createColumnHelper<PerpMarketTrade>();
@@ -150,7 +143,12 @@ const POSITIONS_COLUMNS = (params: PositionColumnParams) => [
         <CancelButton onClick={() => params.vm.cancelOrder(props.getValue())}>
           {params.vm.cancelingOrderId === props.getValue() ? "Loading..." : "Close"}
         </CancelButton>
-        <CancelButton onClick={params.onTpSlClick}>TP/SL</CancelButton>
+        <CancelButton onClick={() => params.onTooltipVisibleChange(true)}>
+          <TakeProfitStopLossTooltip
+            isVisible={params.isTooltipVisible}
+            onVisibleChange={params.onTooltipVisibleChange}
+          />
+        </CancelButton>
       </SmartFlex>
     ),
   }),
@@ -190,9 +188,13 @@ const PerpTableImpl: React.FC = observer(() => {
   const media = useMedia();
 
   const [isTpSlSheetOpen, openTpSlSheet, closeTpSlSheet] = useFlag();
+  const [isTpSlTooltipOpen, setIsTpSlTooltipOpen] = useState(false);
 
   const [tabIndex, setTabIndex] = useState(0);
-  const columns = [POSITIONS_COLUMNS({ vm, theme, onTpSlClick: openTpSlSheet }), BALANCE_COLUMNS];
+  const columns = [
+    POSITIONS_COLUMNS({ vm, theme, isTooltipVisible: isTpSlTooltipOpen, onTooltipVisibleChange: setIsTpSlTooltipOpen }),
+    BALANCE_COLUMNS,
+  ];
 
   const [isTpSlActive, setTpSlActive] = useState(false);
 
@@ -206,6 +208,15 @@ const PerpTableImpl: React.FC = observer(() => {
         assetId,
       };
     });
+
+  const tabs = [
+    { title: "POSITIONS", disabled: false, rowCount: vm.myPositions.length },
+    { title: "BALANCES", disabled: false, rowCount: balanceData.length },
+    // { title: "ORDERS", disabled: true },
+    // { title: "TRADES", disabled: true },
+    // { title: "UNSETTLED P&L", disabled: true },
+    // { title: "HISTORY", disabled: true },
+  ];
 
   const handleTpSlChange = () => {
     setTpSlActive((state) => !state);
@@ -341,7 +352,7 @@ const PerpTableImpl: React.FC = observer(() => {
 
   return (
     <>
-      <BaseTable activeTab={tabIndex} tabs={TABS} onTabClick={setTabIndex}>
+      <BaseTable activeTab={tabIndex} tabs={tabs} onTabClick={setTabIndex}>
         {renderTable()}
       </BaseTable>
       {!!vm.myPositions.length && tabIndex === 0 && (

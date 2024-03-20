@@ -1,7 +1,7 @@
 import { makeAutoObservable, reaction } from "mobx";
 
 import { SpotMarketVolume } from "@src/blockchain/types";
-import { SpotMarket } from "@src/entity";
+import { PerpMarket, SpotMarket } from "@src/entity";
 import BN from "@src/utils/BN";
 import { IntervalUpdater } from "@src/utils/IntervalUpdater";
 import RootStore from "@stores/RootStore";
@@ -19,7 +19,7 @@ class TradeStore {
   loading: boolean = false;
   favMarkets: string[] = [];
   spotMarkets: SpotMarket[] = [];
-  perpMarkets: SpotMarket[] = [];
+  perpMarkets: PerpMarket[] = [];
   marketSelectionOpened: boolean = false;
   marketSymbol: string | null = null;
   readonly defaultMarketSymbol = "BTC-USDC";
@@ -121,6 +121,9 @@ class TradeStore {
         .map((market) => new SpotMarket(market.assetId, bcNetwork!.getTokenBySymbol("USDC").assetId));
 
       this.setSpotMarkets(spotMarkets);
+      this.setPerpMarkets([
+        new PerpMarket(bcNetwork!.getTokenBySymbol("BTC").assetId, bcNetwork!.getTokenBySymbol("USDC").assetId),
+      ]);
 
       await this.updateMarketPrices();
     } catch (error) {
@@ -134,6 +137,8 @@ class TradeStore {
   private setFavMarkets = (v: string[]) => (this.favMarkets = v);
 
   private setSpotMarkets = (v: SpotMarket[]) => (this.spotMarkets = v);
+
+  private setPerpMarkets = (v: PerpMarket[]) => (this.perpMarkets = v);
 
   private setInitialized = (l: boolean) => (this.initialized = l);
 

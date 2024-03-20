@@ -2,6 +2,7 @@ export const ROUTES = {
   ROOT: "/",
   TRADE: "/:marketId",
   FAUCET: "/faucet",
+  PERP: "/perp/:marketId",
 };
 
 export const ARBITRUM_SEPOLIA_FAUCET = "https://faucet.quicknode.com/arbitrum/sepolia";

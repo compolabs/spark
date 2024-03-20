@@ -81,7 +81,7 @@ const Table: React.FC<IProps> = observer(({ columns, data, onClick, fitContent, 
 export default Table;
 
 const Root = styled.div<{ hovered?: boolean; fitContent?: boolean }>`
-  width: ${({ fitContent }) => (fitContent ? "fit-content" : "100%")};
+  width: 100vw;
   background: ${({ theme }) => `${theme.colors.bgPrimary}`};
   height: fit-content;
 

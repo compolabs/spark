@@ -35,7 +35,7 @@ const SpotMarketRow: React.FC<IProps> = observer(({ market }) => {
       onClick={() => {
         tradeStore.setMarketSelectionOpened(false);
         tradeStore.setIsPerp(true);
-        navigate(`/${market.symbol}`);
+        navigate(`/perp/${market.symbol}`);
       }}
     >
       <SmartFlex gap="4px" width="100%" column>
