@@ -12,5 +12,5 @@
 export type { TokenAbi } from "./TokenAbi";
 export type { OrderbookAbi } from "../types/OrderbookAbi";
 
-export { TokenAbi__factory } from "./factories/TokenAbi__factory";
-export { OrderbookAbi__factory } from "../types/factories/OrderbookAbi__factory";
+export { TokenAbi__factory } from "./src-20/factories/TokenAbi__factory";
+export { OrderbookAbi__factory } from "./orderbook/factories/OrderbookAbi__factory";

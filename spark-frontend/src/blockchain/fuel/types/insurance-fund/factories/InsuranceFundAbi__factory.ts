@@ -4,14 +4,14 @@
 /* eslint-disable */
 
 /*
-  Fuels version: 0.75.0
-  Forc version: 0.50.0
+  Fuels version: 0.77.0
+  Forc version: 0.51.1
   Fuel-Core version: 0.22.1
 */
 
 import { Interface, Contract, ContractFactory } from "fuels";
 import type { Provider, Account, AbstractAddress, BytesLike, DeployContractOptions, StorageSlot } from "fuels";
-import type { TokenAbi, TokenAbiInterface } from "../TokenAbi";
+import type { InsuranceFundAbi, InsuranceFundAbiInterface } from "../InsuranceFundAbi";
 
 const _abi = {
   "types": [
@@ -29,28 +29,17 @@ const _abi = {
     },
     {
       "typeId": 2,
-      "type": "enum BurnError",
-      "components": [
-        {
-          "name": "NotEnoughCoins",
-          "type": 0,
-          "typeArguments": null
-        }
-      ],
+      "type": "bool",
+      "components": null,
       "typeParameters": null
     },
     {
       "typeId": 3,
-      "type": "enum Identity",
+      "type": "enum Error",
       "components": [
         {
-          "name": "Address",
-          "type": 7,
-          "typeArguments": null
-        },
-        {
-          "name": "ContractId",
-          "type": 10,
+          "name": "AccessDenied",
+          "type": 0,
           "typeArguments": null
         }
       ],
@@ -58,22 +47,15 @@ const _abi = {
     },
     {
       "typeId": 4,
-      "type": "enum Option",
+      "type": "enum ReentrancyError",
       "components": [
         {
-          "name": "None",
+          "name": "NonReentrant",
           "type": 0,
-          "typeArguments": null
-        },
-        {
-          "name": "Some",
-          "type": 5,
           "typeArguments": null
         }
       ],
-      "typeParameters": [
-        5
-      ]
+      "typeParameters": null
     },
     {
       "typeId": 5,
@@ -89,6 +71,12 @@ const _abi = {
     },
     {
       "typeId": 7,
+      "type": "str",
+      "components": null,
+      "typeParameters": null
+    },
+    {
+      "typeId": 8,
       "type": "struct Address",
       "components": [
         {
@@ -100,7 +88,7 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 8,
+      "typeId": 9,
       "type": "struct AssetId",
       "components": [
         {
@@ -112,29 +100,17 @@ const _abi = {
       "typeParameters": null
     },
     {
-      "typeId": 9,
+      "typeId": 10,
       "type": "struct Bytes",
       "components": [
         {
           "name": "buf",
-          "type": 11,
+          "type": 12,
           "typeArguments": null
         },
         {
           "name": "len",
-          "type": 13,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": null
-    },
-    {
-      "typeId": 10,
-      "type": "struct ContractId",
-      "components": [
-        {
-          "name": "value",
-          "type": 1,
+          "type": 15,
           "typeArguments": null
         }
       ],
@@ -142,6 +118,23 @@ const _abi = {
     },
     {
       "typeId": 11,
+      "type": "struct I64",
+      "components": [
+        {
+          "name": "value",
+          "type": 15,
+          "typeArguments": null
+        },
+        {
+          "name": "negative",
+          "type": 2,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": null
+    },
+    {
+      "typeId": 12,
       "type": "struct RawBytes",
       "components": [
         {
@@ -151,19 +144,7 @@ const _abi = {
         },
         {
           "name": "cap",
-          "type": 13,
-          "typeArguments": null
-        }
-      ],
-      "typeParameters": null
-    },
-    {
-      "typeId": 12,
-      "type": "struct String",
-      "components": [
-        {
-          "name": "bytes",
-          "type": 9,
+          "type": 15,
           "typeArguments": null
         }
       ],
@@ -171,13 +152,51 @@ const _abi = {
     },
     {
       "typeId": 13,
-      "type": "u64",
-      "components": null,
-      "typeParameters": null
+      "type": "struct RawVec",
+      "components": [
+        {
+          "name": "ptr",
+          "type": 6,
+          "typeArguments": null
+        },
+        {
+          "name": "cap",
+          "type": 15,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        5
+      ]
     },
     {
       "typeId": 14,
-      "type": "u8",
+      "type": "struct Vec",
+      "components": [
+        {
+          "name": "buf",
+          "type": 13,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 5,
+              "typeArguments": null
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "type": 15,
+          "typeArguments": null
+        }
+      ],
+      "typeParameters": [
+        5
+      ]
+    },
+    {
+      "typeId": 15,
+      "type": "u64",
       "components": null,
       "typeParameters": null
     }
@@ -186,80 +205,22 @@ const _abi = {
     {
       "inputs": [
         {
-          "name": "asset",
-          "type": 8,
-          "typeArguments": null
-        }
-      ],
-      "name": "decimals",
-      "output": {
-        "name": "",
-        "type": 4,
-        "typeArguments": [
-          {
-            "name": "",
-            "type": 14,
-            "typeArguments": null
-          }
-        ]
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
+          "name": "price_update_data",
+          "type": 14,
+          "typeArguments": [
+            {
+              "name": "",
+              "type": 10,
+              "typeArguments": null
+            }
           ]
         }
-      ]
-    },
-    {
-      "inputs": [
-        {
-          "name": "asset",
-          "type": 8,
-          "typeArguments": null
-        }
       ],
-      "name": "name",
+      "name": "distribute_fee",
       "output": {
         "name": "",
-        "type": 4,
-        "typeArguments": [
-          {
-            "name": "",
-            "type": 12,
-            "typeArguments": null
-          }
-        ]
-      },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
-    },
-    {
-      "inputs": [
-        {
-          "name": "asset",
-          "type": 8,
-          "typeArguments": null
-        }
-      ],
-      "name": "symbol",
-      "output": {
-        "name": "",
-        "type": 4,
-        "typeArguments": [
-          {
-            "name": "",
-            "type": 12,
-            "typeArguments": null
-          }
-        ]
+        "type": 15,
+        "typeArguments": null
       },
       "attributes": [
         {
@@ -272,64 +233,33 @@ const _abi = {
     },
     {
       "inputs": [],
-      "name": "total_assets",
+      "name": "get_insurance_fund_capacity",
       "output": {
         "name": "",
-        "type": 13,
+        "type": 11,
         "typeArguments": null
       },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      "attributes": null
     },
     {
-      "inputs": [
-        {
-          "name": "asset",
-          "type": 8,
-          "typeArguments": null
-        }
-      ],
-      "name": "total_supply",
+      "inputs": [],
+      "name": "repay",
       "output": {
         "name": "",
-        "type": 4,
-        "typeArguments": [
-          {
-            "name": "",
-            "type": 13,
-            "typeArguments": null
-          }
-        ]
+        "type": 0,
+        "typeArguments": null
       },
-      "attributes": [
-        {
-          "name": "storage",
-          "arguments": [
-            "read"
-          ]
-        }
-      ]
+      "attributes": null
     },
     {
       "inputs": [
         {
-          "name": "sub_id",
-          "type": 1,
-          "typeArguments": null
-        },
-        {
-          "name": "amount",
-          "type": 13,
+          "name": "distribution_threshold",
+          "type": 15,
           "typeArguments": null
         }
       ],
-      "name": "burn",
+      "name": "set_distribution_threshold",
       "output": {
         "name": "",
         "type": 0,
@@ -339,7 +269,6 @@ const _abi = {
         {
           "name": "storage",
           "arguments": [
-            "read",
             "write"
           ]
         }
@@ -348,22 +277,12 @@ const _abi = {
     {
       "inputs": [
         {
-          "name": "recipient",
-          "type": 3,
-          "typeArguments": null
-        },
-        {
-          "name": "sub_id",
-          "type": 1,
-          "typeArguments": null
-        },
-        {
-          "name": "amount",
-          "type": 13,
+          "name": "surplus_beneficiary",
+          "type": 8,
           "typeArguments": null
         }
       ],
-      "name": "mint",
+      "name": "set_surplus_beneficiary",
       "output": {
         "name": "",
         "type": 0,
@@ -373,7 +292,6 @@ const _abi = {
         {
           "name": "storage",
           "arguments": [
-            "read",
             "write"
           ]
         }
@@ -385,52 +303,132 @@ const _abi = {
       "logId": 0,
       "loggedType": {
         "name": "",
-        "type": 2,
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 1,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 2,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 3,
+      "loggedType": {
+        "name": "",
+        "type": 4,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 4,
+      "loggedType": {
+        "name": "",
+        "type": 7,
+        "typeArguments": null
+      }
+    },
+    {
+      "logId": 5,
+      "loggedType": {
+        "name": "",
+        "type": 3,
+        "typeArguments": []
+      }
+    },
+    {
+      "logId": 6,
+      "loggedType": {
+        "name": "",
+        "type": 3,
         "typeArguments": []
       }
     }
   ],
   "messagesTypes": [],
-  "configurables": []
+  "configurables": [
+    {
+      "name": "OWNER",
+      "configurableType": {
+        "name": "",
+        "type": 1,
+        "typeArguments": null
+      },
+      "offset": 8932
+    },
+    {
+      "name": "USDC_ADDRESS",
+      "configurableType": {
+        "name": "",
+        "type": 9,
+        "typeArguments": []
+      },
+      "offset": 8796
+    },
+    {
+      "name": "PROXY_ADDRESS",
+      "configurableType": {
+        "name": "",
+        "type": 8,
+        "typeArguments": []
+      },
+      "offset": 8700
+    }
+  ]
 };
 
 const _storageSlots: StorageSlot[] = [
   {
-    "key": "f383b0ce51358be57daa3b725fe44acdb2d880604e367199080b4379c41bb6ed",
+    "key": "de9090cb50e71c2588c773487d1da7066d0c719849a7e58dc8b6397a25c567c0",
     "value": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  {
+    "key": "f383b0ce51358be57daa3b725fe44acdb2d880604e367199080b4379c41bb6ed",
+    "value": "00000000004c4b40000000000000000000000000000000000000000000000000"
   }
 ];
 
-export class TokenAbi__factory {
+export class InsuranceFundAbi__factory {
   static readonly abi = _abi;
 
   static readonly storageSlots = _storageSlots;
 
-  static createInterface(): TokenAbiInterface {
-    return new Interface(_abi) as unknown as TokenAbiInterface
+  static createInterface(): InsuranceFundAbiInterface {
+    return new Interface(_abi) as unknown as InsuranceFundAbiInterface
   }
 
   static connect(
     id: string | AbstractAddress,
     accountOrProvider: Account | Provider
-  ): TokenAbi {
-    return new Contract(id, _abi, accountOrProvider) as unknown as TokenAbi
+  ): InsuranceFundAbi {
+    return new Contract(id, _abi, accountOrProvider) as unknown as InsuranceFundAbi
   }
 
   static async deployContract(
     bytecode: BytesLike,
     wallet: Account,
     options: DeployContractOptions = {}
-  ): Promise<TokenAbi> {
+  ): Promise<InsuranceFundAbi> {
     const factory = new ContractFactory(bytecode, _abi, wallet);
 
-    const { storageSlots } = TokenAbi__factory;
+    const { storageSlots } = InsuranceFundAbi__factory;
 
     const contract = await factory.deployContract({
       storageSlots,
       ...options,
     });
 
-    return contract as unknown as TokenAbi;
+    return contract as unknown as InsuranceFundAbi;
   }
 }
