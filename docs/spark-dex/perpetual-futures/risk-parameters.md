@@ -7,6 +7,6 @@
 5. Liquidation Buffer: The absolute minimum amount over the maintenance margin at which we liquidate positions. For instance, a liquidation buffer of 1.05 would mean that we liquidate positions at 5% above the maintenance margin.
 6. Opening Buffer: the user’s minimum collateral needed to not immediately be liquidated, expressed as opening\_buffer \* maintenance\_margin. The product of these is Initial Margin. For example, an opening buffer of 1.10 and a maintenance margin of 10% for Market A would mean that the max amount of leverage that a user could take in this market would be:
 
-Minimum Collateral = Position Size × Maintenance Margin × Opening Buffer&#x20;
-
-\
+$$
+Minimum Collateral = Position Size × Maintenance Margin × Opening Buffer
+$$

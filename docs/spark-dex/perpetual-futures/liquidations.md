@@ -25,16 +25,18 @@ Leveraged trading amplifies trading power by allowing you to trade with more fun
 
 \#long
 
-liqPrice = indexPrice - ((accountValue - totalPositionValue \* mmRatio) /  ((1 - mmRatio) \* positionSizeOfTokenX))
+$$
+liqPrice = indexPrice - ((accountValue - totalPositionValue * mmRatio) /  ((1 - mmRatio) * positionSizeOfTokenX))
+$$
 
-\
 
 
 \#short
 
-liqPrice = indexPrice - ((accountValue - totalPositionValue \* mmRatio) /  ((1 + mmRatio) \* positionSizeOfTokenX))
+$$
+liqPrice = indexPrice - ((accountValue - totalPositionValue * mmRatio) /  ((1 + mmRatio) * positionSizeOfTokenX))
+$$
 
-\
 
 
 ### **Example**

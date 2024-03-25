@@ -8,7 +8,6 @@ This value is the sum of your collateral, any unrealized PnL (profit & loss) and
 
 <figure><img src="https://lh7-us.googleusercontent.com/qTUWcKLw3RbdMuqnbym6lf0vOsbMWwt2XGhxaD4b5MjX6aFAM07irhBZOUfImiKBTU0X1yea8UC5dFSRLcyCkHASBOYjCyxy9C4Hnjofi41Umho8kR4Z4LfuooxGiUM3ZrNyYSbk22Xfx46buHMphJepdO2ytDIza7NlzD9-i5ZqsWN_dDDhwm8_Y3-QZwzRj6nMnwE" alt=""><figcaption></figcaption></figure>
 
-\
 
 
 ### Free Collateral

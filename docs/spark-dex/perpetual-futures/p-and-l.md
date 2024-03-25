@@ -8,7 +8,7 @@ The position table displays the P\&L for the existing position. Users have the o
 
 
 
-The P\&L mentioned, particularly in the context of SOL-PERP and ETH-PERP shorts, pertains to the unrealized P\&L or uPNL of open positions. To convert this uPNL into realized profit or loss, positions must be closed.
+The P\&L mentioned, particularly in the context of BTC-PERP and ETH-PERP shorts, pertains to the unrealized P\&L or uPNL of open positions. To convert this uPNL into realized profit or loss, positions must be closed.
 
 The PnL in the table is determined by calculating the difference between the entry price of the position and the current time-weighted average price of trades, multiplied by the size of the position.
 

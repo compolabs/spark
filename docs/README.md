@@ -4,21 +4,19 @@
 
 ## What is Spark?
 
-Spark V1 is a cross-margin oracle-based perpetual order book built on [Fuel Network](https://www.fuel.network/). V1 design is made for optimum user experience and safety, as well as to give us a launchpad for future innovations.&#x20;
+Spark is a DeFi super app on the [Fuel.network](https://fuel.network/), revolutionizing financial services with its integrated suite of offerings including perpetual contracts, an order book, as well as lending, borrowing features.
 
-Spark V1 will rely on the active participation of market-makers for its success, and future iterations of our protocol will include various mechanisms to enhance the user trading experience.
+Spark V1 introduces a multicollateral cross-margin system for its perpetual contracts, supporting deposits of diverse assets and implementing sophisticated liquidation protocols to ensure trading flexibility and risk management.
 
 
 
 Key features of **Spark V1**:
 
-* A highly performant order book for longing/shorting Perpetual Contracts with up to 2000 TPS
-* Cross-margin, partial liquidations, and funding rates
-* An advanced risk engine and insurance fund will ensure that the protocol incurs no bad debt
-* SDKs and APIs for non-custodial interaction with our order book
-* Users will be able to gain up to 50x leverage (depending on how much margin they have)
-
-Spark V1 solely accepts USDC as collateral and requires active market makers in order to reduce spread.
+* **High Performance Order Book:** Support for longing/shorting Perpetual Contracts with up to 2000 TPS.
+* **Cross-Margin and Liquidations:** Enhanced margin and liquidation mechanisms, including partial liquidations and dynamic funding rates.
+* **Advanced Risk Management:** A robust risk engine and insurance fund to prevent bad debt within the protocol.
+* **Developer Tools:** Comprehensive SDKs and APIs for non-custodial interaction with our order book, facilitating integration and innovation.
+* **Multicollateral Support:** Margin logic that accommodates the deposit of multiple assets, enhancing trading flexibility and risk distribution.
 
 This means that on Mainnet, we will foster active participation from market makers. Read more in our Market Makers incentivization program.
 

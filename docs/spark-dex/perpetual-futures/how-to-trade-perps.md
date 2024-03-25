@@ -2,7 +2,7 @@
 
 To begin, navigate to the collateral section and click Deposit to add collateral. This step safeguards your account against potential losses due to market fluctuations.
 
-
+<figure><img src="../../.gitbook/assets/image (7).png" alt="" width="375"><figcaption></figcaption></figure>
 
 Next, select the market for trading. Do this by clicking on 'Trade', then 'Perpetuals', and selecting the market of your interest.\
 
