@@ -28,8 +28,8 @@ storage {
 
 abi OrderBookContract {
 
-// ## Deposit and Withdraw of fee
-// Users can deposit money to paing fees into their accounts. This fees is necessary to motivate matching engine, and also to pay protocol fees
+// ## Deposit and Withdraw the fee
+// Users can deposit assets into their accounts to cover fees, used to incentivize the matching engine and pay the exchange's commissions.
 
     #[payable, storage(read, write)]
     fn deposit();
@@ -42,21 +42,21 @@ abi OrderBookContract {
 
 
 // ## Create order
-// This function allows users to create order. It requires a deposit to be matched
+// This function enables users to place orders, requiring a deposit to facilitate matching.
 
     #[payable, storage(read, write)]
     fn create_order(asset1: b256, amount1: u64, matcher_fee: u64) -> u64;
 
 
 // ## Close order
-// Users can close one or multiple orders, unused fee will be returned to the user's balacne
+// Users can close one or multiple orders, and any unused fees will be refunded to their account balance.
    
     #[storage(read, write)]
     fn cancel_order(id: u64);
 
 
 // ## Order getters
-// Allow to get info about orders and orderbook via dry-runs
+// Allow to obtain the order book via dry-runs
    
     //? get_total_ordes_amount in the sheet
     #[storage(read)] 
@@ -73,7 +73,7 @@ abi OrderBookContract {
 
 
 // ## Fulfill orders
-// Allows you to close a specific order without having to create a new one
+// Allows a user to close a specific order without having to create a new one
    
     // #[payable, storage(read, write)]
     // fn fulfill_order(id: u64);
@@ -82,8 +82,8 @@ abi OrderBookContract {
 
 impl OrderBookContract for Contract {
 
-// ## Deposit and Withdraw of fee
-// Users can deposit money to paing fees into their accounts. This fees is necessary to motivate matching engine, and also to pay protocol fees
+// ## Deposit and Withdraw
+// Users can deposit assets into their accounts to cover fees, used to incentivize the matching engine and pay the exchange's commissions.
 
     #[payable, storage(read, write)]
     fn deposit() {
@@ -109,7 +109,7 @@ impl OrderBookContract for Contract {
     }
 
 // ## Create order
-// This function allows users to create order. It requires a deposit to be matched
+// This function enables users to place orders, requiring a deposit to facilitate matching.
 
     #[payable, storage(read, write)]
     fn create_order(asset1: b256, amount1: u64, matcher_fee: u64) -> u64 {
@@ -148,7 +148,7 @@ impl OrderBookContract for Contract {
 
 
 // ## Close order
-// Users can close one or multiple orders, unused fee will be returned to the user's balacne
+// Users can close one or multiple orders, and any unused fees will be refunded to their account balance.
    
     #[storage(read, write)]
     fn cancel_order(id: u64) {
@@ -170,7 +170,7 @@ impl OrderBookContract for Contract {
     
 
 // ## Order getters
-// Allow to get info about orders and orderbook via dry-runs
+// Allows to obtain the order book via dry-runs
    
     #[storage(read)]
     fn orders_amount() -> u64 {
